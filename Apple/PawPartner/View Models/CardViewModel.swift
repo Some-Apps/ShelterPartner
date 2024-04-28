@@ -15,7 +15,6 @@ class CardViewModel: ObservableObject {
     @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("minimumDuration") var minimumDuration = 5
 
-    // Test if this works
     func takeOut(animal: Animal) {
         let db = Firestore.firestore()
         db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
