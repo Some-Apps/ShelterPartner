@@ -16,7 +16,6 @@ class AnimalViewModel: ObservableObject {
     
     @Published var sortedDogs: [Animal] = []
     @Published var sortedCats: [Animal] = []
-    
     @Published var sortedVisitorDogs: [Animal] = []
     @Published var sortedVisitorCats: [Animal] = []
     
