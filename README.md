@@ -9,7 +9,7 @@
 4. Once you're done, create a pull request
 
 ### Submit an Issue
-Feel free to submit any issues.
+Feel free to submit your own issues.
 
 ## Architecture
 
