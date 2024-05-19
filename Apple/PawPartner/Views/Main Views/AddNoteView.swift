@@ -1,6 +1,8 @@
 import FirebaseFirestore
 import SwiftUI
 import Kingfisher
+import GoogleMobileAds
+
 
 struct AddNoteView: View {
     @ObservedObject var viewModel = AddNoteViewModel()
@@ -18,7 +20,7 @@ struct AddNoteView: View {
     
     var body: some View {
         Form {
-            Section("Notes") {
+            Section("Note for \(animal.name)") {
                 TextEditor(text: $note)
                     .focused($isNoteFieldFocused)
             }
@@ -92,6 +94,13 @@ struct AddNoteView: View {
                         .onTapGesture(perform: saveNote)
                 }
             }
+//            Section("This ad supports the future development of PawPartner") {
+//                           GeometryReader { geometry in
+//                               BannerAdView()
+//                                   .frame(width: geometry.size.width, height: 100)
+//                           }
+//                           .frame(height: 100) // Set height to avoid expanding the section
+//                       }
         }
         .onTapGesture {
             isNoteFieldFocused = false
@@ -115,4 +124,17 @@ struct AddNoteView: View {
 
 #Preview {
     AddNoteView(viewModel: AddNoteViewModel(), animalViewModel: AnimalViewModel.shared, animal: Animal.dummyAnimal)
+}
+
+
+struct BannerAdView: UIViewRepresentable {
+    func makeUIView(context: Context) -> GADBannerView {
+        let bannerView = GADBannerView(adSize: GADAdSizeLargeBanner)
+        bannerView.adUnitID = "ad_unit"
+        bannerView.rootViewController = UIApplication.shared.windows.first?.rootViewController
+        bannerView.load(GADRequest())
+        return bannerView
+    }
+
+    func updateUIView(_ uiView: GADBannerView, context: Context) {}
 }

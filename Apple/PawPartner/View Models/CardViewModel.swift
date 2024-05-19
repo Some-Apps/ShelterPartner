@@ -14,7 +14,9 @@ class CardViewModel: ObservableObject {
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("minimumDuration") var minimumDuration = 5
+    @AppStorage("requireName") var requireName = false
 
+    // Test if this works
     func takeOut(animal: Animal) {
         let db = Firestore.firestore()
         db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
@@ -123,17 +125,28 @@ class CardViewModel: ObservableObject {
                 if let startTime = data["startTime"] as? Double {
 //                    print(startTime)
 //                    print(Date())
-                    
+                    var lastVolunteer = ""
+                    lastVolunteer = data["lastVolunteer"] as? String ?? ""
                     // Create a new log
                     let id = UUID().uuidString
-                    let newLog = Log(id: id, startTime: startTime, endTime: Date().timeIntervalSince1970)
+                    let newLog = Log(id: id, startTime: startTime, endTime: Date().timeIntervalSince1970, user: lastVolunteer)
                     
                     // Convert newLog to a dictionary
                     let logDict: [String: Any] = [
                         "id": newLog.id,
                         "startTime": newLog.startTime,
-                        "endTime": newLog.endTime
+                        "endTime": newLog.endTime,
+                        "user": newLog.user ?? ""
                     ]
+                    db.collection("Societies").document(self.storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+                        "lastVolunteer": "",
+                    ]){ err in
+                        if let err = err {
+                            print("Error updating document: \(err)")
+                        } else {
+                            print("Document successfully updated")
+                        }
+                    }
                     
                     // Add newLog to the logs array in the specified animal's document
                     db.collection("Societies").document(self.storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([

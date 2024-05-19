@@ -13,6 +13,10 @@ struct AdvancedSettingsView: View {
     @AppStorage("isCustomFormOn") var isCustomFormOn = false
     @AppStorage("linkType") var linkType = "QR Code"
     @AppStorage("showNoteDates") var showNoteDates = true
+    @AppStorage("requireName") var requireName = false
+    @ObservedObject var viewModel = SettingsViewModel.shared
+    
+    @AppStorage("filterPicker") var filterPicker: Bool = false
     
     let linkTypes = ["QR Code", "Open In App"]
     
@@ -28,22 +32,42 @@ struct AdvancedSettingsView: View {
             Section {
                 Toggle("Show Note Dates", isOn: $showNoteDates)
                     .tint(.blue)
-            } header: {
-                Text("Show Note Dates")
             } footer: {
                 Text("This displays the date a note was created ")
             }
             Section {
+                Toggle("Require Name", isOn: $requireName)
+                    .tint(.blue)
+            } footer: {
+                Text("Before an animal can be taken out, you must enter your name.")
+            }
+            Section {
+                Toggle("Filter Picker", isOn: $filterPicker)
+                    .disabled(viewModel.filterOptions.isEmpty)
+                    .tint(.blue)
+                    .onAppear {
+                        if viewModel.filterOptions.isEmpty {
+                            filterPicker = false
+                        }
+                    }
+            } footer: {
+                Text(viewModel.filterOptions.isEmpty ? "Allow users to selected from additional filters on the main screen. As of now, this requires additional setup. Feel free to email jared@pawpartner.app if you're interested in using this feature." : "Allow users to filter animals from the main page.")
+            }
+            Section {
+                Toggle(isCustomFormOn ? "Enabled" : "Disabled", isOn: $isCustomFormOn)
+                    .tint(.blue)
                 TextField("https://example.com", text: $customFormURL)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
+                    .disabled(!isCustomFormOn)
+                    .foregroundStyle(isCustomFormOn ? .primary : .secondary)
                 Picker("Button Type", selection: $linkType) {
                     ForEach(linkTypes, id: \.self) {
                         Text($0)
                     }
                 }
-                Toggle(isCustomFormOn ? "Enabled" : "Disabled", isOn: $isCustomFormOn)
-                    .tint(.blue)
+                .disabled(!isCustomFormOn)
+                .foregroundStyle(isCustomFormOn ? .primary : .secondary)
             } header: {
                 Text("Custom Animal Form")
             } footer: {

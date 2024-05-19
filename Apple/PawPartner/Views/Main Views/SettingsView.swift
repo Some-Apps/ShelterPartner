@@ -58,17 +58,47 @@ struct SettingsView: View {
     var body: some View {
             NavigationStack {
                 Form {
-                    Section(header: Text("General Settings")) {
-//                        HStack {
-//                            Image(systemName: "doc.richtext")
-//                            Toggle("Visitor Mode", isOn: isVisitorBinding)
-//                                    .toggleStyle(SwitchToggleStyle(tint: .blue))
-//                        }
-//                        HStack {
-//                            Image(systemName: "lock")
-//                            Toggle("Volunteer Mode", isOn: isVolunteerBinding)
-//                                    .toggleStyle(SwitchToggleStyle(tint: .blue))
-//                        }
+                    if viewModel.shelter != "" || viewModel.software != "" || viewModel.mainFilter != "" || viewModel.syncFrequency != "" {
+                        Section(header: Text("Setup")) {
+                            if viewModel.shelter != "" {
+                                HStack {
+                                    Text("Shelter:")
+                                        .bold()
+                                    Text(viewModel.shelter)
+                                        .foregroundStyle(.secondary)
+
+                                }
+                            }
+                            if viewModel.software != "" {
+                                HStack {
+                                    Text("Management Software:")
+                                        .bold()
+                                    Text(viewModel.software)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            if viewModel.mainFilter != "" {
+                                HStack {
+                                    Text("Main Filter:")
+                                        .bold()
+                                    Text(viewModel.mainFilter)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(3)
+                                        .minimumScaleFactor(0.5)
+                                }
+                            }
+                            if viewModel.syncFrequency != "" {
+                                HStack {
+                                    Text("Sync Frequency:")
+                                        .bold()
+                                    Text(viewModel.syncFrequency)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                    
+                    Section(header: Text("Settings")) {
                         HStack {
                             Image(systemName: "lock")
                             Toggle("Admin Mode", isOn: isAdminBinding)
@@ -165,6 +195,7 @@ struct SettingsView: View {
                             Image(systemName: "info.circle")
                             Text("Version: \(appVersion)")
                         }
+                        .foregroundStyle(.secondary)
                     }
                 }
                 .navigationTitle("Settings")
@@ -201,8 +232,4 @@ struct SettingsView: View {
         lastSync = ""
         mode = "logIn"
     }
-}
-
-#Preview {
-    SettingsView()
 }

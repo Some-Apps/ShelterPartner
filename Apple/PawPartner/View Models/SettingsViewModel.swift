@@ -23,6 +23,11 @@ class SettingsViewModel: ObservableObject {
     
     @Published var catTags: [String] = []
     @Published var dogTags: [String] = []
+    @Published var filterOptions: [String] = []
+    @Published var software: String = ""
+    @Published var shelter: String = ""
+    @Published var mainFilter: String = ""
+    @Published var syncFrequency: String = ""
     
     var listener: ListenerRegistration?
     
@@ -123,11 +128,21 @@ class SettingsViewModel: ObservableObject {
                 // Optional fields
                 let catTags = data["catTags"] as? [String] ?? []
                 let dogTags = data["dogTags"] as? [String] ?? []
+                let filterOptions = data["filterOptions"] as? [String] ?? []
+                let software = data["software"] as? String ?? ""
+                let shelter = data["shelter"] as? String ?? ""
+                let mainFilter = data["mainFilter"] as? String ?? ""
+                let syncFrequency = data["syncFrequency"] as? String ?? ""
 
                 self?.reportsDay = reportsDay
                 self?.reportsEmail = reportsEmail
                 self?.catTags = catTags
                 self?.dogTags = dogTags
+                self?.software = software
+                self?.shelter = shelter
+                self?.filterOptions = filterOptions
+                self?.mainFilter = mainFilter
+                self?.syncFrequency = syncFrequency
             }
     }
 

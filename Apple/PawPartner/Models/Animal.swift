@@ -29,6 +29,8 @@ struct Animal: Codable, Identifiable {
     var sex: String?
     var age: String?
     var breed: String?
+    var filters: [String]?
+    var lastVolunteer: String?
     
     var allPhotos: [String] {
         var tempPhotos: [String] = []
