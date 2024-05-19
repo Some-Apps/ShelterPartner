@@ -173,6 +173,8 @@ struct CardView: View {
             .onChange(of: scenePhase) { _ in
                 self.lastUpdate = Date()
             }
+            Divider()
+            Text("Custom stuff here. Maybe playgroups or behavior categories or collar color or just important notes")
 //            Text("Location: \(animal.location)")
 //                .font(UIDevice.current.userInterfaceIdiom == .phone ? .title3 : .title2)
 //                .fontWeight(.heavy)
