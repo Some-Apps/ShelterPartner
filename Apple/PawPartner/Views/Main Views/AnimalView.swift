@@ -13,7 +13,10 @@ struct AnimalView: View {
 
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
     @ObservedObject var viewModel = AnimalViewModel.shared
+    @ObservedObject var settingsViewModel = SettingsViewModel.shared
 
+    @AppStorage("filterPicker") var filterPicker: Bool = false
+    @AppStorage("filter") var filter: String = "No Filter"
     @AppStorage("lastSync") var lastSync: String = ""
     @AppStorage("lastCatSync") var lastCatSync: String = ""
     @AppStorage("lastDogSync") var lastDogSync: String = ""
@@ -39,6 +42,9 @@ struct AnimalView: View {
     @State private var passwordInput = ""
     @State private var showIncorrectPassword = false
     @State private var showDonateQRCode = false
+    
+    @FocusState private var focusField: Bool
+
 
     let columns = [
         GridItem(.adaptive(minimum: 330))
@@ -150,14 +156,19 @@ struct AnimalView: View {
 
                     .pickerStyle(.segmented)
                     .padding([.horizontal, .top])
-                    .onAppear {
-                        print("Current animal type: \(UserDefaults.standard.string(forKey: "animalType") ?? "None")")
-                    }
                     .onChange(of: animalType) { newValue in
                         print("Animal type changed to: \(newValue)")
                         UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
                     }
 
+                if filterPicker {
+                    Picker("Filter", selection: $filter) {
+                        ForEach(settingsViewModel.filterOptions, id: \.self) {
+                            Text($0)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
 //                }
                 
                 ScrollView {
@@ -167,7 +178,7 @@ struct AnimalView: View {
                                 animals: viewModel.sortedDogs,
                                 columns: columns,
                                 cardViewModel: cardViewModel,
-                                playCheck: { $0.canPlay },
+                                playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                             )
 
@@ -176,7 +187,7 @@ struct AnimalView: View {
                                 animals: viewModel.sortedCats,
                                 columns: columns,
                                 cardViewModel: cardViewModel,
-                                playCheck: { $0.canPlay },
+                                playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                             )
                         }
@@ -237,13 +248,6 @@ struct AnimalView: View {
                     }
                     .padding([.bottom, .horizontal])
                 }
-//                .onAppear {
-//                    if viewModel.cats.count < 1 {
-//                        animalType = .Dog
-//                    } else if viewModel.dogs.count < 1 {
-//                        animalType = .Cat
-//                    }
-//                }
             }
             // MARK: -Animal Alert
             .overlay(
@@ -271,7 +275,13 @@ struct AnimalView: View {
         .onChange(of: isImageLoaded) { _ in
             updatePresentationState()
         }
+        .onChange(of: viewModel.showAddNote) { _ in
+            print(viewModel.showAddNote)
+        }
         .onAppear {
+            if settingsViewModel.filterOptions.isEmpty {
+                filterPicker = false
+            }
             if storedSocietyID == "" && Auth.auth().currentUser?.uid != nil {
                 viewModel.fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
                     switch result {
@@ -315,6 +325,12 @@ struct AnimalView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: 500)
+        }
+        .present(isPresented: $viewModel.showRequireName, type: .alert, autohideDuration: 60, closeOnTap: false, closeOnTapOutside: false) {
+            RequireNameView(animal: viewModel.animal)
+        }
+        .sheet(isPresented: $viewModel.showAddNote) {
+            AddNoteView(animal: viewModel.animal)
         }
     }
     // MARK: -Methods

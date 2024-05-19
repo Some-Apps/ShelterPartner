@@ -37,10 +37,13 @@
 		C09CFEEE2B1C038F00AE8560 /* AnimalAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09CFEED2B1C038F00AE8560 /* AnimalAlertView.swift */; };
 		C09CFEF02B1D04EA00AE8560 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09CFEEF2B1D04EA00AE8560 /* QRCodeView.swift */; };
 		C09CFEF42B2007FB00AE8560 /* YoutubeVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09CFEF32B2007FB00AE8560 /* YoutubeVideoView.swift */; };
+		C09ECA412BFA804A0063F2ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C09ECA402BFA804A0063F2ED /* GoogleService-Info.plist */; };
+		C0AB96152BE535A70000D76C /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0AB96142BE535A70000D76C /* SetupView.swift */; };
+		C0AB96172BE54BA40000D76C /* RequireNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0AB96162BE54BA40000D76C /* RequireNameView.swift */; };
 		C0BB509D2A7CABDC007513F3 /* SSToastMessage in Frameworks */ = {isa = PBXBuildFile; productRef = C0BB509C2A7CABDC007513F3 /* SSToastMessage */; };
-		C0C0682B2BDEF91600995E4F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C0C0682A2BDEF91600995E4F /* GoogleService-Info.plist */; };
 		C0C316952B5582B300192C89 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C316942B5582B300192C89 /* AdvancedSettingsView.swift */; };
 		C0C808912AD651EC0070E679 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = C0C808902AD651EC0070E679 /* PartialSheet */; };
+		C0E439112BF2E2A40052FFB5 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */; };
 		C0E513752A181B2000941E3A /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E513742A181B2000941E3A /* CardView.swift */; };
 		C0E5137C2A190F9F00941E3A /* AnimalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E5137B2A190F9F00941E3A /* AnimalViewModel.swift */; };
 		C0ECD8EE2A17E84F001F82C3 /* PawPartnerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD8ED2A17E84F001F82C3 /* PawPartnerApp.swift */; };
@@ -82,11 +85,13 @@
 		C09CFEED2B1C038F00AE8560 /* AnimalAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimalAlertView.swift; sourceTree = "<group>"; };
 		C09CFEEF2B1D04EA00AE8560 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		C09CFEF32B2007FB00AE8560 /* YoutubeVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeVideoView.swift; sourceTree = "<group>"; };
-		C0C0682A2BDEF91600995E4F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C09ECA402BFA804A0063F2ED /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C0AB96142BE535A70000D76C /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
+		C0AB96162BE54BA40000D76C /* RequireNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequireNameView.swift; sourceTree = "<group>"; };
 		C0C316942B5582B300192C89 /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsView.swift; sourceTree = "<group>"; };
 		C0E513742A181B2000941E3A /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		C0E5137B2A190F9F00941E3A /* AnimalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimalViewModel.swift; sourceTree = "<group>"; };
-		C0ECD8EA2A17E84F001F82C3 /* PawPartner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PawPartner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0ECD8EA2A17E84F001F82C3 /* HumaneSociety.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HumaneSociety.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0ECD8ED2A17E84F001F82C3 /* PawPartnerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PawPartnerApp.swift; sourceTree = "<group>"; };
 		C0ECD8EF2A17E84F001F82C3 /* AnimalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimalView.swift; sourceTree = "<group>"; };
 		C0ECD8F12A17E850001F82C3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -105,6 +110,7 @@
 				C01B0A432A1A584D0062994D /* FirebaseAuth in Frameworks */,
 				C090E15B2A5B04D90003D5C2 /* FirebaseStorage in Frameworks */,
 				C0BB509D2A7CABDC007513F3 /* SSToastMessage in Frameworks */,
+				C0E439112BF2E2A40052FFB5 /* GoogleMobileAds in Frameworks */,
 				C01B0A3D2A197F5F0062994D /* AlertToast in Frameworks */,
 				C0ECD9012A17EC3D001F82C3 /* FirebaseFirestore in Frameworks */,
 				C090E15E2A5B06400003D5C2 /* Kingfisher in Frameworks */,
@@ -152,7 +158,7 @@
 			children = (
 				C09CFEDF2B1BF49D00AE8560 /* Preview Content */,
 				C0ECD8F12A17E850001F82C3 /* Assets.xcassets */,
-				C0C0682A2BDEF91600995E4F /* GoogleService-Info.plist */,
+				C09ECA402BFA804A0063F2ED /* GoogleService-Info.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -166,6 +172,7 @@
 				C01B0A5A2A227CB10062994D /* LoginView.swift */,
 				C0FFA1B92B34D89E00D71021 /* TagsView.swift */,
 				C01B0A392A1979F30062994D /* SettingsView.swift */,
+				C0AB96142BE535A70000D76C /* SetupView.swift */,
 				C0C316942B5582B300192C89 /* AdvancedSettingsView.swift */,
 				C0241EBB2A75491200581A88 /* ScheduledReportsView.swift */,
 				C0241EBD2A75545600581A88 /* FeedbackView.swift */,
@@ -184,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				C09CFEED2B1C038F00AE8560 /* AnimalAlertView.swift */,
+				C0AB96162BE54BA40000D76C /* RequireNameView.swift */,
 				C09CFEEB2B1C036D00AE8560 /* ThankYouView.swift */,
 				C0E513742A181B2000941E3A /* CardView.swift */,
 				C09CFEEF2B1D04EA00AE8560 /* QRCodeView.swift */,
@@ -205,7 +213,7 @@
 		C0ECD8EB2A17E84F001F82C3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C0ECD8EA2A17E84F001F82C3 /* PawPartner.app */,
+				C0ECD8EA2A17E84F001F82C3 /* HumaneSociety.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -227,9 +235,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C0ECD8E92A17E84F001F82C3 /* PawPartner */ = {
+		C0ECD8E92A17E84F001F82C3 /* HumaneSociety */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C0ECD8F82A17E850001F82C3 /* Build configuration list for PBXNativeTarget "PawPartner" */;
+			buildConfigurationList = C0ECD8F82A17E850001F82C3 /* Build configuration list for PBXNativeTarget "HumaneSociety" */;
 			buildPhases = (
 				C0ECD8E62A17E84F001F82C3 /* Sources */,
 				C0ECD8E72A17E84F001F82C3 /* Frameworks */,
@@ -239,7 +247,7 @@
 			);
 			dependencies = (
 			);
-			name = PawPartner;
+			name = HumaneSociety;
 			packageProductDependencies = (
 				C0ECD9002A17EC3D001F82C3 /* FirebaseFirestore */,
 				C01B0A3C2A197F5F0062994D /* AlertToast */,
@@ -248,9 +256,10 @@
 				C090E15D2A5B06400003D5C2 /* Kingfisher */,
 				C0BB509C2A7CABDC007513F3 /* SSToastMessage */,
 				C0C808902AD651EC0070E679 /* PartialSheet */,
+				C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */,
 			);
 			productName = HumaneSociety;
-			productReference = C0ECD8EA2A17E84F001F82C3 /* PawPartner.app */;
+			productReference = C0ECD8EA2A17E84F001F82C3 /* HumaneSociety.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -283,12 +292,13 @@
 				C090E15C2A5B06400003D5C2 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				C0BB509B2A7CABDC007513F3 /* XCRemoteSwiftPackageReference "SSToastMessage" */,
 				C0C8088F2AD651EC0070E679 /* XCRemoteSwiftPackageReference "PartialSheet" */,
+				C0E4390F2BF2E2A30052FFB5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			productRefGroup = C0ECD8EB2A17E84F001F82C3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C0ECD8E92A17E84F001F82C3 /* PawPartner */,
+				C0ECD8E92A17E84F001F82C3 /* HumaneSociety */,
 			);
 		};
 /* End PBXProject section */
@@ -300,7 +310,7 @@
 			files = (
 				C09CFEE02B1BF49D00AE8560 /* Preview Content in Resources */,
 				C0ECD8F22A17E850001F82C3 /* Assets.xcassets in Resources */,
-				C0C0682B2BDEF91600995E4F /* GoogleService-Info.plist in Resources */,
+				C09ECA412BFA804A0063F2ED /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,6 +339,7 @@
 				C01B0A112A192E0E0062994D /* ViewInfoView.swift in Sources */,
 				C09CFEE22B1BF53900AE8560 /* Note.swift in Sources */,
 				C0E513752A181B2000941E3A /* CardView.swift in Sources */,
+				C0AB96172BE54BA40000D76C /* RequireNameView.swift in Sources */,
 				C0ECD90F2A1E7656001F82C3 /* NoteView.swift in Sources */,
 				C0ECD90D2A1E7225001F82C3 /* AddNoteViewModel.swift in Sources */,
 				C09CFEE82B1BF57500AE8560 /* Enums.swift in Sources */,
@@ -341,6 +352,7 @@
 				C01B0A4F2A1A9C220062994D /* SettingsViewModel.swift in Sources */,
 				C08785E72A53221600A91C49 /* CreditsView.swift in Sources */,
 				C09CFEEC2B1C036D00AE8560 /* ThankYouView.swift in Sources */,
+				C0AB96152BE535A70000D76C /* SetupView.swift in Sources */,
 				C00611122B6C1A0700E28AD0 /* Photo.swift in Sources */,
 				C09CAFCB2B48D22D004DDCFF /* VisitorView.swift in Sources */,
 				C07AFBA72B914B1B00DC9DF8 /* VisitorDetailView.swift in Sources */,
@@ -496,7 +508,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.36;
+				MARKETING_VERSION = 1.0.37;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jareddanieljones.HumaneSociety;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -535,7 +547,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.36;
+				MARKETING_VERSION = 1.0.37;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jareddanieljones.HumaneSociety;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -559,7 +571,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C0ECD8F82A17E850001F82C3 /* Build configuration list for PBXNativeTarget "PawPartner" */ = {
+		C0ECD8F82A17E850001F82C3 /* Build configuration list for PBXNativeTarget "HumaneSociety" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C0ECD8F92A17E850001F82C3 /* Debug */,
@@ -603,6 +615,14 @@
 				minimumVersion = 3.1.1;
 			};
 		};
+		C0E4390F2BF2E2A30052FFB5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.4.0;
+			};
+		};
 		C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -643,6 +663,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C0C8088F2AD651EC0070E679 /* XCRemoteSwiftPackageReference "PartialSheet" */;
 			productName = PartialSheet;
+		};
+		C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C0E4390F2BF2E2A30052FFB5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 		C0ECD9002A17EC3D001F82C3 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;

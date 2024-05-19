@@ -16,14 +16,17 @@ class AnimalViewModel: ObservableObject {
     
     @Published var sortedDogs: [Animal] = []
     @Published var sortedCats: [Animal] = []
+    
     @Published var sortedVisitorDogs: [Animal] = []
     @Published var sortedVisitorCats: [Animal] = []
     
+    @Published var showRequireName = false
     @Published var showLogTooShort = false
     @Published var showLogCreated = false
     @Published var showAggressionRating = false
     @Published var showAnimalAlert = false
     @Published var showQRCode = false
+    @Published var showAddNote = false
     @Published var cats = [Animal]()
     @Published var dogs = [Animal]()
 //    @Published var lastSync: Date?

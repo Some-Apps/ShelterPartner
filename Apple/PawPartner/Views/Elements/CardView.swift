@@ -11,6 +11,7 @@ struct CardView: View {
     @ObservedObject var viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @AppStorage("mode") var mode = "volunteer"
+    @AppStorage("filterPicker") var filterPicker: Bool = false
     @State private var showViewInfo = false
     @State private var lastUpdate = Date()
     @State private var showAddNote = false
@@ -144,11 +145,21 @@ struct CardView: View {
                             }
                         }
                         Spacer()
-                        NavigationLink(destination: AddNoteView(animal: animal), label: {
+                        Button {
+                            DispatchQueue.main.async {
+                                animalViewModel.animal = animal
+                                animalViewModel.showAddNote = true
+                            }
+                     
+                            
+                        } label: {
                             Image(systemName: "square.and.pencil")
-                        })
+
+                        }
+//                        NavigationLink(destination: AddNoteView(animal: animal), label: {
+//                        })
                     }
-                    .font(UIDevice.current.userInterfaceIdiom == .phone ? .title3 : .title)
+                    .font(UIDevice.current.userInterfaceIdiom == .phone ? .title2 : .title)
                     .fontWeight(.black)
                     .foregroundStyle(.primary.opacity(0.2))
                     
@@ -258,6 +269,8 @@ struct OutlinedButton: View {
     @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("lastCatSync") var lastCatSync: String = ""
     @AppStorage("lastDogSync") var lastDogSync: String = ""
+    @AppStorage("requireName") var requireName = false
+
     var imageURL: URL? {
         if let photo = animal.allPhotos.first {
             return URL(string: photo)
@@ -345,11 +358,15 @@ struct OutlinedButton: View {
                                     animalViewModel.animal = animal
                                     withAnimation {
                                         animalViewModel.showAnimalAlert.toggle()
-
                                     }
                                     
                                 } else {
-                                    viewModel.takeOut(animal: animal)
+                                    if requireName {
+                                        animalViewModel.animal = animal
+                                        animalViewModel.showRequireName.toggle()
+                                    } else {
+                                        viewModel.takeOut(animal: animal)
+                                    }
                                 }
                             }
                         } else {

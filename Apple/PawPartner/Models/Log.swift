@@ -11,6 +11,7 @@ struct Log: Codable {
     var id: String
     var startTime: Double
     var endTime: Double
+    var user: String?
     
     var durationInMinutes: Int {
         let startTimeDate = Date(timeIntervalSince1970: startTime)
