@@ -29,6 +29,8 @@ struct AnimalView: View {
     @AppStorage("mode") var mode = "volunteer"
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("donationURL") var donationURL: String = ""
+    @AppStorage("playgroupsFullyEnabled") var playgroupsFullyEnabled = false
+
 
     @State private var showAnimalAlert = false
     @State private var screenWidth: CGFloat = 500
@@ -148,7 +150,11 @@ struct AnimalView: View {
                 }
                 .padding([.horizontal, .top])
                 .font(UIDevice.current.userInterfaceIdiom == .phone ? .caption : .body)
-//                if viewModel.cats.filter({ $0.canPlay == true }).count > 1 && viewModel.dogs.filter({ $0.canPlay == true }).count > 1 {
+
+                
+                CollapsibleSection()
+                
+                
                 Picker("Animal Type", selection: $animalType) {
                     Text("Cats").tag(AnimalType.Cat)
                     Text("Dogs").tag(AnimalType.Dog)
@@ -161,19 +167,11 @@ struct AnimalView: View {
                         UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
                     }
 
-                if filterPicker {
-                    Picker("Filter", selection: $filter) {
-                        ForEach(settingsViewModel.filterOptions, id: \.self) {
-                            Text($0)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                }
-//                }
                 
                 ScrollView {
                     switch animalType {
                         case .Dog:
+                        if playgroupsFullyEnabled {
                             AnimalGridView(
                                 animals: viewModel.sortedDogs,
                                 columns: columns,
@@ -181,8 +179,19 @@ struct AnimalView: View {
                                 playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                             )
+                        } else {
+                            PlaygroupAnimalGridView(
+                                animals: viewModel.sortedDogs,
+                                columns: columns,
+                                cardViewModel: cardViewModel,
+                                playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                            )
+                        }
+                            
 
                         case .Cat:
+                        if playgroupsFullyEnabled {
                             AnimalGridView(
                                 animals: viewModel.sortedCats,
                                 columns: columns,
@@ -190,6 +199,16 @@ struct AnimalView: View {
                                 playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                             )
+                        } else {
+                            PlaygroupAnimalGridView(
+                                animals: viewModel.sortedCats,
+                                columns: columns,
+                                cardViewModel: cardViewModel,
+                                playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                            )
+                        }
+                            
                         }
 
                     
@@ -399,5 +418,99 @@ struct AnimalGridView<Animal>: View where Animal: Identifiable {
             }
             .padding()
         }
+    }
+}
+
+struct PlaygroupAnimalGridView: View {
+    let animals: [Animal]
+    let columns: [GridItem]
+    let cardViewModel: CardViewModel
+    let playCheck: (Animal) -> Bool
+    let cardView: (Animal) -> CardView
+    
+    var body: some View {
+        if animals.isEmpty {
+            VStack {
+                ProgressView()
+            }
+            .frame(maxWidth: .infinity)
+        } else {
+            ScrollView {
+                VStack(alignment: .leading) {
+                    ForEach(groupAnimalsByPlaygroup().sorted(by: { $0.key ?? "No Playgroup" < $1.key ?? "No Playgroup" }), id: \.key) { playgroup, animals in
+                        Section(
+                            header: NavigationLink(playgroup ?? "No Playgroup", destination: EmptyView())
+                                    .font(.headline)
+                                    .padding(.leading)
+                                    .padding(.top)
+                        ){
+                            LazyVGrid(columns: columns) {
+                                ForEach(animals, id: \.id) { animal in
+                                    if playCheck(animal) {
+                                        cardView(animal)
+                                            .padding(2)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func groupAnimalsByPlaygroup() -> [String?: [Animal]] {
+        Dictionary(grouping: animals, by: { $0.playgroup })
+    }
+}
+
+struct CollapsibleSection: View {
+    @State private var isExpanded: Bool = false
+    
+    @AppStorage("playgroupsEnabled") var playgroupsEnabled = false
+    @AppStorage("playgroupsFullyEnabled") var playgroupsFullyEnabled = false
+    @AppStorage("filterPicker") var filterPicker: Bool = false
+    @AppStorage("filter") var filter: String = "No Filter"
+
+    @ObservedObject var settingsViewModel = SettingsViewModel.shared
+    
+    var body: some View {
+        VStack {
+            Button(action: {
+                withAnimation {
+                    isExpanded.toggle()
+                }
+            }) {
+                HStack {
+                    Text("Volunteer Mode Settings")
+                        .font(.headline)
+                    Spacer()
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.gray)
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+            }
+            
+            if isExpanded {
+                VStack {
+                    if playgroupsEnabled {
+                        Toggle("Playgroups", isOn: $playgroupsFullyEnabled)
+                    }
+//                    if filterPicker {
+//                        Picker("Filter", selection: $filter) {
+//                            ForEach(settingsViewModel.filterOptions, id: \.self) {
+//                                Text($0)
+//                            }
+//                        }
+//                        .pickerStyle(.menu)
+//                    }
+                }
+                .transition(.slide)
+            }
+        }
+        .padding()
     }
 }
