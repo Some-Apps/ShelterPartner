@@ -32,6 +32,7 @@ struct AdvancedSettingsView: View {
             }
             Section {
                 Toggle(playgroupsEnabled ? "Enabled" : "Disabled", isOn: $playgroupsEnabled)
+                    .tint(.blue)
             } header: {
                 Text("Playgroups")
             } footer: {

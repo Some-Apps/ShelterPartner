@@ -12,7 +12,7 @@ import Foundation
 class AddNoteViewModel: ObservableObject {
     @AppStorage("societyID") var storedSocietyID: String = ""
     
-    func createNote(for animal: Animal, note: String, tags: [String]) {
+    func createNote(for animal: Animal, note: String, tags: [String], user: String?) {
         let db = Firestore.firestore()
         
         // Create a new note
@@ -23,7 +23,8 @@ class AddNoteViewModel: ObservableObject {
         let noteDict: [String: Any] = [
             "id": newNote.id,
             "date": newNote.date,
-            "note": newNote.note.trimmingCharacters(in: .whitespacesAndNewlines)
+            "note": newNote.note.trimmingCharacters(in: .whitespacesAndNewlines),
+            "user": user
         ]
         
         // Start a Firestore transaction

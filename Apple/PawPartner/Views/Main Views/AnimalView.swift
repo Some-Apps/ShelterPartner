@@ -30,6 +30,7 @@ struct AnimalView: View {
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("donationURL") var donationURL: String = ""
     @AppStorage("playgroupsFullyEnabled") var playgroupsFullyEnabled = false
+    @AppStorage("playgroupsEnabled") var playgroupsEnabled = false
 
 
     @State private var showAnimalAlert = false
@@ -44,7 +45,7 @@ struct AnimalView: View {
     @State private var passwordInput = ""
     @State private var showIncorrectPassword = false
     @State private var showDonateQRCode = false
-    
+
     @FocusState private var focusField: Bool
 
 
@@ -151,8 +152,9 @@ struct AnimalView: View {
                 .padding([.horizontal, .top])
                 .font(UIDevice.current.userInterfaceIdiom == .phone ? .caption : .body)
 
-                
-                CollapsibleSection()
+                if playgroupsEnabled || filterPicker {
+                    CollapsibleSection()
+                }
                 
                 
                 Picker("Animal Type", selection: $animalType) {
@@ -171,7 +173,7 @@ struct AnimalView: View {
                 ScrollView {
                     switch animalType {
                         case .Dog:
-                        if playgroupsFullyEnabled {
+                        if !playgroupsFullyEnabled {
                             AnimalGridView(
                                 animals: viewModel.sortedDogs,
                                 columns: columns,
@@ -191,7 +193,7 @@ struct AnimalView: View {
                             
 
                         case .Cat:
-                        if playgroupsFullyEnabled {
+                        if !playgroupsFullyEnabled {
                             AnimalGridView(
                                 animals: viewModel.sortedCats,
                                 columns: columns,
@@ -421,6 +423,7 @@ struct AnimalGridView<Animal>: View where Animal: Identifiable {
     }
 }
 
+
 struct PlaygroupAnimalGridView: View {
     let animals: [Animal]
     let columns: [GridItem]
@@ -437,12 +440,31 @@ struct PlaygroupAnimalGridView: View {
         } else {
             ScrollView {
                 VStack(alignment: .leading) {
-                    ForEach(groupAnimalsByPlaygroup().sorted(by: { $0.key ?? "No Playgroup" < $1.key ?? "No Playgroup" }), id: \.key) { playgroup, animals in
+                    ForEach(groupAnimalsByPlaygroup().sorted(by: { (lhs, rhs) in
+                        switch (lhs.key, rhs.key) {
+                        case (nil, _):
+                            return false
+                        case (_, nil):
+                            return true
+                        default:
+                            return lhs.key! < rhs.key!
+                        }
+                    }), id: \.key) { playgroup, animals in
                         Section(
-                            header: NavigationLink(playgroup ?? "No Playgroup", destination: EmptyView())
-                                    .font(.headline)
-                                    .padding(.leading)
-                                    .padding(.top)
+                            header: NavigationLink {
+                                PlaygroupsView(title: playgroup ?? "No Playgroup", animals: animals, columns: columns, cardViewModel: cardViewModel, playcheck: playCheck, cardView: cardView)
+                            } label: {
+                                HStack {
+                                    Text(playgroup ?? "No Playgroup")
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                                .font(.title)
+                                .bold()
+                                .foregroundStyle(.black)
+                                .padding(.top)
+                                .padding([.leading, .trailing, .top])
+                            }
                         ){
                             LazyVGrid(columns: columns) {
                                 ForEach(animals, id: \.id) { animal in
@@ -464,6 +486,7 @@ struct PlaygroupAnimalGridView: View {
         Dictionary(grouping: animals, by: { $0.playgroup })
     }
 }
+
 
 struct CollapsibleSection: View {
     @State private var isExpanded: Bool = false
@@ -508,9 +531,9 @@ struct CollapsibleSection: View {
 //                        .pickerStyle(.menu)
 //                    }
                 }
-                .transition(.slide)
+//                .transition(.scale)
             }
         }
-        .padding()
+        .padding([.horizontal, .top])
     }
 }
