@@ -325,9 +325,15 @@ struct AnimalView: View {
         .present(isPresented: $shouldPresentThankYouView, type: .alert, animation: .easeIn(duration: 0.2), autohideDuration: 60, closeOnTap: false) {
                 ThankYouView(animal: viewModel.animal)
         }
-        .toast(isPresenting: $viewModel.showLogTooShort, duration: 3) {
-            AlertToast(type: .error(.red), title: minimumDuration == 1 ? "Log must be at least \(minimumDuration) minute" : "Log must be at least \(minimumDuration) minutes")
-        }
+//        .present(isPresented: $viewModel.showLogTooShort) {
+//            
+//        }
+//        .confirmationDialog("HMMM", isPresented: $viewModel.showLogTooShort) {
+//            Text("Are you sure")
+//        }
+//        .toast(isPresenting: $viewModel.showLogTooShort, duration: 3) {
+//            AlertToast(type: .error(.red), title: minimumDuration == 1 ? "Log must be at least \(minimumDuration) minute" : "Log must be at least \(minimumDuration) minutes")
+//        }
         .toast(isPresenting: $showIncorrectPassword) {
             AlertToast(type: .error(.red), title: "Incorrect Password")
         }
@@ -508,8 +514,9 @@ struct CollapsibleSection: View {
                 HStack {
                     Text("Volunteer Mode Settings")
                         .font(.headline)
+                        .foregroundStyle(.black)
                     Spacer()
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                    Image(systemName: isExpanded ? "chevron.right" : "chevron.down")
                         .foregroundColor(.gray)
                 }
                 .padding()
@@ -521,17 +528,18 @@ struct CollapsibleSection: View {
                 VStack {
                     if playgroupsEnabled {
                         Toggle("Playgroups", isOn: $playgroupsFullyEnabled)
+                            .tint(.blue)
                     }
-//                    if filterPicker {
-//                        Picker("Filter", selection: $filter) {
-//                            ForEach(settingsViewModel.filterOptions, id: \.self) {
-//                                Text($0)
-//                            }
-//                        }
-//                        .pickerStyle(.menu)
-//                    }
+                    if filterPicker {
+                        Picker("Filter", selection: $filter) {
+                            ForEach(settingsViewModel.filterOptions, id: \.self) {
+                                Text($0)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
                 }
-//                .transition(.scale)
+                .padding(.horizontal)
             }
         }
         .padding([.horizontal, .top])

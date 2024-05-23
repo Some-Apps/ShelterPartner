@@ -272,6 +272,8 @@ struct OutlinedButton: View {
     @AppStorage("lastCatSync") var lastCatSync: String = ""
     @AppStorage("lastDogSync") var lastDogSync: String = ""
     @AppStorage("requireName") var requireName = false
+    
+    @State private var showLogTooShort = false
 
     var imageURL: URL? {
         if let photo = animal.allPhotos.first {
@@ -333,7 +335,14 @@ struct OutlinedButton: View {
                     .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
             }
         }
-
+        .confirmationDialog("Test", isPresented: $showLogTooShort) {
+//            Button("Leave Out", role: .cancel) { }
+            Button("Put Back") {
+                viewModel.putBack(animal: animal)
+            }
+        } message: {
+            Text("\(animal.name) was not let out for the minimum duration of \(viewModel.minimumDuration) minutes. If you tap \"Put Back\", this visit will be ignored")
+        }
         .padding(5)
         .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
             if pressing {
@@ -372,7 +381,12 @@ struct OutlinedButton: View {
                                 }
                             }
                         } else {
-                            viewModel.putBack(animal: animal)
+                            let components = Calendar.current.dateComponents([.minute], from: Date(timeIntervalSince1970: animal.startTime), to: Date())
+                            if components.minute ?? 0 >= viewModel.minimumDuration {
+                                viewModel.putBack(animal: animal)
+                            } else {
+                                showLogTooShort = true
+                            }
                         }
                     } else if self.progress > 0.97 {
                         self.progress = 1
