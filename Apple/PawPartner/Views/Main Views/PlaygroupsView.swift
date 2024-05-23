@@ -1,10 +1,3 @@
-//
-//  PlaygroupsView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/21/24.
-//
-
 import SwiftUI
 
 struct PlaygroupsView: View {
@@ -17,6 +10,7 @@ struct PlaygroupsView: View {
     
     var body: some View {
         ScrollView {
+            BulkOutlineButton(viewModel: cardViewModel, animals: animals)
             AnimalGridView(animals: animals, columns: columns, cardViewModel: cardViewModel, playCheck: playcheck, cardView: cardView)
         }
         .navigationTitle(title)
@@ -27,8 +21,7 @@ struct PlaygroupsView: View {
 struct BulkOutlineButton: View {
     let viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
-    @Binding var showPopover: Bool
-    var animal: Animal
+    var animals: [Animal]
     @State private var progress: CGFloat = 0
     @State private var timer: Timer? = nil
     @State private var tickCount: CGFloat = 0
@@ -46,28 +39,15 @@ struct BulkOutlineButton: View {
     @AppStorage("lastDogSync") var lastDogSync: String = ""
     @AppStorage("requireName") var requireName = false
 
-    var imageURL: URL? {
-        if let photo = animal.allPhotos.first {
-            return URL(string: photo)
-        }
-        return nil
-    }
-    
-//    private var urlWithCacheBuster: URL? {
-//        guard let baseURL = imageURL else { return nil }
-//
-//        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-//        let queryItem = URLQueryItem(name: "lastSync", value: lastSync.isEmpty ? "\(Date().timeIntervalSince1970)" : lastSync)
-//        components?.queryItems = [queryItem]
-//
-//        return components?.url
-//    }
-
-
     let width: CGFloat = 100
     let height: CGFloat = 100
-    let lineWidth: CGFloat = 25
+    let lineWidth: CGFloat = 25 // Adjust this value to increase the thickness of the stroke
     
+    var majorityActionText: String {
+        let inCageCount = animals.filter { $0.inCage }.count
+        let notInCageCount = animals.count - inCageCount
+        return inCageCount > notInCageCount ? "Take Out" : "Put Back"
+    }
 
     var body: some View {
         ZStack {
@@ -77,10 +57,10 @@ struct BulkOutlineButton: View {
                 
             Circle()
                 .trim(from: 0, to: progress)
-                .stroke(animal.inCage ? .orange : .teal, lineWidth: lineWidth)
+                .stroke(Color.orange, style: StrokeStyle(lineWidth: lineWidth))
                 .frame(width: width, height: height)
                 .rotationEffect(.degrees(-90))
-//
+
             Image(systemName: "photo.circle.fill")
                 .resizable()
                 .foregroundStyle(.white)
@@ -90,12 +70,12 @@ struct BulkOutlineButton: View {
                 .scaleEffect(isPressed ? 1 : 1.025)
                 .brightness(isPressed ? -0.05 : 0)
                 .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+            
+            Text(majorityActionText)
         }
-
         .padding(5)
         .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
             if pressing {
-//                feedbackPress.impactOccurred()
                 isPressed = true
                 self.tickCountPressing = 0
                 self.lastEaseValue = self.easeIn(t: 0)
@@ -112,32 +92,12 @@ struct BulkOutlineButton: View {
                         timer?.invalidate()
                         self.progress = 0
                         print("Hold completed")
-                        if animal.inCage {
-                            if animal.canPlay {
-                                if animal.alert.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
-                                    animalViewModel.animal = animal
-                                    withAnimation {
-                                        animalViewModel.showAnimalAlert.toggle()
-                                    }
-                                    
-                                } else {
-                                    if requireName {
-                                        animalViewModel.animal = animal
-                                        animalViewModel.showRequireName.toggle()
-                                    } else {
-                                        viewModel.takeOut(animal: animal)
-                                    }
-                                }
-                            }
-                        } else {
-                            viewModel.putBack(animal: animal)
-                        }
+                        handleAnimalStateChanges()
                     } else if self.progress > 0.97 {
                         self.progress = 1
                     }
                 }
             } else {
-//                feedbackRelease.impactOccurred()
                 isPressed = false
                 self.tickCountNotPressing = 75 // This starts decrement from the end.
                 self.lastEaseValue = self.easeIn(t: 1)
@@ -160,6 +120,33 @@ struct BulkOutlineButton: View {
 
     }
     
+    func handleAnimalStateChanges() {
+        DispatchQueue.main.async {
+            let inCageCount = animals.filter { $0.inCage }.count
+            let notInCageCount = animals.count - inCageCount
+            let majorityInCage = inCageCount > notInCageCount
+
+            for animal in animals {
+                if majorityInCage {
+                    if animal.inCage && animal.canPlay && animal.alert.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
+                        viewModel.takeOut(animal: animal)
+
+//                        if requireName {
+//                            animalViewModel.animal = animal
+//                            animalViewModel.showRequireName.toggle()
+//                        } else {
+//                            viewModel.takeOut(animal: animal)
+//                        }
+                    }
+                } else {
+                    if !animal.inCage {
+                        viewModel.putBack(animal: animal)
+                    }
+                }
+            }
+        }
+    }
+
     func easeIn(t: CGFloat) -> CGFloat {
         return t * t
     }

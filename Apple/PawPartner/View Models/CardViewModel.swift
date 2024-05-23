@@ -53,6 +53,28 @@ class CardViewModel: ObservableObject {
         }
     }
     
+    func bulkPutBack(animals: [Animal]) {
+        let db = Firestore.firestore()
+        for animal in animals {
+            db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+                "inCage": true
+            ]) { err in
+                if let err = err {
+                    print("Error updating document: \(err)")
+                } else {
+                    print("Document successfully updated")
+                    
+                    let components = Calendar.current.dateComponents([.minute], from: Date(timeIntervalSince1970: animal.startTime), to: Date())
+                    if components.minute ?? 0 >= self.minimumDuration {
+                        self.createLog(for: animal)
+                        self.animalViewModel.animal = animal
+                    }
+                }
+            }
+        }
+        
+    }
+    
     func silentPutBack(animal: Animal) {
         let db = Firestore.firestore()
         db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
