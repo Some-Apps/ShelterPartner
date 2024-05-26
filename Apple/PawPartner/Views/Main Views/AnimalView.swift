@@ -29,8 +29,8 @@ struct AnimalView: View {
     @AppStorage("mode") var mode = "volunteer"
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("donationURL") var donationURL: String = ""
-    @AppStorage("playgroupsFullyEnabled") var playgroupsFullyEnabled = false
-    @AppStorage("playgroupsEnabled") var playgroupsEnabled = false
+    @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
+    @AppStorage("groupsEnabled") var groupsEnabled = false
 
 
     @State private var showAnimalAlert = false
@@ -152,7 +152,7 @@ struct AnimalView: View {
                 .padding([.horizontal, .top])
                 .font(UIDevice.current.userInterfaceIdiom == .phone ? .caption : .body)
 
-                if playgroupsEnabled || filterPicker {
+                if groupsEnabled || filterPicker {
                     CollapsibleSection()
                 }
                 
@@ -173,7 +173,7 @@ struct AnimalView: View {
                 ScrollView {
                     switch animalType {
                         case .Dog:
-                        if !playgroupsFullyEnabled {
+                        if !groupsFullyEnabled {
                             AnimalGridView(
                                 animals: viewModel.sortedDogs,
                                 columns: columns,
@@ -182,7 +182,7 @@ struct AnimalView: View {
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                             )
                         } else {
-                            PlaygroupAnimalGridView(
+                            GroupAnimalGridView(
                                 animals: viewModel.sortedDogs,
                                 columns: columns,
                                 cardViewModel: cardViewModel,
@@ -193,7 +193,7 @@ struct AnimalView: View {
                             
 
                         case .Cat:
-                        if !playgroupsFullyEnabled {
+                        if !groupsFullyEnabled {
                             AnimalGridView(
                                 animals: viewModel.sortedCats,
                                 columns: columns,
@@ -202,7 +202,7 @@ struct AnimalView: View {
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                             )
                         } else {
-                            PlaygroupAnimalGridView(
+                            GroupAnimalGridView(
                                 animals: viewModel.sortedCats,
                                 columns: columns,
                                 cardViewModel: cardViewModel,
@@ -427,7 +427,7 @@ struct AnimalGridView<Animal>: View where Animal: Identifiable {
 }
 
 
-struct PlaygroupAnimalGridView: View {
+struct GroupAnimalGridView: View {
     let animals: [Animal]
     let columns: [GridItem]
     let cardViewModel: CardViewModel
@@ -443,7 +443,7 @@ struct PlaygroupAnimalGridView: View {
         } else {
             ScrollView {
                 VStack(alignment: .leading) {
-                    ForEach(groupAnimalsByPlaygroup().sorted(by: { (lhs, rhs) in
+                    ForEach(groupAnimals().sorted(by: { (lhs, rhs) in
                         switch (lhs.key, rhs.key) {
                         case (nil, _):
                             return false
@@ -452,13 +452,13 @@ struct PlaygroupAnimalGridView: View {
                         default:
                             return lhs.key! < rhs.key!
                         }
-                    }), id: \.key) { playgroup, animals in
+                    }), id: \.key) { group, animals in
                         Section(
                             header: NavigationLink {
-                                PlaygroupsView(title: playgroup ?? "No Playgroup", animals: animals, columns: columns, cardViewModel: cardViewModel, playcheck: playCheck, cardView: cardView)
+                                GroupsView(title: group ?? "No Group", animals: animals, columns: columns, cardViewModel: cardViewModel, playcheck: playCheck, cardView: cardView)
                             } label: {
                                 HStack {
-                                    Text(playgroup ?? "No Playgroup")
+                                    Text(group ?? "No Group")
                                     Spacer()
                                     Image(systemName: "chevron.right")
                                 }
@@ -485,8 +485,8 @@ struct PlaygroupAnimalGridView: View {
         }
     }
     
-    private func groupAnimalsByPlaygroup() -> [String?: [Animal]] {
-        Dictionary(grouping: animals, by: { $0.playgroup })
+    private func groupAnimals() -> [String?: [Animal]] {
+        Dictionary(grouping: animals, by: { $0.group })
     }
 }
 
@@ -494,8 +494,8 @@ struct PlaygroupAnimalGridView: View {
 struct CollapsibleSection: View {
     @State private var isExpanded: Bool = false
     
-    @AppStorage("playgroupsEnabled") var playgroupsEnabled = false
-    @AppStorage("playgroupsFullyEnabled") var playgroupsFullyEnabled = false
+    @AppStorage("groupsEnabled") var groupsEnabled = false
+    @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
     @AppStorage("filterPicker") var filterPicker: Bool = false
     @AppStorage("filter") var filter: String = "No Filter"
 
@@ -513,7 +513,7 @@ struct CollapsibleSection: View {
                         .font(.headline)
                         .foregroundStyle(.black)
                     Spacer()
-                    Image(systemName: isExpanded ? "chevron.right" : "chevron.down")
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .foregroundColor(.gray)
                 }
                 .padding()
@@ -522,9 +522,9 @@ struct CollapsibleSection: View {
             }
             
             if isExpanded {
-                VStack {
-                    if playgroupsEnabled {
-                        Toggle("Playgroups", isOn: $playgroupsFullyEnabled)
+                List {
+                    if groupsEnabled {
+                        Toggle("Groups", isOn: $groupsFullyEnabled)
                             .tint(.blue)
                     }
                     if filterPicker {
@@ -533,10 +533,13 @@ struct CollapsibleSection: View {
                                 Text($0)
                             }
                         }
-                        .pickerStyle(.menu)
+                        .pickerStyle(.navigationLink)
+                        .foregroundStyle(.black)
                     }
                 }
-                .padding(.horizontal)
+                .listStyle(.inset)
+                .frame(maxHeight: 100) // Adjust maxHeight as needed
+
             }
         }
         .padding([.horizontal, .top])

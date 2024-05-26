@@ -54,7 +54,6 @@ struct CardView: View {
             return "\(minutes) \(minutes != 1 ? "minutes" : "minute")"
         }()
         
-        
         VStack(alignment: .leading) {
             HStack {
                 OutlinedButton(viewModel: viewModel, showPopover: $showPopover, animal: animal)
@@ -86,7 +85,6 @@ struct CardView: View {
                         .foregroundColor(.primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    //                    Text(animal.name)
                     
                     Text("\(animal.location)")
                         .font(UIDevice.current.userInterfaceIdiom == .phone ? .title3 : .title2)
@@ -110,6 +108,16 @@ struct CardView: View {
                             .minimumScaleFactor(0.5)
                     }
                     
+                    // Extra Info
+                    if let extraInfo = animal.extraInfo {
+                        Text(extraInfo)
+                            .font(.body)
+                            .fontWeight(.regular)
+                            .foregroundColor(.secondary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.5)
+                            .padding(.top, 5)
+                    }
                     
                 }
                 .layoutPriority(1)
@@ -150,66 +158,21 @@ struct CardView: View {
                                 animalViewModel.animal = animal
                                 animalViewModel.showAddNote = true
                             }
-                     
-                            
                         } label: {
                             Image(systemName: "square.and.pencil")
-
                         }
-//                        NavigationLink(destination: AddNoteView(animal: animal), label: {
-//                        })
                     }
                     .font(UIDevice.current.userInterfaceIdiom == .phone ? .title2 : .title)
                     .fontWeight(.black)
                     .foregroundStyle(.primary.opacity(0.2))
-                    
                 }
             }
-            
-            
             .onReceive(timer) { _ in
                 self.lastUpdate = Date()
             }
             .onChange(of: scenePhase) { _ in
                 self.lastUpdate = Date()
             }
-//            Divider()
-//            Text("Custom stuff here. Maybe playgroups or behavior categories or collar color or just important notes")
-//            Text("Location: \(animal.location)")
-//                .font(UIDevice.current.userInterfaceIdiom == .phone ? .title3 : .title2)
-//                .fontWeight(.heavy)
-//                .opacity(0.5)
-//                .lineLimit(1)
-//                .minimumScaleFactor(0.4)
-//                .padding()
-//            HStack {
-//                Spacer()
-//                NavigationLink(destination: ViewInfoView(animal: animal), label: {
-//                    Text("More Info")
-//                })
-//                if QRMode {
-//                    Spacer()
-//                    Button("QR Code") {
-//                        animalViewModel.animal = animal
-//                        animalViewModel.showQRCode = true
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
-//                            animalViewModel.showQRCode = false
-//                        }
-//                    }
-//                }
-//                Spacer()
-////                Button("Add Note") {
-////                    showAddNote.toggle()
-//////                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//////                        showAddNote.toggle()
-//////                    }
-////                }
-//                NavigationLink(destination: AddNoteView(animal: animal), label: {
-//                    Text("Add Note")
-//                })
-//                Spacer()
-//            }
-//            .buttonStyle(.bordered)
         }
         .padding()
         .background(RoundedRectangle(cornerRadius: 20)
@@ -224,19 +187,6 @@ struct CardView: View {
                     showAddNote = false
                 }
         }
-        
-//        .alert(isPresented: $showAnimalAlert) {
-//            Alert(title: Text("\(animal.name): \(animal.alert)"),
-//                  primaryButton: .default(Text("I Understand")) {
-//                viewModel.takeOut(animal: animal)
-//            },
-//                  secondaryButton: .cancel())
-//        }
-//        
-//        
-//        .popover(isPresented: $showPopover) {
-//            Text(animal.alert).padding()
-//        }
     }
     
     func topTags(for animal: Animal, count: Int = 3) -> [String] {
@@ -248,6 +198,8 @@ struct CardView: View {
         return Array(sortedTags ?? [])
     }
 }
+
+
 
 struct OutlinedButton: View {
     let viewModel: CardViewModel

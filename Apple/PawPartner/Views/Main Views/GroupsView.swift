@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PlaygroupsView: View {
+struct GroupsView: View {
     var title: String
     var animals: [Animal]
     let columns: [GridItem]
