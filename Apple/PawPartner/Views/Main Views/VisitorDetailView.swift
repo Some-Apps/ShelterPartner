@@ -7,11 +7,7 @@ struct VisitorDetailView: View {
     let animal: Animal
 
     var numberOfColumns: Int = 2
-    let columns = [
-            GridItem(.flexible()),
-            GridItem(.flexible()),
-            GridItem(.flexible())
-        ]
+
 
     var sortedNotes: [Note] {
         animal.notes
@@ -63,7 +59,7 @@ struct VisitorDetailView: View {
     var body: some View {
         ScrollView {
             
-            LazyVStack {
+            LazyVStack(alignment: .center) {
                 VStack {
                     Text(animal.name)
                         .font(.largeTitle)
@@ -104,76 +100,7 @@ struct VisitorDetailView: View {
                 .frame(height: 400)
                 .padding()
 
-//                if let animalDescription = animal.description {
-//                    Section {
-//                        GroupBox {
-//                            Text(animalDescription)
-//                                .font(.title3)
-//                                .padding()
-//                        }
-//                       
-//                    }
-//                }
-                if animal.sex != nil || animal.age != nil || animal.breed != nil {
-                    Section {
-                        GroupBox {
-                            
-                            LazyVGrid(columns: columns, spacing: 20) {
-                                // Your existing GroupBox for 'Sex', now an item in the grid
-                                if let sex = animal.sex {
-
-                                        VStack {
-                                            Text("Sex")
-                                                .underline()
-                                                .bold()
-                                            Text(sex)
-                                        }
-                                    
-                                    .padding()
-                                    .font(.title3)
-                                    .multilineTextAlignment(.center)
-                                }
-
-                                // Your existing GroupBox for 'Primary Breed', now an item in the grid
-                                if let breed = animal.breed {
-                                        VStack {
-                                            Text("Primary Breed")
-                                                .underline()
-                                                .bold()
-                                            Text(breed)
-                                        }
-                                        .multilineTextAlignment(.center)
-
-                                    .padding()
-                                    .font(.title3)
-                                }
-
-                                // Your existing GroupBox for 'Age', now an item in the grid
-                                if let age = animal.age {
-                                        VStack {
-                                            Text("Age")
-                                                .underline()
-                                                .bold()
-                                            Text(age)
-                                        }
-                                        .multilineTextAlignment(.center)
-
-                                    .padding()
-                                    .font(.title3)
-                                }
-                            }
-                            .padding() // Padding around the entire grid for spacing from the edges
-                            if let animalDescription = animal.description {
-                                if animalDescription.count > 0 {
-                                    Divider()
-                                    Text(animalDescription)
-                                        .font(.title3)
-                                        .padding()
-                                }
-                            }
-                        }
-                    }
-                }
+                AnimalDetailsSection(animal: animal)
                 if !animal.notes.isEmpty && animal.notes.count > 1 {
                     Section {
                         VStack(alignment: .center) {
