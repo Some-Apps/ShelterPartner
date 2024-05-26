@@ -14,6 +14,7 @@ struct AdvancedSettingsView: View {
     @AppStorage("linkType") var linkType = "QR Code"
     @AppStorage("showNoteDates") var showNoteDates = true
     @AppStorage("requireName") var requireName = false
+    @AppStorage("groupsEnabled") var groupsEnabled = false
     @ObservedObject var viewModel = SettingsViewModel.shared
     
     @AppStorage("filterPicker") var filterPicker: Bool = false
@@ -28,6 +29,14 @@ struct AdvancedSettingsView: View {
                 Text("Minimum Log Duration")
             } footer: {
                 Text("This sets the minimum duration for a visit. If a volunteer takes out an animal for a visit lasting less than this amount, it will show an error and not count the visit.")
+            }
+            Section {
+                Toggle(groupsEnabled ? "Enabled" : "Disabled", isOn: $groupsEnabled)
+                    .tint(.blue)
+            } header: {
+                Text("Groups")
+            } footer: {
+                Text("This feature is in testing. If you would like to try this out, email jared@pawpartner.app.")
             }
             Section {
                 Toggle("Show Note Dates", isOn: $showNoteDates)

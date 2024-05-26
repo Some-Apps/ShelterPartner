@@ -23,6 +23,12 @@ struct ViewInfoView: View {
     @AppStorage("mode") var mode = "volunteer"
     
     var numberOfColumns: Int = 2
+    
+    let columns = [
+            GridItem(.flexible()),
+            GridItem(.flexible()),
+            GridItem(.flexible())
+        ]
 
     var sortedNotes: [Note] {
         animal.notes
@@ -175,6 +181,7 @@ struct ViewInfoView: View {
                 .shadow(radius: 5)
                 .frame(height: 400)
                 .padding()
+                
                 if !animal.notes.isEmpty {
                     VStack(alignment: .center) {
                         HStack(alignment: .top, spacing: 20) {

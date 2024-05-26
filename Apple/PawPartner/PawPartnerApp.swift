@@ -10,6 +10,7 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
 import GoogleMobileAds
+import Kingfisher
 
 
 class AppDelegate: NSObject, UIApplicationDelegate {

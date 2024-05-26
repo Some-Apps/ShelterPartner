@@ -54,7 +54,6 @@ struct CardView: View {
             return "\(minutes) \(minutes != 1 ? "minutes" : "minute")"
         }()
         
-        
         VStack(alignment: .leading) {
             HStack {
                 OutlinedButton(viewModel: viewModel, showPopover: $showPopover, animal: animal)
@@ -86,7 +85,6 @@ struct CardView: View {
                         .foregroundColor(.primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    //                    Text(animal.name)
                     
                     Text("\(animal.location)")
                         .font(UIDevice.current.userInterfaceIdiom == .phone ? .title3 : .title2)
@@ -110,6 +108,16 @@ struct CardView: View {
                             .minimumScaleFactor(0.5)
                     }
                     
+                    // Extra Info
+                    if let extraInfo = animal.extraInfo {
+                        Text(extraInfo)
+                            .font(.body)
+                            .fontWeight(.regular)
+                            .foregroundColor(.secondary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.5)
+                            .padding(.top, 5)
+                    }
                     
                 }
                 .layoutPriority(1)
@@ -150,66 +158,21 @@ struct CardView: View {
                                 animalViewModel.animal = animal
                                 animalViewModel.showAddNote = true
                             }
-                     
-                            
                         } label: {
                             Image(systemName: "square.and.pencil")
-
                         }
-//                        NavigationLink(destination: AddNoteView(animal: animal), label: {
-//                        })
                     }
                     .font(UIDevice.current.userInterfaceIdiom == .phone ? .title2 : .title)
                     .fontWeight(.black)
                     .foregroundStyle(.primary.opacity(0.2))
-                    
                 }
             }
-            
-            
             .onReceive(timer) { _ in
                 self.lastUpdate = Date()
             }
             .onChange(of: scenePhase) { _ in
                 self.lastUpdate = Date()
             }
-            Divider()
-            Text("Custom stuff here. Maybe playgroups or behavior categories or collar color or just important notes")
-//            Text("Location: \(animal.location)")
-//                .font(UIDevice.current.userInterfaceIdiom == .phone ? .title3 : .title2)
-//                .fontWeight(.heavy)
-//                .opacity(0.5)
-//                .lineLimit(1)
-//                .minimumScaleFactor(0.4)
-//                .padding()
-//            HStack {
-//                Spacer()
-//                NavigationLink(destination: ViewInfoView(animal: animal), label: {
-//                    Text("More Info")
-//                })
-//                if QRMode {
-//                    Spacer()
-//                    Button("QR Code") {
-//                        animalViewModel.animal = animal
-//                        animalViewModel.showQRCode = true
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
-//                            animalViewModel.showQRCode = false
-//                        }
-//                    }
-//                }
-//                Spacer()
-////                Button("Add Note") {
-////                    showAddNote.toggle()
-//////                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//////                        showAddNote.toggle()
-//////                    }
-////                }
-//                NavigationLink(destination: AddNoteView(animal: animal), label: {
-//                    Text("Add Note")
-//                })
-//                Spacer()
-//            }
-//            .buttonStyle(.bordered)
         }
         .padding()
         .background(RoundedRectangle(cornerRadius: 20)
@@ -224,19 +187,6 @@ struct CardView: View {
                     showAddNote = false
                 }
         }
-        
-//        .alert(isPresented: $showAnimalAlert) {
-//            Alert(title: Text("\(animal.name): \(animal.alert)"),
-//                  primaryButton: .default(Text("I Understand")) {
-//                viewModel.takeOut(animal: animal)
-//            },
-//                  secondaryButton: .cancel())
-//        }
-//        
-//        
-//        .popover(isPresented: $showPopover) {
-//            Text(animal.alert).padding()
-//        }
     }
     
     func topTags(for animal: Animal, count: Int = 3) -> [String] {
@@ -249,11 +199,15 @@ struct CardView: View {
     }
 }
 
+
+
 struct OutlinedButton: View {
     let viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @Binding var showPopover: Bool
     var animal: Animal
+    @State private var isImageCached: Bool = false
+
     @State private var progress: CGFloat = 0
     @State private var timer: Timer? = nil
     @State private var tickCount: CGFloat = 0
@@ -272,6 +226,8 @@ struct OutlinedButton: View {
     @AppStorage("lastCatSync") var lastCatSync: String = ""
     @AppStorage("lastDogSync") var lastDogSync: String = ""
     @AppStorage("requireName") var requireName = false
+    
+    @State private var showLogTooShort = false
 
     var imageURL: URL? {
         if let photo = animal.allPhotos.first {
@@ -320,20 +276,92 @@ struct OutlinedButton: View {
                 .sheet(isPresented: $showAddNote) {
                     AddNoteView(animal: animal)
                 }
-            
-            if let url = imageURL {
-                KFImage(url)
-                    .setProcessor(ResizingImageProcessor(referenceSize: CGSize(width: width*2, height: height*2), mode: .aspectFill))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: width, height: height)
-                    .clipShape(Circle())
-                    .scaleEffect(isPressed ? 1 : 1.025)
-                    .brightness(isPressed ? -0.05 : 0)
-                    .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
-            }
+                .onAppear {
+                    checkIfImageIsCached()
+                }
+            KFImage(imageURL)
+                        .placeholder {
+                            Image(systemName: "photo.circle")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: width, height: height)
+                                .clipShape(Circle())
+                                .scaleEffect(isPressed ? 1 : 1.025)
+                                .brightness(isPressed ? -0.05 : 0)
+                                .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+                        }
+                        .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 150, height: 150))
+                                      |> RoundCornerImageProcessor(cornerRadius: 15))
+                        .scaleFactor(UIScreen.main.scale)
+                        .cacheOriginalImage()
+                        .resizable()
+                        
+                        .onSuccess { result in
+                            print("Task done for: \(result.source.url?.absoluteString ?? "")")
+                        }
+                        .onFailure { error in
+                            print("Job failed: \(error.localizedDescription)")
+                        }
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: width, height: height)
+                        .clipShape(Circle())
+                        .scaleEffect(isPressed ? 1 : 1.025)
+                        .brightness(isPressed ? -0.05 : 0)
+                        .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+//            if let url = imageURL {
+//                KFImage(url)
+//                    .placeholder {
+//                        Image("placeholderImage")
+//                            .resizable()
+//                            .scaledToFit()
+//                    }
+//                    .setProcessor(DownsamplingImageProcessor(size: CGSize(width: width, height: height))
+//                                  |> RoundCornerImageProcessor(cornerRadius: 20))
+//                    .scaleFactor(UIScreen.main.scale)
+//                    .cacheOriginalImage()
+//                    .onSuccess { result in
+//                        print("Task done for: \(result.source.url?.absoluteString ?? "")")
+//                    }
+//                    .onFailure { error in
+//                        print("Job failed: \(error.localizedDescription)")
+//                    }
+//                    .resizable()
+//                    .scaledToFill()
+//                    .frame(width: width, height: height)
+//                    .clipShape(Circle())
+//                    .scaleEffect(isPressed ? 1 : 1.025)
+//                    .brightness(isPressed ? -0.05 : 0)
+//                    .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+//                KFImage(url)
+//                    .setProcessor(ResizingImageProcessor(referenceSize: CGSize(width: width, height: height), mode: .aspectFill))
+//                    .resizable()
+//                    .onSuccess { result in
+//                        // The image has been cached successfully
+//                        print("Image cached successfully: \(result.cacheType)")
+//                    }
+//                    .onFailure { error in
+//                        print("Image loading failed: \(error)")
+//                    }
+//                    .onProgress { receivedSize, totalSize in
+//                        print("Loading progress: \(receivedSize)/\(totalSize)")
+//                    }
+//                    .scaledToFill()
+//                    .frame(width: width, height: height)
+//                    .clipShape(Circle())
+//                    .scaleEffect(isPressed ? 1 : 1.025)
+//                    .brightness(isPressed ? -0.05 : 0)
+//                    .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+//            }
         }
-
+        .confirmationDialog("Test", isPresented: $showLogTooShort) {
+//            Button("Leave Out", role: .cancel) { }
+            Button("Put Back") {
+                viewModel.putBack(animal: animal)
+            }
+        } message: {
+            Text("\(animal.name) was not let out for the minimum duration of \(viewModel.minimumDuration) minutes. If you tap \"Put Back\", this visit will be ignored")
+        }
         .padding(5)
         .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
             if pressing {
@@ -372,7 +400,12 @@ struct OutlinedButton: View {
                                 }
                             }
                         } else {
-                            viewModel.putBack(animal: animal)
+                            let components = Calendar.current.dateComponents([.minute], from: Date(timeIntervalSince1970: animal.startTime), to: Date())
+                            if components.minute ?? 0 >= viewModel.minimumDuration {
+                                viewModel.putBack(animal: animal)
+                            } else {
+                                showLogTooShort = true
+                            }
                         }
                     } else if self.progress > 0.97 {
                         self.progress = 1
@@ -404,6 +437,26 @@ struct OutlinedButton: View {
     
     func easeIn(t: CGFloat) -> CGFloat {
         return t * t
+    }
+    
+    private func checkIfImageIsCached() {
+        guard let imageURL = imageURL else {
+            return
+        }
+        
+        let cache = ImageCache.default
+        cache.retrieveImage(forKey: imageURL.absoluteString) { result in
+            switch result {
+            case .success(let value):
+                if value.image != nil {
+                    self.isImageCached = true
+                } else {
+                    self.isImageCached = false
+                }
+            case .failure:
+                self.isImageCached = false
+            }
+        }
     }
 }
 

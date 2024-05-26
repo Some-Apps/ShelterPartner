@@ -11,15 +11,25 @@ struct AddNoteView: View {
     let animal: Animal
     @Environment(\.dismiss) var dismiss
     @State private var note = ""
+    @State private var name = ""
     @FocusState private var isNoteFieldFocused: Bool
+    @FocusState private var isNameFieldFocused: Bool
     @State private var selectedTags = Set<String>()
-    
+    @AppStorage("requireName") var requireName = false
+
     var gridLayout: [GridItem] {
         [GridItem(.adaptive(minimum: 200))]
     }
     
     var body: some View {
         Form {
+            if requireName {
+                Section("Name of Volunteer") {
+                    TextField("Name", text: $name)
+                        .focused($isNameFieldFocused)
+                }
+            }
+            
             Section("Note for \(animal.name)") {
                 TextEditor(text: $note)
                     .focused($isNoteFieldFocused)
@@ -93,6 +103,7 @@ struct AddNoteView: View {
                     Text("Save Note")
                         .onTapGesture(perform: saveNote)
                 }
+                .disabled(requireName && name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
 //            Section("This ad supports the future development of PawPartner") {
 //                           GeometryReader { geometry in
@@ -104,15 +115,20 @@ struct AddNoteView: View {
         }
         .onTapGesture {
             isNoteFieldFocused = false
+            isNameFieldFocused = false
         }
         .navigationTitle("Add Note About \(animal.name)")
         .onAppear {
-            isNoteFieldFocused = true
+            if requireName {
+                isNameFieldFocused = true
+            } else {
+                isNoteFieldFocused = true
+            }
         }
     }
     
     private func saveNote() {
-        viewModel.createNote(for: animal, note: note, tags: Array(selectedTags))
+        viewModel.createNote(for: animal, note: note, tags: Array(selectedTags), user: name)
         dismiss()
         animalViewModel.toastAddNote.toggle()
     }
