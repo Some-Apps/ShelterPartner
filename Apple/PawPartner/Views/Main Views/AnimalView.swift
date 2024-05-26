@@ -284,10 +284,7 @@ struct AnimalView: View {
         }
         .onChange(of: viewModel.showLogCreated) { newValue in
             if newValue {
-                ThankYouView(animal: viewModel.animal).loadImage { imageLoaded in
-                    self.isImageLoaded = imageLoaded
-                    self.shouldPresentThankYouView = newValue && imageLoaded
-                }
+                self.shouldPresentThankYouView = true
             } else {
                 self.isImageLoaded = false
                 self.shouldPresentThankYouView = false

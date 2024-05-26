@@ -46,20 +46,27 @@ struct ThankYouView: View {
             VStack {
                 if let url = animal.photos.first?.url {
                     KFImage(URL(string: url))
-                        .resizable()
-                        .onSuccess { _ in imageLoaded = true } // Update state when the image is loaded
                         .placeholder {
-                            Image(systemName: "photo") // Placeholder image
+                            Image(systemName: "photo.circle.fill")
                                 .resizable()
-                                .scaledToFit()
+                                .foregroundStyle(.secondary)
                                 .frame(width: 200, height: 200)
-                                .opacity(imageLoaded ? 0 : 1) // Hide placeholder when image is loaded
                         }
+                        .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 200, height: 200)))
+                        .scaleFactor(UIScreen.main.scale)
+                        .cacheOriginalImage()
+                        .onSuccess { result in
+                            print("Task done for: \(result.source.url?.absoluteString ?? "")")
+                        }
+                        .onFailure { error in
+                            print("Job failed: \(error.localizedDescription)")
+                        }
+                        .resizable()
                         .scaledToFill()
                         .frame(width: 200, height: 200)
                         .clipShape(Circle())
                         .shadow(radius: 5)
-                        .opacity(imageLoaded ? 1 : 0) // Show the image only when it's loaded
+                        .transition(.opacity)
                 }
                 Text("Thank You!")
                     .font(.largeTitle)

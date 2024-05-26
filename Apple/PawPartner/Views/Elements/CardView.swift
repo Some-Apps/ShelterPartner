@@ -254,6 +254,8 @@ struct OutlinedButton: View {
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @Binding var showPopover: Bool
     var animal: Animal
+    @State private var isImageCached: Bool = false
+
     @State private var progress: CGFloat = 0
     @State private var timer: Timer? = nil
     @State private var tickCount: CGFloat = 0
@@ -322,18 +324,83 @@ struct OutlinedButton: View {
                 .sheet(isPresented: $showAddNote) {
                     AddNoteView(animal: animal)
                 }
-            
-            if let url = imageURL {
-                KFImage(url)
-                    .setProcessor(ResizingImageProcessor(referenceSize: CGSize(width: width*2, height: height*2), mode: .aspectFill))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: width, height: height)
-                    .clipShape(Circle())
-                    .scaleEffect(isPressed ? 1 : 1.025)
-                    .brightness(isPressed ? -0.05 : 0)
-                    .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
-            }
+                .onAppear {
+                    checkIfImageIsCached()
+                }
+            KFImage(imageURL)
+                        .placeholder {
+                            Image(systemName: "photo.circle")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: width, height: height)
+                                .clipShape(Circle())
+                                .scaleEffect(isPressed ? 1 : 1.025)
+                                .brightness(isPressed ? -0.05 : 0)
+                                .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+                        }
+                        .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 150, height: 150))
+                                      |> RoundCornerImageProcessor(cornerRadius: 15))
+                        .scaleFactor(UIScreen.main.scale)
+                        .cacheOriginalImage()
+                        .resizable()
+                        
+                        .onSuccess { result in
+                            print("Task done for: \(result.source.url?.absoluteString ?? "")")
+                        }
+                        .onFailure { error in
+                            print("Job failed: \(error.localizedDescription)")
+                        }
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: width, height: height)
+                        .clipShape(Circle())
+                        .scaleEffect(isPressed ? 1 : 1.025)
+                        .brightness(isPressed ? -0.05 : 0)
+                        .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+//            if let url = imageURL {
+//                KFImage(url)
+//                    .placeholder {
+//                        Image("placeholderImage")
+//                            .resizable()
+//                            .scaledToFit()
+//                    }
+//                    .setProcessor(DownsamplingImageProcessor(size: CGSize(width: width, height: height))
+//                                  |> RoundCornerImageProcessor(cornerRadius: 20))
+//                    .scaleFactor(UIScreen.main.scale)
+//                    .cacheOriginalImage()
+//                    .onSuccess { result in
+//                        print("Task done for: \(result.source.url?.absoluteString ?? "")")
+//                    }
+//                    .onFailure { error in
+//                        print("Job failed: \(error.localizedDescription)")
+//                    }
+//                    .resizable()
+//                    .scaledToFill()
+//                    .frame(width: width, height: height)
+//                    .clipShape(Circle())
+//                    .scaleEffect(isPressed ? 1 : 1.025)
+//                    .brightness(isPressed ? -0.05 : 0)
+//                    .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+//                KFImage(url)
+//                    .setProcessor(ResizingImageProcessor(referenceSize: CGSize(width: width, height: height), mode: .aspectFill))
+//                    .resizable()
+//                    .onSuccess { result in
+//                        // The image has been cached successfully
+//                        print("Image cached successfully: \(result.cacheType)")
+//                    }
+//                    .onFailure { error in
+//                        print("Image loading failed: \(error)")
+//                    }
+//                    .onProgress { receivedSize, totalSize in
+//                        print("Loading progress: \(receivedSize)/\(totalSize)")
+//                    }
+//                    .scaledToFill()
+//                    .frame(width: width, height: height)
+//                    .clipShape(Circle())
+//                    .scaleEffect(isPressed ? 1 : 1.025)
+//                    .brightness(isPressed ? -0.05 : 0)
+//                    .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+//            }
         }
         .confirmationDialog("Test", isPresented: $showLogTooShort) {
 //            Button("Leave Out", role: .cancel) { }
@@ -418,6 +485,26 @@ struct OutlinedButton: View {
     
     func easeIn(t: CGFloat) -> CGFloat {
         return t * t
+    }
+    
+    private func checkIfImageIsCached() {
+        guard let imageURL = imageURL else {
+            return
+        }
+        
+        let cache = ImageCache.default
+        cache.retrieveImage(forKey: imageURL.absoluteString) { result in
+            switch result {
+            case .success(let value):
+                if value.image != nil {
+                    self.isImageCached = true
+                } else {
+                    self.isImageCached = false
+                }
+            case .failure:
+                self.isImageCached = false
+            }
+        }
     }
 }
 

@@ -286,6 +286,7 @@ struct VisitorView: View {
 struct VisitorImage: View {
     let animal: Animal
     @AppStorage("lastSync") var lastSync: String = ""
+    @State private var isImageCached: Bool = false
 
     var imageURL: URL? {
         if let photo = animal.allPhotos.first {
@@ -294,41 +295,65 @@ struct VisitorImage: View {
         return nil
     }
     
-//    private var urlWithCacheBuster: URL? {
-//        guard let baseURL = imageURL else { return nil }
-//
-//        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-//        let queryItem = URLQueryItem(name: "lastSync", value: lastSync.isEmpty ? "\(Date().timeIntervalSince1970)" : lastSync)
-//        components?.queryItems = [queryItem]
-//
-//        return components?.url
-//    }
-    
     var body: some View {
         ZStack {
             Image(systemName: "photo.circle.fill")
                 .resizable()
-//                .scaledToFit()
                 .foregroundStyle(.secondary)
                 .frame(width: 150, height: 150)
-            if let imageURL = imageURL {
-                KFImage(imageURL)
-                    .setProcessor(ResizingImageProcessor(referenceSize: CGSize(width: 400, height: 400), mode: .aspectFill))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 200, height: 200)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .padding([.horizontal, .top])
-            }
+            VStack {
+                        KFImage(imageURL)
+                            .placeholder {
+                                Image(systemName: "photo.circle.fill")
+                                    .resizable()
+                                    .foregroundStyle(.secondary)
+                                    .frame(width: 150, height: 150)
+                            }
+                            .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 200, height: 200))
+                                          |> RoundCornerImageProcessor(cornerRadius: 20))
+                            .scaleFactor(UIScreen.main.scale)
+                            .cacheOriginalImage()
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 200, height: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .padding([.horizontal, .top])
+                            .onAppear {
+                                checkIfImageIsCached()
+                            }
+                            .opacity(isImageCached ? 1 : 0) // Show only if cached
+
+                        if !isImageCached {
+                            Text("Loading image...") // Loading text while checking cache
+                        }
+                    }
+                    .onAppear {
+                        checkIfImageIsCached()
+                    }
+ 
             
         }
-            
-//
-//            Image(systemName: "photo.circle.fill")
-//                .resizable()
-//                .scaledToFit()
-//                .padding()
         
+    }
+    
+    private func checkIfImageIsCached() {
+        guard let imageURL = imageURL else {
+            return
+        }
+        
+        let cache = ImageCache.default
+        cache.retrieveImage(forKey: imageURL.absoluteString) { result in
+            switch result {
+            case .success(let value):
+                if value.image != nil {
+                    self.isImageCached = true
+                } else {
+                    self.isImageCached = false
+                }
+            case .failure:
+                self.isImageCached = false
+            }
+        }
     }
 }
 
