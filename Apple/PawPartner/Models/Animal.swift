@@ -15,8 +15,6 @@ struct Animal: Codable, Identifiable {
     var location: String
     var alert: String
     var canPlay: Bool
-//    var prioritize: Bool
-//    var prioritizeMinutes: Int
     var inCage: Bool
     var startTime: Double
     var notes: [Note]
@@ -31,6 +29,8 @@ struct Animal: Codable, Identifiable {
     var breed: String?
     var filters: [String]?
     var lastVolunteer: String?
+    var group: String?
+    var extraInfo: String?
     
     var allPhotos: [String] {
         var tempPhotos: [String] = []
