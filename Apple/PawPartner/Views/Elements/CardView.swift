@@ -60,6 +60,34 @@ struct CardView: View {
                             .font(.largeTitle)
                             .bold()
                             .underline()
+                        Menu {
+                            NavigationLink(destination: ViewInfoView(animal: animal), label: {
+                                Label("Details", systemImage: "ellipsis.circle")
+                            })
+                            if QRMode {
+                                Button {
+                                    animalViewModel.animal = animal
+                                    animalViewModel.showQRCode = true
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+                                        animalViewModel.showQRCode = false
+                                    }
+                                } label: {
+                                    Label("QR Code", systemImage: "qrcode")
+                                }
+                            }
+                            Button {
+                                DispatchQueue.main.async {
+                                    animalViewModel.animal = animal
+                                    animalViewModel.showAddNote = true
+                                }
+                            } label: {
+                                Label("Add Note", systemImage: "square.and.pencil")
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                                .foregroundStyle(.black.opacity(0.5))
+                                .font(.title)
+                        }
                         if animal.animalType == .Dog && (societyID == "ChIJ8WVKpxEfAIgRIMOBoCkxBtY" || societyID == "ChIJgbjU6bBRBogRKBb3KxOJGn8") {
                             Image(systemName: animal.aggressionRating == 1 ? "1.circle.fill" : animal.aggressionRating == 2 ? "2.square.fill" : animal.aggressionRating == 3 ? "3.circle.fill" : "")
                                 .font(.title)
@@ -89,7 +117,7 @@ struct CardView: View {
                             .lineLimit(1)
                         }
                         Label(animal.location, systemImage: "mappin.square")
-                        Label("DEGS", systemImage: "square.grid.2x2")
+//                        Label("DEGS", systemImage: "square.grid.2x2")
                         
                         if animal.inCage {
                             Label(timeSinceLastLetOut, systemImage: "clock")
@@ -251,17 +279,17 @@ struct OutlinedButton: View {
                     checkIfImageIsCached()
                 }
             KFImage(imageURL)
-                        .placeholder {
-                            Image(systemName: "photo.circle")
-                                .resizable()
-                                .scaledToFill()
-                                .foregroundStyle(.tertiary)
-                                .frame(width: width, height: height)
-                                .clipShape(Circle())
-                                .scaleEffect(isPressed ? 1 : 1.025)
-                                .brightness(isPressed ? -0.05 : 0)
-                                .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
-                        }
+//                        .placeholder {
+//                            Image(systemName: "photo.circle")
+//                                .resizable()
+//                                .scaledToFill()
+//                                .foregroundStyle(.tertiary)
+//                                .frame(width: width, height: height)
+//                                .clipShape(Circle())
+//                                .scaleEffect(isPressed ? 1 : 1.025)
+//                                .brightness(isPressed ? -0.05 : 0)
+//                                .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+//                        }
                         .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 150, height: 150))
                                       |> RoundCornerImageProcessor(cornerRadius: 15))
                         .scaleFactor(UIScreen.main.scale)

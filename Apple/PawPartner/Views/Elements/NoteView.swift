@@ -24,18 +24,13 @@ struct NoteView: View {
                     HStack(alignment: .top) {
                         if showNoteDates {
                             Text(dateFormatter.string(from: Date(timeIntervalSince1970: note.date)))
-                                .font(.title2)
+                                .font(.title3)
                                 .foregroundColor(.secondary)
-//                                .italic()
                         }
-                        
-//
-//        
-
                         Text(note.note)
-                            .font(UIDevice.current.userInterfaceIdiom == .phone ? .body : .title2)
+                            .font(UIDevice.current.userInterfaceIdiom == .phone ? .body : .title3)
                             .fixedSize(horizontal: false, vertical: true)
-                            .fontWeight(.bold)
+//                            .fontWeight(.bold)
                         Spacer()
 
                         if isWithin20Minutes(of: Date(timeIntervalSince1970: note.date)) || (mode == "volunteerAdmin" || mode == "visitorAdmin") {
@@ -57,7 +52,6 @@ struct NoteView: View {
                     }
                 }
             }
-//            .aspectRatio(5, contentMode: .fit)
             .cornerRadius(20)
     }
     

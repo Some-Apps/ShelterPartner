@@ -50,7 +50,7 @@ struct AnimalView: View {
 
 
     let columns = [
-        GridItem(.adaptive(minimum: 330))
+        GridItem(.adaptive(minimum: 350))
     ]
 
     private let dateFormatter: DateFormatter = {
