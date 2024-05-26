@@ -76,206 +76,209 @@ struct AnimalView: View {
     // MARK: -Body
     var body: some View {
         NavigationStack {
-            VStack {
-                HStack {
-                    Button {
-                        showingFeedbackForm = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "text.bubble.fill")
-                            Text("Give Feedback")
+            ScrollView {
+                LazyVStack {
+                    HStack {
+                        Button {
+                            showingFeedbackForm = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "text.bubble.fill")
+                                Text("Give Feedback")
+                            }
                         }
-                    }
-                    .sheet(isPresented: $showingFeedbackForm) {
-                        if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
-                            WebView(url: feedbackURL)
+                        .sheet(isPresented: $showingFeedbackForm) {
+                            if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
+                                WebView(url: feedbackURL)
+                            }
                         }
-                    }
-                    Spacer()
-                    if mode != "volunteerAdmin" && mode != "visitorAdmin" {
-                        Button("Switch To Admin") {
-                            showingPasswordPrompt = true
-                        }
-                        .sheet(isPresented: $showingPasswordPrompt) {
-                            PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
-                                authViewModel.verifyPassword(password: passwordInput) { isCorrect in
-                                    if isCorrect {
-                                        // The password is correct. Enable the feature here.
-                                        //                                        volunteerMode.toggle()
-                                        mode = "volunteerAdmin"
-                                        mode = "volunteerAdmin"
-                                    } else {
-                                        // The password is incorrect. Show an error message.
-                                        print("Incorrect Password")
-                                        showIncorrectPassword.toggle()
-                                        passwordInput = ""
+                        Spacer()
+                        if mode != "volunteerAdmin" && mode != "visitorAdmin" {
+                            Button("Switch To Admin") {
+                                showingPasswordPrompt = true
+                            }
+                            .sheet(isPresented: $showingPasswordPrompt) {
+                                PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
+                                    authViewModel.verifyPassword(password: passwordInput) { isCorrect in
+                                        if isCorrect {
+                                            // The password is correct. Enable the feature here.
+                                            //                                        volunteerMode.toggle()
+                                            mode = "volunteerAdmin"
+                                            mode = "volunteerAdmin"
+                                        } else {
+                                            // The password is incorrect. Show an error message.
+                                            print("Incorrect Password")
+                                            showIncorrectPassword.toggle()
+                                            passwordInput = ""
+                                        }
                                     }
                                 }
                             }
+                            Spacer()
+                            
                         }
-                        Spacer()
-                        
-                    }
-                    if mode == "volunteerAdmin" || mode == "visitorAdmin" {
-                        Button("Turn Off Admin") {
-                            mode = "volunteer"
+                        if mode == "volunteerAdmin" || mode == "visitorAdmin" {
+                            Button("Turn Off Admin") {
+                                mode = "volunteer"
+                            }
+                            Spacer()
                         }
-                        Spacer()
-                    }
-                   
-                        Button("Switch To Visitor") {
-                            if mode == "volunteerAdmin" {
-                                mode = "visitorAdmin"
-                            } else {
-                                mode = "visitor"
+                       
+                            Button("Switch To Visitor") {
+                                if mode == "volunteerAdmin" {
+                                    mode = "visitorAdmin"
+                                } else {
+                                    mode = "visitor"
 
+                                }
+                            }
+                            Spacer()
+                       
+                        
+                        Button {
+                            showingReportForm = true
+                        } label: {
+                            HStack {
+                                Text("Report Problem")
+                                Image(systemName: "exclamationmark.bubble.fill")
                             }
                         }
-                        Spacer()
-                   
-                    
-                    Button {
-                        showingReportForm = true
-                    } label: {
-                        HStack {
-                            Text("Report Problem")
-                            Image(systemName: "exclamationmark.bubble.fill")
+                        .sheet(isPresented: $showingReportForm) {
+                            if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(storedSocietyID)") {
+                                WebView(url: reportProblemURL)
+                                
+                            }
                         }
                     }
-                    .sheet(isPresented: $showingReportForm) {
-                        if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(storedSocietyID)") {
-                            WebView(url: reportProblemURL)
-                            
-                        }
-                    }
-                }
-                .padding([.horizontal, .top])
-                .font(UIDevice.current.userInterfaceIdiom == .phone ? .caption : .body)
-
-                if groupsEnabled || filterPicker {
-                    CollapsibleSection()
-                }
-                
-                
-                Picker("Animal Type", selection: $animalType) {
-                    Text("Cats").tag(AnimalType.Cat)
-                    Text("Dogs").tag(AnimalType.Dog)
-                }
-
-                    .pickerStyle(.segmented)
                     .padding([.horizontal, .top])
-                    .onChange(of: animalType) { newValue in
-                        print("Animal type changed to: \(newValue)")
-                        UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
+                    .font(UIDevice.current.userInterfaceIdiom == .phone ? .caption : .body)
+
+                    if groupsEnabled || filterPicker {
+                        CollapsibleSection()
+                    }
+                    
+                    
+                    Picker("Animal Type", selection: $animalType) {
+                        Text("Cats").tag(AnimalType.Cat)
+                        Text("Dogs").tag(AnimalType.Dog)
                     }
 
-                
-                ScrollView {
-                    switch animalType {
-                        case .Dog:
-                        if !groupsFullyEnabled {
-                            AnimalGridView(
-                                animals: viewModel.sortedDogs,
-                                columns: columns,
-                                cardViewModel: cardViewModel,
-                                playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
-                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
-                            )
-                        } else {
-                            GroupAnimalGridView(
-                                animals: viewModel.sortedDogs,
-                                columns: columns,
-                                cardViewModel: cardViewModel,
-                                playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
-                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
-                            )
+                        .pickerStyle(.segmented)
+                        .padding([.horizontal, .top])
+                        .onChange(of: animalType) { newValue in
+                            print("Animal type changed to: \(newValue)")
+                            UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
                         }
-                            
 
+                    
+                    ScrollView {
+                        switch animalType {
+                            case .Dog:
+                            if !groupsFullyEnabled {
+                                AnimalGridView(
+                                    animals: viewModel.sortedDogs,
+                                    columns: columns,
+                                    cardViewModel: cardViewModel,
+                                    playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
+                                    cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                                )
+                            } else {
+                                GroupAnimalGridView(
+                                    animals: viewModel.sortedDogs,
+                                    columns: columns,
+                                    cardViewModel: cardViewModel,
+                                    playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
+                                    cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                                )
+                            }
+                                
+
+                            case .Cat:
+                            if !groupsFullyEnabled {
+                                AnimalGridView(
+                                    animals: viewModel.sortedCats,
+                                    columns: columns,
+                                    cardViewModel: cardViewModel,
+                                    playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
+                                    cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                                )
+                            } else {
+                                GroupAnimalGridView(
+                                    animals: viewModel.sortedCats,
+                                    columns: columns,
+                                    cardViewModel: cardViewModel,
+                                    playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
+                                    cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                                )
+                            }
+                                
+                            }
+
+                        
+                        Button {
+                            showTutorialQRCode = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "play.rectangle.fill")
+                                Text("Volunteer Tutorial Video")
+                            }
+                            .padding()
+                            .fontWeight(.black)
+                        }
+                        
+                        
+                        switch animalType {
                         case .Cat:
-                        if !groupsFullyEnabled {
-                            AnimalGridView(
-                                animals: viewModel.sortedCats,
-                                columns: columns,
-                                cardViewModel: cardViewModel,
-                                playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
-                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
-                            )
-                        } else {
-                            GroupAnimalGridView(
-                                animals: viewModel.sortedCats,
-                                columns: columns,
-                                cardViewModel: cardViewModel,
-                                playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
-                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
-                            )
+                            Text("Last Cat Sync: \(lastCatSync)")
+                                .foregroundStyle(Color.secondary)
+                        case .Dog:
+                            Text("Last Dog Sync: \(lastDogSync)")
+                                .foregroundStyle(Color.secondary)
                         }
-                            
-                        }
-
-                    
-                    Button {
-                        showTutorialQRCode = true
-                    } label: {
                         HStack {
-                            Image(systemName: "play.rectangle.fill")
-                            Text("Volunteer Tutorial Video")
-                        }
-                        .padding()
-                        .fontWeight(.black)
-                    }
-                    
-                    
-                    switch animalType {
-                    case .Cat:
-                        Text("Last Cat Sync: \(lastCatSync)")
-                            .foregroundStyle(Color.secondary)
-                    case .Dog:
-                        Text("Last Dog Sync: \(lastDogSync)")
-                            .foregroundStyle(Color.secondary)
-                    }
-                    HStack {
-                        if latestVersion != "\(appVersion)" {
-                            VStack {
-                                Text("Your app is not up to date. Please update when convenient.")
-                                Button(action: {
-                                    if let url = URL(string: updateAppURL) {
-                                        UIApplication.shared.open(url)
+                            if latestVersion != "\(appVersion)" {
+                                VStack {
+                                    Text("Your app is not up to date. Please update when convenient.")
+                                    Button(action: {
+                                        if let url = URL(string: updateAppURL) {
+                                            UIApplication.shared.open(url)
+                                        }
+                                    }) {
+                                        Label("Update", systemImage: "arrow.triangle.2.circlepath")
                                     }
-                                }) {                                    
-                                    Label("Update", systemImage: "arrow.triangle.2.circlepath")
+                                    .buttonStyle(.bordered)
+                                }
+                                .padding()
+                                .background(RoundedRectangle(cornerRadius: 20).fill(.thinMaterial))
+                                .background(RoundedRectangle(cornerRadius: 20).fill(.customOrange))
+                            }
+                            VStack {
+                                Text("PawPartner is completely free. You can follow us for free on Patreon to get behind-the-scenes updates.")
+                                Button {
+                                    showDonateQRCode = true
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+                                        showDonateQRCode = false
+                                    }
+                                } label: {
+                                    Label("Patreon", systemImage: "qrcode")
                                 }
                                 .buttonStyle(.bordered)
                             }
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 20).fill(.thinMaterial))
-                            .background(RoundedRectangle(cornerRadius: 20).fill(.customOrange))
+                            .background(RoundedRectangle(cornerRadius: 20).fill(.customBlue))
                         }
-                        VStack {
-                            Text("PawPartner is completely free. You can follow us for free on Patreon to get behind-the-scenes updates.")
-                            Button {
-                                showDonateQRCode = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
-                                    showDonateQRCode = false
-                                }
-                            } label: {
-                                Label("Patreon", systemImage: "qrcode")
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 20).fill(.thinMaterial))
-                        .background(RoundedRectangle(cornerRadius: 20).fill(.customBlue))
+                        .padding([.bottom, .horizontal])
                     }
-                    .padding([.bottom, .horizontal])
                 }
+                // MARK: -Animal Alert
+                .overlay(
+                    AnimalAlertView(animal: viewModel.animal)
+                        .opacity(viewModel.showAnimalAlert ? 1 : 0)
+                )
+
             }
-            // MARK: -Animal Alert
-            .overlay(
-                AnimalAlertView(animal: viewModel.animal)
-                    .opacity(viewModel.showAnimalAlert ? 1 : 0)
-            )
-        }
+                    }
         .onChange(of: lastSync) { sync in
             let cache = KingfisherManager.shared.cache
             try? cache.diskStorage.removeAll()

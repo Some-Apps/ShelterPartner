@@ -1,8 +1,5 @@
-import SSToastMessage
-import Kingfisher
-import AlertToast
 import SwiftUI
-import SSToastMessage
+import Kingfisher
 
 struct CardView: View {
     let animal: Animal
@@ -201,6 +198,7 @@ struct CardView: View {
 
 
 
+
 struct OutlinedButton: View {
     let viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
@@ -284,6 +282,7 @@ struct OutlinedButton: View {
                             Image(systemName: "photo.circle")
                                 .resizable()
                                 .scaledToFill()
+                                .foregroundStyle(.tertiary)
                                 .frame(width: width, height: height)
                                 .clipShape(Circle())
                                 .scaleEffect(isPressed ? 1 : 1.025)
