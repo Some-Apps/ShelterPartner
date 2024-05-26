@@ -78,16 +78,12 @@ struct ViewInfoView: View {
     
     var body: some View {
         ScrollView {
-            
             LazyVStack {
                 VStack {
                     HStack {
                         Text(animal.name + " ")
                             .font(.largeTitle)
                             .fontWeight(.bold)
-//                        Text(((animal.sex ?? "") == "Male" ? "♂︎" : animal.sex == "Female" ? "♀︎" : ""))
-//                            .font(.largeTitle)
-//                            .foregroundStyle(.secondary)
                     }
                     
                     HStack {
@@ -181,7 +177,7 @@ struct ViewInfoView: View {
                 .shadow(radius: 5)
                 .frame(height: 400)
                 .padding()
-                
+                AnimalDetailsSection(animal: animal)
                 if !animal.notes.isEmpty {
                     VStack(alignment: .center) {
                         HStack(alignment: .top, spacing: 20) {

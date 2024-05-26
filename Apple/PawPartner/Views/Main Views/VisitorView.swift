@@ -212,15 +212,7 @@ struct VisitorView: View {
                                         .padding(.horizontal)
 
                                     }
-//                                    .onTapGesture {
-//                                        showLoading = true
-//                                    }
-//                                    .onDisappear {
-//                                        showLoading = false
-//                                    }
-//                                    .onAppear {
-//                                        showLoading = false
-//                                    }
+
                                 }
                             }
                         }
@@ -303,12 +295,12 @@ struct VisitorImage: View {
                 .frame(width: 150, height: 150)
             VStack {
                         KFImage(imageURL)
-                            .placeholder {
-                                Image(systemName: "photo.circle.fill")
-                                    .resizable()
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 150, height: 150)
-                            }
+//                            .placeholder {
+//                                Image(systemName: "photo.circle.fill")
+//                                    .resizable()
+//                                    .foregroundStyle(.secondary)
+//                                    .frame(width: 150, height: 150)
+//                            }
                             .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 200, height: 200))
                                           |> RoundCornerImageProcessor(cornerRadius: 20))
                             .scaleFactor(UIScreen.main.scale)
@@ -322,10 +314,6 @@ struct VisitorImage: View {
                                 checkIfImageIsCached()
                             }
                             .opacity(isImageCached ? 1 : 0) // Show only if cached
-
-                        if !isImageCached {
-                            Text("Loading image...") // Loading text while checking cache
-                        }
                     }
                     .onAppear {
                         checkIfImageIsCached()
