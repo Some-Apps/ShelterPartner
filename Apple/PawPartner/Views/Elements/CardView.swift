@@ -1,6 +1,7 @@
 import SwiftUI
 import Kingfisher
 
+
 struct CardView: View {
     let animal: Animal
     @Binding var showAnimalAlert: Bool
@@ -52,117 +53,64 @@ struct CardView: View {
         }()
         
         VStack(alignment: .leading) {
-            HStack {
-                OutlinedButton(viewModel: viewModel, showPopover: $showPopover, animal: animal)
-                    .onAppear {
-                        if !animal.inCage {
-                            if Date().timeIntervalSince1970 - animal.startTime > 7200 {
-                                viewModel.silentPutBack(animal: animal)
-                            }
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 7) {
+                    HStack(alignment: .center) {
+                        Text(animal.name + " ")
+                            .font(.largeTitle)
+                            .bold()
+                            .underline()
+                        if animal.animalType == .Dog && (societyID == "ChIJ8WVKpxEfAIgRIMOBoCkxBtY" || societyID == "ChIJgbjU6bBRBogRKBb3KxOJGn8") {
+                            Image(systemName: animal.aggressionRating == 1 ? "1.circle.fill" : animal.aggressionRating == 2 ? "2.square.fill" : animal.aggressionRating == 3 ? "3.circle.fill" : "")
+                                .font(.title)
+                                .foregroundColor(animal.aggressionRating == 1 ? .green : animal.aggressionRating == 2 ? .orange : animal.aggressionRating == 3 ? .red : .primary.opacity(0.2))
+                                .opacity(0.5)
+
+                        }
+                        if let symbol = animal.symbol, let symbolColor = animal.symbolColor {
+                            Image(systemName: symbol)
+                                .foregroundStyle(symbolColor == "red" ? .red : symbolColor == "green" ? .green : symbolColor == "green" ? .blue: symbolColor == "white" ? .white : symbolColor == "gray" ? .gray : .clear)
+                                .font(.title)
+                                .opacity(0.5)
                         }
                     }
-                VStack(alignment: .leading, spacing: (animal.tags != nil && animal.tags != [:]) ? 3 : 14) {
-                    if animal.tags != nil && animal.tags != [:] {
-                        HStack {
-                            ForEach(topTags(for: animal, count: 1), id: \.self) {
-                                Text($0)
-                            }
-                        }
-                        .font(.callout)
-                        .padding(.horizontal, 4)
-                        .background(.ultraThinMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                        .foregroundStyle(.tertiary)
-                        .lineLimit(1)
-                        .shadow(color: .black.opacity(0.2), radius: 0.5, x: 0.5, y: 1)
-                    }
-                    Text(animal.name + " ")
-                        .font(UIDevice.current.userInterfaceIdiom == .phone ? .title2 : .largeTitle)
-                        .fontWeight(.black)
-                        .foregroundColor(.primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    
-                    Text("\(animal.location)")
-                        .font(UIDevice.current.userInterfaceIdiom == .phone ? .title3 : .title2)
-                        .fontWeight(.heavy)
-                        .opacity(0.5)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.4)
-                    if animal.inCage {
-                        Text(timeSinceLastLetOut)
-                            .font(UIDevice.current.userInterfaceIdiom == .phone ? .body : .body)
-                            .fontWeight(.bold)
-                            .opacity(0.2)
+                    VStack(alignment: .leading) {
+                        if animal.tags != nil && animal.tags != [:] {
+                            HStack {
+                                Image(systemName: "tag")
+                                ForEach(topTags(for: animal, count: 3), id: \.self) {
+                                    Text($0)
+                                        .background(.ultraThinMaterial)
+                                        .clipShape(.containerRelative)
+                                }
+                            }
                             .lineLimit(1)
-                            .minimumScaleFactor(0.5)
-                    } else {
-                        Text(timeElapsed)
-                            .font(UIDevice.current.userInterfaceIdiom == .phone ? .body : .body)
-                            .fontWeight(.bold)
-                            .opacity(0.2)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.5)
+                        }
+                        Label(animal.location, systemImage: "mappin.square")
+                        Label("DEGS", systemImage: "square.grid.2x2")
+                        
+                        if animal.inCage {
+                            Label(timeSinceLastLetOut, systemImage: "clock")
+                        } else {
+                            Label(timeElapsed, systemImage: "clock")
+                        }
                     }
-                    
-                    // Extra Info
-                    if let extraInfo = animal.extraInfo {
-                        Text(extraInfo)
-                            .font(.body)
-                            .fontWeight(.regular)
-                            .foregroundColor(.secondary)
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.5)
-                            .padding(.top, 5)
-                    }
-                    
+                    .opacity(0.5)
                 }
                 .layoutPriority(1)
                 .padding(.leading, 10)
-                
                 Spacer()
                 
-                HStack {
-                    if animal.animalType == .Dog && (societyID == "ChIJ8WVKpxEfAIgRIMOBoCkxBtY" || societyID == "ChIJgbjU6bBRBogRKBb3KxOJGn8") {
-                        Image(systemName: animal.aggressionRating == 1 ? "1.circle.fill" : animal.aggressionRating == 2 ? "2.square.fill" : animal.aggressionRating == 3 ? "3.circle.fill" : "")
-                            .font(.title)
-                            .foregroundColor(animal.aggressionRating == 1 ? .green : animal.aggressionRating == 2 ? .orange : animal.aggressionRating == 3 ? .red : .primary.opacity(0.2))
-                    }
-                    if let symbol = animal.symbol, let symbolColor = animal.symbolColor {
-                        Image(systemName: symbol)
-                            .foregroundStyle(symbolColor == "red" ? .red : symbolColor == "green" ? .green : symbolColor == "green" ? .blue: symbolColor == "white" ? .white : symbolColor == "gray" ? .gray : .clear)
-                            .font(.title)
-                    }
-                    VStack {
-                        NavigationLink(destination: ViewInfoView(animal: animal), label: {
-                            Image(systemName: "ellipsis.circle")
-                        })
-                        Spacer()
-                        if QRMode {
-                            Button {
-                                animalViewModel.animal = animal
-                                animalViewModel.showQRCode = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
-                                    animalViewModel.showQRCode = false
-                                }
-                            } label: {
-                                Image(systemName: "qrcode")
-                            }
-                        }
-                        Spacer()
-                        Button {
-                            DispatchQueue.main.async {
-                                animalViewModel.animal = animal
-                                animalViewModel.showAddNote = true
-                            }
-                        } label: {
-                            Image(systemName: "square.and.pencil")
-                        }
-                    }
-                    .font(UIDevice.current.userInterfaceIdiom == .phone ? .title2 : .title)
-                    .fontWeight(.black)
-                    .foregroundStyle(.primary.opacity(0.2))
-                }
+                    OutlinedButton(viewModel: viewModel, showPopover: $showPopover, animal: animal)
+//                    Rectangle()
+//                        .foregroundColor(.clear)
+//                        .contentShape(Rectangle())
+//                        .gesture(DragGesture(minimumDistance: 0)
+//                            .onChanged { _ in }
+//                            .onEnded { _ in })
+                
             }
             .onReceive(timer) { _ in
                 self.lastUpdate = Date()
@@ -175,6 +123,31 @@ struct CardView: View {
         .background(RoundedRectangle(cornerRadius: 20)
             .foregroundColor(backgroundColor)
             .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2))
+//        .contextMenu {
+//            NavigationLink(destination: ViewInfoView(animal: animal), label: {
+//                Label("Details", systemImage: "ellipsis.circle")
+//            })
+//            if QRMode {
+//                Button {
+//                    animalViewModel.animal = animal
+//                    animalViewModel.showQRCode = true
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+//                        animalViewModel.showQRCode = false
+//                    }
+//                } label: {
+//                    Label("QR Code", systemImage: "qrcode")
+//                }
+//            }
+//            Button {
+//                DispatchQueue.main.async {
+//                    animalViewModel.animal = animal
+//                    animalViewModel.showAddNote = true
+//                }
+//            } label: {
+//                Label("Add Note", systemImage: "square.and.pencil")
+//            }
+//        }
+        
         .sheet(isPresented: $showViewInfo) {
             ViewInfoView(animal: animal)
         }
@@ -187,7 +160,6 @@ struct CardView: View {
     }
     
     func topTags(for animal: Animal, count: Int = 3) -> [String] {
-        // Sort the tags based on their count and get the top 'count' tags
         let sortedTags = animal.tags?.sorted { $0.value > $1.value }
             .map { $0.key }
             .prefix(count)
@@ -195,6 +167,7 @@ struct CardView: View {
         return Array(sortedTags ?? [])
     }
 }
+
 
 
 
@@ -394,6 +367,7 @@ struct OutlinedButton: View {
                                         animalViewModel.animal = animal
                                         animalViewModel.showRequireName.toggle()
                                     } else {
+                                        
                                         viewModel.takeOut(animal: animal)
                                     }
                                 }
