@@ -1,10 +1,3 @@
-//
-//  AdvancedSettingsView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 1/15/24.
-//
-
 import SwiftUI
 
 struct AdvancedSettingsView: View {
@@ -50,18 +43,18 @@ struct AdvancedSettingsView: View {
             } footer: {
                 Text("Before an animal can be taken out, you must enter your name.")
             }
-            Section {
-                Toggle("Filter Picker", isOn: $filterPicker)
-                    .disabled(viewModel.filterOptions.isEmpty)
-                    .tint(.blue)
-                    .onAppear {
-                        if viewModel.filterOptions.isEmpty {
-                            filterPicker = false
-                        }
-                    }
-            } footer: {
-                Text(viewModel.filterOptions.isEmpty ? "Allow users to selected from additional filters on the main screen. As of now, this requires additional setup. Feel free to email jared@pawpartner.app if you're interested in using this feature." : "Allow users to filter animals from the main page.")
-            }
+//            Section {
+//                Toggle("Filter Picker", isOn: $filterPicker)
+//                    .disabled(viewModel.filterOptions.isEmpty)
+//                    .tint(.blue)
+//                    .onAppear {
+//                        if viewModel.filterOptions.isEmpty {
+//                            filterPicker = false
+//                        }
+//                    }
+//            } footer: {
+//                Text(viewModel.filterOptions.isEmpty ? "Allow users to selected from additional filters on the main screen. As of now, this requires additional setup. Feel free to email jared@pawpartner.app if you're interested in using this feature." : "Allow users to filter animals from the main page.")
+//            }
             Section {
                 Toggle(isCustomFormOn ? "Enabled" : "Disabled", isOn: $isCustomFormOn)
                     .tint(.blue)
@@ -85,3 +78,4 @@ struct AdvancedSettingsView: View {
         }
     }
 }
+

@@ -17,7 +17,7 @@ struct AnimalDetailsSection: View {
                         }
                         
                         if let breed = animal.breed {
-                            DetailCard(title: "Primary Breed", detail: breed)
+                            DetailCard(title: "Breed", detail: breed)
                         }
                         
                         if let age = animal.age {

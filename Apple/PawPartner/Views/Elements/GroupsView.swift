@@ -1,4 +1,6 @@
 import SwiftUI
+import AlertToast
+import FirebaseFirestore
 
 struct GroupsView: View {
     var title: String
@@ -8,13 +10,20 @@ struct GroupsView: View {
     let playcheck: (Animal) -> Bool
     let cardView: (Animal) -> CardView
     
+    @State private var showLoading = false
+    
     var body: some View {
         ScrollView {
-            BulkOutlineButton(viewModel: cardViewModel, animals: animals, playcheck: playcheck)
-            AnimalGridView(animals: animals, columns: columns, cardViewModel: cardViewModel, playCheck: playcheck, cardView: cardView)
+            LazyVStack {
+                BulkOutlineButton(viewModel: cardViewModel, animals: animals, playcheck: playcheck, showLoading: $showLoading)
+                AnimalGridView(animals: animals, columns: columns, cardViewModel: cardViewModel, playCheck: playcheck, cardView: cardView)
+
+            }
+            
         }
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.large)
+        
     }
 }
 
@@ -23,6 +32,8 @@ struct BulkOutlineButton: View {
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     var animals: [Animal]
     let playcheck: (Animal) -> Bool
+    @Binding var showLoading: Bool
+    @AppStorage("minimumDuration") var minimumDuration = 5
 
     @State private var progress: CGFloat = 0
     @AppStorage("filterPicker") var filterPicker: Bool = false
@@ -52,11 +63,11 @@ struct BulkOutlineButton: View {
     let lineWidth: CGFloat = 25 // Adjust this value to increase the thickness of the stroke
     
     var majorityActionText: String {
-            let filteredAnimals = animals.filter(playcheck)
-            let inCageCount = filteredAnimals.filter { $0.inCage }.count
-            let notInCageCount = filteredAnimals.count - inCageCount
-            return inCageCount > notInCageCount ? "Take Out" : "Put Back"
-        }
+        let filteredAnimals = animals.filter(playcheck)
+        let inCageCount = filteredAnimals.filter { $0.inCage }.count
+        let notInCageCount = filteredAnimals.count - inCageCount
+        return inCageCount > notInCageCount ? "Take Out" : "Put Back"
+    }
 
     var body: some View {
         ZStack {
@@ -89,6 +100,10 @@ struct BulkOutlineButton: View {
         .confirmationDialog("Confirm", isPresented: $takeAllOut) {
             Button("Yes") {
                 handleAnimalStateChanges()
+                print(showLoading)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    print(showLoading)
+                }
             }
         } message: {
             Text("You are about to take out all of the animals in the group. Are you sure you want to continue?")
@@ -101,74 +116,92 @@ struct BulkOutlineButton: View {
             Text("You are about to put all of the animals in the group back. Are you sure you want to continue?")
         }
         .padding(5)
+        
         .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
             if pressing {
                 isPressed = true
-                self.tickCountPressing = 0
-                self.lastEaseValue = self.easeIn(t: 0)
+                feedbackPress.impactOccurred()
+                tickCountPressing = 0
+                lastEaseValue = easeIn(t: 0)
                 timer?.invalidate() // invalidate any existing timer
                 timer = Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { _ in
-                    let t = self.tickCountPressing / 75 // total duration is now 75 ticks
-                    let currentEaseValue = self.easeIn(t: t)
-                    let increment = currentEaseValue - self.lastEaseValue
-                    self.progress += increment
-                    self.lastEaseValue = currentEaseValue
-                    self.tickCountPressing += 1
+                    let t = tickCountPressing / 75 // total duration is now 75 ticks
+                    let currentEaseValue = easeIn(t: t)
+                    let increment = currentEaseValue - lastEaseValue
+                    progress += increment
+                    lastEaseValue = currentEaseValue
+                    tickCountPressing += 1
 
-                    if self.progress >= 1 {
+                    if progress >= 1 {
                         timer?.invalidate()
-                        self.progress = 0
+                        progress = 0
                         print("Hold completed")
                         if majorityActionText == "Take Out" {
                             takeAllOut = true
                         } else {
                             putAllBack = true
                         }
-//                        handleAnimalStateChanges()
-                    } else if self.progress > 0.97 {
-                        self.progress = 1
+                    } else if progress > 0.97 {
+                        progress = 1
                     }
                 }
             } else {
                 isPressed = false
-                self.tickCountNotPressing = 75 // This starts decrement from the end.
-                self.lastEaseValue = self.easeIn(t: 1)
+                feedbackRelease.impactOccurred()
+                tickCountNotPressing = 75 // This starts decrement from the end.
+                lastEaseValue = easeIn(t: 1)
                 timer?.invalidate() // invalidate the current timer
                 timer = Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { _ in
-                    let t = self.tickCountNotPressing / 75
-                    let currentEaseValue = self.easeIn(t: t)
-                    let decrement = self.lastEaseValue - currentEaseValue
-                    self.progress -= decrement
-                    self.lastEaseValue = currentEaseValue
-                    self.tickCountNotPressing -= 1
+                    let t = tickCountNotPressing / 75
+                    let currentEaseValue = easeIn(t: t)
+                    let decrement = lastEaseValue - currentEaseValue
+                    progress -= decrement
+                    lastEaseValue = currentEaseValue
+                    tickCountNotPressing -= 1
 
-                    if self.progress <= 0 {
-                        self.progress = 0
+                    if progress <= 0 {
+                        progress = 0
                         timer?.invalidate() // stop the timer when progress is zero
                     }
                 }
             }
         }, perform: {})
-
+       
     }
     
     func handleAnimalStateChanges() {
-        DispatchQueue.main.async {
-            let filteredAnimals = animals.filter(playcheck)
-            let inCageCount = filteredAnimals.filter { $0.inCage }.count
-            let notInCageCount = filteredAnimals.count - inCageCount
-            let majorityInCage = inCageCount > notInCageCount
-
-            for animal in filteredAnimals {
-                if majorityInCage {
-                    if animal.inCage && animal.canPlay && animal.alert.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-                        viewModel.takeOut(animal: animal)
-                    }
-                } else {
-                    if !animal.inCage {
-                        viewModel.silentPutBack(animal: animal)
+        showLoading = true
+        let db = Firestore.firestore()
+        let batch = db.batch()
+        
+        let filteredAnimals = animals.filter(playcheck)
+        let inCageCount = filteredAnimals.filter { $0.inCage }.count
+        let notInCageCount = filteredAnimals.count - inCageCount
+        let majorityInCage = inCageCount > notInCageCount
+        
+        for animal in filteredAnimals {
+            let animalRef = db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType)s").document(animal.id)
+            if majorityInCage {
+                if animal.inCage && animal.canPlay && animal.alert.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
+                    batch.updateData(["inCage": false, "startTime": Date().timeIntervalSince1970], forDocument: animalRef)
+                }
+            } else {
+                if !animal.inCage {
+                    batch.updateData(["inCage": true], forDocument: animalRef)
+                    let components = Calendar.current.dateComponents([.minute], from: Date(timeIntervalSince1970: animal.startTime), to: Date())
+                    if components.minute ?? 0 >= self.minimumDuration {
+                        viewModel.createLog(for: animal)
                     }
                 }
+            }
+        }
+        
+        batch.commit { error in
+            showLoading = false
+            if let error = error {
+                print("Error updating animals: \(error.localizedDescription)")
+            } else {
+                print("Batch update successful")
             }
         }
     }
@@ -177,3 +210,4 @@ struct BulkOutlineButton: View {
         return t * t
     }
 }
+

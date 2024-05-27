@@ -1,10 +1,3 @@
-//
-//  Animal.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 12/2/23.
-//
-
 import Foundation
 
 struct Animal: Codable, Identifiable {
@@ -31,6 +24,7 @@ struct Animal: Codable, Identifiable {
     var lastVolunteer: String?
     var group: String?
     var extraInfo: String?
+    var fullLocation: String?
     
     var allPhotos: [String] {
         var tempPhotos: [String] = []
