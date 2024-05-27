@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Log: Codable {
+struct Log: Codable, Equatable, Hashable {
     var id: String
     var startTime: Double
     var endTime: Double

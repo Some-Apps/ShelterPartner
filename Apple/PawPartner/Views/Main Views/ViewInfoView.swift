@@ -1,10 +1,3 @@
-//
-//  ViewInfoView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/20/23.
-//
-
 import SwiftUI
 import Kingfisher
 import FirebaseStorage
@@ -80,11 +73,12 @@ struct ViewInfoView: View {
         ScrollView {
             LazyVStack {
                 VStack {
-                    HStack {
                         Text(animal.name + " ")
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                    }
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.5)
+                            .padding(.horizontal)
                     
                     HStack {
                         ForEach(topTags(for: animal), id: \.self) { tag in

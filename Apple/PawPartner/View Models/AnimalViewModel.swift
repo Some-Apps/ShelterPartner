@@ -31,6 +31,7 @@ class AnimalViewModel: ObservableObject {
     var societyListener: ListenerRegistration?
     var statsListener: ListenerRegistration?
     
+    @AppStorage("showAllAnimals") var showAllAnimals = false
     @AppStorage("guidedAccessVideo") var guidedAccessVideo: String = ""
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("staffVideo") var staffVideo: String = ""
@@ -255,13 +256,12 @@ class AnimalViewModel: ObservableObject {
         }
     }
     
-    
     func fetchCatData(completion: @escaping (Bool) -> Void) {
         guard Auth.auth().currentUser != nil else {
             completion(false)
             return
         }
-        
+
         fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
             switch result {
             case .success(let id):
@@ -271,11 +271,13 @@ class AnimalViewModel: ObservableObject {
                 self.catListener = self.db.collection("Societies").document(societyID).collection("Cats").addSnapshotListener { [weak self] (querySnapshot, err) in
                     guard let documents = querySnapshot?.documents else {
                         print("No documents")
-                        completion(false)
+                        DispatchQueue.main.async {
+                            completion(false)
+                        }
                         return
                     }
 
-                    self?.cats = documents.compactMap { queryDocumentSnapshot in
+                    let fetchedCats = documents.compactMap { queryDocumentSnapshot in
                         do {
                             let data = queryDocumentSnapshot.data()
                             let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
@@ -286,29 +288,32 @@ class AnimalViewModel: ObservableObject {
                             return nil
                         }
                     }
-                    self!.sortCats()
-                    completion(true)
 
+                    DispatchQueue.main.async {
+                        self?.cats = fetchedCats.filter(self?.filterAnimals ?? { _ in true })
+//                        let filteredCats = sortedCats.filter(self?.filterAnimals ?? { _ in true })
+                        self?.sortCats()
+                        print("Fetched \(self?.cats.count ?? 0) cats")
+                        completion(true)
+                    }
                 }
-                print(id)
             case .failure(let error):
                 print(error)
-                completion(false)
-
+                DispatchQueue.main.async {
+                    completion(false)
+                }
             }
         }
-        
-        
     }
+
     
-
-
+    
     func fetchDogData(completion: @escaping (Bool) -> Void) {
         guard Auth.auth().currentUser != nil else {
             completion(false)
             return
         }
-        
+
         fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
             switch result {
             case .success(let id):
@@ -318,11 +323,13 @@ class AnimalViewModel: ObservableObject {
                 self.dogListener = self.db.collection("Societies").document(societyID).collection("Dogs").addSnapshotListener { [weak self] (querySnapshot, err) in
                     guard let documents = querySnapshot?.documents else {
                         print("No documents")
-                        completion(false)
+                        DispatchQueue.main.async {
+                            completion(false)
+                        }
                         return
                     }
 
-                    self?.dogs = documents.compactMap { queryDocumentSnapshot in
+                    let fetchedDogs = documents.compactMap { queryDocumentSnapshot in
                         do {
                             let data = queryDocumentSnapshot.data()
                             let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
@@ -333,15 +340,36 @@ class AnimalViewModel: ObservableObject {
                             return nil
                         }
                     }
-                    self?.sortDogs()
-                    completion(true)
+
+                    DispatchQueue.main.async {
+                        self?.dogs = fetchedDogs.filter(self?.filterAnimals ?? { _ in true })
+                        self?.sortDogs()
+//                        let filteredDogs = self.sortedDogs.filter(self?.filterAnimals ?? { _ in true })
+                        print("Fetched \(self?.dogs.count ?? 0) dogs")
+                        completion(true)
+                    }
                 }
-                print(id)
             case .failure(let error):
                 print(error)
-                completion(false)
+                DispatchQueue.main.async {
+                    completion(false)
+                }
             }
         }
+    }
+
+
+
+
+
+    private func filterAnimals(animal: Animal) -> Bool {
+        var result = true
+        if !showAllAnimals {
+            let canPlay = animal.canPlay
+            result = canPlay
+            print("Animal \(animal.id) - canPlay: \(canPlay), result: \(result)")
+        }
+        return result
     }
 
     
