@@ -125,6 +125,7 @@ struct CardView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
 
+
                     VStack(alignment: .leading) {
                         if animal.tags != nil && animal.tags != [:] {
                             HStack {
