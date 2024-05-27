@@ -1,13 +1,6 @@
-//
-//  Photo.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 2/1/24.
-//
-
 import Foundation
 
-struct Photo: Codable, Hashable {
+struct Photo: Codable, Equatable, Hashable {
     var url: String
     var privateURL: String
     var timestamp: Double

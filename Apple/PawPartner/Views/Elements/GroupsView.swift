@@ -7,7 +7,7 @@ struct GroupsView: View {
     var animals: [Animal]
     let columns: [GridItem]
     let cardViewModel: CardViewModel
-    let playcheck: (Animal) -> Bool
+//    let playcheck: (Animal) -> Bool
     let cardView: (Animal) -> CardView
     
     @State private var showLoading = false
@@ -15,8 +15,8 @@ struct GroupsView: View {
     var body: some View {
         ScrollView {
             LazyVStack {
-                BulkOutlineButton(viewModel: cardViewModel, animals: animals, playcheck: playcheck, showLoading: $showLoading)
-                AnimalGridView(animals: animals, columns: columns, cardViewModel: cardViewModel, playCheck: playcheck, cardView: cardView)
+                BulkOutlineButton(viewModel: cardViewModel, animals: animals, showLoading: $showLoading)
+                AnimalGridView(animals: animals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
 
             }
             
@@ -31,9 +31,10 @@ struct BulkOutlineButton: View {
     let viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     var animals: [Animal]
-    let playcheck: (Animal) -> Bool
+//    let playcheck: (Animal) -> Bool
     @Binding var showLoading: Bool
     @AppStorage("minimumDuration") var minimumDuration = 5
+    @AppStorage("showAllAnimals") var showAllAnimals = false
 
     @State private var progress: CGFloat = 0
     @AppStorage("filterPicker") var filterPicker: Bool = false
@@ -63,7 +64,15 @@ struct BulkOutlineButton: View {
     let lineWidth: CGFloat = 25 // Adjust this value to increase the thickness of the stroke
     
     var majorityActionText: String {
-        let filteredAnimals = animals.filter(playcheck)
+        var filteredAnimals: [Animal] = []
+
+        for animal in animals {
+            if animal.canPlay {
+                filteredAnimals.append(animal)
+            } else if showAllAnimals {
+                filteredAnimals.append(animal)
+            }
+        }
         let inCageCount = filteredAnimals.filter { $0.inCage }.count
         let notInCageCount = filteredAnimals.count - inCageCount
         return inCageCount > notInCageCount ? "Take Out" : "Put Back"
@@ -169,12 +178,22 @@ struct BulkOutlineButton: View {
        
     }
     
+
+    
     func handleAnimalStateChanges() {
         showLoading = true
         let db = Firestore.firestore()
         let batch = db.batch()
         
-        let filteredAnimals = animals.filter(playcheck)
+        var filteredAnimals: [Animal] = []
+
+        for animal in animals {
+            if animal.canPlay {
+                filteredAnimals.append(animal)
+            } else if showAllAnimals {
+                filteredAnimals.append(animal)
+            }
+        }
         let inCageCount = filteredAnimals.filter { $0.inCage }.count
         let notInCageCount = filteredAnimals.count - inCageCount
         let majorityInCage = inCageCount > notInCageCount

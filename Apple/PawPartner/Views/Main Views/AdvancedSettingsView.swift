@@ -8,6 +8,8 @@ struct AdvancedSettingsView: View {
     @AppStorage("showNoteDates") var showNoteDates = true
     @AppStorage("requireName") var requireName = false
     @AppStorage("groupsEnabled") var groupsEnabled = false
+    @AppStorage("showAllAnimals") var showAllAnimals = false
+
     @ObservedObject var viewModel = SettingsViewModel.shared
     
     @AppStorage("filterPicker") var filterPicker: Bool = false
@@ -23,6 +25,14 @@ struct AdvancedSettingsView: View {
             } footer: {
                 Text("This sets the minimum duration for a visit. If a volunteer takes out an animal for a visit lasting less than this amount, it will show an error and not count the visit.")
             }
+//            Section {
+//                Toggle(showAllAnimals ? "Enabled" : "Disabled", isOn: $showAllAnimals)
+//                    .tint(.blue)
+//            } header: {
+//                Text("Show Unavailable Animals")
+//            } footer: {
+//                Text("This will display all animal even if they aren't available. However, you won't be able to take out animals that aren't available.")
+//            }
             Section {
                 Toggle(groupsEnabled ? "Enabled" : "Disabled", isOn: $groupsEnabled)
                     .tint(.blue)
@@ -78,4 +88,3 @@ struct AdvancedSettingsView: View {
         }
     }
 }
-
