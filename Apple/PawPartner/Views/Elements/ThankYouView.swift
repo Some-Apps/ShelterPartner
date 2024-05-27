@@ -1,10 +1,3 @@
-//
-//  ThankYouView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 12/2/23.
-//
-
 import SwiftUI
 import Kingfisher
 
@@ -54,7 +47,6 @@ struct ThankYouView: View {
                         }
                         .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 200, height: 200)))
                         .scaleFactor(UIScreen.main.scale)
-                        .cacheOriginalImage()
                         .onSuccess { result in
                             print("Task done for: \(result.source.url?.absoluteString ?? "")")
                         }

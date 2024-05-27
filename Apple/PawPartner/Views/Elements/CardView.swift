@@ -57,7 +57,9 @@ struct CardView: View {
                 VStack(alignment: .leading, spacing: 7) {
                     HStack(alignment: .center) {
                         Text(animal.name + " ")
-                            .font(.largeTitle)
+
+                            .font(.title)
+
                             .bold()
                             .underline()
                         Menu {
@@ -97,9 +99,23 @@ struct CardView: View {
                         }
                         if let symbol = animal.symbol, let symbolColor = animal.symbolColor {
                             Image(systemName: symbol)
-                                .foregroundStyle(symbolColor == "red" ? .red : symbolColor == "green" ? .green : symbolColor == "green" ? .blue: symbolColor == "white" ? .white : symbolColor == "gray" ? .gray : .clear)
+
+                                .foregroundStyle(
+                                    symbolColor == "red" ? .red :
+                                    symbolColor == "green" ? .green :
+                                    symbolColor == "blue" ? .blue:
+                                    symbolColor == "white" ? .white :
+                                    symbolColor == "gray" ? .gray :
+                                    symbolColor == "black" ? .black :
+                                    symbolColor == "silver" ? .gray :
+                                    symbolColor == "yellow" ? .yellow :
+                                        symbolColor == "pink" ? Color(red: 255/255, green: 105/255, blue: 180/255) :
+                                    symbolColor == "orange" ? .orange :
+                                        symbolColor == "purple" ? .purple :
+                                        .clear)
                                 .font(.title)
-                                .opacity(0.5)
+//                                .opacity(0.5)
+     
                         }
                     }
                         .lineLimit(1)
@@ -116,8 +132,18 @@ struct CardView: View {
                             }
                             .lineLimit(1)
                         }
-                        Label(animal.location, systemImage: "mappin.square")
-//                        Label("DEGS", systemImage: "square.grid.2x2")
+
+                        Menu(animal.location, systemImage: "mappin.square") {
+                            Text(animal.fullLocation ?? animal.location)
+                        }
+                        .foregroundStyle(.black)
+//                        Label(animal.location, systemImage: "mappin.square")
+                        if let extraInfo = animal.extraInfo {
+                            if !extraInfo.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                Label(extraInfo, systemImage: "square.grid.2x2")
+                            }
+                        }
+
                         
                         if animal.inCage {
                             Label(timeSinceLastLetOut, systemImage: "clock")
@@ -126,6 +152,10 @@ struct CardView: View {
                         }
                     }
                     .opacity(0.5)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .padding(.trailing)
+
                 }
                 .layoutPriority(1)
                 .padding(.leading, 10)
@@ -275,84 +305,17 @@ struct OutlinedButton: View {
                 .sheet(isPresented: $showAddNote) {
                     AddNoteView(animal: animal)
                 }
-                .onAppear {
-                    checkIfImageIsCached()
-                }
             KFImage(imageURL)
-//                        .placeholder {
-//                            Image(systemName: "photo.circle")
-//                                .resizable()
-//                                .scaledToFill()
-//                                .foregroundStyle(.tertiary)
-//                                .frame(width: width, height: height)
-//                                .clipShape(Circle())
-//                                .scaleEffect(isPressed ? 1 : 1.025)
-//                                .brightness(isPressed ? -0.05 : 0)
-//                                .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
-//                        }
-                        .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 150, height: 150))
-                                      |> RoundCornerImageProcessor(cornerRadius: 15))
-                        .scaleFactor(UIScreen.main.scale)
-                        .cacheOriginalImage()
-                        .resizable()
-                        
-                        .onSuccess { result in
-                            print("Task done for: \(result.source.url?.absoluteString ?? "")")
-                        }
-                        .onFailure { error in
-                            print("Job failed: \(error.localizedDescription)")
-                        }
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: width, height: height)
-                        .clipShape(Circle())
-                        .scaleEffect(isPressed ? 1 : 1.025)
-                        .brightness(isPressed ? -0.05 : 0)
-                        .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
-//            if let url = imageURL {
-//                KFImage(url)
-//                    .placeholder {
-//                        Image("placeholderImage")
-//                            .resizable()
-//                            .scaledToFit()
-//                    }
-//                    .setProcessor(DownsamplingImageProcessor(size: CGSize(width: width, height: height))
-//                                  |> RoundCornerImageProcessor(cornerRadius: 20))
-//                    .scaleFactor(UIScreen.main.scale)
-//                    .cacheOriginalImage()
-//                    .onSuccess { result in
-//                        print("Task done for: \(result.source.url?.absoluteString ?? "")")
-//                    }
-//                    .onFailure { error in
-//                        print("Job failed: \(error.localizedDescription)")
-//                    }
-//                    .resizable()
-//                    .scaledToFill()
-//                    .frame(width: width, height: height)
-//                    .clipShape(Circle())
-//                    .scaleEffect(isPressed ? 1 : 1.025)
-//                    .brightness(isPressed ? -0.05 : 0)
-//                    .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
-//                KFImage(url)
-//                    .setProcessor(ResizingImageProcessor(referenceSize: CGSize(width: width, height: height), mode: .aspectFill))
-//                    .resizable()
-//                    .onSuccess { result in
-//                        // The image has been cached successfully
-//                        print("Image cached successfully: \(result.cacheType)")
-//                    }
-//                    .onFailure { error in
-//                        print("Image loading failed: \(error)")
-//                    }
-//                    .onProgress { receivedSize, totalSize in
-//                        print("Loading progress: \(receivedSize)/\(totalSize)")
-//                    }
-//                    .scaledToFill()
-//                    .frame(width: width, height: height)
-//                    .clipShape(Circle())
-//                    .scaleEffect(isPressed ? 1 : 1.025)
-//                    .brightness(isPressed ? -0.05 : 0)
-//                    .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
-//            }
+
+                .setProcessor(ResizingImageProcessor(referenceSize: CGSize(width: width*1.5, height: height*1.5), mode: .aspectFill))
+                .resizable()
+                .scaledToFill()
+                .frame(width: width, height: height)
+                .clipShape(Circle())
+                .scaleEffect(isPressed ? 1 : 1.025)
+                .brightness(isPressed ? -0.05 : 0)
+                .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+
         }
         .confirmationDialog("Test", isPresented: $showLogTooShort) {
 //            Button("Leave Out", role: .cancel) { }
@@ -365,7 +328,7 @@ struct OutlinedButton: View {
         .padding(5)
         .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
             if pressing {
-//                feedbackPress.impactOccurred()
+                feedbackPress.impactOccurred()
                 isPressed = true
                 self.tickCountPressing = 0
                 self.lastEaseValue = self.easeIn(t: 0)
@@ -413,7 +376,7 @@ struct OutlinedButton: View {
                     }
                 }
             } else {
-//                feedbackRelease.impactOccurred()
+                feedbackRelease.impactOccurred()
                 isPressed = false
                 self.tickCountNotPressing = 75 // This starts decrement from the end.
                 self.lastEaseValue = self.easeIn(t: 1)
@@ -438,26 +401,6 @@ struct OutlinedButton: View {
     
     func easeIn(t: CGFloat) -> CGFloat {
         return t * t
-    }
-    
-    private func checkIfImageIsCached() {
-        guard let imageURL = imageURL else {
-            return
-        }
-        
-        let cache = ImageCache.default
-        cache.retrieveImage(forKey: imageURL.absoluteString) { result in
-            switch result {
-            case .success(let value):
-                if value.image != nil {
-                    self.isImageCached = true
-                } else {
-                    self.isImageCached = false
-                }
-            case .failure:
-                self.isImageCached = false
-            }
-        }
     }
 }
 

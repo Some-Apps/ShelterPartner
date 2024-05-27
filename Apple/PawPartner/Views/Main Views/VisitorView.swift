@@ -259,8 +259,8 @@ struct VisitorView: View {
                     }
                 }
             }
-            viewModel.fetchCatData()
-            viewModel.fetchDogData()
+            viewModel.fetchCatData() { _ in }
+            viewModel.fetchDogData() { _ in }
             viewModel.fetchLatestVersion()
             if storedSocietyID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
                 viewModel.postAppVersion(societyID: storedSocietyID, installedVersion: "\(appVersion) (\(buildNumber))")
@@ -310,39 +310,14 @@ struct VisitorImage: View {
                             .frame(width: 200, height: 200)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                             .padding([.horizontal, .top])
-                            .onAppear {
-                                checkIfImageIsCached()
-                            }
-                            .opacity(isImageCached ? 1 : 0) // Show only if cached
                     }
-                    .onAppear {
-                        checkIfImageIsCached()
-                    }
+            
  
             
         }
         
     }
-    
-    private func checkIfImageIsCached() {
-        guard let imageURL = imageURL else {
-            return
-        }
-        
-        let cache = ImageCache.default
-        cache.retrieveImage(forKey: imageURL.absoluteString) { result in
-            switch result {
-            case .success(let value):
-                if value.image != nil {
-                    self.isImageCached = true
-                } else {
-                    self.isImageCached = false
-                }
-            case .failure:
-                self.isImageCached = false
-            }
-        }
-    }
+
 }
 
 

@@ -1,10 +1,3 @@
-//
-//  AnimalsViewModel.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/20/23.
-//
-
 import SwiftUI
 import AuthenticationServices
 import FirebaseAuth
@@ -263,8 +256,11 @@ class AnimalViewModel: ObservableObject {
     }
     
     
-    func fetchCatData() {
-        guard Auth.auth().currentUser != nil else { return }
+    func fetchCatData(completion: @escaping (Bool) -> Void) {
+        guard Auth.auth().currentUser != nil else {
+            completion(false)
+            return
+        }
         
         fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
             switch result {
@@ -275,6 +271,7 @@ class AnimalViewModel: ObservableObject {
                 self.catListener = self.db.collection("Societies").document(societyID).collection("Cats").addSnapshotListener { [weak self] (querySnapshot, err) in
                     guard let documents = querySnapshot?.documents else {
                         print("No documents")
+                        completion(false)
                         return
                     }
 
@@ -290,10 +287,14 @@ class AnimalViewModel: ObservableObject {
                         }
                     }
                     self!.sortCats()
+                    completion(true)
+
                 }
                 print(id)
             case .failure(let error):
                 print(error)
+                completion(false)
+
             }
         }
         
@@ -302,8 +303,11 @@ class AnimalViewModel: ObservableObject {
     
 
 
-    func fetchDogData() {
-        guard Auth.auth().currentUser != nil else { return }
+    func fetchDogData(completion: @escaping (Bool) -> Void) {
+        guard Auth.auth().currentUser != nil else {
+            completion(false)
+            return
+        }
         
         fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
             switch result {
@@ -314,6 +318,7 @@ class AnimalViewModel: ObservableObject {
                 self.dogListener = self.db.collection("Societies").document(societyID).collection("Dogs").addSnapshotListener { [weak self] (querySnapshot, err) in
                     guard let documents = querySnapshot?.documents else {
                         print("No documents")
+                        completion(false)
                         return
                     }
 
@@ -329,14 +334,16 @@ class AnimalViewModel: ObservableObject {
                         }
                     }
                     self?.sortDogs()
+                    completion(true)
                 }
                 print(id)
             case .failure(let error):
                 print(error)
+                completion(false)
             }
         }
-       
     }
+
     
     func changeAggressionRating(newRating: Int) {
         print(newRating)
