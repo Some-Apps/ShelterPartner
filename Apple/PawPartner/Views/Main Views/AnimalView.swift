@@ -14,6 +14,7 @@ struct AnimalView: View {
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
     @ObservedObject var viewModel = AnimalViewModel.shared
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
+    @AppStorage("showAllAnimals") var showAllAnimals = false
 
     @AppStorage("filterPicker") var filterPicker: Bool = false
     @AppStorage("filter") var filter: String = "No Filter"
@@ -223,7 +224,6 @@ struct AnimalView: View {
                                         animals: viewModel.sortedDogs,
                                         columns: columns,
                                         cardViewModel: cardViewModel,
-                                        playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
                                         cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                                     )
                                 } else {
@@ -231,7 +231,6 @@ struct AnimalView: View {
                                         animals: viewModel.sortedDogs,
                                         columns: columns,
                                         cardViewModel: cardViewModel,
-                                        playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
                                         cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                                     )
                                 }
@@ -241,7 +240,6 @@ struct AnimalView: View {
                                         animals: viewModel.sortedCats,
                                         columns: columns,
                                         cardViewModel: cardViewModel,
-                                        playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
                                         cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                                     )
                                 } else {
@@ -249,7 +247,6 @@ struct AnimalView: View {
                                         animals: viewModel.sortedCats,
                                         columns: columns,
                                         cardViewModel: cardViewModel,
-                                        playCheck: filterPicker == true && filter != "No Filter" ? { $0.canPlay &&  (($0.filters != nil) ? $0.filters!.contains(filter) : false) } : { $0.canPlay },
                                         cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
                                     )
                                 }
@@ -327,7 +324,6 @@ struct AnimalView: View {
                 
             
         }
-
         .onChange(of: lastSync) { sync in
             let cache = KingfisherManager.shared.cache
             try? cache.diskStorage.removeAll()
@@ -348,6 +344,9 @@ struct AnimalView: View {
         .onChange(of: viewModel.showAddNote) { _ in
             print(viewModel.showAddNote)
         }
+        .onDisappear {
+            viewModel.removeListeners()
+        }
         .onAppear {
             if settingsViewModel.filterOptions.isEmpty {
                 filterPicker = false
@@ -363,16 +362,8 @@ struct AnimalView: View {
                     }
                 }
             }
-            viewModel.fetchCatData { success in
-                if success {
-                    updateFilteredAnimals()
-                }
-            }
-            viewModel.fetchDogData { success in
-                if success {
-                    updateFilteredAnimals()
-                }
-            }
+            viewModel.fetchCatData { _ in }
+            viewModel.fetchDogData { _ in }
             viewModel.fetchLatestVersion()
             if storedSocietyID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
                 viewModel.postAppVersion(societyID: storedSocietyID, installedVersion: "\(appVersion) (\(buildNumber))")
@@ -414,6 +405,38 @@ struct AnimalView: View {
     private func updatePresentationState() {
         shouldPresentThankYouView = viewModel.showLogCreated && isImageLoaded
     }
+    
+//    private func loadData() {
+//         if animalType == .Cat {
+//             viewModel.fetchCatData { success in
+//                 if success {
+//                     self.filteredAnimalsList = viewModel.sortedCats.filter(playCheck)
+//                     print("Loaded \(self.filteredAnimalsList.count) cats into view")
+//                 } else {
+//                     print("Failed to load cat data")
+//                 }
+//             }
+//         } else {
+//             viewModel.fetchDogData { success in
+//                 if success {
+//                     self.filteredAnimalsList = viewModel.sortedDogs.filter(playCheck)
+//                     print("Loaded \(self.filteredAnimalsList.count) dogs into view")
+//                 } else {
+//                     print("Failed to load dog data")
+//                 }
+//             }
+//         }
+//     }
+
+//     private func playCheck(animal: Animal) -> Bool {
+//         var result = true
+//         if !showAllAnimals {
+//             let canPlay = animal.canPlay
+//             result = canPlay
+//             print("Animal \(animal.id) - canPlay: \(canPlay), result: \(result)")
+//         }
+//         return result
+//     }
     
     private func updateFilteredAnimals() {
         filteredAnimalsList = animalType == .Cat ? viewModel.sortedCats : viewModel.sortedDogs
@@ -471,11 +494,12 @@ struct WebView: UIViewRepresentable {
     }
 }
 
+
+
 struct AnimalGridView<Animal>: View where Animal: Identifiable {
     let animals: [Animal]
     let columns: [GridItem]
     let cardViewModel: CardViewModel
-    let playCheck: (Animal) -> Bool
     let cardView: (Animal) -> CardView
 
     var body: some View {
@@ -487,13 +511,12 @@ struct AnimalGridView<Animal>: View where Animal: Identifiable {
         } else {
             LazyVGrid(columns: columns) {
                 ForEach(animals, id: \.id) { animal in
-                    if playCheck(animal) {
                         cardView(animal)
                             .padding(2)
-                    }
                 }
             }
             .padding()
+//            .id(animals)  // Force UI update
         }
     }
 }
@@ -502,7 +525,6 @@ struct GroupAnimalGridView: View {
     let animals: [Animal]
     let columns: [GridItem]
     let cardViewModel: CardViewModel
-    let playCheck: (Animal) -> Bool
     let cardView: (Animal) -> CardView
     
     var body: some View {
@@ -526,7 +548,7 @@ struct GroupAnimalGridView: View {
                     }), id: \.key) { group, animals in
                         Section(
                             header: NavigationLink {
-                                GroupsView(title: group ?? "No Group", animals: animals, columns: columns, cardViewModel: cardViewModel, playcheck: playCheck, cardView: cardView)
+                                GroupsView(title: group ?? "No Group", animals: animals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
                             } label: {
                                 HStack {
                                     Text(group ?? "No Group")
@@ -542,13 +564,13 @@ struct GroupAnimalGridView: View {
                         ){
                             LazyVGrid(columns: columns) {
                                 ForEach(animals, id: \.id) { animal in
-                                    if playCheck(animal) {
                                         cardView(animal)
                                             .padding(2)
-                                    }
                                 }
                             }
                             .padding(.horizontal)
+                            .id(animals)  // Force UI update
+
                         }
                     }
                 }
