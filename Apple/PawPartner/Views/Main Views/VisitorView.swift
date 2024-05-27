@@ -310,7 +310,6 @@ struct VisitorImage: View {
                             .frame(width: 200, height: 200)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                             .padding([.horizontal, .top])
-                            
                     }
             
  

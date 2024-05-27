@@ -327,6 +327,7 @@ struct AnimalView: View {
                 
             
         }
+
         .onChange(of: lastSync) { sync in
             let cache = KingfisherManager.shared.cache
             try? cache.diskStorage.removeAll()

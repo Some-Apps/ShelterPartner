@@ -57,7 +57,9 @@ struct CardView: View {
                 VStack(alignment: .leading, spacing: 7) {
                     HStack(alignment: .center) {
                         Text(animal.name + " ")
+
                             .font(.title)
+
                             .bold()
                             .underline()
                         Menu {
@@ -97,6 +99,7 @@ struct CardView: View {
                         }
                         if let symbol = animal.symbol, let symbolColor = animal.symbolColor {
                             Image(systemName: symbol)
+
                                 .foregroundStyle(
                                     symbolColor == "red" ? .red :
                                     symbolColor == "green" ? .green :
@@ -129,6 +132,7 @@ struct CardView: View {
                             }
                             .lineLimit(1)
                         }
+
                         Menu(animal.location, systemImage: "mappin.square") {
                             Text(animal.fullLocation ?? animal.location)
                         }
@@ -139,6 +143,7 @@ struct CardView: View {
                                 Label(extraInfo, systemImage: "square.grid.2x2")
                             }
                         }
+
                         
                         if animal.inCage {
                             Label(timeSinceLastLetOut, systemImage: "clock")
@@ -150,6 +155,7 @@ struct CardView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .padding(.trailing)
+
                 }
                 .layoutPriority(1)
                 .padding(.leading, 10)
@@ -300,6 +306,7 @@ struct OutlinedButton: View {
                     AddNoteView(animal: animal)
                 }
             KFImage(imageURL)
+
                 .setProcessor(ResizingImageProcessor(referenceSize: CGSize(width: width*1.5, height: height*1.5), mode: .aspectFill))
                 .resizable()
                 .scaledToFill()
@@ -308,6 +315,7 @@ struct OutlinedButton: View {
                 .scaleEffect(isPressed ? 1 : 1.025)
                 .brightness(isPressed ? -0.05 : 0)
                 .shadow(color: isPressed ? Color.black.opacity(0.2) : Color.black.opacity(0.5), radius: isPressed ? 0.075 : 2, x: 0.5, y: 1)
+
         }
         .confirmationDialog("Test", isPresented: $showLogTooShort) {
 //            Button("Leave Out", role: .cancel) { }
