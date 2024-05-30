@@ -17,3 +17,8 @@ Feel free to submit your own issues.
 
 ## Dummy Data
 This repo doesn't allow access to any real data. The credentials only allow access to a dummy database
+
+You can use the following login credentials on your local build.
+
+Email: developer@pawpartner.app
+Password: password
