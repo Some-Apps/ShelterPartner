@@ -21,4 +21,5 @@ This repo doesn't allow access to any real data. The credentials only allow acce
 You can use the following login credentials on your local build.
 
 Email: developer@pawpartner.app
+
 Password: password
