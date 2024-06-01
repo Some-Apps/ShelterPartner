@@ -165,13 +165,14 @@ struct CardView: View {
                 Spacer()
                 
                     OutlinedButton(viewModel: viewModel, showPopover: $showPopover, animal: animal)
+                    .onAppear {
+                        if !animal.inCage {
+                            if Date().timeIntervalSince1970 - animal.startTime > 7200 {
+                                viewModel.silentPutBack(animal: animal)
+                            }
+                        }
+                    }
                     .disabled(!animal.canPlay)
-//                    Rectangle()
-//                        .foregroundColor(.clear)
-//                        .contentShape(Rectangle())
-//                        .gesture(DragGesture(minimumDistance: 0)
-//                            .onChanged { _ in }
-//                            .onEnded { _ in })
                 
             }
             .onReceive(timer) { _ in
@@ -185,31 +186,6 @@ struct CardView: View {
         .background(RoundedRectangle(cornerRadius: 20)
             .foregroundColor(backgroundColor)
             .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2))
-//        .contextMenu {
-//            NavigationLink(destination: ViewInfoView(animal: animal), label: {
-//                Label("Details", systemImage: "ellipsis.circle")
-//            })
-//            if QRMode {
-//                Button {
-//                    animalViewModel.animal = animal
-//                    animalViewModel.showQRCode = true
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
-//                        animalViewModel.showQRCode = false
-//                    }
-//                } label: {
-//                    Label("QR Code", systemImage: "qrcode")
-//                }
-//            }
-//            Button {
-//                DispatchQueue.main.async {
-//                    animalViewModel.animal = animal
-//                    animalViewModel.showAddNote = true
-//                }
-//            } label: {
-//                Label("Add Note", systemImage: "square.and.pencil")
-//            }
-//        }
-        
         .sheet(isPresented: $showViewInfo) {
             ViewInfoView(animal: animal)
         }
@@ -268,16 +244,6 @@ struct OutlinedButton: View {
         }
         return nil
     }
-    
-//    private var urlWithCacheBuster: URL? {
-//        guard let baseURL = imageURL else { return nil }
-//
-//        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-//        let queryItem = URLQueryItem(name: "lastSync", value: lastSync.isEmpty ? "\(Date().timeIntervalSince1970)" : lastSync)
-//        components?.queryItems = [queryItem]
-//
-//        return components?.url
-//    }
 
 
     let width: CGFloat = 100
@@ -424,9 +390,3 @@ extension Date {
         }
     }
 }
-
-//
-//
-//#Preview {
-//    CardView(animal: Animal.dummyAnimal, showAnimalAlert: .constant(false), viewModel: CardViewModel(), animalViewModel: AnimalViewModel())
-//}
