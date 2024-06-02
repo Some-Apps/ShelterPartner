@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AdvancedSettingsView: View {
     @AppStorage("minimumDuration") var minimumDuration = 5
+    @AppStorage("cardsPerPage") var cardsPerPage = 30
     @AppStorage("customFormURL") var customFormURL = ""
     @AppStorage("isCustomFormOn") var isCustomFormOn = false
     @AppStorage("linkType") var linkType = "QR Code"
@@ -24,6 +25,13 @@ struct AdvancedSettingsView: View {
                 Text("Minimum Log Duration")
             } footer: {
                 Text("This sets the minimum duration for a visit. If a volunteer takes out an animal for a visit lasting less than this amount, it will show an error and not count the visit.")
+            }
+            Section {
+                Stepper(cardsPerPage == 1 ? "\(cardsPerPage) card per page" : "\(cardsPerPage) cards per page", value: $cardsPerPage, in: 1...200, step: 1)
+            } header: {
+                Text("Cards Per Page")
+            } footer: {
+                Text("Cards are split into pages to ensure smooth performance. Depending on your device, you may be able to raise this number. However, if you notice the app is running slowing, you should lower this number until it runs smoothly.")
             }
 //            Section {
 //                Toggle(showAllAnimals ? "Enabled" : "Disabled", isOn: $showAllAnimals)

@@ -10,7 +10,9 @@ struct GroupsView: View {
     let cardView: (Animal) -> CardView
     
     @State private var currentPage = 1
-    @State private var itemsPerPage = 30
+
+    @AppStorage("cardsPerPage") var cardsPerPage = 30
+
     @State private var showLoading = false
     @ObservedObject var animalViewModel = AnimalViewModel.shared
 
@@ -28,8 +30,9 @@ struct GroupsView: View {
 
 
     var paginatedAnimals: [Animal] {
-        let startIndex = (currentPage - 1) * itemsPerPage
-        let endIndex = min(startIndex + itemsPerPage, animalsInGroup.count)
+        let startIndex = (currentPage - 1) * cardsPerPage
+        let endIndex = min(startIndex + cardsPerPage, animalsInGroup.count)
+
         guard startIndex < animalsInGroup.count else { return [] }
         let paginated = Array(animalsInGroup[startIndex..<endIndex])
         print("Paginated animals count: \(paginated.count) for page \(currentPage)")
@@ -37,7 +40,8 @@ struct GroupsView: View {
     }
 
     var totalPages: Int {
-        let total = Int(ceil(Double(animalsInGroup.count) / Double(itemsPerPage)))
+        let total = Int(ceil(Double(animalsInGroup.count) / Double(cardsPerPage)))
+
         print("Total pages: \(total)")
         return total
     }

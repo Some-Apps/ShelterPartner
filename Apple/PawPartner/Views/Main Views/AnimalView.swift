@@ -32,6 +32,7 @@ struct AnimalView: View {
     @AppStorage("donationURL") var donationURL: String = ""
     @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
     @AppStorage("groupsEnabled") var groupsEnabled = false
+    @AppStorage("cardsPerPage") var cardsPerPage = 30
 
     @State private var filteredAnimalsList: [Animal] = []
 
@@ -56,9 +57,6 @@ struct AnimalView: View {
     @State private var isSearching = false
 
     @State private var currentPage = 1
-    @State private var itemsPerPage = 30
-
-    let filterAttributes = ["Name", "Breed", "Location", "Notes"]
 
     let columns = [
         GridItem(.adaptive(minimum: 350))
@@ -88,16 +86,21 @@ struct AnimalView: View {
     // MARK: - Body
     var body: some View {
         NavigationStack {
-                ScrollView {
-                    VStack {
-                        HStack {
-                            Button {
-                                showingFeedbackForm = true
-                            } label: {
-                                HStack {
-                                    Image(systemName: "text.bubble.fill")
-                                    Text("Give Feedback")
-                                }
+            ScrollView {
+                VStack {
+                    HStack {
+                        Button {
+                            showingFeedbackForm = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "text.bubble.fill")
+                                Text("Give Feedback")
+                            }
+                        }
+                        .sheet(isPresented: $showingFeedbackForm) {
+                            if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
+                                WebView(url: feedbackURL)
+
                             }
                             .sheet(isPresented: $showingFeedbackForm) {
                                 if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
@@ -138,15 +141,16 @@ struct AnimalView: View {
                                     mode = "visitor"
                                 }
                             }
-                            Spacer()
+                        }
+                        Spacer()
 
-                            Button {
-                                showingReportForm = true
-                            } label: {
-                                HStack {
-                                    Text("Report Problem")
-                                    Image(systemName: "exclamationmark.bubble.fill")
-                                }
+                        Button {
+                            showingReportForm = true
+                        } label: {
+                            HStack {
+                                Text("Report Problem")
+                                Image(systemName: "exclamationmark.bubble.fill")
+
                             }
                             .sheet(isPresented: $showingReportForm) {
                                 if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(storedSocietyID)") {
@@ -157,86 +161,93 @@ struct AnimalView: View {
                         .padding([.horizontal, .top])
                         .font(UIDevice.current.userInterfaceIdiom == .phone ? .caption : .body)
 
-                        if groupsEnabled || filterPicker {
-                            CollapsibleSection()
-                        }
+                    CollapsibleSection(searchQuery: $searchQuery, searchQueryFinished: $searchQueryFinished, selectedFilterAttribute: $selectedFilterAttribute, isSearching: $isSearching, onSearch: updateFilteredAnimals)
 
-                        Picker("Animal Type", selection: $animalType) {
-                            Text("Cats").tag(AnimalType.Cat)
-                            Text("Dogs").tag(AnimalType.Dog)
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding([.horizontal, .top])
-                        .onChange(of: animalType) { newValue in
-                            print("Animal type changed to: \(newValue)")
-                            UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
-                            currentPage = 1  // Reset to page 1
-                            updateFilteredAnimals()
-                        }
-                        if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
-                            PageNavigationElement(currentPage: $currentPage, totalPages: totalPages())
-                        }
-                        switch animalType {
-                        case .Dog:
-                            if !groupsFullyEnabled {
-                                AnimalGridView(
-                                    animals: paginatedAnimals(viewModel.sortedDogs),
-                                    columns: columns,
-                                    cardViewModel: cardViewModel,
-                                    cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
-                                )
-                            } else {
-                                GroupAnimalGridView(
-                                    species: animalType.rawValue,
-                                    animals: paginatedAnimals(viewModel.sortedGroupDogs),
-                                    columns: columns,
-                                    cardViewModel: cardViewModel,
-                                    cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
-                                )
-                            }
-                        case .Cat:
-                            if !groupsFullyEnabled {
-                                AnimalGridView(
-                                    animals: paginatedAnimals(viewModel.sortedCats),
-                                    columns: columns,
-                                    cardViewModel: cardViewModel,
-                                    cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
-                                )
-                            } else {
-                                GroupAnimalGridView(
-                                    species: animalType.rawValue,
-                                    animals: paginatedAnimals(viewModel.sortedGroupCats),
-                                    columns: columns,
-                                    cardViewModel: cardViewModel,
-                                    cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
-                                )
-                            }
-                        }
-
-                        if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
-                            PageNavigationElement(currentPage: $currentPage, totalPages: totalPages())
-
-                            Button {
-                                showTutorialQRCode = true
-                            } label: {
-                                HStack {
-                                    Image(systemName: "play.rectangle.fill")
-                                    Text("Volunteer Tutorial Video")
-                                }
-                                .padding()
-                                .fontWeight(.black)
-                            }
-                        }
-
-                        Image("textLogo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 100)
-                            .id("bottom")  // Identifier for scroll-to-bottom
-
+                    Picker("Animal Type", selection: $animalType) {
+                        Text("Cats").tag(AnimalType.Cat)
+                        Text("Dogs").tag(AnimalType.Dog)
                     }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding([.horizontal, .top])
+                    .onChange(of: animalType) { newValue in
+                        print("Animal type changed to: \(newValue)")
+                        UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
+                        currentPage = 1  // Reset to page 1
+                        updateFilteredAnimals()
+                        searchQuery = ""
+                        searchQueryFinished = ""
+                    }
+                    if !searchQueryFinished.isEmpty {
+                        Text("Results for: \(selectedFilterAttribute) contains \(searchQueryFinished.lowercased())")
+                            .bold()
+                            .padding()
+                            .foregroundStyle(.red)
+                    }
+                    if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
+                        PageNavigationElement(currentPage: $currentPage, totalPages: totalPages())
+                    }
+                    switch animalType {
+                    case .Dog:
+                        if !groupsFullyEnabled {
+                            AnimalGridView(
+                                animals: paginatedAnimals(filteredAnimalsList),
+                                columns: columns,
+                                cardViewModel: cardViewModel,
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                            )
+                        } else {
+                            GroupAnimalGridView(
+                                species: animalType.rawValue,
+                                animals: paginatedAnimals(filteredAnimalsList),
+                                columns: columns,
+                                cardViewModel: cardViewModel,
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                            )
+                        }
+                    case .Cat:
+                        if !groupsFullyEnabled {
+                            AnimalGridView(
+                                animals: paginatedAnimals(filteredAnimalsList),
+                                columns: columns,
+                                cardViewModel: cardViewModel,
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                            )
+                        } else {
+                            GroupAnimalGridView(
+                                species: animalType.rawValue,
+                                animals: paginatedAnimals(filteredAnimalsList),
+                                columns: columns,
+                                cardViewModel: cardViewModel,
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                            )
+                        }
+                    }
+
+                    if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
+                        PageNavigationElement(currentPage: $currentPage, totalPages: totalPages())
+
+                        Button {
+                            showTutorialQRCode = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "play.rectangle.fill")
+                                Text("Volunteer Tutorial Video")
+                            }
+                            .padding()
+                            .fontWeight(.black)
+                        }
+                    }
+
+                    Image("textLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: 100)
+                        .id("bottom")  // Identifier for scroll-to-bottom
+
                 }
-            
+            }
+
+
             .overlay(
                 AnimalAlertView(animal: viewModel.animal)
                     .opacity(viewModel.showAnimalAlert ? 1 : 0)
@@ -280,13 +291,18 @@ struct AnimalView: View {
                     }
                 }
             }
-            viewModel.fetchCatData { _ in }
-            viewModel.fetchDogData { _ in }
+            viewModel.fetchCatData { _ in
+                updateFilteredAnimals() // Ensure initial animals are displayed
+            }
+            viewModel.fetchDogData { _ in
+                updateFilteredAnimals() // Ensure initial animals are displayed
+            }
             viewModel.fetchLatestVersion()
             if storedSocietyID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
                 viewModel.postAppVersion(societyID: storedSocietyID, installedVersion: "\(appVersion) (\(buildNumber))")
             }
         }
+
         .present(isPresented: $shouldPresentThankYouView, type: .alert, animation: .easeIn(duration: 0.2), autohideDuration: 60, closeOnTap: false) {
             ThankYouView(animal: viewModel.animal)
         }
@@ -329,21 +345,28 @@ struct AnimalView: View {
     }
 
     private func updateFilteredAnimals() {
-        filteredAnimalsList = animalType == .Cat ? viewModel.sortedCats : viewModel.sortedDogs
+        // Filter the entire list of animals based on the search query and selected attribute
+        filteredAnimalsList = (animalType == .Cat ? viewModel.sortedCats : viewModel.sortedDogs).filter { animal in
+            searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
+        }
+        
+        // Reset to page 1 after filtering
         currentPage = 1
     }
 
     private func paginatedAnimals(_ animals: [Animal]) -> [Animal] {
-        let startIndex = max(0, (currentPage - 1) * itemsPerPage)
-        let endIndex = min(startIndex + itemsPerPage, animals.count)
+        let startIndex = max(0, (currentPage - 1) * cardsPerPage)
+        let endIndex = min(startIndex + cardsPerPage, animals.count)
+
         guard startIndex < endIndex else { return [] }
         return Array(animals[startIndex..<endIndex])
     }
 
     private func totalPages() -> Int {
-        let animalCount = animalType == .Cat ? viewModel.sortedCats.count : viewModel.sortedDogs.count
-        return max(1, Int(ceil(Double(animalCount) / Double(itemsPerPage))))
+        let animalCount = filteredAnimalsList.count
+        return max(1, Int(ceil(Double(animalCount) / Double(cardsPerPage))))
     }
+
 
     func generateQRCode(from string: String) -> UIImage {
         let context = CIContext()
@@ -464,11 +487,18 @@ struct GroupAnimalGridView: View {
 
 struct CollapsibleSection: View {
     @State private var isExpanded: Bool = false
+    @Binding var searchQuery: String
+    @Binding var searchQueryFinished: String
+    @Binding var selectedFilterAttribute: String
+    @Binding var isSearching: Bool
+    
+    let filterAttributes = ["Name", "Location", "Notes", "Breed"]
+    let onSearch: () -> Void
+
 
     @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
-    @AppStorage("filterPicker") var filterPicker: Bool = false
-    @AppStorage("filter") var filter: String = "No Filter"
+
 
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
 
@@ -493,6 +523,57 @@ struct CollapsibleSection: View {
 
             if isExpanded {
                 List {
+                    HStack(spacing: 20) {
+                        TextField("Search", text: $searchQuery)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        Picker("Filter by", selection: $selectedFilterAttribute) {
+                            ForEach(filterAttributes, id: \.self) { attribute in
+                                Text(attribute).tag(attribute)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .onChange(of: selectedFilterAttribute) { filter in
+                            isSearching = true
+                            isSearching = false
+                            searchQueryFinished = searchQuery
+                            onSearch()
+                        }
+                        
+                        Button(action: {
+                            //                            isSearching = true
+                            //                            isSearching = false
+                            //                            searchQueryFinished = searchQuery
+                            //                            onSearch()
+                        }) {
+                            Text("Search")
+                                .buttonStyle(.bordered)
+                        }
+                        .padding(.horizontal)
+                        .onTapGesture {
+                            isSearching = true
+                            isSearching = false
+                            searchQueryFinished = searchQuery
+                            onSearch()
+                        }
+                        
+                        Button(action: {
+                            //                            searchQuery = ""
+                            //                            searchQueryFinished = ""
+                            //                            onSearch()
+                        }) {
+                            Text("Reset Search")
+                                .buttonStyle(.bordered)
+                        }
+                        .padding(.horizontal)
+                        .onTapGesture {
+                            searchQuery = ""
+                            searchQueryFinished = ""
+                            onSearch()
+                        }
+                    }
+                    
+                    
+
                     if groupsEnabled {
                         Toggle("Groups", isOn: $groupsFullyEnabled)
                             .tint(.blue)
@@ -503,5 +584,34 @@ struct CollapsibleSection: View {
             }
         }
         .padding([.horizontal, .top])
+    }
+}
+
+extension Animal {
+    func matchesSearch(query: String, attribute: String) -> Bool {
+        let lowercasedQuery = query.lowercased()
+        switch attribute {
+        case "Name":
+            return self.name.lowercased().contains(lowercasedQuery)
+        case "Location":
+            return self.fullLocation?.lowercased().contains(lowercasedQuery) ?? self.location.lowercased().contains(lowercasedQuery)
+        case "Notes":
+            var allNotes = ""
+            for note in self.notes {
+                if note.note == "Added animal to the app" {
+                    continue
+                }
+                allNotes.append("\(note.note) ")
+            }
+            return allNotes.lowercased().contains(lowercasedQuery)
+        case "Breed":
+            if let breed = breed {
+                return breed.lowercased().contains(lowercasedQuery)
+            } else {
+                return false
+            }
+        default:
+            return false
+        }
     }
 }
