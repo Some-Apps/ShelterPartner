@@ -27,6 +27,7 @@
 		C07B39FF2A23E39F00D13917 /* PasswordPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07B39FE2A23E39F00D13917 /* PasswordPromptView.swift */; };
 		C0837B3D2C03A238006AA375 /* AnimalDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0837B3C2C03A238006AA375 /* AnimalDetailsSection.swift */; };
 		C08785E72A53221600A91C49 /* CreditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08785E62A53221600A91C49 /* CreditsView.swift */; };
+		C08A3C832C0CC46D00D99EF9 /* PageNavigationElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08A3C822C0CC46D00D99EF9 /* PageNavigationElement.swift */; };
 		C090E15B2A5B04D90003D5C2 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C090E15A2A5B04D90003D5C2 /* FirebaseStorage */; };
 		C090E15E2A5B06400003D5C2 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C090E15D2A5B06400003D5C2 /* Kingfisher */; };
 		C09CAFCB2B48D22D004DDCFF /* VisitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09CAFCA2B48D22D004DDCFF /* VisitorView.swift */; };
@@ -79,6 +80,7 @@
 		C07B39FE2A23E39F00D13917 /* PasswordPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordPromptView.swift; sourceTree = "<group>"; };
 		C0837B3C2C03A238006AA375 /* AnimalDetailsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimalDetailsSection.swift; sourceTree = "<group>"; };
 		C08785E62A53221600A91C49 /* CreditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsView.swift; sourceTree = "<group>"; };
+		C08A3C822C0CC46D00D99EF9 /* PageNavigationElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageNavigationElement.swift; sourceTree = "<group>"; };
 		C09CAFCA2B48D22D004DDCFF /* VisitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorView.swift; sourceTree = "<group>"; };
 		C09CFEDF2B1BF49D00AE8560 /* Preview Content */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Preview Content"; sourceTree = "<group>"; };
 		C09CFEE12B1BF53900AE8560 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 				C01B0A4C2A1A96CC0062994D /* LogView.swift */,
 				C09CFEF32B2007FB00AE8560 /* YoutubeVideoView.swift */,
 				C04E1C9B2C042880007E0AE0 /* GroupsView.swift */,
+				C08A3C822C0CC46D00D99EF9 /* PageNavigationElement.swift */,
 				C0837B3C2C03A238006AA375 /* AnimalDetailsSection.swift */,
 			);
 			path = Elements;
@@ -353,6 +356,7 @@
 				C09CFEF42B2007FB00AE8560 /* YoutubeVideoView.swift in Sources */,
 				C01B0A4D2A1A96CC0062994D /* LogView.swift in Sources */,
 				C09CFEE42B1BF55300AE8560 /* Animal.swift in Sources */,
+				C08A3C832C0CC46D00D99EF9 /* PageNavigationElement.swift in Sources */,
 				C04E1C9C2C042880007E0AE0 /* GroupsView.swift in Sources */,
 				C01B0A3A2A1979F30062994D /* SettingsView.swift in Sources */,
 				C0FFA1BA2B34D89E00D71021 /* TagsView.swift in Sources */,

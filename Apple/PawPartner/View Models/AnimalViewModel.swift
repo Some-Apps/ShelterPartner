@@ -9,6 +9,8 @@ class AnimalViewModel: ObservableObject {
     
     @Published var sortedDogs: [Animal] = []
     @Published var sortedCats: [Animal] = []
+    @Published var sortedGroupDogs: [Animal] = []
+    @Published var sortedGroupCats: [Animal] = []
     
     @Published var sortedVisitorDogs: [Animal] = []
     @Published var sortedVisitorCats: [Animal] = []
@@ -22,7 +24,6 @@ class AnimalViewModel: ObservableObject {
     @Published var showAddNote = false
     @Published var cats = [Animal]()
     @Published var dogs = [Animal]()
-//    @Published var lastSync: Date?
     @Published var animal: Animal = Animal.dummyAnimal
     @Published var toastAddNote = false
     
@@ -49,7 +50,6 @@ class AnimalViewModel: ObservableObject {
     @AppStorage("feedbackURL") var feedbackURL: String = ""
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
 
-
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -59,53 +59,23 @@ class AnimalViewModel: ObservableObject {
     
     var db = Firestore.firestore()
     
-    
     func sortCats() {
         sortedCats = cats.sorted(by: { cat1, cat2 in
             switch sortBy {
             case .lastLetOut:
-//                if cat1.prioritize, let log = cat1.logs.last, log.durationInMinutes > cat1.prioritizeMinutes {
-//                    return true
-//                }
-//                if cat2.prioritize, let log = cat2.logs.last, log.durationInMinutes > cat2.prioritizeMinutes {
-//                    return false
-//                }
                 return cat1.logs.last?.endTime ?? 0 < cat2.logs.last?.endTime ?? 0
-                
             case .playtime24Hours:
-//                if cat1.prioritize, let log = cat1.logs.last, log.durationInMinutes > cat1.prioritizeMinutes {
-//                    return true
-//                }
-//                if cat2.prioritize, let log = cat2.logs.last, log.durationInMinutes > cat2.prioritizeMinutes {
-//                    return false
-//                }
                 return cat1.playtimeLast24Hours < cat2.playtimeLast24Hours
             case .playtime7Days:
-//                if cat1.prioritize, let log = cat1.logs.last, log.durationInMinutes > cat1.prioritizeMinutes {
-//                    return true
-//                }
-//                if cat2.prioritize, let log = cat2.logs.last, log.durationInMinutes > cat2.prioritizeMinutes {
-//                    return false
-//                }
                 return cat1.playtimeLast7Days < cat2.playtimeLast7Days
             case .playtime30Days:
-//                if cat1.prioritize, let log = cat1.logs.last, log.durationInMinutes > cat1.prioritizeMinutes {
-//                    return true
-//                }
-//                if cat2.prioritize, let log = cat2.logs.last, log.durationInMinutes > cat2.prioritizeMinutes {
-//                    return false
-//                }
                 return cat1.playtimeLast30Days < cat2.playtimeLast30Days
             case .playtime90Days:
-//                if cat1.prioritize, let log = cat1.logs.last, log.durationInMinutes > cat1.prioritizeMinutes {
-//                    return true
-//                }
-//                if cat2.prioritize, let log = cat2.logs.last, log.durationInMinutes > cat2.prioritizeMinutes {
-//                    return false
-//                }
                 return cat1.playtimeLast90Days < cat2.playtimeLast90Days
             }
         })
+        
+        sortedGroupCats = groupAndSortAnimals(cats)
         
         sortedVisitorCats = cats.sorted(by: { cat1, cat2 in
             return cat1.logs.first?.startTime ?? 0 < cat2.logs.first?.startTime ?? 0
@@ -116,54 +86,36 @@ class AnimalViewModel: ObservableObject {
         sortedDogs = dogs.sorted(by: { dog1, dog2 in
             switch sortBy {
             case .lastLetOut:
-//                if dog1.prioritize, let log = dog1.logs.last, log.durationInMinutes > dog1.prioritizeMinutes {
-//                    return true
-//                }
-//                if dog2.prioritize, let log = dog2.logs.last, log.durationInMinutes > dog2.prioritizeMinutes {
-//                    return false
-//                }
                 return dog1.logs.last?.endTime ?? 0 < dog2.logs.last?.endTime ?? 0
-                
             case .playtime24Hours:
-//                if dog1.prioritize, let log = dog1.logs.last, log.durationInMinutes > dog1.prioritizeMinutes {
-//                    return true
-//                }
-//                if dog2.prioritize, let log = dog2.logs.last, log.durationInMinutes > dog2.prioritizeMinutes {
-//                    return false
-//                }
                 return dog1.playtimeLast24Hours < dog2.playtimeLast24Hours
             case .playtime7Days:
-//                if dog1.prioritize, let log = dog1.logs.last, log.durationInMinutes > dog1.prioritizeMinutes {
-//                    return true
-//                }
-//                if dog2.prioritize, let log = dog2.logs.last, log.durationInMinutes > dog2.prioritizeMinutes {
-//                    return false
-//                }
                 return dog1.playtimeLast7Days < dog2.playtimeLast7Days
             case .playtime30Days:
-//                if dog1.prioritize, let log = dog1.logs.last, log.durationInMinutes > dog1.prioritizeMinutes {
-//                    return true
-//                }
-//                if dog2.prioritize, let log = dog2.logs.last, log.durationInMinutes > dog2.prioritizeMinutes {
-//                    return false
-//                }
                 return dog1.playtimeLast30Days < dog2.playtimeLast30Days
             case .playtime90Days:
-//                if dog1.prioritize, let log = dog1.logs.last, log.durationInMinutes > dog1.prioritizeMinutes {
-//                    return true
-//                }
-//                if dog2.prioritize, let log = dog2.logs.last, log.durationInMinutes > dog2.prioritizeMinutes {
-//                    return false
-//                }
                 return dog1.playtimeLast90Days < dog2.playtimeLast90Days
             }
         })
+        
+        sortedGroupDogs = groupAndSortAnimals(dogs)
         
         sortedVisitorDogs = dogs.sorted(by: { dog1, dog2 in
             return dog1.logs.first?.startTime ?? 0 < dog2.logs.first?.startTime ?? 0
         })
     }
+    
+    private func groupAndSortAnimals(_ animals: [Animal]) -> [Animal] {
+        let groupedAnimals = Dictionary(grouping: animals, by: { $0.group })
+        var sortedGroupedAnimals: [Animal] = []
 
+        for (_, animals) in groupedAnimals {
+            let sortedAnimals = animals.sorted(by: { $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0 })
+            sortedGroupedAnimals.append(contentsOf: sortedAnimals)
+        }
+
+        return sortedGroupedAnimals.sorted(by: { $0.group ?? "No Group" < $1.group ?? "No Group" })
+    }
     
     func postAppVersion(societyID: String, installedVersion: String) {
         let documentReference = db.collection("Societies").document(societyID)
