@@ -100,40 +100,46 @@ struct AnimalView: View {
                         .sheet(isPresented: $showingFeedbackForm) {
                             if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
                                 WebView(url: feedbackURL)
+
                             }
-                        }
-                        Spacer()
-                        if mode != "volunteerAdmin" && mode != "visitorAdmin" {
-                            Button("Switch To Admin") {
-                                showingPasswordPrompt = true
-                            }
-                            .sheet(isPresented: $showingPasswordPrompt) {
-                                PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
-                                    authViewModel.verifyPassword(password: passwordInput) { isCorrect in
-                                        if isCorrect {
-                                            mode = "volunteerAdmin"
-                                        } else {
-                                            print("Incorrect Password")
-                                            showIncorrectPassword.toggle()
-                                            passwordInput = ""
-                                        }
-                                    }
+                            .sheet(isPresented: $showingFeedbackForm) {
+                                if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
+                                    WebView(url: feedbackURL)
                                 }
                             }
                             Spacer()
-                        }
-                        if mode == "volunteerAdmin" || mode == "visitorAdmin" {
-                            Button("Turn Off Admin") {
-                                mode = "volunteer"
+                            if mode != "volunteerAdmin" && mode != "visitorAdmin" {
+                                Button("Switch To Admin") {
+                                    showingPasswordPrompt = true
+                                }
+                                .sheet(isPresented: $showingPasswordPrompt) {
+                                    PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
+                                        authViewModel.verifyPassword(password: passwordInput) { isCorrect in
+                                            if isCorrect {
+                                                mode = "volunteerAdmin"
+                                            } else {
+                                                print("Incorrect Password")
+                                                showIncorrectPassword.toggle()
+                                                passwordInput = ""
+                                            }
+                                        }
+                                    }
+                                }
+                                Spacer()
                             }
-                            Spacer()
-                        }
+                            if mode == "volunteerAdmin" || mode == "visitorAdmin" {
+                                Button("Turn Off Admin") {
+                                    mode = "volunteer"
+                                }
+                                Spacer()
+                            }
 
-                        Button("Switch To Visitor") {
-                            if mode == "volunteerAdmin" {
-                                mode = "visitorAdmin"
-                            } else {
-                                mode = "visitor"
+                            Button("Switch To Visitor") {
+                                if mode == "volunteerAdmin" {
+                                    mode = "visitorAdmin"
+                                } else {
+                                    mode = "visitor"
+                                }
                             }
                         }
                         Spacer()
@@ -144,16 +150,16 @@ struct AnimalView: View {
                             HStack {
                                 Text("Report Problem")
                                 Image(systemName: "exclamationmark.bubble.fill")
+
+                            }
+                            .sheet(isPresented: $showingReportForm) {
+                                if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(storedSocietyID)") {
+                                    WebView(url: reportProblemURL)
+                                }
                             }
                         }
-                        .sheet(isPresented: $showingReportForm) {
-                            if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(storedSocietyID)") {
-                                WebView(url: reportProblemURL)
-                            }
-                        }
-                    }
-                    .padding([.horizontal, .top])
-                    .font(UIDevice.current.userInterfaceIdiom == .phone ? .caption : .body)
+                        .padding([.horizontal, .top])
+                        .font(UIDevice.current.userInterfaceIdiom == .phone ? .caption : .body)
 
                     CollapsibleSection(searchQuery: $searchQuery, searchQueryFinished: $searchQueryFinished, selectedFilterAttribute: $selectedFilterAttribute, isSearching: $isSearching, onSearch: updateFilteredAnimals)
 
@@ -240,6 +246,7 @@ struct AnimalView: View {
 
                 }
             }
+
 
             .overlay(
                 AnimalAlertView(animal: viewModel.animal)
@@ -350,6 +357,7 @@ struct AnimalView: View {
     private func paginatedAnimals(_ animals: [Animal]) -> [Animal] {
         let startIndex = max(0, (currentPage - 1) * cardsPerPage)
         let endIndex = min(startIndex + cardsPerPage, animals.count)
+
         guard startIndex < endIndex else { return [] }
         return Array(animals[startIndex..<endIndex])
     }
@@ -376,6 +384,8 @@ struct AnimalView: View {
         return UIImage(systemName: "xmark.circle") ?? UIImage()
     }
 }
+
+
 
 struct WebView: UIViewRepresentable {
     let url: URL
@@ -485,6 +495,7 @@ struct CollapsibleSection: View {
     let filterAttributes = ["Name", "Location", "Notes", "Breed"]
     let onSearch: () -> Void
 
+
     @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
 
@@ -562,6 +573,7 @@ struct CollapsibleSection: View {
                     }
                     
                     
+
                     if groupsEnabled {
                         Toggle("Groups", isOn: $groupsFullyEnabled)
                             .tint(.blue)
