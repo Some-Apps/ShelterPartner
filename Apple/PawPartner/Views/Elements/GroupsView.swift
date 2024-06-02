@@ -3,27 +3,87 @@ import AlertToast
 import FirebaseFirestore
 
 struct GroupsView: View {
-    var title: String
-    var animals: [Animal]
+    var species: String
+    let group: String
     let columns: [GridItem]
     let cardViewModel: CardViewModel
-//    let playcheck: (Animal) -> Bool
     let cardView: (Animal) -> CardView
     
+    @State private var currentPage = 1
+    @State private var itemsPerPage = 30
     @State private var showLoading = false
-    
+    @ObservedObject var animalViewModel = AnimalViewModel.shared
+
+    var animalsInGroup: [Animal] {
+        let animals: [Animal]
+        if species == "Cat" {
+            animals = animalViewModel.sortedGroupCats
+        } else {
+            animals = animalViewModel.sortedGroupDogs
+        }
+        let filteredAnimals = animals.filter { ($0.group ?? "No Group") == group }
+        print("Filtered \(filteredAnimals.count) animals in group \(group) for \(species)")
+        return filteredAnimals
+    }
+
+
+    var paginatedAnimals: [Animal] {
+        let startIndex = (currentPage - 1) * itemsPerPage
+        let endIndex = min(startIndex + itemsPerPage, animalsInGroup.count)
+        guard startIndex < animalsInGroup.count else { return [] }
+        let paginated = Array(animalsInGroup[startIndex..<endIndex])
+        print("Paginated animals count: \(paginated.count) for page \(currentPage)")
+        return paginated
+    }
+
+    var totalPages: Int {
+        let total = Int(ceil(Double(animalsInGroup.count) / Double(itemsPerPage)))
+        print("Total pages: \(total)")
+        return total
+    }
+
     var body: some View {
         ScrollView {
             LazyVStack {
-                BulkOutlineButton(viewModel: cardViewModel, animals: animals, showLoading: $showLoading)
-                AnimalGridView(animals: animals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
+                BulkOutlineButton(viewModel: cardViewModel, animals: animalsInGroup, showLoading: $showLoading)
+                AnimalGridView(animals: paginatedAnimals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
 
+                if !animalsInGroup.isEmpty {
+                    HStack {
+                        Button(action: {
+                            if currentPage > 1 {
+                                currentPage -= 1
+                            }
+                        }) {
+                            Text("Previous")
+                        }
+                        .disabled(currentPage == 1)
+                        
+                        Spacer()
+                        
+                        Text("Page \(currentPage) of \(totalPages)")
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            if currentPage < totalPages {
+                                currentPage += 1
+                            }
+                        }) {
+                            Text("Next")
+                        }
+                        .disabled(currentPage == totalPages)
+                    }
+                    .padding()
+                }
             }
-            
         }
-        .navigationTitle(title)
+        .navigationTitle(group)
         .navigationBarTitleDisplayMode(.large)
-        
+        .onAppear {
+            currentPage = 1
+            print("GroupsView appeared. Title: \(species), Group: \(group)")
+        }
     }
 }
 
@@ -31,7 +91,6 @@ struct BulkOutlineButton: View {
     let viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     var animals: [Animal]
-//    let playcheck: (Animal) -> Bool
     @Binding var showLoading: Bool
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("showAllAnimals") var showAllAnimals = false
@@ -57,7 +116,6 @@ struct BulkOutlineButton: View {
     
     @State private var takeAllOut = false
     @State private var putAllBack = false
-
 
     let width: CGFloat = 100
     let height: CGFloat = 100
@@ -86,7 +144,7 @@ struct BulkOutlineButton: View {
                 
             Circle()
                 .trim(from: 0, to: progress)
-                .stroke(majorityActionText == "Take Out" ? .orange : .blue, style: StrokeStyle(lineWidth: lineWidth))
+                .stroke(majorityActionText == "Take Out" ? .orange : .teal, style: StrokeStyle(lineWidth: lineWidth))
                 .frame(width: width, height: height)
                 .rotationEffect(.degrees(-90))
 
@@ -175,11 +233,8 @@ struct BulkOutlineButton: View {
                 }
             }
         }, perform: {})
-       
     }
-    
 
-    
     func handleAnimalStateChanges() {
         showLoading = true
         let db = Firestore.firestore()
@@ -229,4 +284,3 @@ struct BulkOutlineButton: View {
         return t * t
     }
 }
-
