@@ -50,35 +50,13 @@ struct GroupsView: View {
         ScrollView {
             LazyVStack {
                 BulkOutlineButton(viewModel: cardViewModel, animals: animalsInGroup, showLoading: $showLoading)
+                if !animalsInGroup.isEmpty {
+                    PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)
+                }
                 AnimalGridView(animals: paginatedAnimals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
 
                 if !animalsInGroup.isEmpty {
-                    HStack {
-                        Button(action: {
-                            if currentPage > 1 {
-                                currentPage -= 1
-                            }
-                        }) {
-                            Text("Previous")
-                        }
-                        .disabled(currentPage == 1)
-                        
-                        Spacer()
-                        
-                        Text("Page \(currentPage) of \(totalPages)")
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            if currentPage < totalPages {
-                                currentPage += 1
-                            }
-                        }) {
-                            Text("Next")
-                        }
-                        .disabled(currentPage == totalPages)
-                    }
-                    .padding()
+                    PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)
                 }
             }
         }

@@ -15,6 +15,7 @@ class AnimalViewModel: ObservableObject {
     @Published var sortedVisitorDogs: [Animal] = []
     @Published var sortedVisitorCats: [Animal] = []
     
+    @Published var showRequireReason = false
     @Published var showRequireName = false
     @Published var showLogTooShort = false
     @Published var showLogCreated = false
