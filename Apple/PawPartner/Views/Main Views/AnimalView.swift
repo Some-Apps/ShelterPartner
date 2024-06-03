@@ -96,6 +96,7 @@ struct AnimalView: View {
                             HStack {
                                 Image(systemName: "text.bubble.fill")
                                 Text("Give Feedback")
+
                             }
                         }
                         .sheet(isPresented: $showingFeedbackForm) {
@@ -135,6 +136,7 @@ struct AnimalView: View {
                                 mode = "visitorAdmin"
                             } else {
                                 mode = "visitor"
+
                             }
                         }
                         Spacer()
@@ -161,6 +163,7 @@ struct AnimalView: View {
                         currentPage = 1 // Reset to page 1 only when a new search is performed
                     })
 
+
                     Picker("Animal Type", selection: $animalType) {
                         Text("Cats").tag(AnimalType.Cat)
                         Text("Dogs").tag(AnimalType.Dog)
@@ -178,6 +181,7 @@ struct AnimalView: View {
                             .bold()
                             .foregroundStyle(.red)
                             .padding()
+
                     }
                     if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
                         PageNavigationElement(currentPage: $currentPage, totalPages: totalPages())
@@ -187,6 +191,7 @@ struct AnimalView: View {
                         if !groupsFullyEnabled {
                             AnimalGridView(
                                 animals: paginatedAnimals(filteredDogsList),
+
                                 columns: columns,
                                 cardViewModel: cardViewModel,
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
@@ -195,6 +200,7 @@ struct AnimalView: View {
                             GroupAnimalGridView(
                                 species: animalType.rawValue,
                                 animals: paginatedAnimals(filteredDogsList),
+
                                 columns: columns,
                                 cardViewModel: cardViewModel,
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
@@ -204,6 +210,7 @@ struct AnimalView: View {
                         if !groupsFullyEnabled {
                             AnimalGridView(
                                 animals: paginatedAnimals(filteredCatsList),
+
                                 columns: columns,
                                 cardViewModel: cardViewModel,
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
@@ -212,6 +219,7 @@ struct AnimalView: View {
                             GroupAnimalGridView(
                                 species: animalType.rawValue,
                                 animals: paginatedAnimals(filteredCatsList),
+
                                 columns: columns,
                                 cardViewModel: cardViewModel,
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
@@ -242,6 +250,7 @@ struct AnimalView: View {
 
                 }
             }
+
             .overlay(
                 AnimalAlertView(animal: viewModel.animal)
                     .opacity(viewModel.showAnimalAlert ? 1 : 0)
@@ -297,6 +306,7 @@ struct AnimalView: View {
             }
         }
         .present(isPresented: $shouldPresentThankYouView, type: .alert, autohideDuration: 60, closeOnTap: false) {
+
             ThankYouView(animal: viewModel.animal)
         }
         .toast(isPresenting: $showIncorrectPassword) {
@@ -345,6 +355,7 @@ struct AnimalView: View {
         filteredDogsList = viewModel.sortedDogs.filter { animal in
             searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
         }
+
     }
 
     private func paginatedAnimals(_ animals: [Animal]) -> [Animal] {
@@ -357,8 +368,10 @@ struct AnimalView: View {
 
     private func totalPages() -> Int {
         let animalCount = (animalType == .Cat ? filteredCatsList : filteredDogsList).count
+
         return max(1, Int(ceil(Double(animalCount) / Double(cardsPerPage))))
     }
+
 
     func generateQRCode(from string: String) -> UIImage {
         let context = CIContext()
@@ -487,6 +500,7 @@ struct CollapsibleSection: View {
     @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
 
+
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
 
     var body: some View {
@@ -529,6 +543,7 @@ struct CollapsibleSection: View {
                                 onSearch()
                             }
                         }
+
                     }
                     Section {
                                 
@@ -627,4 +642,3 @@ extension Animal {
     }
 }
 
-// The rest of your code remains unchanged.
