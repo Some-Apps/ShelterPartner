@@ -99,7 +99,6 @@ struct CardView: View {
                             Image(systemName: animal.aggressionRating == 1 ? "1.circle.fill" : animal.aggressionRating == 2 ? "2.square.fill" : animal.aggressionRating == 3 ? "3.circle.fill" : "")
                                 .font(.title)
                                 .foregroundColor(animal.aggressionRating == 1 ? .green : animal.aggressionRating == 2 ? .orange : animal.aggressionRating == 3 ? .red : .primary.opacity(0.2))
-                                .opacity(0.5)
 
                         }
                         if let symbol = animal.symbol, let symbolColor = animal.symbolColor {
