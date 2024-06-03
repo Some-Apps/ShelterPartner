@@ -216,6 +216,7 @@ struct OutlinedButton: View {
     @Binding var showPopover: Bool
     var animal: Animal
     @State private var isImageCached: Bool = false
+    @AppStorage("requireReason") var requireReason = false
 
     @State private var progress: CGFloat = 0
     @State private var timer: Timer? = nil
@@ -288,10 +289,15 @@ struct OutlinedButton: View {
         .confirmationDialog("Test", isPresented: $showLogTooShort) {
 //            Button("Leave Out", role: .cancel) { }
             Button("Put Back") {
-                viewModel.putBack(animal: animal)
+                if requireReason {
+                    animalViewModel.animal = animal
+                    animalViewModel.showRequireReason = true
+                } else {
+                    viewModel.putBack(animal: animal)
+                }
             }
         } message: {
-            Text("\(animal.name) was not let out for the minimum duration of \(viewModel.minimumDuration) minutes. If you tap \"Put Back\", this visit will be ignored")
+            Text("\(animal.name) was not let out for the minimum duration of \(viewModel.minimumDuration) minutes. If you tap \"Put Back\", this visit may be ignored")
         }
         .padding(5)
         .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
@@ -324,7 +330,7 @@ struct OutlinedButton: View {
                                 } else {
                                     if requireName {
                                         animalViewModel.animal = animal
-                                        animalViewModel.showRequireName.toggle()
+                                        animalViewModel.showRequireName = true
                                     } else {
                                         
                                         viewModel.takeOut(animal: animal)

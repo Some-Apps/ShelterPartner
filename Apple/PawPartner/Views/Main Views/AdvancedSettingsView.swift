@@ -10,29 +10,120 @@ struct AdvancedSettingsView: View {
     @AppStorage("requireName") var requireName = false
     @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("showAllAnimals") var showAllAnimals = false
+    @AppStorage("createLogsAlways") var createLogsAlways = false
+    @AppStorage("requireReason") var requireReason = false
 
     @ObservedObject var viewModel = SettingsViewModel.shared
     
     @AppStorage("filterPicker") var filterPicker: Bool = false
     
+    @State private var showPopover1 = false
+    @State private var showPopover2 = false
+    @State private var showPopover3 = false
+    @State private var showPopover4 = false
+    @State private var showPopover5 = false
+    @State private var showPopover6 = false
+    @State private var showPopover7 = false
+    @State private var showPopover8 = false
+    
     let linkTypes = ["QR Code", "Open In App"]
     
     var body: some View {
         Form {
+
             Section {
                 Stepper(minimumDuration == 1 ? "\(minimumDuration) minute" : "\(minimumDuration) minutes", value: $minimumDuration, in: 0...30, step: 1)
             } header: {
-                Text("Minimum Log Duration")
-            } footer: {
-                Text("This sets the minimum duration for a visit. If a volunteer takes out an animal for a visit lasting less than this amount, it will show an error and not count the visit.")
+                HStack {
+                    Text("Minimum Log Duration")
+                    Button {
+                        showPopover1 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover1) {
+                        Text("This sets the minimum duration for a visit. If a volunteer takes out an animal for a visit lasting less than this amount, it will show an error and not count the visit.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
             }
+            
+            Section {
+                Toggle(requireReason ? "Enabled" : "Disabled", isOn: $requireReason)
+                    .tint(.blue)
+            } header: {
+                HStack {
+                    Text("Require Reason When Under Minimum Duration")
+                    Button {
+                        showPopover8 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover8) {
+                        Text("This will require users to add a reason for why they put the animal back before the minimum duration.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
+            }
+            
+            Section {
+                Toggle(createLogsAlways ? "Enabled" : "Disabled", isOn: $createLogsAlways)
+                    .tint(.blue)
+            } header: {
+                HStack {
+                    Text("Create Logs Even Under Minimum Duration")
+                    Button {
+                        showPopover7 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover7) {
+                        Text("This will create a log for animals that are put back before the minimum duration.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
+            }
+
             Section {
                 Stepper(cardsPerPage == 1 ? "\(cardsPerPage) card per page" : "\(cardsPerPage) cards per page", value: $cardsPerPage, in: 1...200, step: 1)
             } header: {
-                Text("Cards Per Page")
-            } footer: {
-                Text("Cards are split into pages to ensure smooth performance. Depending on your device, you may be able to raise this number. However, if you notice the app is running slowing, you should lower this number until it runs smoothly.")
+                HStack {
+                    Text("Cards Per Page")
+                    Button {
+                        showPopover2 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover2) {
+                        Text("Cards are split into pages to ensure smooth performance. Depending on your device, you may be able to raise this number. However, if you notice the app is running slowing, you should lower this number until it runs smoothly.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
             }
+            
+            Section {
+                Toggle(groupsEnabled ? "Enabled" : "Disabled", isOn: $groupsEnabled)
+                    .tint(.blue)
+            } header: {
+                HStack {
+                    Text("Groups")
+                    Button {
+                        showPopover3 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover3) {
+                        Text("Automatically group animals by categories of your choice. To set up the groups, email jared@pawpartner.app. In the future, this will be able to be set up directly in the app.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
+            }
+
 //            Section {
 //                Toggle(showAllAnimals ? "Enabled" : "Disabled", isOn: $showAllAnimals)
 //                    .tint(.blue)
@@ -41,26 +132,45 @@ struct AdvancedSettingsView: View {
 //            } footer: {
 //                Text("This will display all animal even if they aren't available. However, you won't be able to take out animals that aren't available.")
 //            }
+
             Section {
-                Toggle(groupsEnabled ? "Enabled" : "Disabled", isOn: $groupsEnabled)
+                Toggle(showNoteDates ? "Enabled" : "Disabled", isOn: $showNoteDates)
                     .tint(.blue)
             } header: {
-                Text("Groups")
-            } footer: {
-                Text("This feature is in testing. If you would like to try this out, email jared@pawpartner.app.")
+                HStack {
+                    Text("Show Note Dates")
+                    Button {
+                        showPopover4 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover4) {
+                        Text("This displays the date a note was created")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
             }
+            
             Section {
-                Toggle("Show Note Dates", isOn: $showNoteDates)
+                Toggle(requireName ? "Enabled" : "Disabled", isOn: $requireName)
                     .tint(.blue)
-            } footer: {
-                Text("This displays the date a note was created ")
+            } header: {
+                HStack {
+                    Text("Require Name")
+                    Button {
+                        showPopover5 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover5) {
+                        Text("Before an animal can be taken out, you must enter your name.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
             }
-            Section {
-                Toggle("Require Name", isOn: $requireName)
-                    .tint(.blue)
-            } footer: {
-                Text("Before an animal can be taken out, you must enter your name.")
-            }
+ 
 //            Section {
 //                Toggle("Filter Picker", isOn: $filterPicker)
 //                    .disabled(viewModel.filterOptions.isEmpty)
@@ -73,6 +183,7 @@ struct AdvancedSettingsView: View {
 //            } footer: {
 //                Text(viewModel.filterOptions.isEmpty ? "Allow users to selected from additional filters on the main screen. As of now, this requires additional setup. Feel free to email jared@pawpartner.app if you're interested in using this feature." : "Allow users to filter animals from the main page.")
 //            }
+            
             Section {
                 Toggle(isCustomFormOn ? "Enabled" : "Disabled", isOn: $isCustomFormOn)
                     .tint(.blue)
@@ -89,10 +200,22 @@ struct AdvancedSettingsView: View {
                 .disabled(!isCustomFormOn)
                 .foregroundStyle(isCustomFormOn ? .primary : .secondary)
             } header: {
-                Text("Custom Animal Form")
-            } footer: {
-                Text("If you would like to prompt users to fill out a custom form of your choice after visiting with an animal, add the url and turn on the toggle. This will display a \"Custom Form\" button on the \"Thank You\" pop up after putting an animal back. If the button doesn't work, make sure your url begins with https://")
+                HStack {
+                    Text("Custom Form")
+                    Button {
+                        showPopover6 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover6) {
+                        Text("If you would like to prompt users to fill out a custom form of your choice after visiting with an animal, add the url and turn on the toggle. This will display a \"Custom Form\" button on the \"Thank You\" pop up after putting an animal back. If the button doesn't work, make sure your url begins with https://")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
             }
+            
+            
         }
     }
 }
