@@ -219,27 +219,11 @@ struct VisitorView: View {
                         .padding(.horizontal)
 
                     }
-                    
-                    
-                    
-                    HStack {
-                        if latestVersion != "\(appVersion)" {
-                            VStack {
-                                Text("Your app is not up to date. Please update when convenient.")
-                                Button(action: {
-                                    if let url = URL(string: updateAppURL) {
-                                        UIApplication.shared.open(url)
-                                    }
-                                }) {                                    Label("Update", systemImage: "arrow.triangle.2.circlepath")
-                                }
-                                .buttonStyle(.bordered)
-                            }
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 20).fill(.thinMaterial))
-                            .background(RoundedRectangle(cornerRadius: 20).fill(.customOrange))
-                        }
-                    }
-                    .padding(.bottom)
+                    Image("textLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: 100)
+                        .id("bottom")  // Identifier for scroll-to-bottom
                 }
             }
         }
@@ -310,6 +294,7 @@ struct VisitorImage: View {
                             .frame(width: 200, height: 200)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                             .padding([.horizontal, .top])
+                            
                     }
             
  
@@ -320,9 +305,4 @@ struct VisitorImage: View {
 
 }
 
-
-
-#Preview {
-    VisitorView()
-}
 
