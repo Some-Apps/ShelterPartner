@@ -15,6 +15,8 @@ class CardViewModel: ObservableObject {
     @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("requireName") var requireName = false
+    @AppStorage("createLogsAlways") var createLogsAlways = false
+    @AppStorage("shortReason") var shortReason = ""
 
     // Test if this works
     func takeOut(animal: Animal) {
@@ -47,7 +49,13 @@ class CardViewModel: ObservableObject {
                     self.animalViewModel.animal = animal
                     self.animalViewModel.showLogCreated.toggle()
                 } else {
-                    self.animalViewModel.showLogTooShort.toggle()
+                    if self.createLogsAlways {
+                        self.createLog(for: animal)
+                        self.animalViewModel.animal = animal
+                        self.animalViewModel.showLogCreated.toggle()
+                    } else {
+                        self.animalViewModel.showLogTooShort.toggle()
+                    }
                 }
             }
         }
@@ -151,14 +159,15 @@ class CardViewModel: ObservableObject {
                     lastVolunteer = data["lastVolunteer"] as? String ?? ""
                     // Create a new log
                     let id = UUID().uuidString
-                    let newLog = Log(id: id, startTime: startTime, endTime: Date().timeIntervalSince1970, user: lastVolunteer)
+                    let newLog = Log(id: id, startTime: startTime, endTime: Date().timeIntervalSince1970, user: lastVolunteer, shortReason: self.shortReason)
                     
                     // Convert newLog to a dictionary
                     let logDict: [String: Any] = [
                         "id": newLog.id,
                         "startTime": newLog.startTime,
                         "endTime": newLog.endTime,
-                        "user": newLog.user ?? ""
+                        "user": newLog.user ?? "",
+                        "shortReason": newLog.shortReason ?? ""
                     ]
                     db.collection("Societies").document(self.storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
                         "lastVolunteer": "",

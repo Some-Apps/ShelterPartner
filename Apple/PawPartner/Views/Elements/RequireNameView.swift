@@ -34,6 +34,7 @@ struct RequireNameView: View {
                 Button("Nevermind") {
                     viewModel.showRequireName = false
                     focusField = false
+                    name = ""
                 }
                 Button("Submit") {
                     viewModel.showRequireName = false
