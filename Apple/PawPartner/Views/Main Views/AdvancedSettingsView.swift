@@ -12,7 +12,7 @@ struct AdvancedSettingsView: View {
     @AppStorage("showAllAnimals") var showAllAnimals = false
     @AppStorage("createLogsAlways") var createLogsAlways = false
     @AppStorage("requireReason") var requireReason = false
-
+    
     @ObservedObject var viewModel = SettingsViewModel.shared
     
     @AppStorage("filterPicker") var filterPicker: Bool = false
@@ -25,6 +25,8 @@ struct AdvancedSettingsView: View {
     @State private var showPopover6 = false
     @State private var showPopover7 = false
     @State private var showPopover8 = false
+    @State private var showPopover9 = false
+
     
     let linkTypes = ["QR Code", "Open In App"]
     
@@ -124,14 +126,6 @@ struct AdvancedSettingsView: View {
                 }
             }
 
-//            Section {
-//                Toggle(showAllAnimals ? "Enabled" : "Disabled", isOn: $showAllAnimals)
-//                    .tint(.blue)
-//            } header: {
-//                Text("Show Unavailable Animals")
-//            } footer: {
-//                Text("This will display all animal even if they aren't available. However, you won't be able to take out animals that aren't available.")
-//            }
 
             Section {
                 Toggle(showNoteDates ? "Enabled" : "Disabled", isOn: $showNoteDates)
@@ -216,6 +210,24 @@ struct AdvancedSettingsView: View {
             }
             
             
+            Section {
+                Toggle(showAllAnimals ? "Enabled" : "Disabled", isOn: $showAllAnimals)
+                    .tint(.blue)
+            } header: {
+                HStack {
+                    Text("Display All Animals")
+                    Button {
+                        showPopover9 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover9) {
+                        Text("This will display all animals including ones you've selected to filter out. Filtered animals will be gray and won't be able to be taken out.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
+            }
         }
     }
 }

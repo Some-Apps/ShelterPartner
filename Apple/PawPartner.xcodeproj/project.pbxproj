@@ -48,6 +48,7 @@
 		C0C316952B5582B300192C89 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C316942B5582B300192C89 /* AdvancedSettingsView.swift */; };
 		C0C808912AD651EC0070E679 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = C0C808902AD651EC0070E679 /* PartialSheet */; };
 		C0E439112BF2E2A40052FFB5 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */; };
+		C0E4AB342C0E56B0007146BA /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C0E4AB332C0E56B0007146BA /* FirebaseFirestoreSwift */; };
 		C0E513752A181B2000941E3A /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E513742A181B2000941E3A /* CardView.swift */; };
 		C0E5137C2A190F9F00941E3A /* AnimalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E5137B2A190F9F00941E3A /* AnimalViewModel.swift */; };
 		C0ECD8EE2A17E84F001F82C3 /* PawPartnerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD8ED2A17E84F001F82C3 /* PawPartnerApp.swift */; };
@@ -122,6 +123,7 @@
 				C01B0A3D2A197F5F0062994D /* AlertToast in Frameworks */,
 				C0ECD9012A17EC3D001F82C3 /* FirebaseFirestore in Frameworks */,
 				C090E15E2A5B06400003D5C2 /* Kingfisher in Frameworks */,
+				C0E4AB342C0E56B0007146BA /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,11 +216,19 @@
 			path = Elements;
 			sourceTree = "<group>";
 		};
+		C0E4AB322C0E56B0007146BA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C0ECD8E12A17E84F001F82C3 = {
 			isa = PBXGroup;
 			children = (
 				C0ECD8EC2A17E84F001F82C3 /* PawPartner */,
 				C0ECD8EB2A17E84F001F82C3 /* Products */,
+				C0E4AB322C0E56B0007146BA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -269,6 +279,7 @@
 				C0BB509C2A7CABDC007513F3 /* SSToastMessage */,
 				C0C808902AD651EC0070E679 /* PartialSheet */,
 				C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */,
+				C0E4AB332C0E56B0007146BA /* FirebaseFirestoreSwift */,
 			);
 			productName = HumaneSociety;
 			productReference = C0ECD8EA2A17E84F001F82C3 /* HumaneSociety.app */;
@@ -684,6 +695,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C0E4390F2BF2E2A30052FFB5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
+		};
+		C0E4AB332C0E56B0007146BA /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
 		};
 		C0ECD9002A17EC3D001F82C3 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
