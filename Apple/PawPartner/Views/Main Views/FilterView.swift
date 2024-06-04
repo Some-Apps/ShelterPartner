@@ -4,12 +4,20 @@ struct FilterView: View {
     @StateObject private var viewModel = FilterViewModel()
     
     let fields = ["location", "status"]
-    let conditions = ["equals", "contains", "greater than", "less than"]
+    let conditions = ["=", "contains", "greater than", "less than"]
     
     var body: some View {
         VStack {
-            Text(viewModel.filterFormula)
-                .padding()
+            VStack(alignment: .leading) {
+                ForEach(buildFormulaLines()) { line in
+                    line.text
+                }
+            }
+            .padding()
+            .background(.regularMaterial)
+            .cornerRadius(8)
+            .padding(.bottom)
+            
             List {
                 ForEach(viewModel.filters) { filter in
                     VStack {
@@ -21,6 +29,7 @@ struct FilterView: View {
                             }
                             .pickerStyle(MenuPickerStyle())
                             .labelsHidden()
+                            
                             Picker("Condition", selection: $viewModel.filters[viewModel.filters.firstIndex(where: { $0.id == filter.id })!].condition) {
                                 ForEach(conditions, id: \.self) { condition in
                                     Text(condition)
@@ -28,8 +37,11 @@ struct FilterView: View {
                             }
                             .pickerStyle(MenuPickerStyle())
                             .labelsHidden()
+                            
                             TextField("Value", text: $viewModel.filters[viewModel.filters.firstIndex(where: { $0.id == filter.id })!].value)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
                         }
                         
                         if viewModel.filters.firstIndex(where: { $0.id == filter.id })! > 0 {
@@ -48,6 +60,7 @@ struct FilterView: View {
                 }
                 .onDelete(perform: viewModel.deleteFilter)
             }
+            .listStyle(.inset)
             
             HStack {
                 Button(action: {
@@ -73,5 +86,13 @@ struct FilterView: View {
             .padding()
         }
         .padding()
+    }
+    
+    private func buildFormulaLines() -> [FilterViewModel.ColoredText] {
+        var lines: [FilterViewModel.ColoredText] = []
+        for coloredText in viewModel.filterFormula {
+            lines.append(coloredText)
+        }
+        return lines
     }
 }

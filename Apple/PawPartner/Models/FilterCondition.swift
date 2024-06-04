@@ -10,7 +10,7 @@ import SwiftUI
 struct FilterCondition: Identifiable {
     let id = UUID()
     var field: String = "location"
-    var condition: String = "equals"
+    var condition: String = "="
     var value: String = ""
     var groupWithPrevious: Bool = false
     var conjunction: String = "AND"
