@@ -306,7 +306,6 @@ struct AnimalView: View {
             }
         }
         .present(isPresented: $shouldPresentThankYouView, type: .alert, autohideDuration: 60, closeOnTap: false) {
-
             ThankYouView(animal: viewModel.animal)
         }
         .toast(isPresenting: $showIncorrectPassword) {
