@@ -3,8 +3,9 @@ import SwiftUI
 struct FilterView: View {
     @StateObject private var viewModel = FilterViewModel()
     
+    
     let fields = ["location", "status"]
-    let conditions = ["=", "contains", "greater than", "less than"]
+    let conditions = ["=", "contains"]
     
     var body: some View {
         VStack {
@@ -19,10 +20,10 @@ struct FilterView: View {
             .padding(.bottom)
             
             List {
-                ForEach(viewModel.filters) { filter in
+                ForEach(viewModel.canPlayFilter) { filter in
                     VStack {
                         HStack {
-                            Picker("Field", selection: $viewModel.filters[viewModel.filters.firstIndex(where: { $0.id == filter.id })!].field) {
+                            Picker("Field", selection: $viewModel.canPlayFilter[viewModel.canPlayFilter.firstIndex(where: { $0.id == filter.id })!].field) {
                                 ForEach(fields, id: \.self) { field in
                                     Text(field)
                                 }
@@ -30,7 +31,7 @@ struct FilterView: View {
                             .pickerStyle(MenuPickerStyle())
                             .labelsHidden()
                             
-                            Picker("Condition", selection: $viewModel.filters[viewModel.filters.firstIndex(where: { $0.id == filter.id })!].condition) {
+                            Picker("Condition", selection: $viewModel.canPlayFilter[viewModel.canPlayFilter.firstIndex(where: { $0.id == filter.id })!].condition) {
                                 ForEach(conditions, id: \.self) { condition in
                                     Text(condition)
                                 }
@@ -38,20 +39,20 @@ struct FilterView: View {
                             .pickerStyle(MenuPickerStyle())
                             .labelsHidden()
                             
-                            TextField("Value", text: $viewModel.filters[viewModel.filters.firstIndex(where: { $0.id == filter.id })!].value)
+                            TextField("Value", text: $viewModel.canPlayFilter[viewModel.canPlayFilter.firstIndex(where: { $0.id == filter.id })!].value)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .autocorrectionDisabled()
                                 .textInputAutocapitalization(.never)
                         }
                         
-                        if viewModel.filters.firstIndex(where: { $0.id == filter.id })! > 0 {
-                            Toggle("Group with previous filter?", isOn: $viewModel.filters[viewModel.filters.firstIndex(where: { $0.id == filter.id })!].groupWithPrevious)
+                        if viewModel.canPlayFilter.firstIndex(where: { $0.id == filter.id })! > 0 {
+                            Toggle("Group with previous filter?", isOn: $viewModel.canPlayFilter[viewModel.canPlayFilter.firstIndex(where: { $0.id == filter.id })!].groupWithPrevious)
                         }
                     }
                     .swipeActions {
                         Button(role: .destructive) {
-                            if let index = viewModel.filters.firstIndex(where: { $0.id == filter.id }) {
-                                viewModel.filters.remove(at: index)
+                            if let index = viewModel.canPlayFilter.firstIndex(where: { $0.id == filter.id }) {
+                                viewModel.canPlayFilter.remove(at: index)
                             }
                         } label: {
                             Label("Delete", systemImage: "trash")
@@ -61,7 +62,9 @@ struct FilterView: View {
                 .onDelete(perform: viewModel.deleteFilter)
             }
             .listStyle(.inset)
-            
+            .onDisappear {
+                viewModel.saveFiltersToFirebase()
+            }
             HStack {
                 Button(action: {
                     viewModel.addFilter(conjunction: "AND")

@@ -29,8 +29,7 @@ struct AccountSetupView: View {
                 }
                 Section {
                     TextField("API Key", text: $viewModel.apiKey)
-                    TextField("Main Filter", text: $viewModel.mainFilter)
-                    NavigationLink("Filter", destination: FilterView())
+                    NavigationLink("Can Play Filter", destination: FilterView())
                 }
                 Section {
                     Button("Save") {
