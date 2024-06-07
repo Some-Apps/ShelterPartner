@@ -6,6 +6,10 @@ import UIKit
 
 struct SettingsView: View {
     // MARK: - Properties
+    @Environment(\.dismiss) var dismiss
+    
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
+    
     @StateObject var viewModel = SettingsViewModel.shared
     
     @ObservedObject var animalViewModel = AnimalViewModel.shared
@@ -26,6 +30,10 @@ struct SettingsView: View {
     @State private var showVolunteerVideo = false
     @State private var showShareSheet = false
     @State private var shareItems: [Any] = []
+    
+    @State private var showingPasswordPrompt = false
+    @State private var passwordInput = ""
+    @State private var showIncorrectPassword = false
 
     var appVersion: String {
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
@@ -64,12 +72,20 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 if viewModel.shelter != "" || viewModel.software != "" || viewModel.mainFilter != "" || viewModel.syncFrequency != "" {
-                    Section(header: Text("Setup")) {
+                    Section(header: Text("Account Details")) {
                         if viewModel.shelter != "" {
                             HStack {
                                 Text("Shelter:")
                                     .bold()
                                 Text(viewModel.shelter)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        if storedSocietyID != "" {
+                            HStack {
+                                Text("Shelter ID:")
+                                    .bold()
+                                Text(storedSocietyID)
                                     .foregroundStyle(.secondary)
                             }
                         }
@@ -81,9 +97,17 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
+                        if viewModel.apiKey != "" {
+                            HStack {
+                                Text("API Key:")
+                                    .bold()
+                                Text(viewModel.apiKey)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                         if viewModel.mainFilter != "" {
                             HStack {
-                                Text("Main Filter:")
+                                Text("Filter:")
                                     .bold()
                                 Text(viewModel.mainFilter)
                                     .foregroundStyle(.secondary)
@@ -91,18 +115,37 @@ struct SettingsView: View {
                                     .minimumScaleFactor(0.5)
                             }
                         }
-                        if viewModel.syncFrequency != "" {
-                            HStack {
-                                Text("Sync Frequency:")
-                                    .bold()
-                                Text(viewModel.syncFrequency)
-                                    .foregroundStyle(.secondary)
-                            }
+                    }
+                }
+                
+                Section("Account Settings") {
+                    NavigationLink(destination: AccountSetupView()) {
+                        HStack {
+                            Image(systemName: "shared.with.you")
+                            Text("Account Setup")
+                        }
+                    }
+                    NavigationLink(destination: TagsView(species: .Cat)) {
+                        HStack {
+                            Image(systemName: "tag")
+                            Text("Cat Tags")
+                        }
+                    }
+                    NavigationLink(destination: TagsView(species: .Dog)) {
+                        HStack {
+                            Image(systemName: "tag")
+                            Text("Dog Tags")
+                        }
+                    }
+                    NavigationLink(destination: ScheduledReportsView()) {
+                        HStack {
+                            Image(systemName: "envelope")
+                            Text("Scheduled Reports")
                         }
                     }
                 }
 
-                Section(header: Text("Settings")) {
+                Section("Device Settings") {
                     HStack {
                         Image(systemName: "lock")
                         Toggle("Admin Mode", isOn: isAdminBinding)
@@ -122,24 +165,6 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "text.line.last.and.arrowtriangle.forward")
                             Text("Sort Options")
-                        }
-                    }
-                    NavigationLink(destination: TagsView(species: .Cat)) {
-                        HStack {
-                            Image(systemName: "tag")
-                            Text("Cat Tags")
-                        }
-                    }
-                    NavigationLink(destination: TagsView(species: .Dog)) {
-                        HStack {
-                            Image(systemName: "tag")
-                            Text("Dog Tags")
-                        }
-                    }
-                    NavigationLink(destination: ScheduledReportsView()) {
-                        HStack {
-                            Image(systemName: "envelope")
-                            Text("Scheduled Reports")
                         }
                     }
                     Button {
@@ -217,6 +242,9 @@ struct SettingsView: View {
         .toast(isPresenting: $viewModel.showPasswordChanged) {
             AlertToast(type: .complete(.green), title: "Password Changed")
         }
+        .toast(isPresenting: $viewModel.showAccountUpdated) {
+            AlertToast(type: .complete(.green), title: "Account Updated")
+        }
         .toast(isPresenting: $showLoading) {
             AlertToast(displayMode: .alert, type: .loading)
         }
@@ -235,6 +263,24 @@ struct SettingsView: View {
         )) {
             ActivityView(activityItems: shareItems)
         }
+        .sheet(isPresented: $showingPasswordPrompt) {
+            PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
+                authViewModel.verifyPassword(password: passwordInput) { isCorrect in
+                    if isCorrect {
+                        
+                    } else {
+                        print("Incorrect Password")
+                        showIncorrectPassword.toggle()
+                        passwordInput = ""
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .toast(isPresenting: $showIncorrectPassword) {
+            AlertToast(type: .error(.red), title: "Incorrect Password")
+        }
+
     }
     
     // MARK: - Methods
