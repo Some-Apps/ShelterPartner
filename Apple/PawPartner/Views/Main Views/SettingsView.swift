@@ -71,7 +71,6 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if viewModel.shelter != "" || viewModel.software != "" || viewModel.mainFilter != "" || viewModel.syncFrequency != "" {
                     Section(header: Text("Account Details")) {
                         if viewModel.shelter != "" {
                             HStack {
@@ -116,7 +115,7 @@ struct SettingsView: View {
                             }
                         }
                     }
-                }
+                
                 
                 Section("Account Settings") {
                     NavigationLink(destination: AccountSetupView()) {
@@ -141,6 +140,12 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "envelope")
                             Text("Scheduled Reports")
+                        }
+                    }
+                    NavigationLink(destination: DeviceSettingsView()) {
+                        HStack {
+                            Image(systemName: "wrench.adjustable")
+                            Text("More Account Settings")
                         }
                     }
                 }
@@ -178,7 +183,7 @@ struct SettingsView: View {
                     NavigationLink(destination: AdvancedSettingsView()) {
                         HStack {
                             Image(systemName: "wrench.adjustable")
-                            Text("Advanced Settings")
+                            Text("More Device Settings")
                         }
                     }
                 }
