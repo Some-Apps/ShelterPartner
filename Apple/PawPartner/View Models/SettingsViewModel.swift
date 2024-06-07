@@ -12,6 +12,7 @@ import SwiftUI
 class SettingsViewModel: ObservableObject {
     static let shared = SettingsViewModel()
     
+    @Published var showAccountUpdated = false
     @Published var showPasswordChanged = false
     @Published var showShareSheet = false
     @Published var fileToShare: URL? = nil
@@ -28,6 +29,7 @@ class SettingsViewModel: ObservableObject {
     @Published var shelter: String = ""
     @Published var mainFilter: String = ""
     @Published var syncFrequency: String = ""
+    @Published var apiKey: String = ""
     
     var listener: ListenerRegistration?
     
@@ -133,6 +135,7 @@ class SettingsViewModel: ObservableObject {
                 let shelter = data["shelter"] as? String ?? ""
                 let mainFilter = data["mainFilter"] as? String ?? ""
                 let syncFrequency = data["syncFrequency"] as? String ?? ""
+                let apiKey = data["apiKey"] as? String ?? ""
 
                 self?.reportsDay = reportsDay
                 self?.reportsEmail = reportsEmail
@@ -143,6 +146,7 @@ class SettingsViewModel: ObservableObject {
                 self?.filterOptions = filterOptions
                 self?.mainFilter = mainFilter
                 self?.syncFrequency = syncFrequency
+                self?.apiKey = apiKey
             }
     }
 
@@ -155,6 +159,15 @@ class SettingsViewModel: ObservableObject {
         Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
             "reportsDay": newDay,
             "reportsEmail": newEmail
+        ])
+    }
+    
+    func updateAccountSettings(shelter: String, software: String, apiKey: String, mainFilter: String) {
+        Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
+            "shelter": shelter,
+            "software": software,
+            "apiKey": apiKey,
+            "mainFilter": mainFilter
         ])
     }
 }

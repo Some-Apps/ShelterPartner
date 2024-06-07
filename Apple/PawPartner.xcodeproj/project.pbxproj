@@ -49,6 +49,10 @@
 		C0C808912AD651EC0070E679 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = C0C808902AD651EC0070E679 /* PartialSheet */; };
 		C0E439112BF2E2A40052FFB5 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */; };
 		C0E4AB342C0E56B0007146BA /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C0E4AB332C0E56B0007146BA /* FirebaseFirestoreSwift */; };
+		C0E4AB362C0FA421007146BA /* AccountSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E4AB352C0FA421007146BA /* AccountSetupView.swift */; };
+		C0E4AB382C0FB30B007146BA /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E4AB372C0FB30B007146BA /* FilterView.swift */; };
+		C0E4AB3A2C0FBA8D007146BA /* FilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E4AB392C0FBA8D007146BA /* FilterViewModel.swift */; };
+		C0E4AB3C2C0FBAB0007146BA /* FilterCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E4AB3B2C0FBAB0007146BA /* FilterCondition.swift */; };
 		C0E513752A181B2000941E3A /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E513742A181B2000941E3A /* CardView.swift */; };
 		C0E5137C2A190F9F00941E3A /* AnimalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E5137B2A190F9F00941E3A /* AnimalViewModel.swift */; };
 		C0ECD8EE2A17E84F001F82C3 /* PawPartnerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD8ED2A17E84F001F82C3 /* PawPartnerApp.swift */; };
@@ -98,6 +102,10 @@
 		C0AB96142BE535A70000D76C /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		C0AB96162BE54BA40000D76C /* RequireNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequireNameView.swift; sourceTree = "<group>"; };
 		C0C316942B5582B300192C89 /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsView.swift; sourceTree = "<group>"; };
+		C0E4AB352C0FA421007146BA /* AccountSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSetupView.swift; sourceTree = "<group>"; };
+		C0E4AB372C0FB30B007146BA /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
+		C0E4AB392C0FBA8D007146BA /* FilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewModel.swift; sourceTree = "<group>"; };
+		C0E4AB3B2C0FBAB0007146BA /* FilterCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCondition.swift; sourceTree = "<group>"; };
 		C0E513742A181B2000941E3A /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		C0E5137B2A190F9F00941E3A /* AnimalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimalViewModel.swift; sourceTree = "<group>"; };
 		C0ECD8EA2A17E84F001F82C3 /* HumaneSociety.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HumaneSociety.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,6 +155,7 @@
 				C0ECD90C2A1E7225001F82C3 /* AddNoteViewModel.swift */,
 				C01B0A4E2A1A9C220062994D /* SettingsViewModel.swift */,
 				C01B0A562A227B6A0062994D /* AuthenticationViewModel.swift */,
+				C0E4AB392C0FBA8D007146BA /* FilterViewModel.swift */,
 			);
 			path = "View Models";
 			sourceTree = "<group>";
@@ -159,6 +168,7 @@
 				C09CFEE32B1BF55300AE8560 /* Animal.swift */,
 				C00611112B6C1A0700E28AD0 /* Photo.swift */,
 				C09CFEE12B1BF53900AE8560 /* Note.swift */,
+				C0E4AB3B2C0FBAB0007146BA /* FilterCondition.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -182,6 +192,8 @@
 				C01B0A5A2A227CB10062994D /* LoginView.swift */,
 				C0FFA1B92B34D89E00D71021 /* TagsView.swift */,
 				C01B0A392A1979F30062994D /* SettingsView.swift */,
+				C0E4AB352C0FA421007146BA /* AccountSetupView.swift */,
+				C0E4AB372C0FB30B007146BA /* FilterView.swift */,
 				C0AB96142BE535A70000D76C /* SetupView.swift */,
 				C0C316942B5582B300192C89 /* AdvancedSettingsView.swift */,
 				C0241EBB2A75491200581A88 /* ScheduledReportsView.swift */,
@@ -353,9 +365,11 @@
 				C01B0A5B2A227CB10062994D /* LoginView.swift in Sources */,
 				C01B0A512A1D7B2E0062994D /* CardViewModel.swift in Sources */,
 				C0ECD90B2A1E6FB7001F82C3 /* AddNoteView.swift in Sources */,
+				C0E4AB362C0FA421007146BA /* AccountSetupView.swift in Sources */,
 				C0C316952B5582B300192C89 /* AdvancedSettingsView.swift in Sources */,
 				C09CFEF02B1D04EA00AE8560 /* QRCodeView.swift in Sources */,
 				C0241EBE2A75545600581A88 /* FeedbackView.swift in Sources */,
+				C0E4AB3C2C0FBAB0007146BA /* FilterCondition.swift in Sources */,
 				C07B39FF2A23E39F00D13917 /* PasswordPromptView.swift in Sources */,
 				C0ECD8EE2A17E84F001F82C3 /* PawPartnerApp.swift in Sources */,
 				C0E5137C2A190F9F00941E3A /* AnimalViewModel.swift in Sources */,
@@ -368,6 +382,7 @@
 				C09CFEE82B1BF57500AE8560 /* Enums.swift in Sources */,
 				C01B0A592A227B730062994D /* AuthenticationView.swift in Sources */,
 				C09CFEF42B2007FB00AE8560 /* YoutubeVideoView.swift in Sources */,
+				C0E4AB382C0FB30B007146BA /* FilterView.swift in Sources */,
 				C01B0A4D2A1A96CC0062994D /* LogView.swift in Sources */,
 				C09CFEE42B1BF55300AE8560 /* Animal.swift in Sources */,
 				C08A3C832C0CC46D00D99EF9 /* PageNavigationElement.swift in Sources */,
@@ -384,6 +399,7 @@
 				C09CAFCB2B48D22D004DDCFF /* VisitorView.swift in Sources */,
 				C07AFBA72B914B1B00DC9DF8 /* VisitorDetailView.swift in Sources */,
 				C07AFBA92B94BE9400DC9DF8 /* VisitorNoteView.swift in Sources */,
+				C0E4AB3A2C0FBA8D007146BA /* FilterViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
