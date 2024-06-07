@@ -12,6 +12,7 @@ struct AdvancedSettingsView: View {
     @AppStorage("showAllAnimals") var showAllAnimals = false
     @AppStorage("createLogsAlways") var createLogsAlways = false
     @AppStorage("requireReason") var requireReason = false
+    @AppStorage("showSearchBar") var showSearchBar = false
     
     @ObservedObject var viewModel = SettingsViewModel.shared
     
@@ -26,6 +27,7 @@ struct AdvancedSettingsView: View {
     @State private var showPopover7 = false
     @State private var showPopover8 = false
     @State private var showPopover9 = false
+    @State private var showPopover10 = false
 
     
     let linkTypes = ["QR Code", "Open In App"]
@@ -223,6 +225,25 @@ struct AdvancedSettingsView: View {
                     }
                     .popover(isPresented: $showPopover9) {
                         Text("This will display all animals including ones you've selected to filter out. Filtered animals will be gray and won't be able to be taken out.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
+            }
+            
+            Section {
+                Toggle(showSearchBar ? "Enabled" : "Disabled", isOn: $showSearchBar)
+                    .tint(.blue)
+            } header: {
+                HStack {
+                    Text("Show Search Bar")
+                    Button {
+                        showPopover10 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover10) {
+                        Text("This allows you to search animals by name, notes, breed, etc from the volunteer screen.")
                             .padding()
                             .textCase(nil)
                     }

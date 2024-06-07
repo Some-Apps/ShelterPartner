@@ -499,6 +499,7 @@ struct CollapsibleSection: View {
 
     @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
+    @AppStorage("showSearchBar") var showSearchBar = false
 
 
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
@@ -511,16 +512,19 @@ struct CollapsibleSection: View {
                     isExpanded.toggle()
                 }
             }) {
-                HStack {
-                    Text("Additional Options")
-                        .foregroundStyle(.black)
-                    Spacer()
-                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .foregroundColor(.gray)
+                if groupsEnabled || showSearchBar {
+                    HStack {
+                        Text("Additional Options")
+                            .foregroundStyle(.black)
+                        Spacer()
+                        Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(8)
             }
 
             if isExpanded {
