@@ -52,6 +52,7 @@ struct AdvancedSettingsView: View {
                     }
                 }
             }
+            
             Section {
                 Toggle(requireReason ? "Enabled" : "Disabled", isOn: $requireReason)
                     .tint(.blue)
