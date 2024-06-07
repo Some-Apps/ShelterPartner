@@ -142,7 +142,7 @@ struct SettingsView: View {
                             Text("Scheduled Reports")
                         }
                     }
-                    NavigationLink(destination: AccountSettingsView()) {
+                    NavigationLink(destination: AccountSettingsView().environmentObject(viewModel)) {
                         HStack {
                             Image(systemName: "wrench.adjustable")
                             Text("More Account Settings")

@@ -24,6 +24,7 @@ class SettingsViewModel: ObservableObject {
     
     @Published var catTags: [String] = []
     @Published var dogTags: [String] = []
+    @Published var earlyReasons: [String] = []
     @Published var filterOptions: [String] = []
     @Published var software: String = ""
     @Published var shelter: String = ""
@@ -35,6 +36,23 @@ class SettingsViewModel: ObservableObject {
     
     init() {
         setupListener()
+    }
+    
+    func addReason(reason: String) {
+        let db = Firestore.firestore()
+        let societyRef = db.collection("Societies").document(storedSocietyID)
+        
+        societyRef.updateData([
+            "earlyReasons": FieldValue.arrayUnion([reason])
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+                print(self.storedSocietyID)
+                print(reason)
+            }
+        }
     }
     
     func addTag(tag: String, species: AnimalType) {
@@ -68,6 +86,22 @@ class SettingsViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    func deleteReason(at offsets: IndexSet) {
+        for index in offsets {
+            let reason = earlyReasons[index]
+            Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
+                "earlyReasons": FieldValue.arrayRemove([reason])
+            ])
+        }
+        earlyReasons.remove(atOffsets: offsets)
+    }
+
+    
+    func moveReason(from source: IndexSet, to destination: Int) {
+        earlyReasons.move(fromOffsets: source, toOffset: destination)
+        Firestore.firestore().collection("Societies").document(storedSocietyID).updateData(["earlyReasons": earlyReasons])
     }
 
     func deleteTag(at offsets: IndexSet, species: AnimalType) {
@@ -109,6 +143,7 @@ class SettingsViewModel: ObservableObject {
     private func updateTagsInFirestore(species: AnimalType) {
         Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([species == .Cat ? "catTags" : "dogTags": species == .Cat ? catTags: dogTags])
     }
+
     
     func setupListener() {
         guard !storedSocietyID.isEmpty else { return }
@@ -128,6 +163,7 @@ class SettingsViewModel: ObservableObject {
                 }
 
                 // Optional fields
+                let earlyReasons = data["earlyReasons"] as? [String] ?? []
                 let catTags = data["catTags"] as? [String] ?? []
                 let dogTags = data["dogTags"] as? [String] ?? []
                 let filterOptions = data["filterOptions"] as? [String] ?? []
@@ -139,6 +175,7 @@ class SettingsViewModel: ObservableObject {
 
                 self?.reportsDay = reportsDay
                 self?.reportsEmail = reportsEmail
+                self?.earlyReasons = earlyReasons
                 self?.catTags = catTags
                 self?.dogTags = dogTags
                 self?.software = software
