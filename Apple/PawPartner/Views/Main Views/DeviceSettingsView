@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AdvancedSettingsView: View {
+struct DeviceSettingsView: View {
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("cardsPerPage") var cardsPerPage = 30
     @AppStorage("customFormURL") var customFormURL = ""

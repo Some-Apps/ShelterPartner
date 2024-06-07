@@ -142,7 +142,7 @@ struct SettingsView: View {
                             Text("Scheduled Reports")
                         }
                     }
-                    NavigationLink(destination: DeviceSettingsView()) {
+                    NavigationLink(destination: AccountSettingsView()) {
                         HStack {
                             Image(systemName: "wrench.adjustable")
                             Text("More Account Settings")
@@ -180,7 +180,7 @@ struct SettingsView: View {
                             Text("Download All Data")
                         }
                     }
-                    NavigationLink(destination: AdvancedSettingsView()) {
+                    NavigationLink(destination: DeviceSettingsView()) {
                         HStack {
                             Image(systemName: "wrench.adjustable")
                             Text("More Device Settings")
