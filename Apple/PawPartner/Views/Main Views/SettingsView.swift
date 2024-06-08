@@ -30,7 +30,6 @@ struct SettingsView: View {
     @State private var showVolunteerVideo = false
     @State private var showShareSheet = false
     @State private var shareItems: [Any] = []
-    
     @State private var showingPasswordPrompt = false
     @State private var passwordInput = ""
     @State private var showIncorrectPassword = false

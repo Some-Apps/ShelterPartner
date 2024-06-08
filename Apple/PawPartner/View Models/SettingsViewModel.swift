@@ -24,6 +24,7 @@ class SettingsViewModel: ObservableObject {
     
     @Published var catTags: [String] = []
     @Published var dogTags: [String] = []
+    @Published var earlyReasons: [String] = []
     @Published var filterOptions: [String] = []
     @Published var software: String = ""
     @Published var shelter: String = ""
@@ -37,11 +38,33 @@ class SettingsViewModel: ObservableObject {
         setupListener()
     }
     
+    
+    deinit {
+        listener?.remove() // Stop listening to changes when the object is deinitialized
+    }
+
+
+    func addReason(reason: String) {
+        let db = Firestore.firestore()
+        let societyRef = db.collection("Societies").document(storedSocietyID)
+        
+        societyRef.updateData([
+            "earlyReasons": FieldValue.arrayUnion([reason])
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+                print(self.storedSocietyID)
+                print(reason)
+            }
+        }
+    }
+    
     func addTag(tag: String, species: AnimalType) {
         let db = Firestore.firestore()
         let societyRef = db.collection("Societies").document(storedSocietyID)
         
-        // Use FieldValue.arrayUnion to add the tag
         switch species {
         case .Cat:
             societyRef.updateData([
@@ -68,6 +91,21 @@ class SettingsViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    func deleteReason(at offsets: IndexSet) {
+        for index in offsets {
+            let reason = earlyReasons[index]
+            Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
+                "earlyReasons": FieldValue.arrayRemove([reason])
+            ])
+        }
+        earlyReasons.remove(atOffsets: offsets)
+    }
+    
+    func moveReason(from source: IndexSet, to destination: Int) {
+        earlyReasons.move(fromOffsets: source, toOffset: destination)
+        Firestore.firestore().collection("Societies").document(storedSocietyID).updateData(["earlyReasons": earlyReasons])
     }
 
     func deleteTag(at offsets: IndexSet, species: AnimalType) {
@@ -109,6 +147,7 @@ class SettingsViewModel: ObservableObject {
     private func updateTagsInFirestore(species: AnimalType) {
         Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([species == .Cat ? "catTags" : "dogTags": species == .Cat ? catTags: dogTags])
     }
+
     
     func setupListener() {
         guard !storedSocietyID.isEmpty else { return }
@@ -120,41 +159,32 @@ class SettingsViewModel: ObservableObject {
                     return
                 }
                 
-                guard let data = snapshot?.data(),
-                      let reportsDay = data["reportsDay"] as? String,
-                      let reportsEmail = data["reportsEmail"] as? String else {
-                    print("Failed to parse scheduled reports.")
+                guard let data = snapshot?.data() else {
+                    print("No data found for document")
                     return
                 }
-
-                // Optional fields
-                let catTags = data["catTags"] as? [String] ?? []
-                let dogTags = data["dogTags"] as? [String] ?? []
-                let filterOptions = data["filterOptions"] as? [String] ?? []
-                let software = data["software"] as? String ?? ""
-                let shelter = data["shelter"] as? String ?? ""
-                let mainFilter = data["mainFilter"] as? String ?? ""
-                let syncFrequency = data["syncFrequency"] as? String ?? ""
-                let apiKey = data["apiKey"] as? String ?? ""
-
-                self?.reportsDay = reportsDay
-                self?.reportsEmail = reportsEmail
-                self?.catTags = catTags
-                self?.dogTags = dogTags
-                self?.software = software
-                self?.shelter = shelter
-                self?.filterOptions = filterOptions
-                self?.mainFilter = mainFilter
-                self?.syncFrequency = syncFrequency
-                self?.apiKey = apiKey
+                
+                self?.updateProperties(with: data)
             }
     }
 
-
-        deinit {
-            listener?.remove() // Stop listening to changes when the object is deinitialized
+    private func updateProperties(with data: [String: Any]) {
+        DispatchQueue.main.async {
+            self.reportsDay = data["reportsDay"] as? String ?? ""
+            self.reportsEmail = data["reportsEmail"] as? String ?? ""
+            self.earlyReasons = data["earlyReasons"] as? [String] ?? []
+            self.catTags = data["catTags"] as? [String] ?? []
+            self.dogTags = data["dogTags"] as? [String] ?? []
+            self.software = data["software"] as? String ?? ""
+            self.shelter = data["shelter"] as? String ?? ""
+            self.mainFilter = data["mainFilter"] as? String ?? ""
+            self.syncFrequency = data["syncFrequency"] as? String ?? ""
+            self.apiKey = data["apiKey"] as? String ?? ""
         }
-    
+    }
+
+
+
     func updateScheduledReports(newDay: String, newEmail: String) {
         Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
             "reportsDay": newDay,

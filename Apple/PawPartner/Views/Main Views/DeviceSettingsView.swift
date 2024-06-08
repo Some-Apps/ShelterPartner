@@ -28,13 +28,11 @@ struct DeviceSettingsView: View {
     @State private var showPopover8 = false
     @State private var showPopover9 = false
     @State private var showPopover10 = false
-
     
     let linkTypes = ["QR Code", "Open In App"]
     
     var body: some View {
         Form {
-
             Section {
                 Stepper(minimumDuration == 1 ? "\(minimumDuration) minute" : "\(minimumDuration) minutes", value: $minimumDuration, in: 0...30, step: 1)
             } header: {

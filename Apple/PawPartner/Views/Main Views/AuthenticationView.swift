@@ -19,22 +19,24 @@ struct AuthenticationView: View {
                 TabView {
                     AnimalView()
                         .tabItem {
-                            Image(systemName: "pawprint.fill")
+                            Label("Animals", systemImage: "pawprint.fill")
+//                            Image(systemName: "pawprint.fill")
                         }
                     SettingsView()
                         .tabItem {
-                            Image(systemName: "gearshape.fill")
+                            Label("Settings", systemImage: "gearshape.fill")
+//                            Image(systemName: "gearshape.fill")
                         }
                 }
             case "visitorAdmin":
                 TabView {
                     VisitorView()
                         .tabItem {
-                            Image(systemName: "pawprint.fill")
+                            Label("Animals", systemImage: "pawprint.fill")
                         }
                     SettingsView()
                         .tabItem {
-                            Image(systemName: "gearshape.fill")
+                            Label("Settings", systemImage: "gearshape.fill")
                         }
                 }
                 

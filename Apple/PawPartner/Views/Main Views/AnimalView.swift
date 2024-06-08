@@ -60,7 +60,7 @@ struct AnimalView: View {
     @State private var currentPage = 1
 
     let columns = [
-        GridItem(.adaptive(minimum: 350))
+        GridItem(.adaptive(minimum: 330))
     ]
 
     private let dateFormatter: DateFormatter = {
