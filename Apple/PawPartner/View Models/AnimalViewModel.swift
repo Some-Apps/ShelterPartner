@@ -128,10 +128,10 @@ class AnimalViewModel: ObservableObject {
                 if !secondarySortOption.isEmpty {
                     // Sort by secondarySortOption first, then by let-out time
                     sortedAnimalsInGroup = animalsInGroup.sorted(by: {
-                        if $0.secondarySort ?? "" == $1.secondarySort ?? "" {
+                        if $0.secondarySort == $1.secondarySort {
                             return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
                         }
-                        return ($0.secondarySort ?? "") < ($1.secondarySort ?? "")
+                        return ($0.secondarySort ?? 100) < ($1.secondarySort ?? 100)
                     })
                 } else {
                     // Sort by let-out time only
