@@ -8,15 +8,14 @@
 import SwiftUI
 
 struct AccountSettingsView: View {
-    @EnvironmentObject var viewModel: SettingsViewModel
-
+    @ObservedObject var viewModel = SettingsViewModel.shared
     
     @State private var popoverReasons = false
     
     var body: some View {
         Form {
             Section {
-                NavigationLink("\(viewModel.earlyReasons.count) reasons", destination: ReasonsForEarlyPutBackView().environmentObject(viewModel))
+                NavigationLink("\(viewModel.earlyReasons.count)", destination: ReasonsForEarlyPutBackView())
             } header: {
                 HStack {
                     Text("Reasons for early put back")

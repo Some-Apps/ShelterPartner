@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ReasonsForEarlyPutBackView: View {
-    @EnvironmentObject var viewModel: SettingsViewModel
-    
+    @ObservedObject var viewModel = SettingsViewModel.shared
+
     @State private var newReason = ""
     
     var body: some View {
@@ -18,13 +18,12 @@ struct ReasonsForEarlyPutBackView: View {
                 TextField("New Reason", text: $newReason)
                 
                 if newReason.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
-                    Button("Add Tag") {
+                    Button("Add Reason") {
                         viewModel.addReason(reason: newReason)
                         newReason = ""
                     }
                     .disabled(newReason.trimmingCharacters(in: .whitespacesAndNewlines) == "")
                 }
-                
             }
             if (!viewModel.earlyReasons.isEmpty) {
                 Section("Tags") {

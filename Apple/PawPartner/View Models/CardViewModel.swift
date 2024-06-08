@@ -16,7 +16,8 @@ class CardViewModel: ObservableObject {
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("requireName") var requireName = false
     @AppStorage("createLogsAlways") var createLogsAlways = false
-    @AppStorage("shortReason") var shortReason = ""
+//    @AppStorage("shortReason") var shortReason = ""
+    @Published var shortReason = ""
 
     // Test if this works
     func takeOut(animal: Animal) {

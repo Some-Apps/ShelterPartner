@@ -38,6 +38,12 @@ class SettingsViewModel: ObservableObject {
         setupListener()
     }
     
+    
+    deinit {
+        listener?.remove() // Stop listening to changes when the object is deinitialized
+    }
+
+
     func addReason(reason: String) {
         let db = Firestore.firestore()
         let societyRef = db.collection("Societies").document(storedSocietyID)
@@ -59,7 +65,6 @@ class SettingsViewModel: ObservableObject {
         let db = Firestore.firestore()
         let societyRef = db.collection("Societies").document(storedSocietyID)
         
-        // Use FieldValue.arrayUnion to add the tag
         switch species {
         case .Cat:
             societyRef.updateData([
@@ -97,7 +102,6 @@ class SettingsViewModel: ObservableObject {
         }
         earlyReasons.remove(atOffsets: offsets)
     }
-
     
     func moveReason(from source: IndexSet, to destination: Int) {
         earlyReasons.move(fromOffsets: source, toOffset: destination)
@@ -155,43 +159,32 @@ class SettingsViewModel: ObservableObject {
                     return
                 }
                 
-                guard let data = snapshot?.data(),
-                      let reportsDay = data["reportsDay"] as? String,
-                      let reportsEmail = data["reportsEmail"] as? String else {
-                    print("Failed to parse scheduled reports.")
+                guard let data = snapshot?.data() else {
+                    print("No data found for document")
                     return
                 }
-
-                // Optional fields
-                let earlyReasons = data["earlyReasons"] as? [String] ?? []
-                let catTags = data["catTags"] as? [String] ?? []
-                let dogTags = data["dogTags"] as? [String] ?? []
-                let filterOptions = data["filterOptions"] as? [String] ?? []
-                let software = data["software"] as? String ?? ""
-                let shelter = data["shelter"] as? String ?? ""
-                let mainFilter = data["mainFilter"] as? String ?? ""
-                let syncFrequency = data["syncFrequency"] as? String ?? ""
-                let apiKey = data["apiKey"] as? String ?? ""
-
-                self?.reportsDay = reportsDay
-                self?.reportsEmail = reportsEmail
-                self?.earlyReasons = earlyReasons
-                self?.catTags = catTags
-                self?.dogTags = dogTags
-                self?.software = software
-                self?.shelter = shelter
-                self?.filterOptions = filterOptions
-                self?.mainFilter = mainFilter
-                self?.syncFrequency = syncFrequency
-                self?.apiKey = apiKey
+                
+                self?.updateProperties(with: data)
             }
     }
 
-
-        deinit {
-            listener?.remove() // Stop listening to changes when the object is deinitialized
+    private func updateProperties(with data: [String: Any]) {
+        DispatchQueue.main.async {
+            self.reportsDay = data["reportsDay"] as? String ?? ""
+            self.reportsEmail = data["reportsEmail"] as? String ?? ""
+            self.earlyReasons = data["earlyReasons"] as? [String] ?? []
+            self.catTags = data["catTags"] as? [String] ?? []
+            self.dogTags = data["dogTags"] as? [String] ?? []
+            self.software = data["software"] as? String ?? ""
+            self.shelter = data["shelter"] as? String ?? ""
+            self.mainFilter = data["mainFilter"] as? String ?? ""
+            self.syncFrequency = data["syncFrequency"] as? String ?? ""
+            self.apiKey = data["apiKey"] as? String ?? ""
         }
-    
+    }
+
+
+
     func updateScheduledReports(newDay: String, newEmail: String) {
         Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
             "reportsDay": newDay,
