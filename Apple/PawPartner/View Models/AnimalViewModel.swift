@@ -15,6 +15,8 @@ class AnimalViewModel: ObservableObject {
     @Published var sortedVisitorDogs: [Animal] = []
     @Published var sortedVisitorCats: [Animal] = []
     
+    @AppStorage("secondarySortOption") var secondarySortOption = ""
+
     @Published var showRequireReason = false
     @Published var showRequireName = false
     @Published var showLogTooShort = false
@@ -61,62 +63,90 @@ class AnimalViewModel: ObservableObject {
     var db = Firestore.firestore()
     
     func sortCats() {
-        sortedCats = cats.sorted(by: { cat1, cat2 in
-            switch sortBy {
-            case .lastLetOut:
-                return cat1.logs.last?.endTime ?? 0 < cat2.logs.last?.endTime ?? 0
-            case .playtime24Hours:
-                return cat1.playtimeLast24Hours < cat2.playtimeLast24Hours
-            case .playtime7Days:
-                return cat1.playtimeLast7Days < cat2.playtimeLast7Days
-            case .playtime30Days:
-                return cat1.playtimeLast30Days < cat2.playtimeLast30Days
-            case .playtime90Days:
-                return cat1.playtimeLast90Days < cat2.playtimeLast90Days
-            }
-        })
+            sortedCats = cats.sorted(by: { cat1, cat2 in
+                switch sortBy {
+                case .lastLetOut:
+                    return cat1.logs.last?.endTime ?? 0 < cat2.logs.last?.endTime ?? 0
+                case .playtime24Hours:
+                    return cat1.playtimeLast24Hours < cat2.playtimeLast24Hours
+                case .playtime7Days:
+                    return cat1.playtimeLast7Days < cat2.playtimeLast7Days
+                case .playtime30Days:
+                    return cat1.playtimeLast30Days < cat2.playtimeLast30Days
+                case .playtime90Days:
+                    return cat1.playtimeLast90Days < cat2.playtimeLast90Days
+                }
+            })
+
+
+            sortedGroupCats = groupAndSortAnimals(cats)
+            
+            sortedVisitorCats = cats.sorted(by: { cat1, cat2 in
+                return cat1.logs.first?.startTime ?? 0 < cat2.logs.first?.startTime ?? 0
+            })
+        }
         
-        sortedGroupCats = groupAndSortAnimals(cats)
-        
-        sortedVisitorCats = cats.sorted(by: { cat1, cat2 in
-            return cat1.logs.first?.startTime ?? 0 < cat2.logs.first?.startTime ?? 0
-        })
-    }
-    
-    func sortDogs() {
-        sortedDogs = dogs.sorted(by: { dog1, dog2 in
-            switch sortBy {
-            case .lastLetOut:
-                return dog1.logs.last?.endTime ?? 0 < dog2.logs.last?.endTime ?? 0
-            case .playtime24Hours:
-                return dog1.playtimeLast24Hours < dog2.playtimeLast24Hours
-            case .playtime7Days:
-                return dog1.playtimeLast7Days < dog2.playtimeLast7Days
-            case .playtime30Days:
-                return dog1.playtimeLast30Days < dog2.playtimeLast30Days
-            case .playtime90Days:
-                return dog1.playtimeLast90Days < dog2.playtimeLast90Days
-            }
-        })
-        
-        sortedGroupDogs = groupAndSortAnimals(dogs)
-        
-        sortedVisitorDogs = dogs.sorted(by: { dog1, dog2 in
-            return dog1.logs.first?.startTime ?? 0 < dog2.logs.first?.startTime ?? 0
-        })
-    }
+        func sortDogs() {
+            sortedDogs = dogs.sorted(by: { dog1, dog2 in
+                switch sortBy {
+                case .lastLetOut:
+                    return dog1.logs.last?.endTime ?? 0 < dog2.logs.last?.endTime ?? 0
+                case .playtime24Hours:
+                    return dog1.playtimeLast24Hours < dog2.playtimeLast24Hours
+                case .playtime7Days:
+                    return dog1.playtimeLast7Days < dog2.playtimeLast7Days
+                case .playtime30Days:
+                    return dog1.playtimeLast30Days < dog2.playtimeLast30Days
+                case .playtime90Days:
+                    return dog1.playtimeLast90Days < dog2.playtimeLast90Days
+                }
+            })
+            
+            sortedGroupDogs = groupAndSortAnimals(dogs)
+            
+            sortedVisitorDogs = dogs.sorted(by: { dog1, dog2 in
+                return dog1.logs.first?.startTime ?? 0 < dog2.logs.first?.startTime ?? 0
+            })
+        }
     
     private func groupAndSortAnimals(_ animals: [Animal]) -> [Animal] {
-        let groupedAnimals = Dictionary(grouping: animals, by: { $0.group })
+        // Group the animals by their group attribute
+        let groupedAnimals = Dictionary(grouping: animals, by: { $0.group ?? "No Group" })
+        
+        // Sort the keys (group names)
+        let sortedGroupKeys = groupedAnimals.keys.sorted()
+
+        // Create a new list to hold the sorted animals
         var sortedGroupedAnimals: [Animal] = []
 
-        for (_, animals) in groupedAnimals {
-            let sortedAnimals = animals.sorted(by: { $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0 })
-            sortedGroupedAnimals.append(contentsOf: sortedAnimals)
+        // Iterate over the sorted group keys
+        for key in sortedGroupKeys {
+            if let animalsInGroup = groupedAnimals[key] {
+                let sortedAnimalsInGroup: [Animal]
+                
+                // Check if secondarySortOption is not empty
+                if !secondarySortOption.isEmpty {
+                    // Sort by secondarySortOption first, then by let-out time
+                    sortedAnimalsInGroup = animalsInGroup.sorted(by: {
+                        if $0.secondarySort ?? "" == $1.secondarySort ?? "" {
+                            return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                        }
+                        return ($0.secondarySort ?? "") < ($1.secondarySort ?? "")
+                    })
+                } else {
+                    // Sort by let-out time only
+                    sortedAnimalsInGroup = animalsInGroup.sorted(by: { $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0 })
+                }
+                
+                // Append sorted animals to the final list
+                sortedGroupedAnimals.append(contentsOf: sortedAnimalsInGroup)
+            }
         }
 
-        return sortedGroupedAnimals.sorted(by: { $0.group ?? "No Group" < $1.group ?? "No Group" })
+        return sortedGroupedAnimals
     }
+
+
     
     func postAppVersion(societyID: String, installedVersion: String) {
         let documentReference = db.collection("Societies").document(societyID)

@@ -25,6 +25,7 @@ struct Animal: Codable, Identifiable, Hashable {
     var group: String?
     var extraInfo: String?
     var fullLocation: String?
+    var secondarySort: String?
 
     var allPhotos: [String] {
         return photos.map { $0.url }
