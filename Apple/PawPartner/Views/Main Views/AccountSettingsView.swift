@@ -15,7 +15,7 @@ struct AccountSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink("\(viewModel.earlyReasons.count)", destination: ReasonsForEarlyPutBackView())
+                NavigationLink("Early Reasons", destination: ReasonsForEarlyPutBackView())
             } header: {
                 HStack {
                     Text("Reasons for early put back")
