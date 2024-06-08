@@ -32,6 +32,7 @@ struct DeviceSettingsView: View {
     @State private var showPopover9 = false
     @State private var showPopover10 = false
     @State private var showPopover11 = false
+
     
     let linkTypes = ["QR Code", "Open In App"]
     
@@ -111,7 +112,7 @@ struct DeviceSettingsView: View {
                 }
             }
             
-           
+
 
 
             Section {
@@ -279,8 +280,7 @@ struct DeviceSettingsView: View {
                 }
             }
             
-            
-            
+
         }
     }
 }

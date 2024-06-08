@@ -182,6 +182,7 @@ class SettingsViewModel: ObservableObject {
             self.syncFrequency = data["syncFrequency"] as? String ?? ""
             self.apiKey = data["apiKey"] as? String ?? ""
             self.secondarySortOptions = data["secondarySortOptions"] as? [String] ?? []
+
         }
     }
 
