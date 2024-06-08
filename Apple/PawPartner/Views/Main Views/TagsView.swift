@@ -44,7 +44,6 @@ struct TagsView: View {
             EditButton()
         }
     }
-
     private func moveTag(from source: IndexSet, to destination: Int) {
         viewModel.moveTag(from: source, to: destination, species: species)
     }
