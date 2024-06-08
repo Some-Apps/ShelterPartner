@@ -15,6 +15,7 @@ struct AnimalView: View {
     @ObservedObject var viewModel = AnimalViewModel.shared
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
     @AppStorage("showAllAnimals") var showAllAnimals = false
+    @AppStorage("secondarySortOption") var secondarySortOption = ""
 
     @AppStorage("filterPicker") var filterPicker: Bool = false
     @AppStorage("filter") var filter: String = "No Filter"
@@ -30,9 +31,9 @@ struct AnimalView: View {
     @AppStorage("mode") var mode = "volunteer"
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("donationURL") var donationURL: String = ""
-    @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
-    @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("cardsPerPage") var cardsPerPage = 30
+    @AppStorage("groupsEnabled") var groupsEnabled = false
+
 
     @State private var filteredCatsList: [Animal] = []
     @State private var filteredDogsList: [Animal] = []
@@ -96,7 +97,6 @@ struct AnimalView: View {
                             HStack {
                                 Image(systemName: "text.bubble.fill")
                                 Text("Give Feedback")
-
                             }
                         }
                         .sheet(isPresented: $showingFeedbackForm) {
@@ -188,7 +188,7 @@ struct AnimalView: View {
                     }
                     switch animalType {
                     case .Dog:
-                        if !groupsFullyEnabled {
+                        if !groupsEnabled {
                             AnimalGridView(
                                 animals: paginatedAnimals(filteredDogsList),
 
@@ -207,7 +207,7 @@ struct AnimalView: View {
                             )
                         }
                     case .Cat:
-                        if !groupsFullyEnabled {
+                        if !groupsEnabled {
                             AnimalGridView(
                                 animals: paginatedAnimals(filteredCatsList),
 
@@ -511,7 +511,7 @@ struct CollapsibleSection: View {
                     isExpanded.toggle()
                 }
             }) {
-                if groupsEnabled || showSearchBar {
+                if showSearchBar {
                     HStack {
                         Text("Additional Options")
                             .foregroundStyle(.black)
@@ -566,14 +566,14 @@ struct CollapsibleSection: View {
 
                         }
                         
-
-                        if groupsEnabled {
-                            Section {
-                                Toggle("Groups", isOn: $groupsFullyEnabled)
-                                    .tint(.blue)
-                            }
-                            
-                        }
+//
+//                        if groupsEnabled {
+//                            Section {
+//                                Toggle("Groups", isOn: $groupsFullyEnabled)
+//                                    .tint(.blue)
+//                            }
+//                            
+//                        }
 
                     }
                 .frame(height: 200)

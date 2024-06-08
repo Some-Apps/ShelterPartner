@@ -14,7 +14,7 @@ struct RequireReasonView: View {
         VStack {
             Text("Please select the reason you put this animal back before the minimum duration.")
             Picker("Reason", selection: $cardViewModel.shortReason) {
-                Text("").tag("") // Ensure the empty string option is included
+                Text("").tag("")
                 ForEach(settingsViewModel.earlyReasons, id: \.self) {
                     Text($0)
                 }

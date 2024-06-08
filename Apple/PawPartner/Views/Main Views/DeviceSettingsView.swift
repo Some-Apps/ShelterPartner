@@ -13,8 +13,11 @@ struct DeviceSettingsView: View {
     @AppStorage("createLogsAlways") var createLogsAlways = false
     @AppStorage("requireReason") var requireReason = false
     @AppStorage("showSearchBar") var showSearchBar = false
-    
+    @AppStorage("secondarySortOption") var secondarySortOption = ""
+
     @ObservedObject var viewModel = SettingsViewModel.shared
+    @ObservedObject var animalViewModel = AnimalViewModel.shared
+
     
     @AppStorage("filterPicker") var filterPicker: Bool = false
     
@@ -28,6 +31,7 @@ struct DeviceSettingsView: View {
     @State private var showPopover8 = false
     @State private var showPopover9 = false
     @State private var showPopover10 = false
+    @State private var showPopover11 = false
     
     let linkTypes = ["QR Code", "Open In App"]
     
@@ -107,24 +111,7 @@ struct DeviceSettingsView: View {
                 }
             }
             
-            Section {
-                Toggle(groupsEnabled ? "Enabled" : "Disabled", isOn: $groupsEnabled)
-                    .tint(.blue)
-            } header: {
-                HStack {
-                    Text("Groups")
-                    Button {
-                        showPopover3 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover3) {
-                        Text("Automatically group animals by categories of your choice. To set up the groups, email jared@pawpartner.app. In the future, this will be able to be set up directly in the app.")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
-            }
+           
 
 
             Section {
@@ -247,6 +234,53 @@ struct DeviceSettingsView: View {
                     }
                 }
             }
+            
+            Section {
+                Toggle(groupsEnabled ? "Enabled" : "Disabled", isOn: $groupsEnabled)
+                    .tint(.blue)
+            } header: {
+                HStack {
+                    Text("Groups")
+                    Button {
+                        showPopover3 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover3) {
+                        Text("Automatically group animals by categories of your choice. To set up the groups, email jared@pawpartner.app. In the future, this will be able to be set up directly in the app.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
+            }
+            
+            if !viewModel.secondarySortOptions.isEmpty {
+                Section {
+                    Picker("Secondary Sort", selection: $secondarySortOption) {
+                        Text("").tag("")
+                        ForEach(viewModel.secondarySortOptions, id: \.self) {
+                            Text($0)
+                        }
+                    }
+                } header: {
+                    HStack {
+                        Text("Secondary Sort")
+                        Button {
+                            showPopover11 = true
+                        } label: {
+                            Image(systemName: "questionmark.circle")
+                        }
+                        .popover(isPresented: $showPopover11) {
+                            Text("This allows you to search animals by name, notes, breed, etc from the volunteer screen.")
+                                .padding()
+                                .textCase(nil)
+                        }
+                    }
+                }
+            }
+            
+            
+            
         }
     }
 }
