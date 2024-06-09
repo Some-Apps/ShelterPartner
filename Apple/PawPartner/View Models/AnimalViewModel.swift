@@ -16,6 +16,7 @@ class AnimalViewModel: ObservableObject {
     @Published var sortedVisitorCats: [Animal] = []
     
     @AppStorage("secondarySortOption") var secondarySortOption = ""
+    @AppStorage("groupsEnabled") var groupsEnabled = false
 
     @Published var showRequireReason = false
     @Published var showRequireName = false
@@ -34,6 +35,10 @@ class AnimalViewModel: ObservableObject {
     var dogListener: ListenerRegistration?
     var societyListener: ListenerRegistration?
     var statsListener: ListenerRegistration?
+    
+//    var groupAnimals = true
+//    var sortBySecondaryOption = true
+//    var sortByPrimaryOption = true
     
     @AppStorage("showAllAnimals") var showAllAnimals = false
     @AppStorage("guidedAccessVideo") var guidedAccessVideo: String = ""
@@ -109,42 +114,99 @@ class AnimalViewModel: ObservableObject {
             })
         }
     
-    private func groupAndSortAnimals(_ animals: [Animal]) -> [Animal] {
-        // Group the animals by their group attribute
-        let groupedAnimals = Dictionary(grouping: animals, by: { $0.group ?? "No Group" })
-        
-        // Sort the keys (group names)
-        let sortedGroupKeys = groupedAnimals.keys.sorted()
+    func groupAndSortAnimals(_ animals: [Animal]) -> [Animal] {
+           var groupedAnimals: [String: [Animal]] = ["No Group": animals]
+           
+           if groupsEnabled {
+               // Group the animals by their group attribute
+               groupedAnimals = Dictionary(grouping: animals, by: { $0.group ?? "No Group" })
+           }
+           
+           // Sort the keys (group names)
+           let sortedGroupKeys = groupedAnimals.keys.sorted()
 
-        // Create a new list to hold the sorted animals
-        var sortedGroupedAnimals: [Animal] = []
+           // Create a new list to hold the sorted animals
+           var sortedGroupedAnimals: [Animal] = []
 
-        // Iterate over the sorted group keys
-        for key in sortedGroupKeys {
-            if let animalsInGroup = groupedAnimals[key] {
-                let sortedAnimalsInGroup: [Animal]
-                
-                // Check if secondarySortOption is not empty
-                if !secondarySortOption.isEmpty {
-                    // Sort by secondarySortOption first, then by let-out time
-                    sortedAnimalsInGroup = animalsInGroup.sorted(by: {
-                        if $0.secondarySort == $1.secondarySort {
-                            return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
-                        }
-                        return ($0.secondarySort ?? 100) < ($1.secondarySort ?? 100)
-                    })
-                } else {
-                    // Sort by let-out time only
-                    sortedAnimalsInGroup = animalsInGroup.sorted(by: { $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0 })
-                }
-                
-                // Append sorted animals to the final list
-                sortedGroupedAnimals.append(contentsOf: sortedAnimalsInGroup)
-            }
-        }
+           // Iterate over the sorted group keys
+           for key in sortedGroupKeys {
+               if let animalsInGroup = groupedAnimals[key] {
+                   let sortedAnimalsInGroup: [Animal]
+                   
+                   // Check if secondarySortOption is not empty and sorting by secondary option is enabled
+                   if !secondarySortOption.isEmpty {
+                       // Sort by secondarySortOption first, then by let-out time
+                       sortedAnimalsInGroup = animalsInGroup.sorted(by: {
+                           if secondarySortOption == "Color" {
+                               if $0.colorSort == $1.colorSort {
+                                   return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                               }
+                               return ($0.colorSort ?? 100) < ($1.colorSort ?? 100)
+                           } else if secondarySortOption == "Behavior" {
+                               if $0.behaviorSort == $1.behaviorSort {
+//                                   return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                                   switch sortBy {
+                                   case .lastLetOut:
+                                       return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                                   case .playtime24Hours:
+                                       return $0.playtimeLast24Hours < $1.playtimeLast24Hours
+                                   case .playtime7Days:
+                                       return $0.playtimeLast7Days < $1.playtimeLast7Days
+                                   case .playtime30Days:
+                                       return $0.playtimeLast30Days < $1.playtimeLast30Days
+                                   case .playtime90Days:
+                                       return $0.playtimeLast90Days < $1.playtimeLast90Days
+                                   }
+                               }
+                               return ($0.behaviorSort ?? 100) < ($1.behaviorSort ?? 100)
+                           } else {
+                               if $0.secondarySort == $1.secondarySort {
+//                                   return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                                   switch sortBy {
+                                   case .lastLetOut:
+                                       return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                                   case .playtime24Hours:
+                                       return $0.playtimeLast24Hours < $1.playtimeLast24Hours
+                                   case .playtime7Days:
+                                       return $0.playtimeLast7Days < $1.playtimeLast7Days
+                                   case .playtime30Days:
+                                       return $0.playtimeLast30Days < $1.playtimeLast30Days
+                                   case .playtime90Days:
+                                       return $0.playtimeLast90Days < $1.playtimeLast90Days
+                                   }
+                               }
+                               return ($0.secondarySort ?? 100) < ($1.secondarySort ?? 100)
+                           }
+                       })
+                   } else if true {
+                       // Sort by let-out time only if primary sorting is enabled
+                       sortedAnimalsInGroup = animalsInGroup.sorted(by: {
+//                           $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                           switch sortBy {
+                           case .lastLetOut:
+                               return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                           case .playtime24Hours:
+                               return $0.playtimeLast24Hours < $1.playtimeLast24Hours
+                           case .playtime7Days:
+                               return $0.playtimeLast7Days < $1.playtimeLast7Days
+                           case .playtime30Days:
+                               return $0.playtimeLast30Days < $1.playtimeLast30Days
+                           case .playtime90Days:
+                               return $0.playtimeLast90Days < $1.playtimeLast90Days
+                           }
+                       })
+                   } else {
+                       // If no sorting is enabled, keep the original order
+                       sortedAnimalsInGroup = animalsInGroup
+                   }
+                   
+                   // Append sorted animals to the final list
+                   sortedGroupedAnimals.append(contentsOf: sortedAnimalsInGroup)
+               }
+           }
 
-        return sortedGroupedAnimals
-    }
+           return sortedGroupedAnimals
+       }
 
 
     
@@ -370,13 +432,10 @@ class AnimalViewModel: ObservableObject {
     }
     
     
-    
     func removeListeners() {
         catListener?.remove()
         dogListener?.remove()
         societyListener?.remove()
         statsListener?.remove()
     }
-
-    
 }

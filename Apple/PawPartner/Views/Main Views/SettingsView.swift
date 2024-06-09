@@ -316,35 +316,11 @@ struct SettingsView: View {
             
             var csvString = "id,name,species,note,note date,note person,log start,log end,log person\n"
             
-            // Fetch Cats
-            documentRef.collection("Cats").getDocuments { (querySnapshot, error) in
-                if let error = error {
-                    print("Error getting cat documents: \(error)")
-                    showLoading = false
-                    return
-                }
+            fetchAllAnimals(from: documentRef.collection("Cats")) { catCSV in
+                csvString.append(contentsOf: catCSV)
                 
-                for document in querySnapshot!.documents {
-                    let data = document.data()
-                    if let animal = parseAnimal(data: data) {
-                        csvString.append(contentsOf: formatAnimalToCSV(animal: animal))
-                    }
-                }
-                
-                // Fetch Dogs
-                documentRef.collection("Dogs").getDocuments { (querySnapshot, error) in
-                    if let error = error {
-                        print("Error getting dog documents: \(error)")
-                        showLoading = false
-                        return
-                    }
-                    
-                    for document in querySnapshot!.documents {
-                        let data = document.data()
-                        if let animal = parseAnimal(data: data) {
-                            csvString.append(contentsOf: formatAnimalToCSV(animal: animal))
-                        }
-                    }
+                fetchAllAnimals(from: documentRef.collection("Dogs")) { dogCSV in
+                    csvString.append(contentsOf: dogCSV)
                     
                     // Save CSV and present share sheet
                     saveAndShareCSV(csvString: csvString)
@@ -352,18 +328,53 @@ struct SettingsView: View {
             }
         }
     }
-    
+
+    func fetchAllAnimals(from collection: CollectionReference, lastDocument: DocumentSnapshot? = nil, completion: @escaping (String) -> Void) {
+        var query: Query = collection
+        if let lastDocument = lastDocument {
+            query = query.start(afterDocument: lastDocument)
+        }
+        
+        query.limit(to: 1000).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+                completion("")
+                return
+            }
+            
+            var csvString = ""
+            
+            for document in querySnapshot!.documents {
+                let data = document.data()
+                if let animal = parseAnimal(data: data) {
+                    csvString.append(contentsOf: formatAnimalToCSV(animal: animal))
+                }
+            }
+            
+            if let lastDocument = querySnapshot?.documents.last, querySnapshot?.documents.count == 1000 {
+                // Fetch next batch
+                fetchAllAnimals(from: collection, lastDocument: lastDocument) { nextBatchCSV in
+                    csvString.append(contentsOf: nextBatchCSV)
+                    completion(csvString)
+                }
+            } else {
+                completion(csvString)
+            }
+        }
+    }
+
     func parseAnimal(data: [String: Any]) -> Animal? {
         guard
             let id = data["id"] as? String,
             let name = data["name"] as? String,
-            let species = data["animalType"] as? String,
-            let notesData = data["notes"] as? [[String: Any]],
-            let logsData = data["logs"] as? [[String: Any]]
+            let species = data["animalType"] as? String
         else {
             print("Missing required fields in data: \(data)")
             return nil
         }
+        
+        let notesData = data["notes"] as? [[String: Any]] ?? []
+        let logsData = data["logs"] as? [[String: Any]] ?? []
         
         let notes = notesData.compactMap { noteData -> Note? in
             guard
@@ -407,7 +418,7 @@ struct SettingsView: View {
             photos: [] // Assuming photos are not included in this example
         )
     }
-    
+
     func formatAnimalToCSV(animal: Animal) -> String {
         var csvRows = [String]()
         let dateFormatter = DateFormatter()
@@ -426,15 +437,29 @@ struct SettingsView: View {
             let logStartDateString = log != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: log!.startTime)) : ""
             let logEndDateString = log != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: log!.endTime)) : ""
             
-            let row = "\(i == 0 ? animal.id : ""),\(i == 0 ? animal.name : ""),\(i == 0 ? animal.animalType.rawValue : ""),\(note?.note ?? ""),\(noteDateString),\(note?.user ?? ""),\(logStartDateString),\(logEndDateString),\(log?.user ?? "")\n"
+            let row = "\(i == 0 ? escapeCSV(animal.id) : ""),\(i == 0 ? escapeCSV(animal.name) : ""),\(i == 0 ? escapeCSV(animal.animalType.rawValue) : ""),\(escapeCSV(note?.note ?? "")),\(noteDateString),\(escapeCSV(note?.user ?? "")),\(logStartDateString),\(logEndDateString),\(escapeCSV(log?.user ?? ""))\n"
+            csvRows.append(row)
+        }
+        
+        if maxRows == 0 {
+            let row = "\(escapeCSV(animal.id)),\(escapeCSV(animal.name)),\(escapeCSV(animal.animalType.rawValue)),,,,,,\n"
             csvRows.append(row)
         }
         
         return csvRows.joined()
     }
 
+    func escapeCSV(_ field: String) -> String {
+        var escapedField = field
+        if escapedField.contains("\"") {
+            escapedField = escapedField.replacingOccurrences(of: "\"", with: "\"\"")
+        }
+        if escapedField.contains(",") || escapedField.contains("\n") || escapedField.contains("\"") {
+            escapedField = "\"\(escapedField)\""
+        }
+        return escapedField
+    }
 
-    
     func saveAndShareCSV(csvString: String) {
         let fileManager = FileManager.default
         let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
@@ -467,6 +492,7 @@ struct SettingsView: View {
             }
         }
     }
+
 
 
 }
