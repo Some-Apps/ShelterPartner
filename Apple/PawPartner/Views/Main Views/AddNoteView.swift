@@ -103,7 +103,7 @@ struct AddNoteView: View {
                     Text("Save Note")
                         .onTapGesture(perform: saveNote)
                 }
-                .disabled(requireName && name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .disabled(requireName && name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedTags.isEmpty))
             }
 //            Section("This ad supports the future development of PawPartner") {
 //                           GeometryReader { geometry in

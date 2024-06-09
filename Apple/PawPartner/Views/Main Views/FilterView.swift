@@ -4,8 +4,8 @@ struct FilterView: View {
     @StateObject private var viewModel = FilterViewModel()
     
     
-    let fields = ["location", "status"]
-    let conditions = ["=", "contains"]
+    let fields = ["location", "status", "age", "sex"]
+    let conditions = ["=", "!=", "contains", "doesn't contain", ">", "<"]
     
     var body: some View {
         VStack {

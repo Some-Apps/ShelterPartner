@@ -348,22 +348,27 @@ struct AnimalView: View {
 
     private func updateFilteredAnimals() {
         // Filter the entire list of animals based on the search query and selected attribute
-        if groupsEnabled {
-            filteredCatsList = viewModel.sortedGroupCats.filter { animal in
-                searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
-            }
-            filteredDogsList = viewModel.sortedGroupDogs.filter { animal in
-                searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
-            }
-        } else {
-            filteredCatsList = viewModel.sortedCats.filter { animal in
-                searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
-            }
-            filteredDogsList = viewModel.sortedDogs.filter { animal in
-                searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
-            }
+        filteredCatsList = viewModel.sortedGroupCats.filter { animal in
+            searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
         }
-        
+        filteredDogsList = viewModel.sortedGroupDogs.filter { animal in
+            searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
+        }
+//        if groupsEnabled {
+//            filteredCatsList = viewModel.sortedGroupCats.filter { animal in
+//                searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
+//            }
+//            filteredDogsList = viewModel.sortedGroupDogs.filter { animal in
+//                searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
+//            }
+//        } else {
+//            filteredCatsList = viewModel.sortedCats.filter { animal in
+//                searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
+//            }
+//            filteredDogsList = viewModel.sortedDogs.filter { animal in
+//                searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
+//            }
+//        }
 
     }
 
@@ -582,7 +587,7 @@ struct CollapsibleSection: View {
 //                                Toggle("Groups", isOn: $groupsFullyEnabled)
 //                                    .tint(.blue)
 //                            }
-//                            
+//
 //                        }
 
                     }
@@ -612,9 +617,9 @@ struct CollapsibleSection: View {
 //                            )
 //                            .frame(height: 25)
 //                        }
-//                        
+//
 //                    }
-//                    
+//
 //                )
             }
         }
