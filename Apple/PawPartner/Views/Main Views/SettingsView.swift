@@ -23,6 +23,9 @@ struct SettingsView: View {
     @AppStorage("guidedAccessVideo") var guidedAccessVideo: String = ""
     @AppStorage("mode") var mode = "volunteer"
     @AppStorage("lastSync") var lastSync: String = ""
+    @AppStorage("updateAppURL") var updateAppURL: String = ""
+    @AppStorage("latestVersion") var latestVersion: String = ""
+
 
     @State private var showGuidedAccessVideo = false
     @State private var showLoading = false
@@ -236,11 +239,29 @@ struct SettingsView: View {
                         Text("Version: \(appVersion)")
                     }
                     .foregroundStyle(.secondary)
+                    if latestVersion != appVersion {
+                        HStack {
+                            Image(systemName: "exclamationmark.circle")
+                                .foregroundStyle(.red)
+                            Text("Your app is not up to date. Please update when convenient.")
+                                .foregroundStyle(.red)
+                            Link("Update", destination: (URL(string: updateAppURL) ?? URL(string: "https://pawparnter.app"))!)
+                                .buttonStyle(.bordered)
+                        }
+                    }
+                }
+                Section {
+                    HStack {
+                        Image(systemName: "pawprint.fill")
+                        Text("Dedicated to Aslan")
+                    }
+                    .foregroundStyle(.secondary)
                 }
             }
             .navigationTitle("Settings")
             .onAppear {
                 viewModel.setupListener()
+                animalViewModel.fetchLatestVersion()
             }
         }
         .toast(isPresenting: $viewModel.showPasswordChanged) {
