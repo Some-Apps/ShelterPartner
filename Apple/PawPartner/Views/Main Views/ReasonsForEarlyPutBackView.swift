@@ -26,7 +26,7 @@ struct ReasonsForEarlyPutBackView: View {
                 }
             }
             if (!viewModel.earlyReasons.isEmpty) {
-                Section("Tags") {
+                Section("Reasons") {
                     ForEach(viewModel.earlyReasons, id: \.self) { reason in
                         HStack {
                             Text(reason)
