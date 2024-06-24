@@ -10,6 +10,8 @@ struct CardView: View {
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @AppStorage("mode") var mode = "volunteer"
     @AppStorage("filterPicker") var filterPicker: Bool = false
+    @AppStorage("enableAutomaticPutBack") var enableAutomaticPutBack = false
+    @AppStorage("automaticPutBackHours") var automaticPutBackHours = 3
     @State private var showViewInfo = false
     @State private var lastUpdate = Date()
     @State private var showAddNote = false
@@ -165,8 +167,8 @@ struct CardView: View {
                 
                     OutlinedButton(viewModel: viewModel, showPopover: $showPopover, animal: animal)
                     .onAppear {
-                        if !animal.inCage {
-                            if Date().timeIntervalSince1970 - animal.startTime > 7200 {
+                        if !animal.inCage && enableAutomaticPutBack {
+                            if Date().timeIntervalSince1970 - animal.startTime > Double(automaticPutBackHours * 60) {
                                 viewModel.silentPutBack(animal: animal)
                             }
                         }

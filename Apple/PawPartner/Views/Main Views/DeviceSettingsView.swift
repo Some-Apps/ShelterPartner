@@ -14,6 +14,9 @@ struct DeviceSettingsView: View {
     @AppStorage("requireReason") var requireReason = false
     @AppStorage("showSearchBar") var showSearchBar = false
     @AppStorage("secondarySortOption") var secondarySortOption = ""
+    @AppStorage("enableAutomaticPutBack") var enableAutomaticPutBack = false
+    @AppStorage("automaticPutBackHours") var automaticPutBackHours = 3
+    @AppStorage("automaticPutBackIgnoreVisit") var automaticPutBackIgnoreVisit = true
 
     @ObservedObject var viewModel = SettingsViewModel.shared
     @ObservedObject var animalViewModel = AnimalViewModel.shared
@@ -32,6 +35,7 @@ struct DeviceSettingsView: View {
     @State private var showPopover9 = false
     @State private var showPopover10 = false
     @State private var showPopover11 = false
+    @State private var showPopover12 = false
 
     
     let linkTypes = ["QR Code", "Open In App"]
@@ -50,6 +54,26 @@ struct DeviceSettingsView: View {
                     }
                     .popover(isPresented: $showPopover1) {
                         Text("This sets the minimum duration for a visit. If a volunteer takes out an animal for a visit lasting less than this amount, it will show an error and not count the visit.")
+                            .padding()
+                            .textCase(nil)
+                    }
+                }
+            }
+            
+            Section {
+                Toggle(enableAutomaticPutBack ? "Enabled" : "Disabled", isOn: $enableAutomaticPutBack)
+                Toggle(automaticPutBackIgnoreVisit ? "Ignore Visit: Enabled" : "Ignore Visit: Disabled", isOn: $automaticPutBackIgnoreVisit)
+                Stepper(automaticPutBackHours == 1 ? "\(automaticPutBackHours) hour" : "\(automaticPutBackHours) hours", value: $automaticPutBackHours, in: 1...24, step: 1)
+            } header: {
+                HStack {
+                    Text("Automatic Put Back")
+                    Button {
+                        showPopover12 = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .popover(isPresented: $showPopover12) {
+                        Text("This setting will automatically put back animals who are out of their kennel after a certain period of time. This is so that if someone forgets to put them back, they won't stay orange all day.")
                             .padding()
                             .textCase(nil)
                     }
