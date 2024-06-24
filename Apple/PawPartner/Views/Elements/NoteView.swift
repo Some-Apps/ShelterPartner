@@ -22,15 +22,18 @@ struct NoteView: View {
             GroupBox {
                 VStack(alignment: .leading) {
                     HStack(alignment: .top) {
-                        if showNoteDates {
-                            Text(dateFormatter.string(from: Date(timeIntervalSince1970: note.date)))
-                                .font(.title3)
-                                .foregroundColor(.secondary)
+                        VStack(alignment: .leading) {
+                            if showNoteDates {
+                                Text(dateFormatter.string(from: Date(timeIntervalSince1970: note.date)))
+                                    .font(UIDevice.current.userInterfaceIdiom == .phone ? .body : .title3)
+                                    .foregroundColor(.secondary)
+                                    .underline()
+                            }
+                            Text(note.note)
+                                .font(UIDevice.current.userInterfaceIdiom == .phone ? .body : .title3)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
-                        Text(note.note)
-                            .font(UIDevice.current.userInterfaceIdiom == .phone ? .body : .title3)
-                            .fixedSize(horizontal: false, vertical: true)
-//                            .fontWeight(.bold)
+                        
                         Spacer()
 
                         if isWithin20Minutes(of: Date(timeIntervalSince1970: note.date)) || (mode == "volunteerAdmin" || mode == "visitorAdmin") {
