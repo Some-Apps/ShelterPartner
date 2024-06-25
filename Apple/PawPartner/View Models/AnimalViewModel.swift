@@ -16,7 +16,9 @@ class AnimalViewModel: ObservableObject {
     @Published var sortedVisitorCats: [Animal] = []
     
     @AppStorage("secondarySortOption") var secondarySortOption = ""
-    @AppStorage("groupsEnabled") var groupsEnabled = false
+//    @AppStorage("groupsEnabled") var groupsEnabled = false
+    @AppStorage("groupOption") var groupOption = ""
+
 
     @Published var showRequireReason = false
     @Published var showRequireName = false
@@ -117,10 +119,11 @@ class AnimalViewModel: ObservableObject {
     func groupAndSortAnimals(_ animals: [Animal]) -> [Animal] {
            var groupedAnimals: [String: [Animal]] = ["No Group": animals]
            
-           if groupsEnabled {
-               // Group the animals by their group attribute
-               groupedAnimals = Dictionary(grouping: animals, by: { $0.group ?? "No Group" })
-           }
+        if groupOption != "" {
+            if groupOption == "Color" {
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.colorGroup ?? "No Group" })
+            }
+        }
            
            // Sort the keys (group names)
            let sortedGroupKeys = groupedAnimals.keys.sorted()
@@ -139,7 +142,18 @@ class AnimalViewModel: ObservableObject {
                        sortedAnimalsInGroup = animalsInGroup.sorted(by: {
                            if secondarySortOption == "Color" {
                                if $0.colorSort == $1.colorSort {
-                                   return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                                   switch sortBy {
+                                   case .lastLetOut:
+                                       return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                                   case .playtime24Hours:
+                                       return $0.playtimeLast24Hours < $1.playtimeLast24Hours
+                                   case .playtime7Days:
+                                       return $0.playtimeLast7Days < $1.playtimeLast7Days
+                                   case .playtime30Days:
+                                       return $0.playtimeLast30Days < $1.playtimeLast30Days
+                                   case .playtime90Days:
+                                       return $0.playtimeLast90Days < $1.playtimeLast90Days
+                                   }
                                }
                                return ($0.colorSort ?? 100) < ($1.colorSort ?? 100)
                            } else if secondarySortOption == "Behavior" {

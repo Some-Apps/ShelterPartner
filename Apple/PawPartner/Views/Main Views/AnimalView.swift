@@ -32,7 +32,8 @@ struct AnimalView: View {
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("donationURL") var donationURL: String = ""
     @AppStorage("cardsPerPage") var cardsPerPage = 30
-    @AppStorage("groupsEnabled") var groupsEnabled = false
+//    @AppStorage("groupsEnabled") var groupsEnabled = false
+    @AppStorage("groupOption") var groupOption = ""
 
 
     @State private var filteredCatsList: [Animal] = []
@@ -188,7 +189,7 @@ struct AnimalView: View {
                     }
                     switch animalType {
                     case .Dog:
-                        if !groupsEnabled {
+                        if groupOption == "" {
                             AnimalGridView(
                                 allAnimals: viewModel.dogs,
                                 animals: paginatedAnimals(filteredDogsList),
@@ -209,7 +210,7 @@ struct AnimalView: View {
                             )
                         }
                     case .Cat:
-                        if !groupsEnabled {
+                        if groupOption == "" {
                             AnimalGridView(
                                 allAnimals: viewModel.cats,
                                 animals: paginatedAnimals(filteredCatsList),
@@ -453,6 +454,8 @@ struct GroupAnimalGridView: View {
     let columns: [GridItem]
     let cardViewModel: CardViewModel
     let cardView: (Animal) -> CardView
+    
+    @AppStorage("groupOption") var groupOption = ""
 
     var body: some View {
         if allAnimals.isEmpty {
@@ -503,7 +506,11 @@ struct GroupAnimalGridView: View {
     }
 
     private func groupAnimals() -> [String?: [Animal]] {
-        Dictionary(grouping: animals, by: { $0.group })
+        if groupOption == "Color" {
+            return Dictionary(grouping: animals, by: { $0.colorGroup ?? "No Group" })
+        } else {
+            return Dictionary(grouping: animals, by: { _ in "No Group" })
+        }
     }
 }
 
@@ -517,7 +524,8 @@ struct CollapsibleSection: View {
     let filterAttributes = ["Name", "Location", "Notes", "Breed"]
     let onSearch: () -> Void
 
-    @AppStorage("groupsEnabled") var groupsEnabled = false
+//    @AppStorage("groupsEnabled") var groupsEnabled = false
+    @AppStorage("groupOption") var groupOption = ""
     @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
     @AppStorage("showSearchBar") var showSearchBar = false
 
