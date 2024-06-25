@@ -190,6 +190,7 @@ struct AnimalView: View {
                     case .Dog:
                         if !groupsEnabled {
                             AnimalGridView(
+                                allAnimals: viewModel.dogs,
                                 animals: paginatedAnimals(filteredDogsList),
 
                                 columns: columns,
@@ -199,6 +200,7 @@ struct AnimalView: View {
                         } else {
                             GroupAnimalGridView(
                                 species: animalType.rawValue,
+                                allAnimals: viewModel.dogs,
                                 animals: paginatedAnimals(filteredDogsList),
 
                                 columns: columns,
@@ -209,6 +211,7 @@ struct AnimalView: View {
                     case .Cat:
                         if !groupsEnabled {
                             AnimalGridView(
+                                allAnimals: viewModel.cats,
                                 animals: paginatedAnimals(filteredCatsList),
 
                                 columns: columns,
@@ -218,6 +221,7 @@ struct AnimalView: View {
                         } else {
                             GroupAnimalGridView(
                                 species: animalType.rawValue,
+                                allAnimals: viewModel.cats,
                                 animals: paginatedAnimals(filteredCatsList),
 
                                 columns: columns,
@@ -418,13 +422,14 @@ struct WebView: UIViewRepresentable {
 }
 
 struct AnimalGridView<Animal>: View where Animal: Identifiable {
+    let allAnimals: [Animal]
     let animals: [Animal]
     let columns: [GridItem]
     let cardViewModel: CardViewModel
     let cardView: (Animal) -> CardView
 
     var body: some View {
-        if animals.isEmpty {
+        if allAnimals.isEmpty {
             VStack {
                 ProgressView()
             }
@@ -443,13 +448,14 @@ struct AnimalGridView<Animal>: View where Animal: Identifiable {
 
 struct GroupAnimalGridView: View {
     let species: String
+    let allAnimals: [Animal]
     let animals: [Animal]
     let columns: [GridItem]
     let cardViewModel: CardViewModel
     let cardView: (Animal) -> CardView
 
     var body: some View {
-        if animals.isEmpty {
+        if allAnimals.isEmpty {
             VStack {
                 ProgressView()
             }
