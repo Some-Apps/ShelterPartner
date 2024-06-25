@@ -168,7 +168,7 @@ struct CardView: View {
                     OutlinedButton(viewModel: viewModel, showPopover: $showPopover, animal: animal)
                     .onAppear {
                         if !animal.inCage && enableAutomaticPutBack {
-                            if Date().timeIntervalSince1970 - animal.startTime > Double(automaticPutBackHours * 60) {
+                            if Date().timeIntervalSince1970 - animal.startTime > Double(automaticPutBackHours * 3600) {
                                 viewModel.silentPutBack(animal: animal)
                             }
                         }
