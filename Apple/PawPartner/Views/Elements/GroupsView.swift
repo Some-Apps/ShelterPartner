@@ -10,12 +10,12 @@ struct GroupsView: View {
     let cardView: (Animal) -> CardView
     
     @State private var currentPage = 1
-
+    
     @AppStorage("cardsPerPage") var cardsPerPage = 30
-
+    
     @State private var showLoading = false
     @ObservedObject var animalViewModel = AnimalViewModel.shared
-
+    
     var animalsInGroup: [Animal] {
         let animals: [Animal]
         if species == "Cat" {
@@ -26,6 +26,16 @@ struct GroupsView: View {
         let filteredAnimals = animals.filter { ($0.group ?? "No Group") == group }
         print("Filtered \(filteredAnimals.count) animals in group \(group) for \(species)")
         return filteredAnimals
+    }
+    
+    var allAnimals: [Animal] {
+        let allAnimals: [Animal]
+        if species == "Cat" {
+            allAnimals = animalViewModel.cats
+        } else {
+            allAnimals = animalViewModel.dogs
+        }
+        return allAnimals
     }
 
 
@@ -53,7 +63,7 @@ struct GroupsView: View {
                 if !animalsInGroup.isEmpty {
                     PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)
                 }
-                AnimalGridView(animals: paginatedAnimals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
+                AnimalGridView(allAnimals: allAnimals, animals: paginatedAnimals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
 
                 if !animalsInGroup.isEmpty {
                     PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)

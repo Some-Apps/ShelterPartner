@@ -62,8 +62,12 @@ struct DeviceSettingsView: View {
             
             Section {
                 Toggle(enableAutomaticPutBack ? "Enabled" : "Disabled", isOn: $enableAutomaticPutBack)
+                    .tint(.blue)
                 Toggle(automaticPutBackIgnoreVisit ? "Ignore Visit: Enabled" : "Ignore Visit: Disabled", isOn: $automaticPutBackIgnoreVisit)
+                    .tint(.blue)
+                    .disabled(!enableAutomaticPutBack)
                 Stepper(automaticPutBackHours == 1 ? "\(automaticPutBackHours) hour" : "\(automaticPutBackHours) hours", value: $automaticPutBackHours, in: 1...24, step: 1)
+                    .disabled(!enableAutomaticPutBack)
             } header: {
                 HStack {
                     Text("Automatic Put Back")
