@@ -122,7 +122,12 @@ class AnimalViewModel: ObservableObject {
         if groupOption != "" {
             if groupOption == "Color" {
                 groupedAnimals = Dictionary(grouping: animals, by: { $0.colorGroup ?? "No Group" })
+            } else if groupOption == "Behavior" {
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.behaviorGroup ?? "No Group" })
+            } else if groupOption == "Building" {
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.buildingGroup ?? "No Group" })
             }
+        
         }
            
            // Sort the keys (group names)

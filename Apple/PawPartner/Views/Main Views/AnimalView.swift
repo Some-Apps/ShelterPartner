@@ -508,6 +508,10 @@ struct GroupAnimalGridView: View {
     private func groupAnimals() -> [String?: [Animal]] {
         if groupOption == "Color" {
             return Dictionary(grouping: animals, by: { $0.colorGroup ?? "No Group" })
+        } else if groupOption == "Behavior" {
+            return Dictionary(grouping: animals, by: { $0.behaviorGroup ?? "No Group" })
+        } else if groupOption == "Building" {
+            return Dictionary(grouping: animals, by: { $0.buildingGroup ?? "No Group" })
         } else {
             return Dictionary(grouping: animals, by: { _ in "No Group" })
         }

@@ -31,6 +31,8 @@ struct Animal: Codable, Identifiable, Hashable {
     var behaviorSort: Int?
     
     var colorGroup: String?
+    var behaviorGroup: String?
+    var buildingGroup: String?
 
     var allPhotos: [String] {
         return photos.map { $0.url }
