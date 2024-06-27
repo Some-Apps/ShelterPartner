@@ -32,6 +32,7 @@ class SettingsViewModel: ObservableObject {
     @Published var syncFrequency: String = ""
     @Published var apiKey: String = ""
     @Published var secondarySortOptions: [String] = []
+    @Published var groupOptions: [String] = []
     
     var listener: ListenerRegistration?
     
@@ -182,7 +183,7 @@ class SettingsViewModel: ObservableObject {
             self.syncFrequency = data["syncFrequency"] as? String ?? ""
             self.apiKey = data["apiKey"] as? String ?? ""
             self.secondarySortOptions = data["secondarySortOptions"] as? [String] ?? []
-
+            self.groupOptions = data["groupOptions"] as? [String] ?? []
         }
     }
 
