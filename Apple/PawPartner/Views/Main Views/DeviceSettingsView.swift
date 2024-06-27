@@ -8,7 +8,7 @@ struct DeviceSettingsView: View {
     @AppStorage("linkType") var linkType = "QR Code"
     @AppStorage("showNoteDates") var showNoteDates = true
     @AppStorage("requireName") var requireName = false
-    @AppStorage("groupsEnabled") var groupsEnabled = false
+//    @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("showAllAnimals") var showAllAnimals = false
     @AppStorage("createLogsAlways") var createLogsAlways = false
     @AppStorage("requireReason") var requireReason = false
@@ -17,6 +17,8 @@ struct DeviceSettingsView: View {
     @AppStorage("enableAutomaticPutBack") var enableAutomaticPutBack = false
     @AppStorage("automaticPutBackHours") var automaticPutBackHours = 3
     @AppStorage("automaticPutBackIgnoreVisit") var automaticPutBackIgnoreVisit = true
+    @AppStorage("groupOption") var groupOption = ""
+    @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
 
     @ObservedObject var viewModel = SettingsViewModel.shared
     @ObservedObject var animalViewModel = AnimalViewModel.shared
@@ -263,26 +265,32 @@ struct DeviceSettingsView: View {
                     }
                 }
             }
-            
-            Section {
-                Toggle(groupsEnabled ? "Enabled" : "Disabled", isOn: $groupsEnabled)
-                    .tint(.blue)
-            } header: {
-                HStack {
-                    Text("Groups")
-                    Button {
-                        showPopover3 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
+            if !viewModel.groupOptions.isEmpty {
+                Section {
+                    Picker("Group By", selection: $groupOption) {
+                        Text("").tag("")
+                        ForEach(viewModel.groupOptions, id: \.self) {
+                            Text($0)
+                        }
                     }
-                    .popover(isPresented: $showPopover3) {
-                        Text("Automatically group animals by categories of your choice. To set up the groups, email jared@pawpartner.app. In the future, this will be able to be set up directly in the app.")
-                            .padding()
-                            .textCase(nil)
+                    Toggle("Show \"Bulk Take Out\" Button", isOn: $showBulkTakeOut)
+                        .tint(.blue)
+                } header: {
+                    HStack {
+                        Text("Groups")
+                        Button {
+                            showPopover3 = true
+                        } label: {
+                            Image(systemName: "questionmark.circle")
+                        }
+                        .popover(isPresented: $showPopover3) {
+                            Text("Automatically group animals by categories of your choice. To set up the groups, email jared@pawpartner.app. In the future, this will be able to be set up directly in the app.")
+                                .padding()
+                                .textCase(nil)
+                        }
                     }
                 }
             }
-            
             if !viewModel.secondarySortOptions.isEmpty {
                 Section {
                     Picker("Secondary Sort", selection: $secondarySortOption) {
