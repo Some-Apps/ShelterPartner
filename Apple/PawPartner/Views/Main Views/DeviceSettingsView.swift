@@ -18,6 +18,7 @@ struct DeviceSettingsView: View {
     @AppStorage("automaticPutBackHours") var automaticPutBackHours = 3
     @AppStorage("automaticPutBackIgnoreVisit") var automaticPutBackIgnoreVisit = true
     @AppStorage("groupOption") var groupOption = ""
+    @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
 
     @ObservedObject var viewModel = SettingsViewModel.shared
     @ObservedObject var animalViewModel = AnimalViewModel.shared
@@ -272,6 +273,8 @@ struct DeviceSettingsView: View {
                             Text($0)
                         }
                     }
+                    Toggle("Show \"Bulk Take Out\" Button", isOn: $showBulkTakeOut)
+                        .tint(.blue)
                 } header: {
                     HStack {
                         Text("Groups")

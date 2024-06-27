@@ -27,10 +27,10 @@ struct AccountSetupView: View {
                         }
                     }
                 }
-//                Section {
+                Section {
 //                    TextField("API Key", text: $viewModel.apiKey)
-//                    NavigationLink("Main Filter", destination: FilterView())
-//                }
+                    NavigationLink("Main Filter", destination: FilterView())
+                }
                 Section {
                     Button("Save") {
                         viewModel.updateAccountSettings(shelter: viewModel.shelter, software: viewModel.software, apiKey: viewModel.apiKey, mainFilter: viewModel.mainFilter)

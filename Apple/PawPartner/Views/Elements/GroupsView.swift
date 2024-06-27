@@ -8,6 +8,8 @@ struct GroupsView: View {
     let columns: [GridItem]
     let cardViewModel: CardViewModel
     let cardView: (Animal) -> CardView
+    @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
+
     
     @State private var currentPage = 1
     
@@ -59,7 +61,9 @@ struct GroupsView: View {
     var body: some View {
         ScrollView {
             LazyVStack {
-                BulkOutlineButton(viewModel: cardViewModel, animals: animalsInGroup, showLoading: $showLoading)
+                if showBulkTakeOut {
+                    BulkOutlineButton(viewModel: cardViewModel, animals: animalsInGroup, showLoading: $showLoading)
+                }
                 if !animalsInGroup.isEmpty {
                     PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)
                 }
