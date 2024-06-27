@@ -1,55 +1,80 @@
-//
-//  AuthenticationView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/27/23.
-//
-
+import FirebaseAuth
 import SwiftUI
 
 struct AuthenticationView: View {
     @ObservedObject var viewModel = AuthenticationViewModel.shared
-    @AppStorage("mode") var mode = "volunteer"
-
+    @AppStorage("accountType") var accountType = "volunteer"
     
     var body: some View {
         if viewModel.isSignedIn {
-            switch mode {
-            case "volunteerAdmin":
+            switch accountType {
+            case "admin":
+                TabView {
+                        AnimalView()
+                            .task {
+                                viewModel.fetchUserAccountType(userID: Auth.auth().currentUser?.uid ?? "noAccount")
+                            }
+                            .tabItem {
+                                Label("Volunteer", systemImage: "pawprint.fill")
+                            }
+                        VisitorView()
+                            .task {
+                                viewModel.fetchUserAccountType(userID: Auth.auth().currentUser?.uid ?? "noAccount")
+                            }
+                            .tabItem {
+                                Label("Visitor", systemImage: "person.2.circle.fill")
+                            }
+                    SettingsView()
+                        .tabItem {
+                            Label("Settings", systemImage: "gearshape.fill")
+                        }
+                }
+                .task {
+                    viewModel.fetchUserAccountType(userID: Auth.auth().currentUser?.uid ?? "noAccount")
+                }
+            case "volunteer":
                 TabView {
                     AnimalView()
-                        .tabItem {
-                            Label("Animals", systemImage: "pawprint.fill")
-//                            Image(systemName: "pawprint.fill")
+                        .task {
+                            viewModel.fetchUserAccountType(userID: Auth.auth().currentUser?.uid ?? "noAccount")
                         }
-                    SettingsView()
                         .tabItem {
-                            Label("Settings", systemImage: "gearshape.fill")
-//                            Image(systemName: "gearshape.fill")
+                            Label("Volunteer", systemImage: "pawprint.fill")
                         }
-                }
-            case "visitorAdmin":
-                TabView {
                     VisitorView()
-                        .tabItem {
-                            Label("Animals", systemImage: "pawprint.fill")
+                        .task {
+                            viewModel.fetchUserAccountType(userID: Auth.auth().currentUser?.uid ?? "noAccount")
                         }
-                    SettingsView()
                         .tabItem {
-                            Label("Settings", systemImage: "gearshape.fill")
+                            Label("Visitor", systemImage: "person.2.circle.fill")
                         }
                 }
-                
-            
-            case "volunteer":
-                AnimalView()
-            case "visitor":
-                VisitorView()
+                   
+
+               
             default:
-                AnimalView()
+                TabView {
+                    AnimalView()
+                        .task {
+                            viewModel.fetchUserAccountType(userID: Auth.auth().currentUser?.uid ?? "noAccount")
+                        }
+                        .tabItem {
+                            Label("Volunteer", systemImage: "pawprint.fill")
+                        }
+                    VisitorView()
+                        .task {
+                            viewModel.fetchUserAccountType(userID: Auth.auth().currentUser?.uid ?? "noAccount")
+                        }
+                        .tabItem {
+                            Label("Visitor", systemImage: "person.2.circle.fill")
+                        }
+                }
             }
         } else {
             LoginView()
+                .task {
+                    viewModel.fetchUserAccountType(userID: Auth.auth().currentUser?.uid ?? "noAccount")
+                }
         }
     }
 }

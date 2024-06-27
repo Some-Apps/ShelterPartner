@@ -15,6 +15,18 @@ struct AccountSettingsView: View {
     var body: some View {
         Form {
             Section {
+                NavigationLink(destination: TagsView(species: .Cat)) {
+                    HStack {
+                        Image(systemName: "tag")
+                        Text("Cat Tags")
+                    }
+                }
+                NavigationLink(destination: TagsView(species: .Dog)) {
+                    HStack {
+                        Image(systemName: "tag")
+                        Text("Dog Tags")
+                    }
+                }
                 NavigationLink("Early Reasons", destination: ReasonsForEarlyPutBackView())
             } header: {
                 HStack {

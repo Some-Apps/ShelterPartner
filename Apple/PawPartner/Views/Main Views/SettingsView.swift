@@ -21,10 +21,11 @@ struct SettingsView: View {
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("staffVideo") var staffVideo: String = ""
     @AppStorage("guidedAccessVideo") var guidedAccessVideo: String = ""
-    @AppStorage("mode") var mode = "volunteer"
+//    @AppStorage("mode") var mode = "volunteer"
     @AppStorage("lastSync") var lastSync: String = ""
     @AppStorage("updateAppURL") var updateAppURL: String = ""
     @AppStorage("latestVersion") var latestVersion: String = ""
+    @AppStorage("accountType") var accountType = "volunteer"
 
 
     @State private var showGuidedAccessVideo = false
@@ -51,23 +52,23 @@ struct SettingsView: View {
         return "Unknown Build"
     }
 
-    private var isVisitorBinding: Binding<Bool> {
-        Binding<Bool>(
-            get: { self.mode == "visitor" },
-            set: { newValue in
-                self.mode = newValue ? "visitor" : "visitorAdmin"
-            }
-        )
-    }
-
-    private var isAdminBinding: Binding<Bool> {
-        Binding<Bool>(
-            get: { self.mode == "volunteerAdmin" },
-            set: { newValue in
-                self.mode = newValue ? "volunteerAdmin" : "volunteer"
-            }
-        )
-    }
+//    private var isVisitorBinding: Binding<Bool> {
+//        Binding<Bool>(
+//            get: { self.mode == "visitor" },
+//            set: { newValue in
+//                self.mode = newValue ? "visitor" : "visitorAdmin"
+//            }
+//        )
+//    }
+//
+//    private var isAdminBinding: Binding<Bool> {
+//        Binding<Bool>(
+//            get: { self.mode == "volunteerAdmin" },
+//            set: { newValue in
+//                self.mode = newValue ? "volunteerAdmin" : "volunteer"
+//            }
+//        )
+//    }
 
     // MARK: - Body
     var body: some View {
@@ -126,18 +127,13 @@ struct SettingsView: View {
                             Text("Account Setup")
                         }
                     }
-                    NavigationLink(destination: TagsView(species: .Cat)) {
+                    NavigationLink(destination: VolunteerAccountsView()) {
                         HStack {
-                            Image(systemName: "tag")
-                            Text("Cat Tags")
+                            Image(systemName: "person.crop.rectangle.stack")
+                            Text("Volunteer Accounts")
                         }
                     }
-                    NavigationLink(destination: TagsView(species: .Dog)) {
-                        HStack {
-                            Image(systemName: "tag")
-                            Text("Dog Tags")
-                        }
-                    }
+                    
                     NavigationLink(destination: ScheduledReportsView()) {
                         HStack {
                             Image(systemName: "envelope")
@@ -153,11 +149,11 @@ struct SettingsView: View {
                 }
 
                 Section("Device Settings") {
-                    HStack {
-                        Image(systemName: "lock")
-                        Toggle("Admin Mode", isOn: isAdminBinding)
-                            .toggleStyle(SwitchToggleStyle(tint: .blue))
-                    }
+//                    HStack {
+//                        Image(systemName: "lock")
+//                        Toggle("Admin Mode", isOn: isAdminBinding)
+//                            .toggleStyle(SwitchToggleStyle(tint: .blue))
+//                    }
                     HStack {
                         Image(systemName: "qrcode")
                         Toggle("QR Codes", isOn: $QRMode)
@@ -319,7 +315,7 @@ struct SettingsView: View {
         viewModel.reportsEmail = ""
         storedSocietyID = ""
         lastSync = ""
-        mode = "logIn"
+//        mode = "logIn"
     }
     
     func downloadAllData() {
