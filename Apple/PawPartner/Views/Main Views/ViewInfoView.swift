@@ -12,8 +12,8 @@ struct ViewInfoView: View {
     @State private var confirmDeleteTag: Bool = false
     @State private var isFullScreen = false
     @State private var selectedImageIndex = 0
+    @AppStorage("accountType") var accountType = "volunteer"
 
-    @AppStorage("mode") var mode = "volunteer"
     
     var numberOfColumns: Int = 2
     
@@ -84,7 +84,7 @@ struct ViewInfoView: View {
                         ForEach(topTags(for: animal), id: \.self) { tag in
                             HStack {
                                 Text(tag)
-                                if mode == "volunteerAdmin" || mode == "visitorAdmin" {
+                                if accountType == "admin" {
                                     Button {
                                         tagToDelete = tag
                                         confirmDeleteTag = true
@@ -143,7 +143,7 @@ struct ViewInfoView: View {
                                         self.isFullScreen = true
                                     }
                                     .tag(index) // Important for selection
-                                if mode == "volunteerAdmin" || mode == "visitorAdmin", let host = url.host, host.contains("storage.googleapis.com") {
+                                if accountType == "admin", let host = url.host, host.contains("storage.googleapis.com") {
                                     Button(action: {
                                         confirmDeletePhoto.toggle()
                                     }) {

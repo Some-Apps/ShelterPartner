@@ -28,7 +28,7 @@ struct AnimalView: View {
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
     @AppStorage("animalType") var animalType = AnimalType.Cat
     @AppStorage("societyID") var storedSocietyID: String = ""
-    @AppStorage("mode") var mode = "volunteer"
+    @AppStorage("animalMode") var animalMode = "volunteer"
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("donationURL") var donationURL: String = ""
     @AppStorage("cardsPerPage") var cardsPerPage = 30
@@ -106,41 +106,11 @@ struct AnimalView: View {
                             }
                         }
                         Spacer()
-                        if mode != "volunteerAdmin" && mode != "visitorAdmin" {
-                            Button("Switch To Admin") {
-                                showingPasswordPrompt = true
-                            }
-                            .sheet(isPresented: $showingPasswordPrompt) {
-                                PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
-                                    authViewModel.verifyPassword(password: passwordInput) { isCorrect in
-                                        if isCorrect {
-                                            mode = "volunteerAdmin"
-                                        } else {
-                                            print("Incorrect Password")
-                                            showIncorrectPassword.toggle()
-                                            passwordInput = ""
-                                        }
-                                    }
-                                }
-                            }
-                            Spacer()
-                        }
-                        if mode == "volunteerAdmin" || mode == "visitorAdmin" {
-                            Button("Turn Off Admin") {
-                                mode = "volunteer"
-                            }
-                            Spacer()
-                        }
 
-                        Button("Switch To Visitor") {
-                            if mode == "volunteerAdmin" {
-                                mode = "visitorAdmin"
-                            } else {
-                                mode = "visitor"
-
-                            }
-                        }
-                        Spacer()
+//                        Button("Switch To Visitor") {
+//                            animalMode = "visitor"
+//                        }
+//                        Spacer()
 
                         Button {
                             showingReportForm = true
@@ -528,7 +498,6 @@ struct CollapsibleSection: View {
     let filterAttributes = ["Name", "Location", "Notes", "Breed"]
     let onSearch: () -> Void
 
-//    @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("groupOption") var groupOption = ""
     @AppStorage("groupsFullyEnabled") var groupsFullyEnabled = false
     @AppStorage("showSearchBar") var showSearchBar = false
@@ -565,7 +534,6 @@ struct CollapsibleSection: View {
                     Section {
                         HStack {
                             TextField("Search", text: $searchQuery)
-//                                .frame(width: UIScreen.main.bounds.width * 0.5)
                             Picker("", selection: $selectedFilterAttribute) {
                                 ForEach(filterAttributes, id: \.self) { attribute in
                                     Text(attribute).tag(attribute)
@@ -579,10 +547,8 @@ struct CollapsibleSection: View {
                                 onSearch()
                             }
                         }
-
                     }
                     Section {
-                                
                             Button("Search") {
                                 resignFirstResponder()
                                 isSearching = true
@@ -596,21 +562,9 @@ struct CollapsibleSection: View {
                                 searchQueryFinished = ""
                                 onSearch()
                             }
-
                         }
-                        
-//
-//                        if groupsEnabled {
-//                            Section {
-//                                Toggle("Groups", isOn: $groupsFullyEnabled)
-//                                    .tint(.blue)
-//                            }
-//
-//                        }
-
                     }
                 .frame(height: 200)
-//                .scrollContentBackground(.hidden)
                 .overlay(
                     VStack {
                         Spacer()
@@ -623,22 +577,6 @@ struct CollapsibleSection: View {
                     }
                         .allowsHitTesting(true)
                 )
-//                .background(
-//                    ZStack {
-//                        Color(uiColor: .systemGray6)
-//                        VStack {
-//                            Spacer()
-//                            LinearGradient(
-//                                gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.15)]),
-//                                startPoint: .top,
-//                                endPoint: .bottom
-//                            )
-//                            .frame(height: 25)
-//                        }
-//
-//                    }
-//
-//                )
             }
         }
         .padding([.horizontal, .top])

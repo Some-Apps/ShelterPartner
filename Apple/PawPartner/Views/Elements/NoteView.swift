@@ -13,7 +13,7 @@ struct NoteView: View {
     let note: Note
     let animal: Animal
     @AppStorage("societyID") var storedSocietyID: String = ""
-    @AppStorage("mode") var mode = "volunteer"
+    @AppStorage("accountType") var accountType = "volunteer"
     @AppStorage("showNoteDates") var showNoteDates = true
 
     @State private var confirmDeleteNote = false
@@ -36,7 +36,7 @@ struct NoteView: View {
                         
                         Spacer()
 
-                        if isWithin20Minutes(of: Date(timeIntervalSince1970: note.date)) || (mode == "volunteerAdmin" || mode == "visitorAdmin") {
+                        if isWithin20Minutes(of: Date(timeIntervalSince1970: note.date)) || (accountType == "admin") {
                             Button {
                                 confirmDeleteNote.toggle()
                             } label: {

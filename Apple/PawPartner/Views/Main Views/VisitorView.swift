@@ -17,7 +17,7 @@ struct VisitorView: View {
     @AppStorage("updateAppURL") var updateAppURL: String = ""
     @AppStorage("animalType") var animalType = AnimalType.Cat
     @AppStorage("societyID") var storedSocietyID: String = ""
-    @AppStorage("mode") var mode = "volunteer"
+    @AppStorage("animalMode") var animalMode = "visitor"
     @AppStorage("feedbackURL") var feedbackURL: String = ""
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
 
@@ -84,44 +84,40 @@ struct VisitorView: View {
                         }
                     }
                     Spacer()
-                    if mode != "volunteerAdmin" && mode != "visitorAdmin" {
-                        Button("Switch To Admin") {
-                            showingPasswordPrompt = true
-                        }
-                        .sheet(isPresented: $showingPasswordPrompt) {
-                            PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
-                                authViewModel.verifyPassword(password: passwordInput) { isCorrect in
-                                    if isCorrect {
-                                        // The password is correct. Enable the feature here.
-                                        //                                        volunteerMode.toggle()
-                                        mode = "volunteerAdmin"
-                                    } else {
-                                        // The password is incorrect. Show an error message.
-                                        print("Incorrect Password")
-                                        showIncorrectPassword.toggle()
-                                        passwordInput = ""
-                                    }
-                                }
-                            }
-                        }
-                        Spacer()
-                        
-                    }
-                    if mode == "volunteerAdmin" || mode == "visitorAdmin" {
-                        Button("Turn Off Admin") {
-                            mode = "volunteer"
-                        }
-                        Spacer()
-                    }
+//                    if mode != "volunteerAdmin" && mode != "visitorAdmin" {
+//                        Button("Switch To Admin") {
+//                            showingPasswordPrompt = true
+//                        }
+//                        .sheet(isPresented: $showingPasswordPrompt) {
+//                            PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
+//                                authViewModel.verifyPassword(password: passwordInput) { isCorrect in
+//                                    if isCorrect {
+//                                        // The password is correct. Enable the feature here.
+//                                        //                                        volunteerMode.toggle()
+//                                        mode = "volunteerAdmin"
+//                                    } else {
+//                                        // The password is incorrect. Show an error message.
+//                                        print("Incorrect Password")
+//                                        showIncorrectPassword.toggle()
+//                                        passwordInput = ""
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        Spacer()
+//                        
+//                    }
+//                    if mode == "volunteerAdmin" || mode == "visitorAdmin" {
+//                        Button("Turn Off Admin") {
+//                            mode = "volunteer"
+//                        }
+//                        Spacer()
+//                    }
                    
-                        Button("Switch To Volunteer") {
-                            if mode == "visitorAdmin" {
-                                mode = "volunteerAdmin"
-                            } else {
-                                mode = "volunteer"
-                            }
-                        }
-                        Spacer()
+//                        Button("Switch To Volunteer") {
+//                            animalMode = "volunteer"
+//                        }
+//                        Spacer()
                    
                     
                     Button {

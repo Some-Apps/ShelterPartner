@@ -19,9 +19,12 @@ class AuthenticationViewModel: ObservableObject {
     @AppStorage("volunteerVideo") var volunteerVideo = ""
     @AppStorage("staffVideo") var staffVideo = ""
     @AppStorage("guidedAccessVideo") var guidedAccessVideo = ""
+    @AppStorage("accountType") var accountType = "volunteer"
+
     
     var handle: AuthStateDidChangeListenerHandle?
     var signUpListener: ListenerRegistration?
+    var accountListener: ListenerRegistration?
 
     init() {
         isSignedIn = Auth.auth().currentUser != nil
@@ -63,6 +66,22 @@ class AuthenticationViewModel: ObservableObject {
             }
             if let guidedAccessVideo = data["guidedAccessVideo"] as? String {
                 self?.guidedAccessVideo = guidedAccessVideo
+            }
+        }
+    }
+    
+    func fetchUserAccountType(userID: String) {
+        accountListener = Firestore.firestore().collection("Users").document(Auth.auth().currentUser?.uid ?? "noAccount").addSnapshotListener { [weak self] (documentSnapshot, error) in
+            guard let document = documentSnapshot else {
+                print("Error fetching document: \(error!)")
+                return
+            }
+            guard let data = document.data() else {
+                print("Document data was empty.")
+                return
+            }
+            if let accountType = data["type"] as? String {
+                self?.accountType = accountType
             }
         }
     }
