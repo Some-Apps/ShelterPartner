@@ -1,7 +1,6 @@
 import FirebaseFirestore
 import SwiftUI
 import Kingfisher
-import GoogleMobileAds
 
 
 struct AddNoteView: View {
@@ -143,14 +142,14 @@ struct AddNoteView: View {
 }
 
 
-struct BannerAdView: UIViewRepresentable {
-    func makeUIView(context: Context) -> GADBannerView {
-        let bannerView = GADBannerView(adSize: GADAdSizeLargeBanner)
-        bannerView.adUnitID = "ad_unit"
-        bannerView.rootViewController = UIApplication.shared.windows.first?.rootViewController
-        bannerView.load(GADRequest())
-        return bannerView
-    }
-
-    func updateUIView(_ uiView: GADBannerView, context: Context) {}
-}
+//struct BannerAdView: UIViewRepresentable {
+//    func makeUIView(context: Context) -> GADBannerView {
+//        let bannerView = GADBannerView(adSize: GADAdSizeLargeBanner)
+//        bannerView.adUnitID = "ad_unit"
+//        bannerView.rootViewController = UIApplication.shared.windows.first?.rootViewController
+//        bannerView.load(GADRequest())
+//        return bannerView
+//    }
+//
+//    func updateUIView(_ uiView: GADBannerView, context: Context) {}
+//}

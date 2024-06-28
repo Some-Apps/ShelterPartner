@@ -9,7 +9,6 @@ import SwiftUI
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
-import GoogleMobileAds
 import Kingfisher
 
 

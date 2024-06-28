@@ -10,8 +10,6 @@
 		C00611122B6C1A0700E28AD0 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00611112B6C1A0700E28AD0 /* Photo.swift */; };
 		C01B0A112A192E0E0062994D /* ViewInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01B0A102A192E0E0062994D /* ViewInfoView.swift */; };
 		C01B0A3A2A1979F30062994D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01B0A392A1979F30062994D /* SettingsView.swift */; };
-		C01B0A3D2A197F5F0062994D /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = C01B0A3C2A197F5F0062994D /* AlertToast */; };
-		C01B0A432A1A584D0062994D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C01B0A422A1A584D0062994D /* FirebaseAuth */; };
 		C01B0A4D2A1A96CC0062994D /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01B0A4C2A1A96CC0062994D /* LogView.swift */; };
 		C01B0A4F2A1A9C220062994D /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01B0A4E2A1A9C220062994D /* SettingsViewModel.swift */; };
 		C01B0A512A1D7B2E0062994D /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01B0A502A1D7B2E0062994D /* CardViewModel.swift */; };
@@ -23,6 +21,14 @@
 		C0241EBE2A75545600581A88 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0241EBD2A75545600581A88 /* FeedbackView.swift */; };
 		C04E1C9C2C042880007E0AE0 /* GroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E1C9B2C042880007E0AE0 /* GroupsView.swift */; };
 		C055E0172C2E056B006A0370 /* VolunteerAccountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C055E0162C2E056B006A0370 /* VolunteerAccountsView.swift */; };
+		C055E01A2C2F383A006A0370 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = C055E0192C2F383A006A0370 /* AlertToast */; };
+		C055E01C2C2F383F006A0370 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C055E01B2C2F383F006A0370 /* FirebaseAuth */; };
+		C055E01E2C2F3844006A0370 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C055E01D2C2F3844006A0370 /* FirebaseFirestore */; };
+		C055E0202C2F384A006A0370 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C055E01F2C2F384A006A0370 /* FirebaseFirestoreSwift */; };
+		C055E0222C2F3851006A0370 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C055E0212C2F3851006A0370 /* FirebaseStorage */; };
+		C055E0252C2F3881006A0370 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C055E0242C2F3881006A0370 /* Kingfisher */; };
+		C055E0282C2F38A2006A0370 /* SSToastMessage in Frameworks */ = {isa = PBXBuildFile; productRef = C055E0272C2F38A2006A0370 /* SSToastMessage */; };
+		C055E02B2C2F3D3B006A0370 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = C055E02A2C2F3D3B006A0370 /* PartialSheet */; };
 		C07AFBA72B914B1B00DC9DF8 /* VisitorDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07AFBA62B914B1B00DC9DF8 /* VisitorDetailView.swift */; };
 		C07AFBA92B94BE9400DC9DF8 /* VisitorNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07AFBA82B94BE9400DC9DF8 /* VisitorNoteView.swift */; };
 		C07B39FF2A23E39F00D13917 /* PasswordPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07B39FE2A23E39F00D13917 /* PasswordPromptView.swift */; };
@@ -32,8 +38,6 @@
 		C08A3C852C0D1BE700D99EF9 /* RequireReasonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08A3C842C0D1BE700D99EF9 /* RequireReasonView.swift */; };
 		C08A3C892C13B85B00D99EF9 /* AccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08A3C882C13B85B00D99EF9 /* AccountSettingsView.swift */; };
 		C08A3C8B2C13BEE400D99EF9 /* ReasonsForEarlyPutBackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08A3C8A2C13BEE400D99EF9 /* ReasonsForEarlyPutBackView.swift */; };
-		C090E15B2A5B04D90003D5C2 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C090E15A2A5B04D90003D5C2 /* FirebaseStorage */; };
-		C090E15E2A5B06400003D5C2 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C090E15D2A5B06400003D5C2 /* Kingfisher */; };
 		C09CAFCB2B48D22D004DDCFF /* VisitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09CAFCA2B48D22D004DDCFF /* VisitorView.swift */; };
 		C09CFEE02B1BF49D00AE8560 /* Preview Content in Resources */ = {isa = PBXBuildFile; fileRef = C09CFEDF2B1BF49D00AE8560 /* Preview Content */; };
 		C09CFEE22B1BF53900AE8560 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09CFEE12B1BF53900AE8560 /* Note.swift */; };
@@ -47,11 +51,7 @@
 		C09ECA412BFA804A0063F2ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C09ECA402BFA804A0063F2ED /* GoogleService-Info.plist */; };
 		C0AB96152BE535A70000D76C /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0AB96142BE535A70000D76C /* SetupView.swift */; };
 		C0AB96172BE54BA40000D76C /* RequireNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0AB96162BE54BA40000D76C /* RequireNameView.swift */; };
-		C0BB509D2A7CABDC007513F3 /* SSToastMessage in Frameworks */ = {isa = PBXBuildFile; productRef = C0BB509C2A7CABDC007513F3 /* SSToastMessage */; };
 		C0C316952B5582B300192C89 /* DeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C316942B5582B300192C89 /* DeviceSettingsView.swift */; };
-		C0C808912AD651EC0070E679 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = C0C808902AD651EC0070E679 /* PartialSheet */; };
-		C0E439112BF2E2A40052FFB5 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */; };
-		C0E4AB342C0E56B0007146BA /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C0E4AB332C0E56B0007146BA /* FirebaseFirestoreSwift */; };
 		C0E4AB362C0FA421007146BA /* AccountSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E4AB352C0FA421007146BA /* AccountSetupView.swift */; };
 		C0E4AB382C0FB30B007146BA /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E4AB372C0FB30B007146BA /* FilterView.swift */; };
 		C0E4AB3A2C0FBA8D007146BA /* FilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E4AB392C0FBA8D007146BA /* FilterViewModel.swift */; };
@@ -61,7 +61,6 @@
 		C0ECD8EE2A17E84F001F82C3 /* PawPartnerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD8ED2A17E84F001F82C3 /* PawPartnerApp.swift */; };
 		C0ECD8F02A17E84F001F82C3 /* AnimalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD8EF2A17E84F001F82C3 /* AnimalView.swift */; };
 		C0ECD8F22A17E850001F82C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C0ECD8F12A17E850001F82C3 /* Assets.xcassets */; };
-		C0ECD9012A17EC3D001F82C3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C0ECD9002A17EC3D001F82C3 /* FirebaseFirestore */; };
 		C0ECD90B2A1E6FB7001F82C3 /* AddNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90A2A1E6FB6001F82C3 /* AddNoteView.swift */; };
 		C0ECD90D2A1E7225001F82C3 /* AddNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90C2A1E7225001F82C3 /* AddNoteViewModel.swift */; };
 		C0ECD90F2A1E7656001F82C3 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90E2A1E7656001F82C3 /* NoteView.swift */; };
@@ -129,15 +128,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C0C808912AD651EC0070E679 /* PartialSheet in Frameworks */,
-				C01B0A432A1A584D0062994D /* FirebaseAuth in Frameworks */,
-				C090E15B2A5B04D90003D5C2 /* FirebaseStorage in Frameworks */,
-				C0BB509D2A7CABDC007513F3 /* SSToastMessage in Frameworks */,
-				C0E439112BF2E2A40052FFB5 /* GoogleMobileAds in Frameworks */,
-				C01B0A3D2A197F5F0062994D /* AlertToast in Frameworks */,
-				C0ECD9012A17EC3D001F82C3 /* FirebaseFirestore in Frameworks */,
-				C090E15E2A5B06400003D5C2 /* Kingfisher in Frameworks */,
-				C0E4AB342C0E56B0007146BA /* FirebaseFirestoreSwift in Frameworks */,
+				C055E0252C2F3881006A0370 /* Kingfisher in Frameworks */,
+				C055E01A2C2F383A006A0370 /* AlertToast in Frameworks */,
+				C055E02B2C2F3D3B006A0370 /* PartialSheet in Frameworks */,
+				C055E0282C2F38A2006A0370 /* SSToastMessage in Frameworks */,
+				C055E01C2C2F383F006A0370 /* FirebaseAuth in Frameworks */,
+				C055E01E2C2F3844006A0370 /* FirebaseFirestore in Frameworks */,
+				C055E0222C2F3851006A0370 /* FirebaseStorage in Frameworks */,
+				C055E0202C2F384A006A0370 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,15 +290,14 @@
 			);
 			name = HumaneSociety;
 			packageProductDependencies = (
-				C0ECD9002A17EC3D001F82C3 /* FirebaseFirestore */,
-				C01B0A3C2A197F5F0062994D /* AlertToast */,
-				C01B0A422A1A584D0062994D /* FirebaseAuth */,
-				C090E15A2A5B04D90003D5C2 /* FirebaseStorage */,
-				C090E15D2A5B06400003D5C2 /* Kingfisher */,
-				C0BB509C2A7CABDC007513F3 /* SSToastMessage */,
-				C0C808902AD651EC0070E679 /* PartialSheet */,
-				C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */,
-				C0E4AB332C0E56B0007146BA /* FirebaseFirestoreSwift */,
+				C055E0192C2F383A006A0370 /* AlertToast */,
+				C055E01B2C2F383F006A0370 /* FirebaseAuth */,
+				C055E01D2C2F3844006A0370 /* FirebaseFirestore */,
+				C055E01F2C2F384A006A0370 /* FirebaseFirestoreSwift */,
+				C055E0212C2F3851006A0370 /* FirebaseStorage */,
+				C055E0242C2F3881006A0370 /* Kingfisher */,
+				C055E0272C2F38A2006A0370 /* SSToastMessage */,
+				C055E02A2C2F3D3B006A0370 /* PartialSheet */,
 			);
 			productName = HumaneSociety;
 			productReference = C0ECD8EA2A17E84F001F82C3 /* HumaneSociety.app */;
@@ -332,11 +329,10 @@
 			mainGroup = C0ECD8E12A17E84F001F82C3;
 			packageReferences = (
 				C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				C01B0A3B2A197F5F0062994D /* XCRemoteSwiftPackageReference "AlertToast" */,
-				C090E15C2A5B06400003D5C2 /* XCRemoteSwiftPackageReference "Kingfisher" */,
-				C0BB509B2A7CABDC007513F3 /* XCRemoteSwiftPackageReference "SSToastMessage" */,
-				C0C8088F2AD651EC0070E679 /* XCRemoteSwiftPackageReference "PartialSheet" */,
-				C0E4390F2BF2E2A30052FFB5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				C055E0182C2F383A006A0370 /* XCRemoteSwiftPackageReference "AlertToast" */,
+				C055E0232C2F3881006A0370 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				C055E0262C2F38A2006A0370 /* XCRemoteSwiftPackageReference "SSToastMessage" */,
+				C055E0292C2F3D3B006A0370 /* XCRemoteSwiftPackageReference "PartialSheet" */,
 			);
 			productRefGroup = C0ECD8EB2A17E84F001F82C3 /* Products */;
 			projectDirPath = "";
@@ -546,7 +542,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PawPartner/Resources/Preview Content\"";
-				DEVELOPMENT_TEAM = 5SGZH379X4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PawPartner/Info.plist;
@@ -585,7 +581,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PawPartner/Resources/Preview Content\"";
-				DEVELOPMENT_TEAM = 5SGZH379X4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PawPartner/Info.plist;
@@ -638,44 +634,36 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		C01B0A3B2A197F5F0062994D /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+		C055E0182C2F383A006A0370 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/elai950/AlertToast";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.3.9;
 			};
 		};
-		C090E15C2A5B06400003D5C2 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+		C055E0232C2F3881006A0370 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
+				minimumVersion = 7.12.0;
 			};
 		};
-		C0BB509B2A7CABDC007513F3 /* XCRemoteSwiftPackageReference "SSToastMessage" */ = {
+		C055E0262C2F38A2006A0370 /* XCRemoteSwiftPackageReference "SSToastMessage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SimformSolutionsPvtLtd/SSToastMessage";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 2.0.0;
 			};
 		};
-		C0C8088F2AD651EC0070E679 /* XCRemoteSwiftPackageReference "PartialSheet" */ = {
+		C055E0292C2F3D3B006A0370 /* XCRemoteSwiftPackageReference "PartialSheet" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AndreaMiotto/PartialSheet";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.1.1;
-			};
-		};
-		C0E4390F2BF2E2A30052FFB5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.4.0;
 			};
 		};
 		C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -689,50 +677,45 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C01B0A3C2A197F5F0062994D /* AlertToast */ = {
+		C055E0192C2F383A006A0370 /* AlertToast */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = C01B0A3B2A197F5F0062994D /* XCRemoteSwiftPackageReference "AlertToast" */;
+			package = C055E0182C2F383A006A0370 /* XCRemoteSwiftPackageReference "AlertToast" */;
 			productName = AlertToast;
 		};
-		C01B0A422A1A584D0062994D /* FirebaseAuth */ = {
+		C055E01B2C2F383F006A0370 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
 		};
-		C090E15A2A5B04D90003D5C2 /* FirebaseStorage */ = {
+		C055E01D2C2F3844006A0370 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseStorage;
+			productName = FirebaseFirestore;
 		};
-		C090E15D2A5B06400003D5C2 /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C090E15C2A5B06400003D5C2 /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
-		};
-		C0BB509C2A7CABDC007513F3 /* SSToastMessage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C0BB509B2A7CABDC007513F3 /* XCRemoteSwiftPackageReference "SSToastMessage" */;
-			productName = SSToastMessage;
-		};
-		C0C808902AD651EC0070E679 /* PartialSheet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C0C8088F2AD651EC0070E679 /* XCRemoteSwiftPackageReference "PartialSheet" */;
-			productName = PartialSheet;
-		};
-		C0E439102BF2E2A40052FFB5 /* GoogleMobileAds */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C0E4390F2BF2E2A30052FFB5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
-			productName = GoogleMobileAds;
-		};
-		C0E4AB332C0E56B0007146BA /* FirebaseFirestoreSwift */ = {
+		C055E01F2C2F384A006A0370 /* FirebaseFirestoreSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestoreSwift;
 		};
-		C0ECD9002A17EC3D001F82C3 /* FirebaseFirestore */ = {
+		C055E0212C2F3851006A0370 /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
+			productName = FirebaseStorage;
+		};
+		C055E0242C2F3881006A0370 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C055E0232C2F3881006A0370 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		C055E0272C2F38A2006A0370 /* SSToastMessage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C055E0262C2F38A2006A0370 /* XCRemoteSwiftPackageReference "SSToastMessage" */;
+			productName = SSToastMessage;
+		};
+		C055E02A2C2F3D3B006A0370 /* PartialSheet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C055E0292C2F3D3B006A0370 /* XCRemoteSwiftPackageReference "PartialSheet" */;
+			productName = PartialSheet;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
