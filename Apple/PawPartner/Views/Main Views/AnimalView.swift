@@ -5,6 +5,7 @@ import AlertToast
 import Kingfisher
 import WebKit
 import UIKit
+import SSToastMessage
 
 struct AnimalView: View {
     // MARK: - Properties
@@ -305,6 +306,7 @@ struct AnimalView: View {
                 .scaledToFit()
                 .frame(maxWidth: 500)
         }
+        .present
         .present(isPresented: $viewModel.showRequireName, type: .alert, autohideDuration: 60, closeOnTap: false, closeOnTapOutside: false) {
             RequireNameView(animal: viewModel.animal)
         }
