@@ -5,8 +5,9 @@ import SwiftUI
 class FilterViewModel: ObservableObject {
 //    @Published var filters: [FilterCondition] = []
     @Published var canPlayFilter: [FilterCondition] = []
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     
-    @AppStorage("societyID") var shelterID = ""
+//    @AppStorage("societyID") var shelterID = ""
 
     
     private var db = Firestore.firestore()
@@ -21,7 +22,7 @@ class FilterViewModel: ObservableObject {
     }
     
     func fetchFilters() {
-            listenerRegistration = db.collection("Societies").document(shelterID).addSnapshotListener { documentSnapshot, error in
+        listenerRegistration = db.collection("Societies").document(authViewModel.shelterID).addSnapshotListener { documentSnapshot, error in
                 guard let document = documentSnapshot else {
                     print("Error fetching document: \(error!)")
                     return
@@ -51,7 +52,7 @@ class FilterViewModel: ObservableObject {
             ] as [String: Any]
         }
         
-        db.collection("Societies").document(shelterID).updateData(["canPlayFilter": filtersArray]) { error in
+        db.collection("Societies").document(authViewModel.shelterID).updateData(["canPlayFilter": filtersArray]) { error in
             if let error = error {
                 print("Error saving document: \(error)")
             } else {

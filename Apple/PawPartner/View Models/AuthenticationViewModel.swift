@@ -16,15 +16,20 @@ class AuthenticationViewModel: ObservableObject {
     @Published var isSignedIn = false
     @Published var showLoginSuccess = false
     @Published var signUpForm = ""
+    
+    
+    @Published var shelterID = ""
+    @Published var accountType = "volunteer"
+    
     @AppStorage("volunteerVideo") var volunteerVideo = ""
     @AppStorage("staffVideo") var staffVideo = ""
     @AppStorage("guidedAccessVideo") var guidedAccessVideo = ""
-    @AppStorage("accountType") var accountType = "volunteer"
+//    @AppStorage("accountType") var accountType = "volunteer"
 
     
     var handle: AuthStateDidChangeListenerHandle?
     var signUpListener: ListenerRegistration?
-    var accountListener: ListenerRegistration?
+    var dataListener: ListenerRegistration?
 
     init() {
         isSignedIn = Auth.auth().currentUser != nil
@@ -33,6 +38,18 @@ class AuthenticationViewModel: ObservableObject {
             if let user = user {
                 print("User \(user.uid) signed in")
                 self?.isSignedIn = true
+                self?.fetchSocietyID(forUser: user.uid) { (result) in
+                    switch result {
+                    case .success(let id):
+                        self?.shelterID = id
+                        print("Shelter ID: \(id)")
+                        self?.setupListeners(theUserID: user.uid)
+                    default:
+                        print("failed")
+//                        print("Shelter ID: \(id)")
+                    }
+                }
+//                self?.setupListeners()
             } else {
                 print("User signed out")
                 self?.isSignedIn = false
@@ -42,7 +59,13 @@ class AuthenticationViewModel: ObservableObject {
     deinit {
         if let handle = handle {
             Auth.auth().removeStateDidChangeListener(handle)
+            
         }
+    }
+    
+    func removeListeners() {
+        signUpListener?.remove()
+        dataListener?.remove()
     }
         
     func fetchSignUpForm() {
@@ -70,25 +93,21 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
     
-    func fetchUserAccountType(userID: String) {
-        accountListener = Firestore.firestore().collection("Users").document(Auth.auth().currentUser?.uid ?? "noAccount").addSnapshotListener { [weak self] (documentSnapshot, error) in
-            guard let document = documentSnapshot else {
-                print("Error fetching document: \(error!)")
-                return
-            }
-            guard let data = document.data() else {
-                print("Document data was empty.")
-                return
-            }
-            if let accountType = data["type"] as? String {
-                self?.accountType = accountType
-            }
-        }
-    }
-    
-    func removeListeners() {
-        signUpListener?.remove()
-    }
+//    func fetchUserAccountType(userID: String) {
+//        accountListener = Firestore.firestore().collection("Users").document(Auth.auth().currentUser?.uid ?? "noAccount").addSnapshotListener { [weak self] (documentSnapshot, error) in
+//            guard let document = documentSnapshot else {
+//                print("Error fetching document: \(error!)")
+//                return
+//            }
+//            guard let data = document.data() else {
+//                print("Document data was empty.")
+//                return
+//            }
+//            if let accountType = data["type"] as? String {
+//                self?.accountType = accountType
+//            }
+//        }
+//    }
 
     func signOut() {
         do {
@@ -116,7 +135,81 @@ class AuthenticationViewModel: ObservableObject {
             }
         }
     }
+    
+    func fetchData(forUser userID: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let db = Firestore.firestore()
+        
+        db.collection("Users").document(userID).addSnapshotListener { (documentSnapshot, error) in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                if let document = documentSnapshot, document.exists, let data = document.data(),
+                   let societyID = data["societyID"] as? String {
+                    completion(.success(societyID))
+                } else {
+                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "SocietyID not found"])))
+                }
+            }
+        }
+    }
+    
 
+    
+    func setupListeners(theUserID: String) {
+        
+        dataListener = Firestore.firestore().collection("Users").document(theUserID)
+            .addSnapshotListener { [weak self] snapshot, error in
+                if let error = error {
+                    print("Error fetching scheduled reports: \(error)")
+                    return
+                }
+                
+                guard let data = snapshot?.data() else {
+                    print("No data found for document")
+                    return
+                }
+                
+                self?.shelterID = data["societyID"] as? String ?? ""
+//                print(theShelterID)
+//                print("This shelter \(self?.shelterID)")
+                self?.accountType = data["type"] as? String ?? "volunteer"
+//                self?.updateProperties(with: data)
+            }
+    }
+    
+//    private func updateProperties(with data: [String: Any]) {
+//        DispatchQueue.main.async {
+//            self.reportsDay = data["reportsDay"] as? String ?? ""
+//            self.reportsEmail = data["reportsEmail"] as? String ?? ""
+//            self.earlyReasons = data["earlyReasons"] as? [String] ?? []
+//            self.catTags = data["catTags"] as? [String] ?? []
+//            self.dogTags = data["dogTags"] as? [String] ?? []
+//            self.software = data["software"] as? String ?? ""
+//            self.shelter = data["shelter"] as? String ?? ""
+//            self.mainFilter = data["mainFilter"] as? String ?? ""
+//            self.syncFrequency = data["syncFrequency"] as? String ?? ""
+//            self.apiKey = data["apiKey"] as? String ?? ""
+//            self.secondarySortOptions = data["secondarySortOptions"] as? [String] ?? []
+//            self.groupOptions = data["groupOptions"] as? [String] ?? []
+//        }
+//    }
+    
+    func fetchSocietyID(forUser userID: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let db = Firestore.firestore()
+        
+        db.collection("Users").document(userID).getDocument { (document, error) in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                if let document = document, document.exists, let data = document.data(),
+                   let societyID = data["societyID"] as? String {
+                    completion(.success(societyID))
+                } else {
+                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "SocietyID not found"])))
+                }
+            }
+        }
+    }
 
     func updatePassword(oldPassword: String, newPassword: String) {
         guard let user = Auth.auth().currentUser, let email = user.email else { return }

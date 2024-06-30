@@ -86,6 +86,7 @@ struct GroupsView: View {
 struct BulkOutlineButton: View {
     let viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     var animals: [Animal]
     @Binding var showLoading: Bool
     @AppStorage("minimumDuration") var minimumDuration = 5
@@ -105,7 +106,7 @@ struct BulkOutlineButton: View {
     @State private var tickCountPressing: CGFloat = 0
     @State private var tickCountNotPressing: CGFloat = 75 // Starts from the end.
     
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("lastCatSync") var lastCatSync: String = ""
     @AppStorage("lastDogSync") var lastDogSync: String = ""
     @AppStorage("requireName") var requireName = false
@@ -250,7 +251,7 @@ struct BulkOutlineButton: View {
         let majorityInCage = inCageCount > notInCageCount
         
         for animal in filteredAnimals {
-            let animalRef = db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType)s").document(animal.id)
+            let animalRef = db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType)s").document(animal.id)
             if majorityInCage {
                 if animal.inCage && animal.canPlay && animal.alert.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
                     batch.updateData(["inCage": false, "startTime": Date().timeIntervalSince1970], forDocument: animalRef)

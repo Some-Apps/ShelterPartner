@@ -16,7 +16,7 @@ struct VisitorView: View {
     @AppStorage("latestVersion") var latestVersion: String = ""
     @AppStorage("updateAppURL") var updateAppURL: String = ""
     @AppStorage("animalType") var animalType = AnimalType.Cat
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("animalMode") var animalMode = "visitor"
     @AppStorage("feedbackURL") var feedbackURL: String = ""
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
@@ -79,7 +79,7 @@ struct VisitorView: View {
                         }
                     }
                     .sheet(isPresented: $showingFeedbackForm) {
-                        if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
+                        if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(authViewModel.shelterID)") {
                             WebView(url: feedbackURL)
                         }
                     }
@@ -129,7 +129,7 @@ struct VisitorView: View {
                         }
                     }
                     .sheet(isPresented: $showingReportForm) {
-                        if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(storedSocietyID)") {
+                        if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(authViewModel.shelterID)") {
                             WebView(url: reportProblemURL)
                             
                         }
@@ -227,11 +227,11 @@ struct VisitorView: View {
             AlertToast(displayMode: .alert, type: .loading)
         }
         .onAppear {
-            if storedSocietyID == "" && Auth.auth().currentUser?.uid != nil {
+            if authViewModel.shelterID == "" && Auth.auth().currentUser?.uid != nil {
                 viewModel.fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
                     switch result {
                     case .success(let id):
-                        storedSocietyID = id
+                        authViewModel.shelterID = id
                         viewModel.listenForSocietyLastSyncUpdate(societyID: id)
                         
                     case .failure(let error):
@@ -242,8 +242,8 @@ struct VisitorView: View {
             viewModel.fetchCatData() { _ in }
             viewModel.fetchDogData() { _ in }
             viewModel.fetchLatestVersion()
-            if storedSocietyID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
-                viewModel.postAppVersion(societyID: storedSocietyID, installedVersion: "\(appVersion) (\(buildNumber))")
+            if authViewModel.shelterID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+                viewModel.postAppVersion(societyID: authViewModel.shelterID, installedVersion: "\(appVersion) (\(buildNumber))")
             }
         }
 

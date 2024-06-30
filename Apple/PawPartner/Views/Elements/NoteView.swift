@@ -12,8 +12,9 @@ import Kingfisher
 struct NoteView: View {
     let note: Note
     let animal: Animal
-    @AppStorage("societyID") var storedSocietyID: String = ""
-    @AppStorage("accountType") var accountType = "volunteer"
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
+//    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("accountType") var accountType = "volunteer"
     @AppStorage("showNoteDates") var showNoteDates = true
 
     @State private var confirmDeleteNote = false
@@ -36,7 +37,7 @@ struct NoteView: View {
                         
                         Spacer()
 
-                        if isWithin20Minutes(of: Date(timeIntervalSince1970: note.date)) || (accountType == "admin") {
+                        if isWithin20Minutes(of: Date(timeIntervalSince1970: note.date)) || (authViewModel.accountType == "admin") {
                             Button {
                                 confirmDeleteNote.toggle()
                             } label: {
@@ -72,7 +73,7 @@ struct NoteView: View {
     
     func deleteNote() {
         // This is the path to the animal
-        let animalPath = Firestore.firestore().collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id)
+        let animalPath = Firestore.firestore().collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id)
 
         // Get the document
         animalPath.getDocument { (document, error) in

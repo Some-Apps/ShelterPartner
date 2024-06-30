@@ -28,7 +28,7 @@ struct AnimalView: View {
     @AppStorage("feedbackURL") var feedbackURL: String = ""
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
     @AppStorage("animalType") var animalType = AnimalType.Cat
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("animalMode") var animalMode = "volunteer"
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("donationURL") var donationURL: String = ""
@@ -102,7 +102,7 @@ struct AnimalView: View {
                             }
                         }
                         .sheet(isPresented: $showingFeedbackForm) {
-                            if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
+                            if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(authViewModel.shelterID)") {
                                 WebView(url: feedbackURL)
                             }
                         }
@@ -122,7 +122,7 @@ struct AnimalView: View {
                             }
                         }
                         .sheet(isPresented: $showingReportForm) {
-                            if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(storedSocietyID)") {
+                            if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(authViewModel.shelterID)") {
                                 WebView(url: reportProblemURL)
                             }
                         }
@@ -259,11 +259,11 @@ struct AnimalView: View {
             if settingsViewModel.filterOptions.isEmpty {
                 filterPicker = false
             }
-            if storedSocietyID == "" && Auth.auth().currentUser?.uid != nil {
+            if authViewModel.shelterID == "" && Auth.auth().currentUser?.uid != nil {
                 viewModel.fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
                     switch result {
                     case .success(let id):
-                        storedSocietyID = id
+                        authViewModel.shelterID = id
                         viewModel.listenForSocietyLastSyncUpdate(societyID: id)
                     case .failure(let error):
                         print(error)
@@ -277,8 +277,8 @@ struct AnimalView: View {
                 updateFilteredAnimals() // Ensure initial animals are displayed
             }
             viewModel.fetchLatestVersion()
-            if storedSocietyID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
-                viewModel.postAppVersion(societyID: storedSocietyID, installedVersion: "\(appVersion) (\(buildNumber))")
+            if authViewModel.shelterID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+                viewModel.postAppVersion(societyID: authViewModel.shelterID, installedVersion: "\(appVersion) (\(buildNumber))")
             }
         }
         .present(isPresented: $shouldPresentThankYouView, type: .alert, duration: 60, closeOnTap: false) {

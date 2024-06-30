@@ -10,7 +10,8 @@ import FirebaseFirestore
 import Foundation
 
 class AddNoteViewModel: ObservableObject {
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     
     func createNote(for animal: Animal, note: String, tags: [String], user: String?) {
         let db = Firestore.firestore()
@@ -29,7 +30,7 @@ class AddNoteViewModel: ObservableObject {
         
         // Start a Firestore transaction
         db.runTransaction({ (transaction, errorPointer) -> Any? in
-            let animalDocument = db.collection("Societies").document(self.storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id)
+            let animalDocument = db.collection("Societies").document(self.authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id)
             
             // Attempt to retrieve the animal document
             let animalDocumentSnapshot = try? transaction.getDocument(animalDocument)

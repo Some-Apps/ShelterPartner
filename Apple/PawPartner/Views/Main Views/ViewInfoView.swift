@@ -12,8 +12,8 @@ struct ViewInfoView: View {
     @State private var confirmDeleteTag: Bool = false
     @State private var isFullScreen = false
     @State private var selectedImageIndex = 0
-    @AppStorage("accountType") var accountType = "volunteer"
-
+//    @AppStorage("accountType") var accountType = "volunteer"
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     
     var numberOfColumns: Int = 2
     
@@ -66,7 +66,7 @@ struct ViewInfoView: View {
     @State private var tagToDelete: String? = nil
 
     @AppStorage("lastSync") var lastSync: String = ""
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
 
     
     var body: some View {
@@ -84,7 +84,7 @@ struct ViewInfoView: View {
                         ForEach(topTags(for: animal), id: \.self) { tag in
                             HStack {
                                 Text(tag)
-                                if accountType == "admin" {
+                                if authViewModel.accountType == "admin" {
                                     Button {
                                         tagToDelete = tag
                                         confirmDeleteTag = true
@@ -143,7 +143,7 @@ struct ViewInfoView: View {
                                         self.isFullScreen = true
                                     }
                                     .tag(index) // Important for selection
-                                if accountType == "admin", let host = url.host, host.contains("storage.googleapis.com") {
+                                if authViewModel.accountType == "admin", let host = url.host, host.contains("storage.googleapis.com") {
                                     Button(action: {
                                         confirmDeletePhoto.toggle()
                                     }) {
@@ -249,7 +249,7 @@ struct ViewInfoView: View {
             switch result {
             case .success():
                 print("Image successfully deleted from Firebase Storage")
-                removeImageURLFromFirestore(urlString: urlString, society_id: storedSocietyID, species: animal.animalType.rawValue, animal_id: animal.id)
+                removeImageURLFromFirestore(urlString: urlString, society_id: authViewModel.shelterID, species: animal.animalType.rawValue, animal_id: animal.id)
 
             case .failure(let error):
                 print("Error deleting image from Firebase Storage: \(error)")
@@ -261,7 +261,7 @@ struct ViewInfoView: View {
         print("Attempting to delete tag: '\(tag)'") // Debugging print statement
 
         let db = Firestore.firestore()
-        let documentRef = db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id)
+        let documentRef = db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id)
 
         documentRef.getDocument { (document, error) in
             if let document = document, document.exists, var tags = document.data()?["tags"] as? [String: Any] {

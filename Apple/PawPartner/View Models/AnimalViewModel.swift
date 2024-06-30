@@ -56,7 +56,6 @@ class AnimalViewModel: ObservableObject {
     @AppStorage("latestVersion") var latestVersion: String = ""
     @AppStorage("updateAppURL") var updateAppURL: String = ""
     @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
-    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("feedbackURL") var feedbackURL: String = ""
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
 
@@ -437,18 +436,18 @@ class AnimalViewModel: ObservableObject {
     }
 
     
-    func changeAggressionRating(newRating: Int) {
-        print(newRating)
-        db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
-            "aggressionRating": newRating
-        ]) { err in
-            if let err = err {
-                print("Error updating document: \(err)")
-            } else {
-                print("Document successfully updated")
-            }
-        }
-    }
+//    func changeAggressionRating(newRating: Int) {
+//        print(newRating)
+//        db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+//            "aggressionRating": newRating
+//        ]) { err in
+//            if let err = err {
+//                print("Error updating document: \(err)")
+//            } else {
+//                print("Document successfully updated")
+//            }
+//        }
+//    }
     
     
     func removeListeners() {
