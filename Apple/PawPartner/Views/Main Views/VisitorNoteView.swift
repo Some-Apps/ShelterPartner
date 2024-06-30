@@ -12,7 +12,7 @@ import Kingfisher
 struct VisitorNoteView: View {
     let note: Note
     let animal: Animal
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     
     var body: some View {
             GroupBox {

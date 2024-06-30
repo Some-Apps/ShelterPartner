@@ -24,6 +24,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct PawPartnerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject var authViewModel = AuthenticationViewModel.shared
     
     var body: some Scene {
         WindowGroup {

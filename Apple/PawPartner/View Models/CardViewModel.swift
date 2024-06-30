@@ -12,7 +12,8 @@ import SwiftUI
 
 class CardViewModel: ObservableObject {
     @ObservedObject var animalViewModel = AnimalViewModel.shared
-    @AppStorage("societyID") var storedSocietyID: String = ""
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("requireName") var requireName = false
     @AppStorage("createLogsAlways") var createLogsAlways = false
@@ -24,7 +25,7 @@ class CardViewModel: ObservableObject {
     // Test if this works
     func takeOut(animal: Animal) {
         let db = Firestore.firestore()
-        db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+        db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
             "startTime": Date().timeIntervalSince1970,
             "inCage": false
         ]){ err in
@@ -38,7 +39,7 @@ class CardViewModel: ObservableObject {
     
     func putBack(animal: Animal) {
         let db = Firestore.firestore()
-        db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+        db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
             "inCage": true
         ]) { err in
             if let err = err {
@@ -67,7 +68,7 @@ class CardViewModel: ObservableObject {
     func bulkPutBack(animals: [Animal]) {
         let db = Firestore.firestore()
         for animal in animals {
-            db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+            db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
                 "inCage": true
             ]) { err in
                 if let err = err {
@@ -88,7 +89,7 @@ class CardViewModel: ObservableObject {
     
     func silentPutBack(animal: Animal) {
         let db = Firestore.firestore()
-        db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+        db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
             "inCage": true
         ]) { err in
             if let err = err {
@@ -112,7 +113,7 @@ class CardViewModel: ObservableObject {
         let db = Firestore.firestore()
         
         // Fetch the document
-        db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).getDocument { (document, error) in
+        db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).getDocument { (document, error) in
             if let document = document, document.exists, let data = document.data() {
                 // Retrieve startTime from the fetched document data
                 if let startTime = data["startTime"] as? Double {
@@ -131,7 +132,7 @@ class CardViewModel: ObservableObject {
                     ]
                     
                     // Add newLog to the logs array in the specified animal's document
-                    db.collection("Societies").document(self.storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+                    db.collection("Societies").document(self.authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
                         "logs": FieldValue.arrayUnion([logDict])
                     ]) { err in
                         if let err = err {
@@ -155,7 +156,7 @@ class CardViewModel: ObservableObject {
         let db = Firestore.firestore()
         
         // Fetch the document
-        db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).getDocument { (document, error) in
+        db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).getDocument { (document, error) in
             if let document = document, document.exists, let data = document.data() {
                 // Retrieve startTime from the fetched document data
                 if let startTime = data["startTime"] as? Double {
@@ -175,7 +176,7 @@ class CardViewModel: ObservableObject {
                         "user": newLog.user ?? "",
                         "shortReason": newLog.shortReason ?? ""
                     ]
-                    db.collection("Societies").document(self.storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+                    db.collection("Societies").document(self.authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
                         "lastVolunteer": "",
                     ]){ err in
                         if let err = err {
@@ -186,7 +187,7 @@ class CardViewModel: ObservableObject {
                     }
                     
                     // Add newLog to the logs array in the specified animal's document
-                    db.collection("Societies").document(self.storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+                    db.collection("Societies").document(self.authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
                         "logs": FieldValue.arrayUnion([logDict])
                     ]) { err in
                         if let err = err {

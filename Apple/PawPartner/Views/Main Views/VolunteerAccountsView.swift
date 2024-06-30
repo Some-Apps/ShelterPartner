@@ -4,13 +4,22 @@ import FirebaseFirestore
 import FirebaseAuth
 import AlertToast
 
+struct Volunteer: Identifiable {
+    var id: String
+    var name: String
+    var email: String
+}
+
 struct VolunteerAccountsView: View {
     @State private var name = ""
     @State private var email = ""
     @State private var showingAlert = false
     @State private var alertMessage = ""
     @State private var showToast = false
-    @AppStorage("societyID") var storedSocietyID: String = ""
+    @State private var volunteers: [Volunteer] = []
+//    @AppStorage("societyID") var storedSocietyID: String = ""
+    
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
 
     var body: some View {
         Form {
@@ -24,16 +33,21 @@ struct VolunteerAccountsView: View {
                 }
             }
             Section("Volunteers") {
-                
+                List {
+                    ForEach(volunteers) { volunteer in
+                        Text("\(volunteer.name) (\(volunteer.email))")
+                    }
+                    .onDelete(perform: deleteVolunteer)
+                }
             }
             Section("Volunteer Settings") {
                 Toggle("Geo-restrict Volunteer Accounts", isOn: .constant(true))
                     .tint(.blue)
             }
         }
-//        .alert(isPresented: $showingAlert) {
-//            Alert(title: Text("Invite Status"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-//        }
+        .onAppear {
+            fetchVolunteers()
+        }
         .toast(isPresenting: $showingAlert) {
             AlertToast(displayMode: .alert, type: .complete(.green), title: alertMessage)
         }
@@ -56,7 +70,7 @@ struct VolunteerAccountsView: View {
                 db.collection("Users").document(user.uid).setData([
                     "name": name,
                     "email": email,
-                    "societyID": storedSocietyID,
+                    "societyID": authViewModel.shelterID,
                     "type": "volunteer"
                 ]) { error in
                     if let error = error {
@@ -70,6 +84,7 @@ struct VolunteerAccountsView: View {
                         self.email = ""
                         self.showToast = false
                         self.sendEmailInvite(name: name, email: email, password: password)
+                        self.fetchVolunteers() // Refresh the list after adding a new volunteer
                     }
                 }
             }
@@ -115,4 +130,56 @@ struct VolunteerAccountsView: View {
             }
         }.resume()
     }
+
+    private func fetchVolunteers() {
+        let db = Firestore.firestore()
+        db.collection("Users")
+            .whereField("societyID", isEqualTo: authViewModel.shelterID)
+            .whereField("type", isEqualTo: "volunteer")
+            .order(by: "name")
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    self.alertMessage = "Error fetching volunteers: \(error.localizedDescription)"
+                    self.showingAlert = true
+                } else {
+                    self.volunteers = snapshot?.documents.compactMap { doc in
+                        let data = doc.data()
+                        return Volunteer(
+                            id: doc.documentID,
+                            name: data["name"] as? String ?? "",
+                            email: data["email"] as? String ?? ""
+                        )
+                    } ?? []
+                }
+            }
+    }
+
+    private func deleteVolunteer(at offsets: IndexSet) {
+        offsets.forEach { index in
+            let volunteer = volunteers[index]
+            let db = Firestore.firestore()
+            db.collection("Users").document(volunteer.id).delete { error in
+                if let error = error {
+                    self.alertMessage = "Error deleting volunteer: \(error.localizedDescription)"
+                    self.showingAlert = true
+                } else {
+//                    self.callDeleteUserFunction(uid: volunteer.id) // Call cloud function to delete from Firebase Auth
+                    self.volunteers.remove(at: index)
+                }
+            }
+        }
+    }
+    
+//    private func callDeleteUserFunction(uid: String) {
+//        let functions = Functions.functions()
+//        functions.httpsCallable("deleteUser").call(["uid": uid]) { result, error in
+//            if let error = error {
+//                self.alertMessage = "Error deleting user from Firebase Auth: \(error.localizedDescription)"
+//                self.showingAlert = true
+//            } else {
+//                self.alertMessage = "User successfully deleted from Firebase Auth"
+//                self.showingAlert = true
+//            }
+//        }
+//    }
 }

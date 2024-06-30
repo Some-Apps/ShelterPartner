@@ -16,7 +16,7 @@ struct SettingsView: View {
     @ObservedObject var authenticationViewModel = AuthenticationViewModel()
     
     @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("QRMode") var QRMode = true
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("staffVideo") var staffVideo: String = ""
@@ -25,7 +25,7 @@ struct SettingsView: View {
     @AppStorage("lastSync") var lastSync: String = ""
     @AppStorage("updateAppURL") var updateAppURL: String = ""
     @AppStorage("latestVersion") var latestVersion: String = ""
-    @AppStorage("accountType") var accountType = "volunteer"
+//    @AppStorage("accountType") var accountType = "volunteer"
 
 
     @State private var showGuidedAccessVideo = false
@@ -83,11 +83,11 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if storedSocietyID != "" {
+                        if authenticationViewModel.shelterID != "" {
                             HStack {
                                 Text("Shelter ID:")
                                     .bold()
-                                Text(storedSocietyID)
+                                Text(authenticationViewModel.shelterID)
                                     .foregroundStyle(.secondary)
                             }
                         }
@@ -313,7 +313,7 @@ struct SettingsView: View {
         authenticationViewModel.signOut()
         viewModel.reportsDay = "Never"
         viewModel.reportsEmail = ""
-        storedSocietyID = ""
+        authenticationViewModel.shelterID = ""
         lastSync = ""
 //        mode = "logIn"
     }
@@ -322,7 +322,7 @@ struct SettingsView: View {
         showLoading = true
         
         let db = Firestore.firestore()
-        let documentRef = db.collection("Societies").document(storedSocietyID)
+        let documentRef = db.collection("Societies").document(authenticationViewModel.shelterID)
         
         documentRef.getDocument { (document, error) in
             guard let document = document, document.exists else {

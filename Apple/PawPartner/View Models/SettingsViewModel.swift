@@ -12,12 +12,14 @@ import SwiftUI
 class SettingsViewModel: ObservableObject {
     static let shared = SettingsViewModel()
     
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
+    
     @Published var showAccountUpdated = false
     @Published var showPasswordChanged = false
     @Published var showShareSheet = false
     @Published var fileToShare: URL? = nil
     @Published var isFetchingData = false // New property
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     
     @Published var reportsDay: String = "Never"
     @Published var reportsEmail: String = ""
@@ -48,7 +50,7 @@ class SettingsViewModel: ObservableObject {
 
     func addReason(reason: String) {
         let db = Firestore.firestore()
-        let societyRef = db.collection("Societies").document(storedSocietyID)
+        let societyRef = db.collection("Societies").document(authViewModel.shelterID)
         
         societyRef.updateData([
             "earlyReasons": FieldValue.arrayUnion([reason])
@@ -57,7 +59,7 @@ class SettingsViewModel: ObservableObject {
                 print("Error updating document: \(err)")
             } else {
                 print("Document successfully updated")
-                print(self.storedSocietyID)
+                print(self.authViewModel.shelterID)
                 print(reason)
             }
         }
@@ -65,7 +67,7 @@ class SettingsViewModel: ObservableObject {
     
     func addTag(tag: String, species: AnimalType) {
         let db = Firestore.firestore()
-        let societyRef = db.collection("Societies").document(storedSocietyID)
+        let societyRef = db.collection("Societies").document(authViewModel.shelterID)
         
         switch species {
         case .Cat:
@@ -76,7 +78,7 @@ class SettingsViewModel: ObservableObject {
                     print("Error updating document: \(err)")
                 } else {
                     print("Document successfully updated")
-                    print(self.storedSocietyID)
+                    print(self.authViewModel.shelterID)
                     print(tag)
                 }
             }
@@ -88,7 +90,7 @@ class SettingsViewModel: ObservableObject {
                     print("Error updating document: \(err)")
                 } else {
                     print("Document successfully updated")
-                    print(self.storedSocietyID)
+                    print(self.authViewModel.shelterID)
                     print(tag)
                 }
             }
@@ -98,7 +100,7 @@ class SettingsViewModel: ObservableObject {
     func deleteReason(at offsets: IndexSet) {
         for index in offsets {
             let reason = earlyReasons[index]
-            Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
+            Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData([
                 "earlyReasons": FieldValue.arrayRemove([reason])
             ])
         }
@@ -107,7 +109,7 @@ class SettingsViewModel: ObservableObject {
     
     func moveReason(from source: IndexSet, to destination: Int) {
         earlyReasons.move(fromOffsets: source, toOffset: destination)
-        Firestore.firestore().collection("Societies").document(storedSocietyID).updateData(["earlyReasons": earlyReasons])
+        Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData(["earlyReasons": earlyReasons])
     }
 
     func deleteTag(at offsets: IndexSet, species: AnimalType) {
@@ -115,12 +117,12 @@ class SettingsViewModel: ObservableObject {
             switch species {
             case .Cat:
                 let tag = catTags[index]
-                Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
+                Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData([
                     "catTags": FieldValue.arrayRemove([tag])
                 ])
             case .Dog:
                 let tag = dogTags[index]
-                Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
+                Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData([
                     "dogTags": FieldValue.arrayRemove([tag])
                 ])
             }
@@ -147,14 +149,14 @@ class SettingsViewModel: ObservableObject {
     }
     
     private func updateTagsInFirestore(species: AnimalType) {
-        Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([species == .Cat ? "catTags" : "dogTags": species == .Cat ? catTags: dogTags])
+        Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData([species == .Cat ? "catTags" : "dogTags": species == .Cat ? catTags: dogTags])
     }
 
     
     func setupListener() {
-        guard !storedSocietyID.isEmpty else { return }
+        guard !authViewModel.shelterID.isEmpty else { return }
         
-        listener = Firestore.firestore().collection("Societies").document(storedSocietyID)
+        listener = Firestore.firestore().collection("Societies").document(authViewModel.shelterID)
             .addSnapshotListener { [weak self] snapshot, error in
                 if let error = error {
                     print("Error fetching scheduled reports: \(error)")
@@ -190,14 +192,14 @@ class SettingsViewModel: ObservableObject {
 
 
     func updateScheduledReports(newDay: String, newEmail: String) {
-        Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
+        Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData([
             "reportsDay": newDay,
             "reportsEmail": newEmail
         ])
     }
     
     func updateAccountSettings(shelter: String, software: String, apiKey: String, mainFilter: String) {
-        Firestore.firestore().collection("Societies").document(storedSocietyID).updateData([
+        Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData([
             "shelter": shelter,
             "software": software,
             "apiKey": apiKey,

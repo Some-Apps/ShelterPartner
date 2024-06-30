@@ -6,7 +6,7 @@ struct RequireReasonView: View {
     @ObservedObject var cardViewModel = CardViewModel()
     @ObservedObject var viewModel = AnimalViewModel.shared
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @FocusState private var focusField: Bool
     let animal: Animal
 

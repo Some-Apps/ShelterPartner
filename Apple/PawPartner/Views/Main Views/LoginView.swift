@@ -30,7 +30,7 @@ struct LoginView: View {
     @State private var showLoginError = false
     @State private var loginError = ""
     @State private var isLoginInProgress = false  // New property
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("lastSync") var lastSync: String = ""
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -90,7 +90,7 @@ struct LoginView: View {
                                     switch result {
                                     case .success(let societyID):
                                         let tempSocietyID = societyID
-                                        storedSocietyID = tempSocietyID
+//                                        storedSocietyID = tempSocietyID
                                         print("User signed in successfully")
                                         print("SocietyID: \(societyID)")
                                     case .failure(let error):
@@ -171,8 +171,4 @@ struct LoginView: View {
             }
         }
     }
-}
-
-#Preview {
-    LoginView()
 }

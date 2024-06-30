@@ -233,7 +233,7 @@ struct OutlinedButton: View {
     @State private var tickCountPressing: CGFloat = 0
     @State private var tickCountNotPressing: CGFloat = 75 // Starts from the end.
     
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("lastCatSync") var lastCatSync: String = ""
     @AppStorage("lastDogSync") var lastDogSync: String = ""
     @AppStorage("requireName") var requireName = false
