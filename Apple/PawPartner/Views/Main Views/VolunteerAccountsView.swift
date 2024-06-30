@@ -2,12 +2,15 @@ import SwiftUI
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
+import AlertToast
 
 struct VolunteerAccountsView: View {
     @State private var name = ""
     @State private var email = ""
     @State private var showingAlert = false
     @State private var alertMessage = ""
+    @State private var showToast = false
+    @AppStorage("societyID") var storedSocietyID: String = ""
 
     var body: some View {
         Form {
@@ -28,33 +31,44 @@ struct VolunteerAccountsView: View {
                     .tint(.blue)
             }
         }
-        .alert(isPresented: $showingAlert) {
-            Alert(title: Text("Invite Status"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+//        .alert(isPresented: $showingAlert) {
+//            Alert(title: Text("Invite Status"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+//        }
+        .toast(isPresenting: $showingAlert) {
+            AlertToast(displayMode: .alert, type: .complete(.green), title: alertMessage)
+        }
+        .toast(isPresenting: $showToast) {
+            AlertToast(type: .loading, title: "Sending Invite...")
         }
     }
 
     private func sendInvite() {
+        showToast = true
         let password = generateRandomPassword()
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
             if let error = error {
                 self.alertMessage = "Error: \(error.localizedDescription)"
                 self.showingAlert = true
+                self.showToast = false
             } else if let authResult = authResult {
                 let user = authResult.user
                 let db = Firestore.firestore()
-                db.collection("volunteers").document(user.uid).setData([
+                db.collection("Users").document(user.uid).setData([
                     "name": name,
                     "email": email,
-                    "password": password
+                    "societyID": storedSocietyID,
+                    "type": "volunteer"
                 ]) { error in
                     if let error = error {
                         self.alertMessage = "Error saving user to Firestore: \(error.localizedDescription)"
                         self.showingAlert = true
+                        self.showToast = false
                     } else {
                         self.alertMessage = "Invite sent successfully!"
                         self.showingAlert = true
                         self.name = ""
                         self.email = ""
+                        self.showToast = false
                         self.sendEmailInvite(name: name, email: email, password: password)
                     }
                 }
@@ -86,22 +100,19 @@ struct VolunteerAccountsView: View {
             if let error = error {
                 self.alertMessage = "Error sending email invite: \(error.localizedDescription)"
                 self.showingAlert = true
+                self.showToast = false
                 return
             }
             
             if let response = response as? HTTPURLResponse, response.statusCode == 200 {
                 self.alertMessage = "Email invite sent successfully!"
                 self.showingAlert = true
+                self.showToast = false
             } else {
                 self.alertMessage = "Failed to send email invite."
                 self.showingAlert = true
+                self.showToast = false
             }
         }.resume()
     }
-}
-
-
-
-#Preview {
-    VolunteerAccountsView()
 }
