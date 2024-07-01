@@ -35,7 +35,11 @@ struct VolunteerAccountsView: View {
             Section("Volunteers") {
                 List {
                     ForEach(volunteers) { volunteer in
-                        Text("\(volunteer.name) (\(volunteer.email))")
+                        HStack {
+                            Text(volunteer.name)
+                            Text(" (\(volunteer.email))")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                     .onDelete(perform: deleteVolunteer)
                 }
@@ -59,37 +63,45 @@ struct VolunteerAccountsView: View {
     private func sendInvite() {
         showToast = true
         let password = generateRandomPassword()
-        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+        
+        guard let url = URL(string: "https://us-central1-pawpartnerdevelopment.cloudfunctions.net/VolunteerInvite") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body: [String: Any] = [
+            "name": name,
+            "email": email,
+            "password": password,
+            "shelterID": authViewModel.shelterID
+        ]
+        
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                self.alertMessage = "Error: \(error.localizedDescription)"
+                self.alertMessage = "Error sending invite: \(error.localizedDescription)"
                 self.showingAlert = true
                 self.showToast = false
-            } else if let authResult = authResult {
-                let user = authResult.user
-                let db = Firestore.firestore()
-                db.collection("Users").document(user.uid).setData([
-                    "name": name,
-                    "email": email,
-                    "societyID": authViewModel.shelterID,
-                    "type": "volunteer"
-                ]) { error in
-                    if let error = error {
-                        self.alertMessage = "Error saving user to Firestore: \(error.localizedDescription)"
-                        self.showingAlert = true
-                        self.showToast = false
-                    } else {
-                        self.alertMessage = "Invite sent successfully!"
-                        self.showingAlert = true
-                        self.name = ""
-                        self.email = ""
-                        self.showToast = false
-                        self.sendEmailInvite(name: name, email: email, password: password)
-                        self.fetchVolunteers() // Refresh the list after adding a new volunteer
-                    }
-                }
+                return
             }
-        }
+            
+            if let response = response as? HTTPURLResponse, response.statusCode == 200 {
+                self.alertMessage = "Invite sent successfully!"
+                self.showingAlert = true
+                self.name = ""
+                self.email = ""
+                self.showToast = false
+                self.fetchVolunteers() // Refresh the list after adding a new volunteer
+            } else {
+                self.alertMessage = "Failed to send invite."
+                self.showingAlert = true
+                self.showToast = false
+            }
+        }.resume()
     }
+
 
     private func generateRandomPassword() -> String {
         let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -97,7 +109,7 @@ struct VolunteerAccountsView: View {
     }
 
     private func sendEmailInvite(name: String, email: String, password: String) {
-        guard let url = URL(string: "https://<YOUR_CLOUD_FUNCTION_URL>") else { return }
+        guard let url = URL(string: "https://us-central1-humanesociety-21855.cloudfunctions.net/VolunteerInvite") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -130,6 +142,7 @@ struct VolunteerAccountsView: View {
             }
         }.resume()
     }
+
 
     private func fetchVolunteers() {
         let db = Firestore.firestore()

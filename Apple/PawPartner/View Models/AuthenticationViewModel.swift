@@ -93,21 +93,6 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
     
-//    func fetchUserAccountType(userID: String) {
-//        accountListener = Firestore.firestore().collection("Users").document(Auth.auth().currentUser?.uid ?? "noAccount").addSnapshotListener { [weak self] (documentSnapshot, error) in
-//            guard let document = documentSnapshot else {
-//                print("Error fetching document: \(error!)")
-//                return
-//            }
-//            guard let data = document.data() else {
-//                print("Document data was empty.")
-//                return
-//            }
-//            if let accountType = data["type"] as? String {
-//                self?.accountType = accountType
-//            }
-//        }
-//    }
 
     func signOut() {
         do {
@@ -135,24 +120,6 @@ class AuthenticationViewModel: ObservableObject {
             }
         }
     }
-    
-    func fetchData(forUser userID: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let db = Firestore.firestore()
-        
-        db.collection("Users").document(userID).addSnapshotListener { (documentSnapshot, error) in
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                if let document = documentSnapshot, document.exists, let data = document.data(),
-                   let societyID = data["societyID"] as? String {
-                    completion(.success(societyID))
-                } else {
-                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "SocietyID not found"])))
-                }
-            }
-        }
-    }
-    
 
     
     func setupListeners(theUserID: String) {
