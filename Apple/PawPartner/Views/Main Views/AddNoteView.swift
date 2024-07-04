@@ -7,6 +7,7 @@ struct AddNoteView: View {
     @ObservedObject var viewModel = AddNoteViewModel()
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     let animal: Animal
     @Environment(\.dismiss) var dismiss
     @State private var note = ""
@@ -35,12 +36,12 @@ struct AddNoteView: View {
             }
             
             
-            if animal.animalType == .Cat && !settingsViewModel.catTags.isEmpty {
+            if animal.animalType == .Cat && !authViewModel.catTags.isEmpty {
                 Section("Tags") {
                     HStack {
                         ScrollView {
                             LazyVGrid(columns: gridLayout) {
-                                ForEach(settingsViewModel.catTags, id: \.self) { tag in
+                                ForEach(authViewModel.catTags, id: \.self) { tag in
                                     Text(tag)
                                         .lineLimit(1)
                                         .frame(maxWidth: .infinity)
@@ -64,12 +65,12 @@ struct AddNoteView: View {
                     }
                     .frame(height: 175)
                 }
-            } else if animal.animalType == .Dog && !settingsViewModel.dogTags.isEmpty {
+            } else if animal.animalType == .Dog && !authViewModel.dogTags.isEmpty {
                 Section("Tags") {
                     HStack {
                         ScrollView {
                             LazyVGrid(columns: gridLayout) {
-                                ForEach(settingsViewModel.dogTags, id: \.self) { tag in
+                                ForEach(authViewModel.dogTags, id: \.self) { tag in
                                     Text(tag)
                                         .lineLimit(1)
                                         .frame(maxWidth: .infinity)
@@ -137,9 +138,6 @@ struct AddNoteView: View {
    
 
 
-#Preview {
-    AddNoteView(viewModel: AddNoteViewModel(), animalViewModel: AnimalViewModel.shared, animal: Animal.dummyAnimal)
-}
 
 
 //struct BannerAdView: UIViewRepresentable {

@@ -17,6 +17,19 @@ class AuthenticationViewModel: ObservableObject {
     @Published var showLoginSuccess = false
     @Published var signUpForm = ""
     
+    @Published var reportsDay: String = "Never"
+    @Published var reportsEmail: String = ""
+    @Published var catTags: [String] = []
+    @Published var dogTags: [String] = []
+    @Published var earlyReasons: [String] = []
+    @Published var filterOptions: [String] = []
+    @Published var software: String = ""
+    @Published var shelter: String = ""
+    @Published var mainFilter: String = ""
+    @Published var syncFrequency: String = ""
+    @Published var apiKey: String = ""
+    @Published var secondarySortOptions: [String] = []
+    @Published var groupOptions: [String] = []
     
     @Published var shelterID = ""
     @Published var accountType = "volunteer"
@@ -29,6 +42,7 @@ class AuthenticationViewModel: ObservableObject {
     
     var handle: AuthStateDidChangeListenerHandle?
     var signUpListener: ListenerRegistration?
+    var userListener: ListenerRegistration?
     var dataListener: ListenerRegistration?
 
     init() {
@@ -123,8 +137,8 @@ class AuthenticationViewModel: ObservableObject {
 
     
     func setupListeners(theUserID: String) {
-        
-        dataListener = Firestore.firestore().collection("Users").document(theUserID)
+        print("Setting up listeners")
+        userListener = Firestore.firestore().collection("Users").document(theUserID)
             .addSnapshotListener { [weak self] snapshot, error in
                 if let error = error {
                     print("Error fetching scheduled reports: \(error)")
@@ -137,29 +151,42 @@ class AuthenticationViewModel: ObservableObject {
                 }
                 
                 self?.shelterID = data["societyID"] as? String ?? ""
-//                print(theShelterID)
-//                print("This shelter \(self?.shelterID)")
                 self?.accountType = data["type"] as? String ?? "volunteer"
-//                self?.updateProperties(with: data)
+            }
+        dataListener = Firestore.firestore().collection("Societies").document(shelterID)
+            .addSnapshotListener { [weak self] snapshot, error in
+                if let error = error {
+                    print("Error fetching scheduled reports: \(error)")
+                    return
+                }
+                
+                guard let data = snapshot?.data() else {
+                    print("No data found for document")
+                    return
+                }
+                
+                self?.updateProperties(with: data)
             }
     }
     
-//    private func updateProperties(with data: [String: Any]) {
-//        DispatchQueue.main.async {
-//            self.reportsDay = data["reportsDay"] as? String ?? ""
-//            self.reportsEmail = data["reportsEmail"] as? String ?? ""
-//            self.earlyReasons = data["earlyReasons"] as? [String] ?? []
-//            self.catTags = data["catTags"] as? [String] ?? []
-//            self.dogTags = data["dogTags"] as? [String] ?? []
-//            self.software = data["software"] as? String ?? ""
-//            self.shelter = data["shelter"] as? String ?? ""
-//            self.mainFilter = data["mainFilter"] as? String ?? ""
-//            self.syncFrequency = data["syncFrequency"] as? String ?? ""
-//            self.apiKey = data["apiKey"] as? String ?? ""
-//            self.secondarySortOptions = data["secondarySortOptions"] as? [String] ?? []
-//            self.groupOptions = data["groupOptions"] as? [String] ?? []
-//        }
-//    }
+    private func updateProperties(with data: [String: Any]) {
+        DispatchQueue.main.async {
+            self.reportsDay = data["reportsDay"] as? String ?? ""
+            self.reportsEmail = data["reportsEmail"] as? String ?? ""
+            self.earlyReasons = data["earlyReasons"] as? [String] ?? []
+            self.catTags = data["catTags"] as? [String] ?? []
+            self.dogTags = data["dogTags"] as? [String] ?? []
+            self.software = data["software"] as? String ?? ""
+            self.shelter = data["shelter"] as? String ?? ""
+            self.mainFilter = data["mainFilter"] as? String ?? ""
+            self.syncFrequency = data["syncFrequency"] as? String ?? ""
+            self.apiKey = data["apiKey"] as? String ?? ""
+            self.secondarySortOptions = data["secondarySortOptions"] as? [String] ?? []
+            self.groupOptions = data["groupOptions"] as? [String] ?? []
+            print(self.earlyReasons)
+
+        }
+    }
     
     func fetchSocietyID(forUser userID: String, completion: @escaping (Result<String, Error>) -> Void) {
         let db = Firestore.firestore()

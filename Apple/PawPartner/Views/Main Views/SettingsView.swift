@@ -75,11 +75,11 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                     Section(header: Text("Account Details")) {
-                        if viewModel.shelter != "" {
+                        if authViewModel.shelter != "" {
                             HStack {
                                 Text("Shelter:")
                                     .bold()
-                                Text(viewModel.shelter)
+                                Text(authViewModel.shelter)
                                     .foregroundStyle(.secondary)
                             }
                         }
@@ -91,27 +91,27 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if viewModel.software != "" {
+                        if authViewModel.software != "" {
                             HStack {
                                 Text("Management Software:")
                                     .bold()
-                                Text(viewModel.software)
+                                Text(authViewModel.software)
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if viewModel.apiKey != "" {
+                        if authViewModel.apiKey != "" {
                             HStack {
                                 Text("API Key:")
                                     .bold()
-                                Text(viewModel.apiKey)
+                                Text(authViewModel.apiKey)
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if viewModel.mainFilter != "" {
+                        if authViewModel.mainFilter != "" {
                             HStack {
                                 Text("Filter:")
                                     .bold()
-                                Text(viewModel.mainFilter)
+                                Text(authViewModel.mainFilter)
                                     .foregroundStyle(.secondary)
                                     .lineLimit(3)
                                     .minimumScaleFactor(0.5)
@@ -256,7 +256,6 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .onAppear {
-                viewModel.setupListener()
                 animalViewModel.fetchLatestVersion()
             }
         }
@@ -311,8 +310,8 @@ struct SettingsView: View {
         animalViewModel.cats = []
         animalViewModel.dogs = []
         authenticationViewModel.signOut()
-        viewModel.reportsDay = "Never"
-        viewModel.reportsEmail = ""
+        authViewModel.reportsDay = "Never"
+        authViewModel.reportsEmail = ""
         authenticationViewModel.shelterID = ""
         lastSync = ""
 //        mode = "logIn"

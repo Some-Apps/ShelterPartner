@@ -256,7 +256,7 @@ struct AnimalView: View {
             viewModel.removeListeners()
         }
         .onAppear {
-            if settingsViewModel.filterOptions.isEmpty {
+            if authViewModel.filterOptions.isEmpty {
                 filterPicker = false
             }
             if authViewModel.shelterID == "" && Auth.auth().currentUser?.uid != nil {

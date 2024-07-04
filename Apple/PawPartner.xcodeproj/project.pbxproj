@@ -39,6 +39,8 @@
 		C08A3C892C13B85B00D99EF9 /* AccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08A3C882C13B85B00D99EF9 /* AccountSettingsView.swift */; };
 		C08A3C8B2C13BEE400D99EF9 /* ReasonsForEarlyPutBackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08A3C8A2C13BEE400D99EF9 /* ReasonsForEarlyPutBackView.swift */; };
 		C0953A762C31C62E00E803C1 /* VisitorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0953A752C31C62E00E803C1 /* VisitorSettingsView.swift */; };
+		C0953A782C37509E00E803C1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C0953A772C37509E00E803C1 /* FirebaseMessaging */; };
+		C0953A7A2C37529700E803C1 /* GeoRestrictionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0953A792C37529700E803C1 /* GeoRestrictionView.swift */; };
 		C09CAFCB2B48D22D004DDCFF /* VisitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09CAFCA2B48D22D004DDCFF /* VisitorView.swift */; };
 		C09CFEE02B1BF49D00AE8560 /* Preview Content in Resources */ = {isa = PBXBuildFile; fileRef = C09CFEDF2B1BF49D00AE8560 /* Preview Content */; };
 		C09CFEE22B1BF53900AE8560 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09CFEE12B1BF53900AE8560 /* Note.swift */; };
@@ -95,6 +97,7 @@
 		C08A3C882C13B85B00D99EF9 /* AccountSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsView.swift; sourceTree = "<group>"; };
 		C08A3C8A2C13BEE400D99EF9 /* ReasonsForEarlyPutBackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReasonsForEarlyPutBackView.swift; sourceTree = "<group>"; };
 		C0953A752C31C62E00E803C1 /* VisitorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorSettingsView.swift; sourceTree = "<group>"; };
+		C0953A792C37529700E803C1 /* GeoRestrictionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoRestrictionView.swift; sourceTree = "<group>"; };
 		C09CAFCA2B48D22D004DDCFF /* VisitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorView.swift; sourceTree = "<group>"; };
 		C09CFEDF2B1BF49D00AE8560 /* Preview Content */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Preview Content"; sourceTree = "<group>"; };
 		C09CFEE12B1BF53900AE8560 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
@@ -130,6 +133,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0953A782C37509E00E803C1 /* FirebaseMessaging in Frameworks */,
 				C02F9BA92C2F548E00A4E361 /* Kingfisher in Frameworks */,
 				C02F9BAE2C2F54A700A4E361 /* FirebaseAuth in Frameworks */,
 				C02F9BAC2C2F549700A4E361 /* AlertToast in Frameworks */,
@@ -200,6 +204,7 @@
 				C08A3C8A2C13BEE400D99EF9 /* ReasonsForEarlyPutBackView.swift */,
 				C01B0A392A1979F30062994D /* SettingsView.swift */,
 				C055E0162C2E056B006A0370 /* VolunteerAccountsView.swift */,
+				C0953A792C37529700E803C1 /* GeoRestrictionView.swift */,
 				C08A3C882C13B85B00D99EF9 /* AccountSettingsView.swift */,
 				C0C316942B5582B300192C89 /* DeviceSettingsView.swift */,
 				C0E4AB352C0FA421007146BA /* AccountSetupView.swift */,
@@ -301,6 +306,7 @@
 				C02F9BAF2C2F54BA00A4E361 /* FirebaseFirestore */,
 				C02F9BB12C2F54BA00A4E361 /* FirebaseFirestoreSwift */,
 				C02F9BB32C2F54BA00A4E361 /* FirebaseStorage */,
+				C0953A772C37509E00E803C1 /* FirebaseMessaging */,
 			);
 			productName = HumaneSociety;
 			productReference = C0ECD8EA2A17E84F001F82C3 /* HumaneSociety.app */;
@@ -400,6 +406,7 @@
 				C08A3C832C0CC46D00D99EF9 /* PageNavigationElement.swift in Sources */,
 				C04E1C9C2C042880007E0AE0 /* GroupsView.swift in Sources */,
 				C01B0A3A2A1979F30062994D /* SettingsView.swift in Sources */,
+				C0953A7A2C37529700E803C1 /* GeoRestrictionView.swift in Sources */,
 				C0FFA1BA2B34D89E00D71021 /* TagsView.swift in Sources */,
 				C01B0A4F2A1A9C220062994D /* SettingsViewModel.swift in Sources */,
 				C0837B3D2C03A238006AA375 /* AnimalDetailsSection.swift in Sources */,
@@ -552,6 +559,7 @@
 				INFOPLIST_FILE = PawPartner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PawPartner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawPartner needs your location to determine if you are near your animal shelter";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -591,6 +599,7 @@
 				INFOPLIST_FILE = PawPartner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PawPartner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawPartner needs your location to determine if you are near your animal shelter";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -720,6 +729,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		C0953A772C37509E00E803C1 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C0ECD8FD2A17EC3D001F82C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
