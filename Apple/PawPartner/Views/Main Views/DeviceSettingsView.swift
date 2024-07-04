@@ -20,7 +20,7 @@ struct DeviceSettingsView: View {
     @AppStorage("groupOption") var groupOption = ""
     @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
 
-    @ObservedObject var viewModel = SettingsViewModel.shared
+    @ObservedObject var viewModel = AuthenticationViewModel.shared
     @ObservedObject var animalViewModel = AnimalViewModel.shared
 
     

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TagsView: View {
     @ObservedObject var viewModel = SettingsViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     let species: AnimalType
     @State private var newTag = ""
 
@@ -26,9 +27,9 @@ struct TagsView: View {
                 }
                 
             }
-            if (species == .Cat ? !viewModel.catTags.isEmpty : !viewModel.dogTags.isEmpty) {
+            if (species == .Cat ? !authViewModel.catTags.isEmpty : !authViewModel.dogTags.isEmpty) {
                 Section("Tags") {
-                    ForEach(species == .Cat ? viewModel.catTags : viewModel.dogTags, id: \.self) { tag in
+                    ForEach(species == .Cat ? authViewModel.catTags : authViewModel.dogTags, id: \.self) { tag in
                         HStack {
                             Text(tag)
                                 .font(.title3)

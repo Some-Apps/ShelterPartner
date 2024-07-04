@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SetupView: View {
-    @ObservedObject var viewModel = SettingsViewModel.shared
+    @ObservedObject var viewModel = AuthenticationViewModel.shared
     
     @AppStorage("filterPicker") var filterPicker: Bool = false
     

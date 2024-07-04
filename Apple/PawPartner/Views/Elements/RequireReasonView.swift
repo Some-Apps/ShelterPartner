@@ -5,7 +5,8 @@ struct RequireReasonView: View {
     
     @ObservedObject var cardViewModel = CardViewModel()
     @ObservedObject var viewModel = AnimalViewModel.shared
-    @ObservedObject var settingsViewModel = SettingsViewModel.shared
+//    @ObservedObject var settingsViewModel = SettingsViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
 //    @AppStorage("societyID") var storedSocietyID: String = ""
     @FocusState private var focusField: Bool
     let animal: Animal
@@ -15,7 +16,7 @@ struct RequireReasonView: View {
             Text("Please select the reason you put this animal back before the minimum duration.")
             Picker("Reason", selection: $cardViewModel.shortReason) {
                 Text("").tag("")
-                ForEach(settingsViewModel.earlyReasons, id: \.self) {
+                ForEach(authViewModel.earlyReasons, id: \.self) {
                     Text($0)
                 }
             }
