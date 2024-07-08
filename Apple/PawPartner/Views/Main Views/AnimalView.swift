@@ -160,19 +160,21 @@ struct AnimalView: View {
                         currentPage = 1 // Reset to page 1 only when a new search is performed
                     })
 
-
-                    Picker("Animal Type", selection: $animalType) {
-                        Text("Cats").tag(AnimalType.Cat)
-                        Text("Dogs").tag(AnimalType.Dog)
+                    if !(viewModel.dogs.isEmpty || viewModel.cats.isEmpty) {
+                        Picker("Animal Type", selection: $animalType) {
+                            Text("Cats").tag(AnimalType.Cat)
+                            Text("Dogs").tag(AnimalType.Dog)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding([.horizontal, .top])
+                        .onChange(of: animalType) { newValue in
+                            print("Animal type changed to: \(newValue)")
+                            UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
+                            updateFilteredAnimals()
+                            currentPage = 1 // Reset to page 1 when animal type is changed
+                        }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .padding([.horizontal, .top])
-                    .onChange(of: animalType) { newValue in
-                        print("Animal type changed to: \(newValue)")
-                        UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
-                        updateFilteredAnimals()
-                        currentPage = 1 // Reset to page 1 when animal type is changed
-                    }
+                    
                     if !searchQueryFinished.isEmpty {
                         Text("Results for: \(selectedFilterAttribute) contains \(searchQueryFinished)")
                             .bold()
@@ -281,6 +283,11 @@ struct AnimalView: View {
             viewModel.removeListeners()
         }
         .onAppear {
+            if viewModel.cats.isEmpty {
+                animalType = .Dog
+            } else if viewModel.dogs.isEmpty {
+                animalType = .Cat
+            }
             if authViewModel.filterOptions.isEmpty {
                 filterPicker = false
             }

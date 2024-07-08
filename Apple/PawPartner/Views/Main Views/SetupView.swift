@@ -17,7 +17,7 @@ struct SetupView: View {
             Section {
                 Toggle("Filter Picker", isOn: $filterPicker)
                     .disabled(viewModel.filterOptions.isEmpty)
-                    .tint(.blue)
+                    .tint(.customBlue)
             } header: {
                 Text("Filter Picker")
             } footer: {

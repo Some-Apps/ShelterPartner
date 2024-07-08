@@ -84,7 +84,7 @@ struct VolunteerAccountsView: View {
                     Toggle(isOn: $georestrictionEnabled) {
                         Text("Enable Geo-Restriction")
                     }
-                    .tint(.blue)
+                    .tint(.customBlue)
                     .onChange(of: georestrictionEnabled) { _ in
                         updateGeorestrictionSettings()
                     }
