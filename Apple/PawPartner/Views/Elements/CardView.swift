@@ -107,20 +107,21 @@ struct CardView: View {
                             Image(systemName: symbol)
                                 .foregroundStyle(
                                     symbolColor == "red" ? .red :
-                                    symbolColor == "green" ? .green :
-                                    symbolColor == "blue" ? .blue:
-                                    symbolColor == "white" ? .white :
-                                    symbolColor == "gray" ? .gray :
-                                    symbolColor == "black" ? .black :
-                                    symbolColor == "silver" ? .gray :
-                                    symbolColor == "yellow" ? .yellow :
+                                        symbolColor == "brown" ? .brown :
+                                        symbolColor == "green" ? .green :
+                                        symbolColor == "blue" ? .blue :
+                                        symbolColor == "white" ? .white :
+                                        symbolColor == "gray" ? .gray :
+                                        symbolColor == "black" ? .black :
+                                        symbolColor == "silver" ? .gray :
+                                        symbolColor == "yellow" ? .yellow :
                                         symbolColor == "pink" ? Color(red: 255/255, green: 105/255, blue: 180/255) :
-                                    symbolColor == "orange" ? .orange :
+                                        symbolColor == "orange" ? .orange :
                                         symbolColor == "purple" ? .purple :
-                                        .clear)
+                                            .clear)
                                 .font(.title)
-//                                .opacity(0.5)
-     
+                            //                                .opacity(0.5)
+                            
                         }
                     }
                         .lineLimit(1)

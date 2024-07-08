@@ -15,6 +15,8 @@ struct ViewInfoView: View {
 //    @AppStorage("accountType") var accountType = "volunteer"
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
     
+    @AppStorage("adminMode") var adminMode = true
+    
     var numberOfColumns: Int = 2
     
     let columns = [
@@ -84,7 +86,7 @@ struct ViewInfoView: View {
                         ForEach(topTags(for: animal), id: \.self) { tag in
                             HStack {
                                 Text(tag)
-                                if authViewModel.accountType == "admin" {
+                                if authViewModel.accountType == "admin" && adminMode {
                                     Button {
                                         tagToDelete = tag
                                         confirmDeleteTag = true
@@ -143,7 +145,7 @@ struct ViewInfoView: View {
                                         self.isFullScreen = true
                                     }
                                     .tag(index) // Important for selection
-                                if authViewModel.accountType == "admin", let host = url.host, host.contains("storage.googleapis.com") {
+                                if authViewModel.accountType == "admin" && adminMode, let host = url.host, host.contains("storage.googleapis.com") {
                                     Button(action: {
                                         confirmDeletePhoto.toggle()
                                     }) {

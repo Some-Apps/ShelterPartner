@@ -181,6 +181,8 @@ struct VisitorView: View {
 //                            }
 //                        }
 //                    }
+                if !(viewModel.dogs.isEmpty || viewModel.cats.isEmpty) {
+                    
                     Picker("Animal Type", selection: $animalType) {
                         ForEach(AnimalType.allCases, id: \.self) { animalType in
                             Text("\(animalType.rawValue)s").tag(animalType)
@@ -188,7 +190,7 @@ struct VisitorView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding([.horizontal, .top])
-                
+                }
                 
                 ScrollView {
                     switch animalType {
@@ -242,7 +244,7 @@ struct VisitorView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(maxHeight: 100)
-                        .id("bottom")  // Identifier for scroll-to-bottom
+                        .id("bottom")
                 }
             }
         }
@@ -250,6 +252,11 @@ struct VisitorView: View {
             AlertToast(displayMode: .alert, type: .loading)
         }
         .onAppear {
+            if viewModel.cats.isEmpty {
+                animalType = .Dog
+            } else if viewModel.dogs.isEmpty {
+                animalType = .Cat
+            }
             if authViewModel.shelterID == "" && Auth.auth().currentUser?.uid != nil {
                 viewModel.fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
                     switch result {

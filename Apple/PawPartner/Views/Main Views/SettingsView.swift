@@ -7,28 +7,24 @@ import UIKit
 struct SettingsView: View {
     // MARK: - Properties
     @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.isSearching) private var isSearching
+
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
-    
     @StateObject var viewModel = SettingsViewModel.shared
-    
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @ObservedObject var authenticationViewModel = AuthenticationViewModel()
-    
+
     @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
-//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("QRMode") var QRMode = true
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("staffVideo") var staffVideo: String = ""
     @AppStorage("guidedAccessVideo") var guidedAccessVideo: String = ""
-//    @AppStorage("mode") var mode = "volunteer"
     @AppStorage("lastSync") var lastSync: String = ""
     @AppStorage("updateAppURL") var updateAppURL: String = ""
     @AppStorage("latestVersion") var latestVersion: String = ""
     @AppStorage("adminMode") var adminMode = true
-//    @AppStorage("accountType") var accountType = "volunteer"
 
-
+    @State private var searchText = ""
     @State private var showGuidedAccessVideo = false
     @State private var showLoading = false
     @State private var showStaffVideo = false
@@ -53,30 +49,13 @@ struct SettingsView: View {
         return "Unknown Build"
     }
 
-//    private var isVisitorBinding: Binding<Bool> {
-//        Binding<Bool>(
-//            get: { self.mode == "visitor" },
-//            set: { newValue in
-//                self.mode = newValue ? "visitor" : "visitorAdmin"
-//            }
-//        )
-//    }
-//
-//    private var isAdminBinding: Binding<Bool> {
-//        Binding<Bool>(
-//            get: { self.mode == "volunteerAdmin" },
-//            set: { newValue in
-//                self.mode = newValue ? "volunteerAdmin" : "volunteer"
-//            }
-//        )
-//    }
-
     // MARK: - Body
     var body: some View {
         NavigationStack {
             Form {
+                if shouldShowSection("Account Details") {
                     Section(header: Text("Account Details")) {
-                        if authViewModel.shelter != "" {
+                        if shouldShowItem("Shelter", value: authViewModel.shelter) {
                             HStack {
                                 Text("Shelter:")
                                     .bold()
@@ -84,7 +63,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if authenticationViewModel.shelterID != "" {
+                        if shouldShowItem("Shelter ID", value: authenticationViewModel.shelterID) {
                             HStack {
                                 Text("Shelter ID:")
                                     .bold()
@@ -92,7 +71,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if authViewModel.software != "" {
+                        if shouldShowItem("Management Software", value: authViewModel.software) {
                             HStack {
                                 Text("Management Software:")
                                     .bold()
@@ -100,7 +79,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if authViewModel.apiKey != "" {
+                        if shouldShowItem("API Key", value: authViewModel.apiKey) {
                             HStack {
                                 Text("API Key:")
                                     .bold()
@@ -108,7 +87,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if authViewModel.mainFilter != "" {
+                        if shouldShowItem("Filter", value: authViewModel.mainFilter) {
                             HStack {
                                 Text("Filter:")
                                     .bold()
@@ -119,142 +98,180 @@ struct SettingsView: View {
                             }
                         }
                     }
-                
-                
-                Section("Account Settings") {
-                    NavigationLink(destination: AccountSetupView()) {
-                        HStack {
-                            Image(systemName: "shared.with.you")
-                            Text("Account Setup")
+                }
+
+                if shouldShowSection("Account Settings") {
+                    Section("Account Settings") {
+                        if shouldShowItem("Account Setup") {
+                            NavigationLink(destination: AccountSetupView()) {
+                                HStack {
+                                    Image(systemName: "shared.with.you")
+                                    Text("Account Setup")
+                                }
+                            }
                         }
-                    }
-                    NavigationLink(destination: VolunteerAccountsView()) {
-                        HStack {
-                            Image(systemName: "person.crop.rectangle.stack")
-                            Text("Volunteer Accounts")
+                        if shouldShowItem("Volunteer Accounts") {
+                            NavigationLink(destination: VolunteerAccountsView()) {
+                                HStack {
+                                    Image(systemName: "person.crop.rectangle.stack")
+                                    Text("Volunteer Accounts")
+                                }
+                            }
                         }
-                    }
-                    
-                    NavigationLink(destination: ScheduledReportsView()) {
-                        HStack {
-                            Image(systemName: "envelope")
-                            Text("Scheduled Reports")
+                        if shouldShowItem("Scheduled Reports") {
+                            NavigationLink(destination: ScheduledReportsView()) {
+                                HStack {
+                                    Image(systemName: "envelope")
+                                    Text("Scheduled Reports")
+                                }
+                            }
                         }
-                    }
-                    NavigationLink(destination: AccountSettingsView()) {
-                        HStack {
-                            Image(systemName: "wrench.adjustable")
-                            Text("More Account Settings")
+                        if shouldShowItem("All Account Settings") {
+                            NavigationLink(destination: AccountSettingsView()) {
+                                HStack {
+                                    Image(systemName: "wrench.adjustable")
+                                    Text("All Account Settings")
+                                }
+                            }
                         }
                     }
                 }
 
-                Section("Device Settings") {
-                    HStack {
-                        Image(systemName: "lock")
-                        Toggle("Admin Mode", isOn: $adminMode)
-                            .toggleStyle(SwitchToggleStyle(tint: .blue))
-                    }
-                    HStack {
-                        Image(systemName: "qrcode")
-                        Toggle("QR Codes", isOn: $QRMode)
-                            .toggleStyle(SwitchToggleStyle(tint: .blue))
-                    }
-
-                    Picker(selection: $sortBy) {
-                        ForEach(SortBy.allCases, id: \.self) { sortOption in
-                            Text(sortOption.rawValue).tag(sortOption)
+                if shouldShowSection("Device Settings") {
+                    Section("Device Settings") {
+                        if shouldShowItem("Admin Mode") {
+                            HStack {
+                                Image(systemName: "lock")
+                                Toggle("Admin Mode", isOn: $adminMode)
+                                    .tint(.customBlue)
+                            }
                         }
-                    } label: {
-                        HStack {
-                            Image(systemName: "text.line.last.and.arrowtriangle.forward")
-                            Text("Sort Options")
+                        if shouldShowItem("QR Codes") {
+                            HStack {
+                                Image(systemName: "qrcode")
+                                Toggle("QR Codes", isOn: $QRMode)
+                                    .tint(.customBlue)
+                            }
                         }
-                    }
-                    Button {
-                        downloadAllData()
-                    } label: {
-                        HStack {
-                            Image(systemName: "chart.bar.xaxis")
-                            Text("Download All Data")
+                        if shouldShowItem("Sort Options") {
+                            Picker(selection: $sortBy) {
+                                ForEach(SortBy.allCases, id: \.self) { sortOption in
+                                    Text(sortOption.rawValue).tag(sortOption)
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "text.line.last.and.arrowtriangle.forward")
+                                    Text("Sort Options")
+                                }
+                            }
                         }
-                    }
-                    NavigationLink(destination: DeviceSettingsView()) {
-                        HStack {
-                            Image(systemName: "wrench.adjustable")
-                            Text("More Device Settings")
+                        if shouldShowItem("Download All Data") {
+                            Button {
+                                downloadAllData()
+                            } label: {
+                                HStack {
+                                    Image(systemName: "chart.bar.xaxis")
+                                    Text("Download All Data")
+                                }
+                            }
+                        }
+                        if shouldShowItem("All Device Settings") {
+                            NavigationLink(destination: DeviceSettingsView()) {
+                                HStack {
+                                    Image(systemName: "wrench.adjustable")
+                                    Text("All Device Settings")
+                                }
+                            }
                         }
                     }
                 }
 
-                Section(header: Text("Account")) {
-                    NavigationLink(destination: ChangePasswordView()) {
-                        HStack {
-                            Image(systemName: "lock.rotation")
-                            Text("Change Password")
+                if shouldShowSection("Account") {
+                    Section(header: Text("Account")) {
+                        if shouldShowItem("Change Password") {
+                            NavigationLink(destination: ChangePasswordView()) {
+                                HStack {
+                                    Image(systemName: "lock.rotation")
+                                    Text("Change Password")
+                                }
+                            }
                         }
-                    }
-                    Button {
-                        handleSignOut()
-                    } label: {
-                        HStack {
-                            Image(systemName: "door.left.hand.open")
-                            Text("Sign Out")
-                        }
-                        .foregroundStyle(.red)
-                    }
-                }
-
-                Section(header: Text("About")) {
-                    Button {
-                        showVolunteerVideo = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "play.tv")
-                            Text("Volunteer Walkthrough Video")
-                        }
-                    }
-                    Button {
-                        showStaffVideo = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "play.tv")
-                            Text("Staff Walkthrough Video")
-                        }
-                    }
-                    Button {
-                        showGuidedAccessVideo = true
-                        print(guidedAccessVideo)
-                    } label: {
-                        HStack {
-                            Image(systemName: "play.tv")
-                            Text("Guided Access Video")
-                        }
-                    }
-                    HStack {
-                        Image(systemName: "info.circle")
-                        Text("Version: \(appVersion)")
-                    }
-                    .foregroundStyle(.secondary)
-                    if latestVersion != appVersion {
-                        HStack {
-                            Image(systemName: "exclamationmark.circle")
+                        if shouldShowItem("Sign Out") {
+                            Button {
+                                handleSignOut()
+                            } label: {
+                                HStack {
+                                    Image(systemName: "door.left.hand.open")
+                                    Text("Sign Out")
+                                }
                                 .foregroundStyle(.red)
-                            Text("Your app is not up to date. Please update when convenient.")
-                                .foregroundStyle(.red)
-                            Link("Update", destination: (URL(string: updateAppURL) ?? URL(string: "https://pawparnter.app"))!)
-                                .buttonStyle(.bordered)
+                            }
                         }
                     }
                 }
-                Section {
-                    HStack {
-                        Image(systemName: "pawprint.fill")
-                        Text("Dedicated to Aslan")
+
+                if shouldShowSection("About") {
+                    Section(header: Text("About")) {
+                        if shouldShowItem("Volunteer Walkthrough Video") {
+                            Button {
+                                showVolunteerVideo = true
+                            } label: {
+                                HStack {
+                                    Image(systemName: "play.tv")
+                                    Text("Volunteer Walkthrough Video")
+                                }
+                            }
+                        }
+                        if shouldShowItem("Staff Walkthrough Video") {
+                            Button {
+                                showStaffVideo = true
+                            } label: {
+                                HStack {
+                                    Image(systemName: "play.tv")
+                                    Text("Staff Walkthrough Video")
+                                }
+                            }
+                        }
+                        if shouldShowItem("Guided Access Video") {
+                            Button {
+                                showGuidedAccessVideo = true
+                                print(guidedAccessVideo)
+                            } label: {
+                                HStack {
+                                    Image(systemName: "play.tv")
+                                    Text("Guided Access Video")
+                                }
+                            }
+                        }
+                        HStack {
+                            Image(systemName: "info.circle")
+                            Text("Version: \(appVersion)")
+                        }
+                        .foregroundStyle(.secondary)
+                        if latestVersion != appVersion {
+                            HStack {
+                                Image(systemName: "exclamationmark.circle")
+                                    .foregroundStyle(.red)
+                                Text("Your app is not up to date. Please update when convenient.")
+                                    .foregroundStyle(.red)
+                                Link("Update", destination: (URL(string: updateAppURL) ?? URL(string: "https://pawparnter.app"))!)
+                                    .buttonStyle(.bordered)
+                            }
+                        }
                     }
-                    .foregroundStyle(.secondary)
+                }
+
+                if shouldShowSection("Dedicated to Aslan") {
+                    Section {
+                        HStack {
+                            Image(systemName: "pawprint.fill")
+                            Text("Dedicated to Aslan")
+                        }
+                        .foregroundStyle(.secondary)
+                    }
                 }
             }
+            .searchable(text: $searchText)
             .navigationTitle("Settings")
             .onAppear {
                 animalViewModel.fetchLatestVersion()
@@ -288,7 +305,7 @@ struct SettingsView: View {
             PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
                 authViewModel.verifyPassword(password: passwordInput) { isCorrect in
                     if isCorrect {
-                        
+
                     } else {
                         print("Incorrect Password")
                         showIncorrectPassword.toggle()
@@ -301,11 +318,10 @@ struct SettingsView: View {
         .toast(isPresenting: $showIncorrectPassword) {
             AlertToast(type: .error(.red), title: "Incorrect Password")
         }
-
     }
-    
+
     // MARK: - Methods
-    
+
     func handleSignOut() {
         animalViewModel.removeListeners()
         animalViewModel.cats = []
@@ -315,14 +331,52 @@ struct SettingsView: View {
         authViewModel.reportsEmail = ""
         authenticationViewModel.shelterID = ""
         lastSync = ""
-//        mode = "logIn"
+    }
+
+    // Helper functions to determine if a section or item should be shown based on the search text
+    func shouldShowSection(_ sectionName: String) -> Bool {
+        switch sectionName {
+        case "Account Details":
+            return shouldShowItem("Shelter", value: authViewModel.shelter) ||
+                   shouldShowItem("Shelter ID", value: authenticationViewModel.shelterID) ||
+                   shouldShowItem("Management Software", value: authViewModel.software) ||
+                   shouldShowItem("API Key", value: authViewModel.apiKey) ||
+                   shouldShowItem("Filter", value: authViewModel.mainFilter)
+        case "Account Settings":
+            return shouldShowItem("Account Setup") ||
+                   shouldShowItem("Volunteer Accounts") ||
+                   shouldShowItem("Scheduled Reports") ||
+                   shouldShowItem("All Account Settings")
+        case "Device Settings":
+            return shouldShowItem("Admin Mode") ||
+                   shouldShowItem("QR Codes") ||
+                   shouldShowItem("Sort Options") ||
+                   shouldShowItem("Download All Data") ||
+                   shouldShowItem("All Device Settings")
+        case "Account":
+            return shouldShowItem("Change Password") ||
+                   shouldShowItem("Sign Out")
+        case "About":
+            return shouldShowItem("Volunteer Walkthrough Video") ||
+                   shouldShowItem("Staff Walkthrough Video") ||
+                   shouldShowItem("Guided Access Video") ||
+                   latestVersion != appVersion
+        case "Dedicated to Aslan":
+            return true
+        default:
+            return false
+        }
+    }
+
+    func shouldShowItem(_ itemName: String, value: String = "") -> Bool {
+        return searchText.isEmpty || itemName.localizedCaseInsensitiveContains(searchText) || value.localizedCaseInsensitiveContains(searchText)
     }
     
     func downloadAllData() {
         showLoading = true
         
         let db = Firestore.firestore()
-        let documentRef = db.collection("Societies").document(authenticationViewModel.shelterID)
+        let documentRef = db.collection("Societies").document(authViewModel.shelterID)
         
         documentRef.getDocument { (document, error) in
             guard let document = document, document.exists else {
@@ -345,7 +399,7 @@ struct SettingsView: View {
             }
         }
     }
-
+    
     func fetchAllAnimals(from collection: CollectionReference, lastDocument: DocumentSnapshot? = nil, completion: @escaping (String) -> Void) {
         var query: Query = collection
         if let lastDocument = lastDocument {
@@ -379,7 +433,40 @@ struct SettingsView: View {
             }
         }
     }
-
+    
+    func saveAndShareCSV(csvString: String) {
+        let fileManager = FileManager.default
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        guard let documentDirectory = urls.first else {
+            showLoading = false
+            return
+        }
+        
+        let filePath = documentDirectory.appendingPathComponent("animals_data.csv")
+        
+        do {
+            try csvString.write(to: filePath, atomically: true, encoding: .utf8)
+            if fileManager.fileExists(atPath: filePath.path) {
+                DispatchQueue.main.async {
+                    self.showLoading = false
+                    self.shareItems = [filePath]
+                    self.showShareSheet = true
+                }
+                print("CSV saved to \(filePath)")
+            } else {
+                print("File does not exist at path: \(filePath)")
+                DispatchQueue.main.async {
+                    self.showLoading = false
+                }
+            }
+        } catch {
+            print("Failed to create file: \(error)")
+            DispatchQueue.main.async {
+                self.showLoading = false
+            }
+        }
+    }
+    
     func parseAnimal(data: [String: Any]) -> Animal? {
         guard
             let id = data["id"] as? String,
@@ -465,7 +552,7 @@ struct SettingsView: View {
         
         return csvRows.joined()
     }
-
+    
     func escapeCSV(_ field: String) -> String {
         var escapedField = field
         if escapedField.contains("\"") {
@@ -476,42 +563,6 @@ struct SettingsView: View {
         }
         return escapedField
     }
-
-    func saveAndShareCSV(csvString: String) {
-        let fileManager = FileManager.default
-        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        guard let documentDirectory = urls.first else {
-            showLoading = false
-            return
-        }
-        
-        let filePath = documentDirectory.appendingPathComponent("animals_data.csv")
-        
-        do {
-            try csvString.write(to: filePath, atomically: true, encoding: .utf8)
-            if fileManager.fileExists(atPath: filePath.path) {
-                DispatchQueue.main.async {
-                    self.showLoading = false
-                    self.shareItems = [filePath]
-                    self.showShareSheet = true
-                }
-                print("CSV saved to \(filePath)")
-            } else {
-                print("File does not exist at path: \(filePath)")
-                DispatchQueue.main.async {
-                    self.showLoading = false
-                }
-            }
-        } catch {
-            print("Failed to create file: \(error)")
-            DispatchQueue.main.async {
-                self.showLoading = false
-            }
-        }
-    }
-
-
-
 }
 
 struct ActivityView: UIViewControllerRepresentable {

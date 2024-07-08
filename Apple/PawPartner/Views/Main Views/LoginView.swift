@@ -102,7 +102,7 @@ struct LoginView: View {
                     .font(.largeTitle)
                     .buttonStyle(.bordered)
                     .fontWeight(.bold)
-                    .tint(.blue)
+                    .tint(.customBlue)
 //                    Text("In order to create an account, please fill out the following form and I will get back to you as soon as possible.")
 //                        .foregroundColor(.secondary)
 //                        .multilineTextAlignment(.center)
