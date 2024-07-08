@@ -25,6 +25,7 @@ struct SettingsView: View {
     @AppStorage("lastSync") var lastSync: String = ""
     @AppStorage("updateAppURL") var updateAppURL: String = ""
     @AppStorage("latestVersion") var latestVersion: String = ""
+    @AppStorage("adminMode") var adminMode = true
 //    @AppStorage("accountType") var accountType = "volunteer"
 
 
@@ -149,11 +150,11 @@ struct SettingsView: View {
                 }
 
                 Section("Device Settings") {
-//                    HStack {
-//                        Image(systemName: "lock")
-//                        Toggle("Admin Mode", isOn: isAdminBinding)
-//                            .toggleStyle(SwitchToggleStyle(tint: .blue))
-//                    }
+                    HStack {
+                        Image(systemName: "lock")
+                        Toggle("Admin Mode", isOn: $adminMode)
+                            .toggleStyle(SwitchToggleStyle(tint: .blue))
+                    }
                     HStack {
                         Image(systemName: "qrcode")
                         Toggle("QR Codes", isOn: $QRMode)

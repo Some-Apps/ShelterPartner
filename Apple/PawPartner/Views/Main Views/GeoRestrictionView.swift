@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GeoRestrictionView: View {
     var body: some View {
-        Text("This account is Geo-restricted. To use the app, you will need to be at the animal shelter.")
+        Text("This account is geo-restricted. To use the app, you will need to be at the animal shelter.")
     }
 }
 

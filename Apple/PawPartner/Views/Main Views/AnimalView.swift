@@ -35,6 +35,7 @@ struct AnimalView: View {
     @AppStorage("cardsPerPage") var cardsPerPage = 30
 //    @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("groupOption") var groupOption = ""
+    @AppStorage("adminMode") var adminMode = true
 
 
     @State private var filteredCatsList: [Animal] = []
@@ -112,6 +113,30 @@ struct AnimalView: View {
 //                            animalMode = "visitor"
 //                        }
 //                        Spacer()
+                        if !adminMode && authViewModel.accountType == "admin" {
+                            Button("Switch To Admin") {
+                                showingPasswordPrompt = true
+                            }
+                            .sheet(isPresented: $showingPasswordPrompt) {
+                                PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
+                                    authViewModel.verifyPassword(password: passwordInput) { isCorrect in
+                                        if isCorrect {
+                                            // The password is correct. Enable the feature here.
+                                            //                                        volunteerMode.toggle()
+                                            adminMode = true
+                                        } else {
+                                            // The password is incorrect. Show an error message.
+                                            print("Incorrect Password")
+                                            showIncorrectPassword.toggle()
+                                            passwordInput = ""
+                                        }
+                                    }
+                                }
+                            }
+                            Spacer()
+                        }
+                        
+
 
                         Button {
                             showingReportForm = true

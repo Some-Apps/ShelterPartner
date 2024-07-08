@@ -20,6 +20,7 @@ struct VisitorView: View {
     @AppStorage("animalMode") var animalMode = "visitor"
     @AppStorage("feedbackURL") var feedbackURL: String = ""
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
+    @AppStorage("adminMode") var adminMode = true
 
     
     @State private var screenWidth: CGFloat = 500
@@ -84,6 +85,28 @@ struct VisitorView: View {
                         }
                     }
                     Spacer()
+                    if !adminMode && authViewModel.accountType == "admin" {
+                        Button("Switch To Admin") {
+                            showingPasswordPrompt = true
+                        }
+                        .sheet(isPresented: $showingPasswordPrompt) {
+                            PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
+                                authViewModel.verifyPassword(password: passwordInput) { isCorrect in
+                                    if isCorrect {
+                                        // The password is correct. Enable the feature here.
+                                        //                                        volunteerMode.toggle()
+                                        adminMode = true
+                                    } else {
+                                        // The password is incorrect. Show an error message.
+                                        print("Incorrect Password")
+                                        showIncorrectPassword.toggle()
+                                        passwordInput = ""
+                                    }
+                                }
+                            }
+                        }
+                        Spacer()
+                    }
 //                    if mode != "volunteerAdmin" && mode != "visitorAdmin" {
 //                        Button("Switch To Admin") {
 //                            showingPasswordPrompt = true

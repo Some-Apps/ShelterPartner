@@ -4,11 +4,32 @@ import FirebaseFirestore
 import FirebaseAuth
 import AlertToast
 import CoreLocation
+import MapKit
 
 struct Volunteer: Identifiable {
     var id: String
     var name: String
     var email: String
+}
+
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    private let locationManager = CLLocationManager()
+    
+    @Published var location: CLLocationCoordinate2D?
+    
+    override init() {
+        super.init()
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            self.location = location.coordinate
+            locationManager.stopUpdatingLocation()
+        }
+    }
 }
 
 struct VolunteerAccountsView: View {
@@ -24,77 +45,99 @@ struct VolunteerAccountsView: View {
     @State private var georestrictionEnabled = false
     @State private var georestrictionCenter = CLLocationCoordinate2D()
     @State private var georestrictionRadius = 1000.0 // in meters
-    
+    @State private var zoomLevel: Double = 0.05
+    @ObservedObject var locationManager = LocationManager()
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
     
     var body: some View {
-        Form {
-            Section("Add Volunteer") {
-                TextField("Volunteer Name", text: $name)
-                TextField("Volunteer Email", text: $email)
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
-                Button("Send Invite") {
-                    sendInvite()
+        GeometryReader { geometry in
+            let minDimension = min(geometry.size.width, geometry.size.height)
+            
+            Form {
+                Section("Add Volunteer") {
+                    TextField("Volunteer Name", text: $name)
+                    TextField("Volunteer Email", text: $email)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                    Button("Send Invite") {
+                        sendInvite()
+                    }
                 }
-            }
-            Section("Volunteers") {
-                List {
-                    ForEach(volunteers) { volunteer in
-                        NavigationLink(destination: VolunteerDetailView(volunteer: volunteer)) {
-                            HStack {
-                                Text(volunteer.name)
-                                Text(" (\(volunteer.email))")
-                                    .foregroundStyle(.secondary)
+                if !volunteers.isEmpty {
+                    Section("Volunteers") {
+                        List {
+                            ForEach(volunteers) { volunteer in
+                                NavigationLink(destination: VolunteerDetailView(volunteer: volunteer)) {
+                                    HStack {
+                                        Text(volunteer.name)
+                                        Text(" (\(volunteer.email))")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
                             }
+                            .onDelete(perform: showDeleteConfirmation)
                         }
                     }
-                    .onDelete(perform: showDeleteConfirmation)
+                }
+
+                Section("Geo-Restrict Volunteer Accounts") {
+                    Toggle(isOn: $georestrictionEnabled) {
+                        Text("Enable Geo-Restriction")
+                    }
+                    .tint(.blue)
+                    .onChange(of: georestrictionEnabled) { _ in
+                        updateGeorestrictionSettings()
+                    }
+                    
+                    if georestrictionEnabled {
+                        VStack {
+                            Text("Center Location")
+                            MapView(centerCoordinate: $georestrictionCenter, radius: $georestrictionRadius, zoomLevel: $zoomLevel, locationManager: locationManager)
+                                .frame(width: minDimension * 0.8, height: minDimension * 0.8) // 80% of the smaller dimension
+                            Text("Radius: \(Int(georestrictionRadius)) meters")
+                            Slider(value: $georestrictionRadius, in: 100...5000, step: 100)
+                            Text("Zoom Level")
+                            Slider(value: $zoomLevel, in: 0.01...0.2, step: 0.001)
+                        }
+                        .onAppear {
+                            fetchGeorestrictionSettings()
+                            if georestrictionCenter.latitude == 0 && georestrictionCenter.longitude == 0 {
+                                if let location = locationManager.location {
+                                    georestrictionCenter = location
+                                }
+                            }
+                        }
+                        .onDisappear {
+                            updateGeorestrictionSettings()
+                        }
+                    }
                 }
             }
-//            Section("Geo-Restrict Volunteer Accounts") {
-//                Toggle(isOn: $georestrictionEnabled) {
-//                    Text("Enable Geo-Restriction")
-//                }
-//                .tint(.blue)
-//                if georestrictionEnabled {
-//                    VStack {
-//                        Text("Center Location")
-//                        MapView(centerCoordinate: $georestrictionCenter)
-//                            .frame(height: 200)
-//                        Text("Radius: \(Int(georestrictionRadius)) meters")
-//                        Slider(value: $georestrictionRadius, in: 100...5000, step: 100)
-//                    }
-//                    .onDisappear {
-//                        updateGeorestrictionSettings()
-//                    }
-//                }
-//            }
-        }
-        .onAppear {
-            fetchVolunteers()
-//            fetchGeorestrictionSettings()
-        }
-        .alert(isPresented: $isShowingDeleteAlert) {
-            Alert(
-                title: Text("Confirm Delete"),
-                message: Text("Are you sure you want to delete \(volunteerToDelete?.name ?? "this volunteer")?"),
-                primaryButton: .destructive(Text("Delete")) {
-                    if let volunteer = volunteerToDelete {
-                        deleteVolunteer(volunteer: volunteer)
-                    }
-                },
-                secondaryButton: .cancel()
-            )
-        }
-        .toast(isPresenting: $showingAlert) {
-            AlertToast(displayMode: .alert, type: .complete(.green), title: alertMessage)
-        }
-        .toast(isPresenting: $showToast) {
-            AlertToast(type: .loading, title: "Sending Invite...")
-        }
-        .toast(isPresenting: $isDeleting) {
-            AlertToast(type: .loading, title: "Deleting Volunteer...")
+            .onAppear {
+                fetchVolunteers()
+                fetchGeorestrictionSettings()
+            }
+            .alert(isPresented: $isShowingDeleteAlert) {
+                Alert(
+                    title: Text("Confirm Delete"),
+                    message: Text("Are you sure you want to delete \(volunteerToDelete?.name ?? "this volunteer")?"),
+                    primaryButton: .destructive(Text("Delete")) {
+                        if let volunteer = volunteerToDelete {
+                            deleteVolunteer(volunteer: volunteer)
+                        }
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+            .toast(isPresenting: $showingAlert) {
+                AlertToast(displayMode: .alert, type: .complete(.green), title: alertMessage)
+            }
+            .toast(isPresenting: $showToast) {
+                AlertToast(type: .loading, title: "Sending Invite...")
+            }
+            .toast(isPresenting: $isDeleting) {
+                AlertToast(type: .loading, title: "Deleting Volunteer...")
+            }
         }
     }
 
@@ -183,6 +226,7 @@ struct VolunteerAccountsView: View {
                         self.georestrictionCenter = CLLocationCoordinate2D(latitude: center.latitude, longitude: center.longitude)
                     }
                     self.georestrictionRadius = georestriction["radius"] as? Double ?? 1000.0
+                    self.zoomLevel = georestriction["zoomLevel"] as? Double ?? 0.05
                 }
             } else {
                 print("Document does not exist or error fetching document: \(error?.localizedDescription ?? "unknown error")")
@@ -194,11 +238,14 @@ struct VolunteerAccountsView: View {
         let db = Firestore.firestore()
         let shelterDocRef = db.collection("Societies").document(authViewModel.shelterID)
         let centerGeoPoint = GeoPoint(latitude: georestrictionCenter.latitude, longitude: georestrictionCenter.longitude)
-        shelterDocRef.updateData([
-            "georestriction.enabled": georestrictionEnabled,
-            "georestriction.center": centerGeoPoint,
-            "georestriction.radius": georestrictionRadius
-        ]) { error in
+        shelterDocRef.setData([
+            "georestriction": [
+                "enabled": georestrictionEnabled,
+                "center": centerGeoPoint,
+                "radius": georestrictionRadius,
+                "zoomLevel": zoomLevel
+            ]
+        ], merge: true) { error in
             if let error = error {
                 self.alertMessage = "Error updating georestriction settings: \(error.localizedDescription)"
                 self.showingAlert = true
@@ -271,36 +318,82 @@ struct VolunteerDetailView: View {
     }
 }
 
-import MapKit
-
 struct MapView: UIViewRepresentable {
     @Binding var centerCoordinate: CLLocationCoordinate2D
+    @Binding var radius: Double
+    @Binding var zoomLevel: Double
+    var locationManager: LocationManager
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
         mapView.delegate = context.coordinator
+        
+        // Add center button
+        let button = UIButton(type: .system)
+//        button.setTitle("Center", for: .normal)
+        button.setImage(UIImage(systemName: "location.circle.fill"), for: .normal)
+        button.addTarget(context.coordinator, action: #selector(context.coordinator.centerMap), for: .touchUpInside)
+        button.backgroundColor = UIColor(white: 1, alpha: 0.8)
+        button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        mapView.addSubview(button)
+        
+        NSLayoutConstraint.activate([
+            button.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -10),
+            button.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -10),
+            button.widthAnchor.constraint(equalToConstant: 60),
+            button.heightAnchor.constraint(equalToConstant: 30)
+        ])
+        
         return mapView
     }
 
     func updateUIView(_ view: MKMapView, context: Context) {
-        let region = MKCoordinateRegion(center: centerCoordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+        let invertedZoomLevel = 0.2 - zoomLevel
+        let region = MKCoordinateRegion(center: centerCoordinate, span: MKCoordinateSpan(latitudeDelta: invertedZoomLevel, longitudeDelta: invertedZoomLevel))
         view.setRegion(region, animated: true)
-        view.addAnnotation(MKPointAnnotation(__coordinate: centerCoordinate))
+        view.removeAnnotations(view.annotations)
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = centerCoordinate
+        view.addAnnotation(annotation)
+        view.removeOverlays(view.overlays)
+        let circle = MKCircle(center: centerCoordinate, radius: radius)
+        view.addOverlay(circle)
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(self, locationManager: locationManager)
     }
 
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: MapView
+        var locationManager: LocationManager
 
-        init(_ parent: MapView) {
+        init(_ parent: MapView, locationManager: LocationManager) {
             self.parent = parent
+            self.locationManager = locationManager
+        }
+
+        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if let circleOverlay = overlay as? MKCircle {
+                let renderer = MKCircleRenderer(circle: circleOverlay)
+                renderer.strokeColor = .blue
+                renderer.fillColor = UIColor.blue.withAlphaComponent(0.2)
+                renderer.lineWidth = 1
+                return renderer
+            }
+            return MKOverlayRenderer(overlay: overlay)
         }
 
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
             parent.centerCoordinate = mapView.centerCoordinate
+        }
+        
+        @objc func centerMap() {
+            if let location = locationManager.location {
+                parent.centerCoordinate = location
+            }
         }
     }
 }
