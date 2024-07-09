@@ -24,10 +24,21 @@ struct AddNoteView: View {
     var body: some View {
         Form {
             if requireName {
-                Section("Name of Volunteer") {
-                    TextField("Name", text: $name)
-                        .focused($isNameFieldFocused)
+                if !authViewModel.name.isEmpty {
+                    Section("Name of Volunteer") {
+                        Text(authViewModel.name)
+                            .foregroundStyle(.secondary)
+                            .onAppear {
+                                name = authViewModel.name
+                            }
+                    }
+                } else {
+                    Section("Name of Volunteer") {
+                        TextField("Name", text: $name)
+                            .focused($isNameFieldFocused)
+                    }
                 }
+                
             }
             
             Section("Note for \(animal.name)") {

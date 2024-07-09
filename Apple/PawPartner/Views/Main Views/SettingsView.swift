@@ -53,9 +53,16 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if shouldShowSection("Account Details") {
                     Section(header: Text("Account Details")) {
-                        if shouldShowItem("Shelter", value: authViewModel.shelter) {
+                        if !authViewModel.name.isEmpty {
+                            HStack {
+                                Text("Name:")
+                                    .bold()
+                                Text(authViewModel.name)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        if !authViewModel.shelterID.isEmpty {
                             HStack {
                                 Text("Shelter:")
                                     .bold()
@@ -63,7 +70,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if shouldShowItem("Shelter ID", value: authenticationViewModel.shelterID) {
+                        if !authViewModel.shelterID.isEmpty {
                             HStack {
                                 Text("Shelter ID:")
                                     .bold()
@@ -71,7 +78,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if shouldShowItem("Management Software", value: authViewModel.software) {
+                        if !authViewModel.software.isEmpty {
                             HStack {
                                 Text("Management Software:")
                                     .bold()
@@ -79,7 +86,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if shouldShowItem("API Key", value: authViewModel.apiKey) {
+                        if !authViewModel.apiKey.isEmpty {
                             HStack {
                                 Text("API Key:")
                                     .bold()
@@ -87,7 +94,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if shouldShowItem("Filter", value: authViewModel.mainFilter) {
+                        if !authViewModel.mainFilter.isEmpty {
                             HStack {
                                 Text("Filter:")
                                     .bold()
@@ -98,105 +105,22 @@ struct SettingsView: View {
                             }
                         }
                     }
-                }
-
-                if shouldShowSection("Account Settings") {
-                    Section("Account Settings") {
-                        if shouldShowItem("Account Setup") {
-                            NavigationLink(destination: AccountSetupView()) {
-                                HStack {
-                                    Image(systemName: "shared.with.you")
-                                    Text("Account Setup")
-                                }
-                            }
-                        }
-                        if shouldShowItem("Volunteer Accounts") {
-                            NavigationLink(destination: VolunteerAccountsView()) {
-                                HStack {
-                                    Image(systemName: "person.crop.rectangle.stack")
-                                    Text("Volunteer Accounts")
-                                }
-                            }
-                        }
-                        if shouldShowItem("Scheduled Reports") {
-                            NavigationLink(destination: ScheduledReportsView()) {
-                                HStack {
-                                    Image(systemName: "envelope")
-                                    Text("Scheduled Reports")
-                                }
-                            }
-                        }
-                        if shouldShowItem("All Account Settings") {
-                            NavigationLink(destination: AccountSettingsView()) {
-                                HStack {
-                                    Image(systemName: "wrench.adjustable")
-                                    Text("All Account Settings")
-                                }
-                            }
-                        }
+                Section {
+                    NavigationLink(destination: AccountSettingsView()) {
+                        Text("Account Settings")
+                    }
+                    NavigationLink(destination: DeviceSettingsView()) {
+                        Text("Device Settings")
                     }
                 }
-
-                if shouldShowSection("Device Settings") {
-                    Section("Device Settings") {
-                        if shouldShowItem("Admin Mode") {
-                            HStack {
-                                Image(systemName: "lock")
-                                Toggle("Admin Mode", isOn: $adminMode)
-                                    .tint(.customBlue)
-                            }
-                        }
-                        if shouldShowItem("QR Codes") {
-                            HStack {
-                                Image(systemName: "qrcode")
-                                Toggle("QR Codes", isOn: $QRMode)
-                                    .tint(.customBlue)
-                            }
-                        }
-                        if shouldShowItem("Sort Options") {
-                            Picker(selection: $sortBy) {
-                                ForEach(SortBy.allCases, id: \.self) { sortOption in
-                                    Text(sortOption.rawValue).tag(sortOption)
-                                }
-                            } label: {
-                                HStack {
-                                    Image(systemName: "text.line.last.and.arrowtriangle.forward")
-                                    Text("Sort Options")
-                                }
-                            }
-                        }
-                        if shouldShowItem("Download All Data") {
-                            Button {
-                                downloadAllData()
-                            } label: {
-                                HStack {
-                                    Image(systemName: "chart.bar.xaxis")
-                                    Text("Download All Data")
-                                }
-                            }
-                        }
-                        if shouldShowItem("All Device Settings") {
-                            NavigationLink(destination: DeviceSettingsView()) {
-                                HStack {
-                                    Image(systemName: "wrench.adjustable")
-                                    Text("All Device Settings")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if shouldShowSection("Account") {
                     Section(header: Text("Account")) {
-                        if shouldShowItem("Change Password") {
                             NavigationLink(destination: ChangePasswordView()) {
                                 HStack {
                                     Image(systemName: "lock.rotation")
                                     Text("Change Password")
                                 }
                             }
-                        }
-                        if shouldShowItem("Sign Out") {
+                        
                             Button {
                                 handleSignOut()
                             } label: {
@@ -206,43 +130,13 @@ struct SettingsView: View {
                                 }
                                 .foregroundStyle(.red)
                             }
-                        }
+                        
                     }
-                }
+                
 
-                if shouldShowSection("About") {
                     Section(header: Text("About")) {
-                        if shouldShowItem("Volunteer Walkthrough Video") {
-                            Button {
-                                showVolunteerVideo = true
-                            } label: {
-                                HStack {
-                                    Image(systemName: "play.tv")
-                                    Text("Volunteer Walkthrough Video")
-                                }
-                            }
-                        }
-                        if shouldShowItem("Staff Walkthrough Video") {
-                            Button {
-                                showStaffVideo = true
-                            } label: {
-                                HStack {
-                                    Image(systemName: "play.tv")
-                                    Text("Staff Walkthrough Video")
-                                }
-                            }
-                        }
-                        if shouldShowItem("Guided Access Video") {
-                            Button {
-                                showGuidedAccessVideo = true
-                                print(guidedAccessVideo)
-                            } label: {
-                                HStack {
-                                    Image(systemName: "play.tv")
-                                    Text("Guided Access Video")
-                                }
-                            }
-                        }
+                        Link("Tutorials", destination: URL(string: "https://pawpartner.app/tutorials")!)
+                        
                         HStack {
                             Image(systemName: "info.circle")
                             Text("Version: \(appVersion)")
@@ -259,9 +153,8 @@ struct SettingsView: View {
                             }
                         }
                     }
-                }
+                
 
-                if shouldShowSection("Dedicated to Aslan") {
                     Section {
                         HStack {
                             Image(systemName: "pawprint.fill")
@@ -269,7 +162,7 @@ struct SettingsView: View {
                         }
                         .foregroundStyle(.secondary)
                     }
-                }
+                
             }
             .searchable(text: $searchText)
             .navigationTitle("Settings")
@@ -331,237 +224,6 @@ struct SettingsView: View {
         authViewModel.reportsEmail = ""
         authenticationViewModel.shelterID = ""
         lastSync = ""
-    }
-
-    // Helper functions to determine if a section or item should be shown based on the search text
-    func shouldShowSection(_ sectionName: String) -> Bool {
-        switch sectionName {
-        case "Account Details":
-            return shouldShowItem("Shelter", value: authViewModel.shelter) ||
-                   shouldShowItem("Shelter ID", value: authenticationViewModel.shelterID) ||
-                   shouldShowItem("Management Software", value: authViewModel.software) ||
-                   shouldShowItem("API Key", value: authViewModel.apiKey) ||
-                   shouldShowItem("Filter", value: authViewModel.mainFilter)
-        case "Account Settings":
-            return shouldShowItem("Account Setup") ||
-                   shouldShowItem("Volunteer Accounts") ||
-                   shouldShowItem("Scheduled Reports") ||
-                   shouldShowItem("All Account Settings")
-        case "Device Settings":
-            return shouldShowItem("Admin Mode") ||
-                   shouldShowItem("QR Codes") ||
-                   shouldShowItem("Sort Options") ||
-                   shouldShowItem("Download All Data") ||
-                   shouldShowItem("All Device Settings")
-        case "Account":
-            return shouldShowItem("Change Password") ||
-                   shouldShowItem("Sign Out")
-        case "About":
-            return shouldShowItem("Volunteer Walkthrough Video") ||
-                   shouldShowItem("Staff Walkthrough Video") ||
-                   shouldShowItem("Guided Access Video") ||
-                   latestVersion != appVersion
-        case "Dedicated to Aslan":
-            return true
-        default:
-            return false
-        }
-    }
-
-    func shouldShowItem(_ itemName: String, value: String = "") -> Bool {
-        return searchText.isEmpty || itemName.localizedCaseInsensitiveContains(searchText) || value.localizedCaseInsensitiveContains(searchText)
-    }
-    
-    func downloadAllData() {
-        showLoading = true
-        
-        let db = Firestore.firestore()
-        let documentRef = db.collection("Societies").document(authViewModel.shelterID)
-        
-        documentRef.getDocument { (document, error) in
-            guard let document = document, document.exists else {
-                print("Document does not exist")
-                showLoading = false
-                return
-            }
-            
-            var csvString = "id,name,species,note,note date,note person,log start,log end,log person\n"
-            
-            fetchAllAnimals(from: documentRef.collection("Cats")) { catCSV in
-                csvString.append(contentsOf: catCSV)
-                
-                fetchAllAnimals(from: documentRef.collection("Dogs")) { dogCSV in
-                    csvString.append(contentsOf: dogCSV)
-                    
-                    // Save CSV and present share sheet
-                    saveAndShareCSV(csvString: csvString)
-                }
-            }
-        }
-    }
-    
-    func fetchAllAnimals(from collection: CollectionReference, lastDocument: DocumentSnapshot? = nil, completion: @escaping (String) -> Void) {
-        var query: Query = collection
-        if let lastDocument = lastDocument {
-            query = query.start(afterDocument: lastDocument)
-        }
-        
-        query.limit(to: 1000).getDocuments { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-                completion("")
-                return
-            }
-            
-            var csvString = ""
-            
-            for document in querySnapshot!.documents {
-                let data = document.data()
-                if let animal = parseAnimal(data: data) {
-                    csvString.append(contentsOf: formatAnimalToCSV(animal: animal))
-                }
-            }
-            
-            if let lastDocument = querySnapshot?.documents.last, querySnapshot?.documents.count == 1000 {
-                // Fetch next batch
-                fetchAllAnimals(from: collection, lastDocument: lastDocument) { nextBatchCSV in
-                    csvString.append(contentsOf: nextBatchCSV)
-                    completion(csvString)
-                }
-            } else {
-                completion(csvString)
-            }
-        }
-    }
-    
-    func saveAndShareCSV(csvString: String) {
-        let fileManager = FileManager.default
-        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        guard let documentDirectory = urls.first else {
-            showLoading = false
-            return
-        }
-        
-        let filePath = documentDirectory.appendingPathComponent("animals_data.csv")
-        
-        do {
-            try csvString.write(to: filePath, atomically: true, encoding: .utf8)
-            if fileManager.fileExists(atPath: filePath.path) {
-                DispatchQueue.main.async {
-                    self.showLoading = false
-                    self.shareItems = [filePath]
-                    self.showShareSheet = true
-                }
-                print("CSV saved to \(filePath)")
-            } else {
-                print("File does not exist at path: \(filePath)")
-                DispatchQueue.main.async {
-                    self.showLoading = false
-                }
-            }
-        } catch {
-            print("Failed to create file: \(error)")
-            DispatchQueue.main.async {
-                self.showLoading = false
-            }
-        }
-    }
-    
-    func parseAnimal(data: [String: Any]) -> Animal? {
-        guard
-            let id = data["id"] as? String,
-            let name = data["name"] as? String,
-            let species = data["animalType"] as? String
-        else {
-            print("Missing required fields in data: \(data)")
-            return nil
-        }
-        
-        let notesData = data["notes"] as? [[String: Any]] ?? []
-        let logsData = data["logs"] as? [[String: Any]] ?? []
-        
-        let notes = notesData.compactMap { noteData -> Note? in
-            guard
-                let id = noteData["id"] as? String,
-                let date = noteData["date"] as? Double,
-                let note = noteData["note"] as? String
-            else {
-                print("Missing required fields in noteData: \(noteData)")
-                return nil
-            }
-            return Note(id: id, date: date, note: note, user: noteData["user"] as? String)
-        }
-        
-        let logs = logsData.compactMap { logData -> Log? in
-            guard
-                let id = logData["id"] as? String,
-                let startTime = logData["startTime"] as? Double,
-                let endTime = logData["endTime"] as? Double
-            else {
-                print("Missing required fields in logData: \(logData)")
-                return nil
-            }
-            return Log(id: id, startTime: startTime, endTime: endTime, user: logData["user"] as? String, shortReason: logData["shortReason"] as? String)
-        }
-        
-        let tags = data["tags"] as? [String: Int] ?? [:]
-        
-        return Animal(
-            id: id,
-            aggressionRating: data["aggressionRating"] as? Int,
-            name: name,
-            animalType: AnimalType(rawValue: species) ?? .Cat,
-            location: data["location"] as? String ?? "",
-            alert: data["alert"] as? String ?? "",
-            canPlay: data["canPlay"] as? Bool ?? false,
-            inCage: data["inCage"] as? Bool ?? false,
-            startTime: data["startTime"] as? Double ?? 0,
-            notes: notes,
-            logs: logs,
-            tags: tags,
-            photos: [] // Assuming photos are not included in this example
-        )
-    }
-
-    func formatAnimalToCSV(animal: Animal) -> String {
-        var csvRows = [String]()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
-        let notes = Array(animal.notes.dropFirst())
-        let logs = Array(animal.logs.dropFirst())
-        
-        let maxRows = max(notes.count, logs.count)
-        
-        for i in 0..<maxRows {
-            let note = i < notes.count ? notes[i] : nil
-            let log = i < logs.count ? logs[i] : nil
-            
-            let noteDateString = note != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: note!.date)) : ""
-            let logStartDateString = log != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: log!.startTime)) : ""
-            let logEndDateString = log != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: log!.endTime)) : ""
-            
-            let row = "\(i == 0 ? escapeCSV(animal.id) : ""),\(i == 0 ? escapeCSV(animal.name) : ""),\(i == 0 ? escapeCSV(animal.animalType.rawValue) : ""),\(escapeCSV(note?.note ?? "")),\(noteDateString),\(escapeCSV(note?.user ?? "")),\(logStartDateString),\(logEndDateString),\(escapeCSV(log?.user ?? "")),\(escapeCSV(log?.shortReason ?? ""))\n"
-            csvRows.append(row)
-        }
-        
-        if maxRows == 0 {
-            let row = "\(escapeCSV(animal.id)),\(escapeCSV(animal.name)),\(escapeCSV(animal.animalType.rawValue)),,,,,,\n"
-            csvRows.append(row)
-        }
-        
-        return csvRows.joined()
-    }
-    
-    func escapeCSV(_ field: String) -> String {
-        var escapedField = field
-        if escapedField.contains("\"") {
-            escapedField = escapedField.replacingOccurrences(of: "\"", with: "\"\"")
-        }
-        if escapedField.contains(",") || escapedField.contains("\n") || escapedField.contains("\"") {
-            escapedField = "\"\(escapedField)\""
-        }
-        return escapedField
     }
 }
 

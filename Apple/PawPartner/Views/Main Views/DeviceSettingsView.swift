@@ -54,6 +54,7 @@ struct DeviceSettingsView: View {
     @State private var showPopover10 = false
     @State private var showPopover11 = false
     @State private var showPopover12 = false
+    @State private var showPopover13 = false // show sort options
 
     let linkTypes = ["QR Code", "Open In App"]
 
@@ -209,27 +210,16 @@ struct DeviceSettingsView: View {
             }
             
             Section {
-                Toggle(requireName ? "Enabled" : "Disabled", isOn: $requireName)
+                Toggle(isOn: $requireName) {
+                    SettingElement(title: "Require Name: \(requireName ? "Enabled" : "Disabled")", explanation: "Before an animal can be taken out, you must enter your name if you are not logged in to your volunteer account.")
+                }
                     .tint(.customBlue)
                     .onChange(of: requireName) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Require Name")
-                    Button {
-                        showPopover5 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover5) {
-                        Text("Before an animal can be taken out, you must enter your name.")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
             }
-
             Section {
-                Toggle(isCustomFormOn ? "Enabled" : "Disabled", isOn: $isCustomFormOn)
+                Toggle(isOn: $isCustomFormOn) {
+                    SettingElement(title: "Custom Form: \(isCustomFormOn ? "Enabled" : "Disabled")", explanation: "If you would like to prompt users to fill out a custom form of your choice after visiting with an animal, add the url and turn on the toggle. This will display a \"Custom Form\" button on the \"Thank You\" pop up after putting an animal back. If the button doesn't work, make sure your url begins with https://")
+                }
                     .tint(.customBlue)
                     .onChange(of: isCustomFormOn) { _ in saveSettings() }
                 TextField("https://example.com", text: $customFormURL)
@@ -238,132 +228,90 @@ struct DeviceSettingsView: View {
                     .disabled(!isCustomFormOn)
                     .foregroundStyle(isCustomFormOn ? .primary : .secondary)
                     .onChange(of: customFormURL) { _ in saveSettings() }
-                Picker("Button Type", selection: $linkType) {
+                Picker(selection: $linkType) {
                     ForEach(linkTypes, id: \.self) {
                         Text($0)
                     }
+                } label: {
+                    Button {
+                        
+                    } label: {
+                        SettingElement(title: "Button Type", explanation: "How you want the link to be displayed")
+                            .foregroundStyle(.black)
+                    }
                 }
-                .disabled(!isCustomFormOn)
                 .foregroundStyle(isCustomFormOn ? .primary : .secondary)
                 .onChange(of: linkType) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Custom Form")
-                    Button {
-                        showPopover6 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover6) {
-                        Text("If you would like to prompt users to fill out a custom form of your choice after visiting with an animal, add the url and turn on the toggle. This will display a \"Custom Form\" button on the \"Thank You\" pop up after putting an animal back. If the button doesn't work, make sure your url begins with https://")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
             }
             
             Section {
-                Toggle(showAllAnimals ? "Enabled" : "Disabled", isOn: $showAllAnimals)
+                Toggle(isOn: $showAllAnimals) {
+                    SettingElement(title: "Display All Animals \(showAllAnimals ? "Enabled" : "Disabled")", explanation: "Display all animals including ones you've selected to filter out. Filtered animals will be gray and won't be able to be taken out.")
+                }
                     .tint(.customBlue)
                     .onChange(of: showAllAnimals) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Display All Animals")
-                    Button {
-                        showPopover9 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover9) {
-                        Text("This will display all animals including ones you've selected to filter out. Filtered animals will be gray and won't be able to be taken out.")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
             }
-            
             Section {
-                Toggle(showSearchBar ? "Enabled" : "Disabled", isOn: $showSearchBar)
+                Toggle(isOn: $showSearchBar) {
+                    SettingElement(title: "Show Search Bar: \(showSearchBar ? "Enabled" : "Disabled")", explanation: "Search animals by name, notes, breed, etc.")
+                }
                     .tint(.customBlue)
                     .onChange(of: showSearchBar) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Show Search Bar")
-                    Button {
-                        showPopover10 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover10) {
-                        Text("This allows you to search animals by name, notes, breed, etc from the volunteer screen.")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
             }
 
             if !viewModel.groupOptions.isEmpty {
                 Section {
-                    Toggle("Show Filter Options", isOn: $showFilterOptions)
-                        .tint(.customBlue)
-                        .onChange(of: showFilterOptions) { _ in saveSettings() }
-
+                    Toggle(isOn: $showFilterOptions) {
+                        SettingElement(title: "Show Filter Options", explanation: "Allow users to add their own filter in the Animal tab.")
+                    }
+                    .tint(.customBlue)
+                    .onChange(of: showFilterOptions) { _ in saveSettings() }
                 }
                 
                 Section {
-                    Picker("Group By", selection: $groupOption) {
+                    Picker(selection: $groupOption) {
                         Text("").tag("")
                         ForEach(viewModel.groupOptions, id: \.self) {
                             Text($0)
                         }
+                    } label: {
+                        Button {
+                            
+                        } label: {
+                            SettingElement(title: "Group By", explanation: "Group animals by categories of your choice.")
+                                .foregroundStyle(.black)
+                        }
+                        
                     }
                     .onChange(of: groupOption) { _ in saveSettings() }
-                    Toggle("Show \"Bulk Take Out\" Button", isOn: $showBulkTakeOut)
+                    Toggle(isOn: $showBulkTakeOut) {
+                        SettingElement(title: "Show \"Bulk Take Out\" Button", explanation: "This allows users to take out and put back all the animals in a group at the same time.")
+                    }
                         .tint(.customBlue)
                         .onChange(of: showBulkTakeOut) { _ in saveSettings() }
-                } header: {
-                    HStack {
-                        Text("Groups")
-                        Button {
-                            showPopover3 = true
-                        } label: {
-                            Image(systemName: "questionmark.circle")
-                        }
-                        .popover(isPresented: $showPopover3) {
-                            Text("Automatically group animals by categories of your choice. To set up the groups, email jared@pawpartner.app. In the future, this will be able to be set up directly in the app.")
-                                .padding()
-                                .textCase(nil)
-                        }
-                    }
                 }
             }
 
             if !viewModel.secondarySortOptions.isEmpty {
                 Section {
-                    Picker("Secondary Sort", selection: $secondarySortOption) {
+                    Picker(selection: $secondarySortOption) {
                         Text("").tag("")
                         ForEach(viewModel.secondarySortOptions, id: \.self) {
                             Text($0)
                         }
+                    } label: {
+                        Button {
+                            
+                        } label: {
+                            SettingElement(title: "Secondary Sort", explanation: "Sort animals by categories of your choice.")
+                                .foregroundStyle(.black)
+                        }
                     }
                     .onChange(of: secondarySortOption) { _ in saveSettings() }
-                } header: {
-                    HStack {
-                        Text("Secondary Sort")
-                        Button {
-                            showPopover11 = true
-                        } label: {
-                            Image(systemName: "questionmark.circle")
-                        }
-                        .popover(isPresented: $showPopover11) {
-                            Text("This allows you to search animals by name, notes, breed, etc from the volunteer screen.")
-                                .padding()
-                                .textCase(nil)
-                        }
-                    }
                 }
             }
         }
+        .navigationTitle("Device Settings")
         .toast(isPresenting: $showLoading) {
             AlertToast(displayMode: .alert, type: .loading)
         }
