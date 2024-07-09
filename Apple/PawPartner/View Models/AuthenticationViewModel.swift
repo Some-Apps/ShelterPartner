@@ -14,26 +14,26 @@ class AuthenticationViewModel: ObservableObject {
     static let shared = AuthenticationViewModel()
     
     @AppStorage("volunteerSettingsEnabled") var volunteerSettingsEnabled = false
-        @AppStorage("minimumDuration") var minimumDuration = 5
-        @AppStorage("cardsPerPage") var cardsPerPage = 30
-        @AppStorage("customFormURL") var customFormURL = ""
-        @AppStorage("isCustomFormOn") var isCustomFormOn = false
-        @AppStorage("linkType") var linkType = "QR Code"
-        @AppStorage("showNoteDates") var showNoteDates = true
-        @AppStorage("requireName") var requireName = false
-        @AppStorage("showAllAnimals") var showAllAnimals = false
-        @AppStorage("createLogsAlways") var createLogsAlways = false
-        @AppStorage("requireReason") var requireReason = false
-        @AppStorage("showSearchBar") var showSearchBar = false
-        @AppStorage("secondarySortOption") var secondarySortOption = ""
-        @AppStorage("enableAutomaticPutBack") var enableAutomaticPutBack = false
-        @AppStorage("automaticPutBackHours") var automaticPutBackHours = 3
-        @AppStorage("automaticPutBackIgnoreVisit") var automaticPutBackIgnoreVisit = true
-        @AppStorage("groupOption") var groupOption = ""
-        @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
-        @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
-        @AppStorage("QRMode") var QRMode = true
-        @AppStorage("adminMode") var adminMode = true
+    @AppStorage("minimumDuration") var minimumDuration = 5
+    @AppStorage("cardsPerPage") var cardsPerPage = 30
+    @AppStorage("customFormURL") var customFormURL = ""
+    @AppStorage("isCustomFormOn") var isCustomFormOn = false
+    @AppStorage("linkType") var linkType = "QR Code"
+    @AppStorage("showNoteDates") var showNoteDates = true
+    @AppStorage("requireName") var requireName = false
+    @AppStorage("showAllAnimals") var showAllAnimals = false
+    @AppStorage("createLogsAlways") var createLogsAlways = false
+    @AppStorage("requireReason") var requireReason = false
+    @AppStorage("showSearchBar") var showSearchBar = false
+    @AppStorage("secondarySortOption") var secondarySortOption = ""
+    @AppStorage("enableAutomaticPutBack") var enableAutomaticPutBack = false
+    @AppStorage("automaticPutBackHours") var automaticPutBackHours = 3
+    @AppStorage("automaticPutBackIgnoreVisit") var automaticPutBackIgnoreVisit = true
+    @AppStorage("groupOption") var groupOption = ""
+    @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
+    @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
+    @AppStorage("QRMode") var QRMode = true
+    @AppStorage("adminMode") var adminMode = true
     
     @Published var isSignedIn = false
     @Published var showLoginSuccess = false
@@ -55,6 +55,7 @@ class AuthenticationViewModel: ObservableObject {
     
     @Published var shelterID = ""
     @Published var accountType = "volunteer"
+    @Published var name = ""
     
     @AppStorage("volunteerVideo") var volunteerVideo = ""
     @AppStorage("staffVideo") var staffVideo = ""
@@ -157,6 +158,7 @@ class AuthenticationViewModel: ObservableObject {
                 }
                 self?.shelterID = data["societyID"] as? String ?? ""
                 self?.accountType = data["type"] as? String ?? "volunteer"
+                self?.name = data["name"] as? String ?? ""
                 
                 if self?.accountType == "volunteer" {
                     self?.setupVolunteerSettingsListener()

@@ -292,8 +292,8 @@ struct AnimalView: View {
                             showTutorialQRCode = true
                         } label: {
                             HStack {
-                                Image(systemName: "play.rectangle.fill")
-                                Text("Volunteer Tutorial Video")
+                                Image(systemName: "qrcode")
+                                Text("Tutorials")
                             }
                             .padding()
                             .fontWeight(.black)
@@ -383,11 +383,11 @@ struct AnimalView: View {
         .sheet(isPresented: $viewModel.showQRCode) {
             QRCodeView(animal: viewModel.animal)
         }
-        .sheet(isPresented: $showDonateQRCode) {
-            CustomQRCodeView(url: donationURL)
-        }
+//        .sheet(isPresented: $showDonateQRCode) {
+//            CustomQRCodeView(url: donationURL)
+//        }
         .sheet(isPresented: $showTutorialQRCode) {
-            Image(uiImage: generateQRCode(from: "https://www.youtube.com/watch?v=\(volunteerVideo)"))
+            Image(uiImage: generateQRCode(from: "https://pawpartner.app/tutorials"))
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()
