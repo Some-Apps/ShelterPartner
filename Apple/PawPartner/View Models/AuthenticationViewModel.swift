@@ -101,7 +101,7 @@ class AuthenticationViewModel: ObservableObject {
         dataListener?.remove()
         volunteerSettingsListener?.remove()
     }
-    
+        
     func fetchSignUpForm() {
         signUpListener = Firestore.firestore().collection("Stats").document("AppInformation").addSnapshotListener { [weak self] (documentSnapshot, error) in
             guard let document = documentSnapshot else {

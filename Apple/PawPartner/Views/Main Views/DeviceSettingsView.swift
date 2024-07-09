@@ -33,6 +33,7 @@ struct DeviceSettingsView: View {
     @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
     @AppStorage("QRMode") var QRMode = true
     @AppStorage("adminMode") var adminMode = true
+    @AppStorage("showFilterOptions") var showFilterOptions = false
 
     @ObservedObject var viewModel = AuthenticationViewModel.shared
     @ObservedObject var animalViewModel = AnimalViewModel.shared
@@ -303,6 +304,13 @@ struct DeviceSettingsView: View {
 
             if !viewModel.groupOptions.isEmpty {
                 Section {
+                    Toggle("Show Filter Options", isOn: $showFilterOptions)
+                        .tint(.customBlue)
+                        .onChange(of: showFilterOptions) { _ in saveSettings() }
+
+                }
+                
+                Section {
                     Picker("Group By", selection: $groupOption) {
                         Text("").tag("")
                         ForEach(viewModel.groupOptions, id: \.self) {
@@ -366,7 +374,9 @@ struct DeviceSettingsView: View {
             ActivityView(activityItems: shareItems)
         }
         .onAppear {
-            loadSettingsFromFirestore()
+            if volunteerSettingsEnabled {
+                loadSettingsFromFirestore()
+            }
         }
     }
     
@@ -399,6 +409,7 @@ struct DeviceSettingsView: View {
             "enableAutomaticPutBack": enableAutomaticPutBack,
             "automaticPutBackHours": automaticPutBackHours,
             "automaticPutBackIgnoreVisit": automaticPutBackIgnoreVisit,
+            "showFilterOptions": showFilterOptions,
             "groupOption": groupOption,
             "showBulkTakeOut": showBulkTakeOut
         ]
@@ -435,6 +446,7 @@ struct DeviceSettingsView: View {
                     self.enableAutomaticPutBack = data["enableAutomaticPutBack"] as? Bool ?? false
                     self.automaticPutBackHours = data["automaticPutBackHours"] as? Int ?? 3
                     self.automaticPutBackIgnoreVisit = data["automaticPutBackIgnoreVisit"] as? Bool ?? true
+                    self.showFilterOptions = data["showFilterOptions"] as? Bool ?? false
                     self.groupOption = data["groupOption"] as? String ?? ""
                     self.showBulkTakeOut = data["showBulkTakeOut"] as? Bool ?? false
                 }

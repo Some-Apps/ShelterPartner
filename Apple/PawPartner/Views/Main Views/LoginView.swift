@@ -89,7 +89,7 @@ struct LoginView: View {
                                 fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
                                     switch result {
                                     case .success(let societyID):
-                                        let tempSocietyID = societyID
+//                                        _ = societyID
 //                                        storedSocietyID = tempSocietyID
                                         print("User signed in successfully")
                                         print("SocietyID: \(societyID)")
