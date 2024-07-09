@@ -5,7 +5,6 @@ import AlertToast
 import Kingfisher
 import WebKit
 import UIKit
-//import SSToastMessage
 
 struct AnimalView: View {
     // MARK: - Properties
@@ -28,21 +27,18 @@ struct AnimalView: View {
     @AppStorage("feedbackURL") var feedbackURL: String = ""
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
     @AppStorage("animalType") var animalType = AnimalType.Cat
-//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("animalMode") var animalMode = "volunteer"
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("donationURL") var donationURL: String = ""
     @AppStorage("cardsPerPage") var cardsPerPage = 30
-//    @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("groupOption") var groupOption = ""
     @AppStorage("adminMode") var adminMode = true
     @AppStorage("showFilterOptions") var showFilterOptions = false
 
-
     @State private var filteredCatsList: [Animal] = []
     @State private var filteredDogsList: [Animal] = []
     @State private var finalFilterCategory = "None"
-    @State private var finalFilterSelection = "None"
+    @State private var finalFilterSelections: Set<String> = []
     @State private var searchQuery = ""
     @State private var showAnimalAlert = false
     @State private var screenWidth: CGFloat = 500
@@ -56,6 +52,7 @@ struct AnimalView: View {
     @State private var passwordInput = ""
     @State private var showIncorrectPassword = false
     @State private var showDonateQRCode = false
+    @State private var isFilterOptionsExpanded = false
 
     @FocusState private var focusField: Bool
 
@@ -91,7 +88,7 @@ struct AnimalView: View {
     }
     
     var filterSelectionOptions: [String] {
-        var options: [String] = ["None"]
+        var options: [String] = []
         
         var animals: [Animal]
         if animalType == .Cat {
@@ -102,26 +99,20 @@ struct AnimalView: View {
         
         if finalFilterCategory == "Color" {
             for animal in animals {
-                if options.contains(animal.colorGroup ?? "None") {
-                    continue
-                } else {
-                    options.append(animal.colorGroup ?? "None")
+                if let colorGroup = animal.colorGroup, !options.contains(colorGroup) {
+                    options.append(colorGroup)
                 }
             }
         } else if finalFilterCategory == "Building" {
             for animal in animals {
-                if options.contains(animal.buildingGroup ?? "None") {
-                    continue
-                } else {
-                    options.append(animal.buildingGroup ?? "None")
+                if let buildingGroup = animal.buildingGroup, !options.contains(buildingGroup) {
+                    options.append(buildingGroup)
                 }
             }
         } else if finalFilterCategory == "Behavior" {
             for animal in animals {
-                if options.contains(animal.behaviorGroup ?? "None") {
-                    continue
-                } else {
-                    options.append(animal.behaviorGroup ?? "None")
+                if let behaviorGroup = animal.behaviorGroup, !options.contains(behaviorGroup) {
+                    options.append(behaviorGroup)
                 }
             }
         }
@@ -129,6 +120,18 @@ struct AnimalView: View {
         print("Filter options for category \(finalFilterCategory): \(options)")
         return options
     }
+    
+    var filterTitle: String {
+           var title = ""
+           if finalFilterCategory != "None" {
+               title += "\(finalFilterCategory)"
+               if !finalFilterSelections.isEmpty {
+                   let selections = finalFilterSelections.sorted().joined(separator: " or ")
+                   title += " is \(selections)"
+               }
+           }
+           return title
+       }
 
     // MARK: - Body
     var body: some View {
@@ -151,10 +154,6 @@ struct AnimalView: View {
                         }
                         Spacer()
 
-//                        Button("Switch To Visitor") {
-//                            animalMode = "visitor"
-//                        }
-//                        Spacer()
                         if !adminMode && authViewModel.accountType == "admin" {
                             Button("Switch To Admin") {
                                 showingPasswordPrompt = true
@@ -163,11 +162,8 @@ struct AnimalView: View {
                                 PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
                                     authViewModel.verifyPassword(password: passwordInput) { isCorrect in
                                         if isCorrect {
-                                            // The password is correct. Enable the feature here.
-                                            //                                        volunteerMode.toggle()
                                             adminMode = true
                                         } else {
-                                            // The password is incorrect. Show an error message.
                                             print("Incorrect Password")
                                             showIncorrectPassword.toggle()
                                             passwordInput = ""
@@ -177,8 +173,6 @@ struct AnimalView: View {
                             }
                             Spacer()
                         }
-                        
-
 
                         Button {
                             showingReportForm = true
@@ -225,32 +219,23 @@ struct AnimalView: View {
 
                     }
                     if showFilterOptions {
-                        HStack {
-                            Text("Filter Category: ")
-                            Picker("Filter Category: ", selection: $finalFilterCategory) {
-                                ForEach(["None"] + authViewModel.groupOptions, id: \.self) {
-                                    Text($0)
-                                }
+                        DisclosureGroup(isExpanded: $isFilterOptionsExpanded) {
+                            AnimalFilterView(finalFilterCategory: $finalFilterCategory, finalFilterSelections: $finalFilterSelections, currentPage: $currentPage, animals: animalType == .Cat ? viewModel.sortedCats : viewModel.sortedDogs)
+                        } label: {
+                            HStack {
+                                Text("User Filter: ")
+                                    .bold()
+                                Text(filterTitle)
                             }
-                            .onChange(of: finalFilterCategory) { filter in
-                                currentPage = 1
-                                updateFilteredAnimals()
-                            }
-                            Text("Filter Selection: ")
-                            Picker("Filter Selection: ", selection: $finalFilterSelection) {
-                                ForEach(filterSelectionOptions, id: \.self) {
-                                    Text($0)
-                                }
-                            }
-                            .disabled(finalFilterCategory == "None")
-                            .onChange(of: finalFilterSelection) { filter in
-                                currentPage = 1
-                                updateFilteredAnimals()
-                            }
+                            .foregroundStyle(Color(uiColor: .systemGray))
+                            .font(.title2)
                         }
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 20).fill(.regularMaterial))
                         .padding()
+                        .onChange(of: finalFilterSelections) { _ in
+                            updateFilteredAnimals()
+                        }
                     }
                     if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
                         PageNavigationElement(currentPage: $currentPage, totalPages: totalPages())
@@ -429,23 +414,22 @@ struct AnimalView: View {
             // Apply search query filtering
             (searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)) &&
             // Apply category-based filtering
-            (finalFilterCategory == "None" || finalFilterSelection == "None" ||
-                (finalFilterCategory == "Color" && animal.colorGroup == finalFilterSelection) ||
-                (finalFilterCategory == "Building" && animal.buildingGroup == finalFilterSelection) ||
-                (finalFilterCategory == "Behavior" && animal.behaviorGroup == finalFilterSelection))
+            (finalFilterCategory == "None" || finalFilterSelections.isEmpty ||
+                (finalFilterCategory == "Color" && finalFilterSelections.contains(animal.colorGroup ?? "")) ||
+                (finalFilterCategory == "Building" && finalFilterSelections.contains(animal.buildingGroup ?? "")) ||
+                (finalFilterCategory == "Behavior" && finalFilterSelections.contains(animal.behaviorGroup ?? "")))
         }
 
         filteredDogsList = viewModel.sortedGroupDogs.filter { animal in
             // Apply search query filtering
             (searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)) &&
             // Apply category-based filtering
-            (finalFilterCategory == "None" || finalFilterSelection == "None" ||
-                (finalFilterCategory == "Color" && animal.colorGroup == finalFilterSelection) ||
-                (finalFilterCategory == "Building" && animal.buildingGroup == finalFilterSelection) ||
-                (finalFilterCategory == "Behavior" && animal.behaviorGroup == finalFilterSelection))
+            (finalFilterCategory == "None" || finalFilterSelections.isEmpty ||
+                (finalFilterCategory == "Color" && finalFilterSelections.contains(animal.colorGroup ?? "")) ||
+                (finalFilterCategory == "Building" && finalFilterSelections.contains(animal.buildingGroup ?? "")) ||
+                (finalFilterCategory == "Behavior" && finalFilterSelections.contains(animal.behaviorGroup ?? "")))
         }
     }
-
 
     private func paginatedAnimals(_ animals: [Animal]) -> [Animal] {
         let startIndex = max(0, (currentPage - 1) * cardsPerPage)
@@ -460,7 +444,6 @@ struct AnimalView: View {
 
         return max(1, Int(ceil(Double(animalCount) / Double(cardsPerPage))))
     }
-
 
     func generateQRCode(from string: String) -> UIImage {
         let context = CIContext()
