@@ -1,16 +1,5 @@
-//
-//  HumaneSocietyApp.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/19/23.
-//
-
 import SwiftUI
 import FirebaseCore
-import FirebaseFirestore
-import FirebaseAuth
-import Kingfisher
-
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
@@ -19,7 +8,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
 }
-
 
 @main
 struct PawPartnerApp: App {

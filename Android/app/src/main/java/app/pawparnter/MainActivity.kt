@@ -29,6 +29,18 @@ class PawPartnerApp : Application() {
 
 
 
+// AppDelegate equivalent in Kotlin
+import android.app.Application
+import com.google.firebase.FirebaseApp
+
+class PawPartnerApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        FirebaseApp.initializeApp(this)
+    }
+}
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
