@@ -28,20 +28,33 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
             self.location = location.coordinate
+        } else {
+            print("No locations available in didUpdateLocations.")
         }
     }
+
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         self.authorizationStatus = status
     }
 
     func isWithinBounds(center: CLLocationCoordinate2D, radius: Double) -> Bool {
-        guard let currentLocation = location else { return false }
+        print("Checking bounds with center: \(center), radius: \(radius)")
+        
+        guard let currentLocation = location else {
+            print("Current location is nil")
+            return false
+        }
+
         let centerLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
         let currentCLLocation = CLLocation(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
         let distance = centerLocation.distance(from: currentCLLocation)
+        
+        print("Distance: \(distance), within bounds: \(distance <= radius)")
+        
         return distance <= radius
     }
+
 }
 
 struct VolunteerAccountsView: View {

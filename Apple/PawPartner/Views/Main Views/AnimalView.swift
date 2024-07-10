@@ -383,9 +383,6 @@ struct AnimalView: View {
         .sheet(isPresented: $viewModel.showQRCode) {
             QRCodeView(animal: viewModel.animal)
         }
-//        .sheet(isPresented: $showDonateQRCode) {
-//            CustomQRCodeView(url: donationURL)
-//        }
         .sheet(isPresented: $showTutorialQRCode) {
             Image(uiImage: generateQRCode(from: "https://pawpartner.app/tutorials"))
                 .interpolation(.none)
@@ -404,7 +401,7 @@ struct AnimalView: View {
         }
     }
 
-    // MARK: - Methods
+//    // MARK: - Methods
     private func updatePresentationState() {
         shouldPresentThankYouView = viewModel.showLogCreated && isImageLoaded
     }
@@ -435,7 +432,10 @@ struct AnimalView: View {
         let startIndex = max(0, (currentPage - 1) * cardsPerPage)
         let endIndex = min(startIndex + cardsPerPage, animals.count)
 
-        guard startIndex < endIndex else { return [] }
+        guard startIndex < animals.count else {
+            print("Start index \(startIndex) out of bounds for array of size \(animals.count)")
+            return []
+        }
         return Array(animals[startIndex..<endIndex])
     }
 
@@ -461,6 +461,7 @@ struct AnimalView: View {
         return UIImage(systemName: "xmark.circle") ?? UIImage()
     }
 }
+
 
 struct WebView: UIViewRepresentable {
     let url: URL

@@ -5,7 +5,7 @@ import FirebaseAuth
 
 class AuthenticationViewModel: ObservableObject {
     static let shared = AuthenticationViewModel()
-    
+
     @AppStorage("volunteerSettingsEnabled") var volunteerSettingsEnabled = false
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("cardsPerPage") var cardsPerPage = 30
@@ -32,7 +32,7 @@ class AuthenticationViewModel: ObservableObject {
     @Published var isSignedIn = false
     @Published var showLoginSuccess = false
     @Published var signUpForm = ""
-    
+
     @Published var reportsDay: String = "Never"
     @Published var reportsEmail: String = ""
     @Published var catTags: [String] = []
@@ -46,46 +46,46 @@ class AuthenticationViewModel: ObservableObject {
     @Published var apiKey: String = ""
     @Published var secondarySortOptions: [String] = []
     @Published var groupOptions: [String] = []
-    
+
     @Published var shelterID = ""
     @AppStorage("accountType") var accountType = "volunteer"
     @Published var name = ""
-    
+
     @AppStorage("volunteerVideo") var volunteerVideo = ""
     @AppStorage("staffVideo") var staffVideo = ""
     @AppStorage("guidedAccessVideo") var guidedAccessVideo = ""
-    
+
     @Published var locationSettings = LocationSettings(center: GeoPoint(latitude: 0, longitude: 0), enabled: false, radius: 0, zoomLevel: 0)
-    
+
     var handle: AuthStateDidChangeListenerHandle?
     var signUpListener: ListenerRegistration?
     var userListener: ListenerRegistration?
     var dataListener: ListenerRegistration?
     var volunteerSettingsListener: ListenerRegistration?
-    
+
     private var listenersSetUp = false // Flag to check if listeners are already set up
 
     init() {
         isSignedIn = Auth.auth().currentUser != nil
-        
+
         handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
             self?.handleAuthStateChange(user: user)
         }
     }
-    
+
     deinit {
         if let handle = handle {
             Auth.auth().removeStateDidChangeListener(handle)
         }
     }
-    
+
     func removeListeners() {
         signUpListener?.remove()
         dataListener?.remove()
         volunteerSettingsListener?.remove()
         listenersSetUp = false // Reset flag when listeners are removed
     }
-    
+
     func fetchSignUpForm() {
         signUpListener = Firestore.firestore().collection("Stats").document("AppInformation").addSnapshotListener { [weak self] (documentSnapshot, error) in
             guard let document = documentSnapshot else {
@@ -102,7 +102,7 @@ class AuthenticationViewModel: ObservableObject {
             self?.guidedAccessVideo = data["guidedAccessVideo"] as? String ?? ""
         }
     }
-    
+
     func signOut() {
         do {
             try Auth.auth().signOut()
@@ -113,7 +113,7 @@ class AuthenticationViewModel: ObservableObject {
             print("Error signing out: %@", signOutError)
         }
     }
-    
+
     func verifyPassword(password: String, completion: @escaping (Bool) -> Void) {
         guard let user = Auth.auth().currentUser, let email = user.email else {
             completion(false)
@@ -129,7 +129,7 @@ class AuthenticationViewModel: ObservableObject {
             }
         }
     }
-    
+
     private func handleAuthStateChange(user: User?) {
         if let user = user {
             print("User \(user.uid) signed in")
@@ -152,7 +152,7 @@ class AuthenticationViewModel: ObservableObject {
             self.shelterID = ""
         }
     }
-    
+
     func setupListeners(theUserID: String) {
         guard !listenersSetUp else { return } // Return if listeners are already set up
 
@@ -172,11 +172,11 @@ class AuthenticationViewModel: ObservableObject {
                 self?.shelterID = data["societyID"] as? String ?? ""
                 self?.accountType = data["type"] as? String ?? "volunteer"
                 self?.name = data["name"] as? String ?? ""
-                
+
                 if self?.accountType == "volunteer" {
                     self?.setupVolunteerSettingsListener()
                 }
-                
+
                 // Ensure shelterID is not empty before setting up the data listener
                 if let shelterID = self?.shelterID, !shelterID.isEmpty {
                     self?.setupDataListener(shelterID: shelterID)
@@ -185,13 +185,13 @@ class AuthenticationViewModel: ObservableObject {
                 }
             }
     }
-    
+
     private func setupVolunteerSettingsListener() {
         guard !shelterID.isEmpty else {
             print("Shelter ID is empty, skipping volunteer settings listener setup")
             return
         }
-        
+
         volunteerSettingsListener = Firestore.firestore().collection("Societies").document(shelterID).addSnapshotListener { [weak self] snapshot, error in
             if let error = error {
                 print("Error fetching volunteer settings: \(error)")
@@ -206,7 +206,7 @@ class AuthenticationViewModel: ObservableObject {
             }
         }
     }
-    
+
     private func setupDataListener(shelterID: String) {
         guard !shelterID.isEmpty else {
             print("Shelter ID is empty, skipping data listener setup")
@@ -226,14 +226,14 @@ class AuthenticationViewModel: ObservableObject {
                 self?.updateProperties(with: data)
             }
     }
-    
+
     private func updateVolunteerSettings(with data: [String: Any]) {
         let settings = VolunteerSettings(from: data)
         // Update UserDefaults with the latest settings from Firestore
         settings.applyToUserDefaults()
     }
-    
-    private func updateProperties(with data: [String: Any]) {
+
+    func updateProperties(with data: [String: Any]) {
         DispatchQueue.main.async {
             self.reportsDay = data["reportsDay"] as? String ?? ""
             self.reportsEmail = data["reportsEmail"] as? String ?? ""
@@ -247,13 +247,15 @@ class AuthenticationViewModel: ObservableObject {
             self.apiKey = data["apiKey"] as? String ?? ""
             self.secondarySortOptions = data["secondarySortOptions"] as? [String] ?? []
             self.groupOptions = data["groupOptions"] as? [String] ?? []
-            
+
             if let locationData = data["georestriction"] as? [String: Any] {
                 self.locationSettings = LocationSettings(from: locationData)
+                // Debug output for LocationSettings
+                print("Updated location settings: \(self.locationSettings)")
             }
         }
     }
-    
+
     func fetchSocietyID(forUser userID: String, completion: @escaping (Result<String, Error>) -> Void) {
         let db = Firestore.firestore()
         db.collection("Users").document(userID).getDocument { (document, error) in
@@ -269,7 +271,7 @@ class AuthenticationViewModel: ObservableObject {
             }
         }
     }
-    
+
     func updatePassword(oldPassword: String, newPassword: String) {
         guard let user = Auth.auth().currentUser, let email = user.email else { return }
         let credential = EmailAuthProvider.credential(withEmail: email, password: oldPassword)
@@ -311,7 +313,7 @@ struct VolunteerSettings {
     var groupOption: String
     var showBulkTakeOut: Bool
     var showFilterOptions: Bool
-    
+
     init(from data: [String: Any]) {
         self.adminMode = data["adminMode"] as? Bool ?? false
         self.QRMode = data["QRMode"] as? Bool ?? true
@@ -335,7 +337,7 @@ struct VolunteerSettings {
         self.showBulkTakeOut = data["showBulkTakeOut"] as? Bool ?? false
         self.showFilterOptions = data["showFilterOptions"] as? Bool ?? false
     }
-    
+
     func applyToUserDefaults() {
         UserDefaults.standard.set(adminMode, forKey: "adminMode")
         UserDefaults.standard.set(QRMode, forKey: "QRMode")
@@ -362,18 +364,18 @@ struct VolunteerSettings {
 }
 
 struct LocationSettings {
-    var center: GeoPoint
+    var center: GeoPoint?
     var enabled: Bool
-    var radius: Double
+    var radius: Double?
     var zoomLevel: Double
-    
-    init(center: GeoPoint = GeoPoint(latitude: 0, longitude: 0), enabled: Bool = false, radius: Double = 0, zoomLevel: Double = 0) {
+
+    init(center: GeoPoint? = GeoPoint(latitude: 0, longitude: 0), enabled: Bool = false, radius: Double? = 0, zoomLevel: Double = 0) {
         self.center = center
         self.enabled = enabled
         self.radius = radius
         self.zoomLevel = zoomLevel
     }
-    
+
     init(from data: [String: Any]) {
         self.center = data["center"] as? GeoPoint ?? GeoPoint(latitude: 0, longitude: 0)
         self.enabled = data["enabled"] as? Bool ?? false
