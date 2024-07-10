@@ -141,8 +141,27 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SimformSolutionsPvtLtd/SSToastMessage",
       "state" : {
-        "revision" : "cd0a4499feca70c7255ad1287da49df42a1bcde0",
-        "version" : "2.0.0"
+        "revision" : "6f8c15ae5347655a22651c94ed29a651c172e6ce",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "swift-package-manager-google-mobile-ads",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googleads/swift-package-manager-google-mobile-ads.git",
+      "state" : {
+        "revision" : "2e4ae78561feac7192c5d8757464546adebb4c7d",
+        "version" : "11.6.0"
+      }
+    },
+    {
+      "identity" : "swift-package-manager-google-user-messaging-platform",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git",
+      "state" : {
+        "revision" : "459949af1286c12487a6efd76f00f3e9d951c9ba",
+        "version" : "2.5.0"
+
       }
     },
     {
