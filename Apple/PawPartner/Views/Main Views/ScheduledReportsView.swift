@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ScheduledReportsView: View {
     @ObservedObject var viewModel = SettingsViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     let daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Never"]
     
     var body: some View {
@@ -16,27 +17,27 @@ struct ScheduledReportsView: View {
             Section {
                 VStack(alignment: .leading) {
                     Label("Email", systemImage: "envelope.fill")
-                    TextField("Email", text: $viewModel.reportsEmail)
+                    TextField("Email", text: $authViewModel.reportsEmail)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
-                        .onChange(of: viewModel.reportsEmail) { newValue in
+                        .onChange(of: authViewModel.reportsEmail) { newValue in
 //                            print(newValue)
-                            viewModel.updateScheduledReports(newDay: viewModel.reportsDay, newEmail: newValue)
+                            viewModel.updateScheduledReports(newDay: authViewModel.reportsDay, newEmail: newValue)
                         }
                         .foregroundColor(.secondary)
                 }
                 
                 VStack(alignment: .leading) {
                     Label("Day", systemImage: "calendar")
-                    Picker("", selection: $viewModel.reportsDay) {
+                    Picker("", selection: $authViewModel.reportsDay) {
                         ForEach(daysOfWeek, id: \.self) {
                             Text($0)
                         }
                     }
                     .labelsHidden()  // hide the blank label of the picker
-                    .onChange(of: viewModel.reportsDay) { newValue in
+                    .onChange(of: authViewModel.reportsDay) { newValue in
                         print(newValue)
-                        viewModel.updateScheduledReports(newDay: newValue, newEmail: viewModel.reportsEmail)
+                        viewModel.updateScheduledReports(newDay: newValue, newEmail: authViewModel.reportsEmail)
                     }
                 }
             }

@@ -4,20 +4,23 @@ import FirebaseFirestore
 
 struct GroupsView: View {
     var species: String
-    let group: String
+    let groupCategory: String
+    let groupSelection: String
     let columns: [GridItem]
     let cardViewModel: CardViewModel
     let cardView: (Animal) -> CardView
     @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
 
-    
     @State private var currentPage = 1
-    
+    @State private var finalFilterCategory = "None"
+    @State private var finalFilterSelections: Set<String> = []
     @AppStorage("cardsPerPage") var cardsPerPage = 30
-    
+    @AppStorage("showFilterOptions") var showFilterOptions = false
     @State private var showLoading = false
+    @State private var isFilterOptionsExpanded = false
     @ObservedObject var animalViewModel = AnimalViewModel.shared
-    
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
+
     var animalsInGroup: [Animal] {
         let animals: [Animal]
         if species == "Cat" {
@@ -25,38 +28,95 @@ struct GroupsView: View {
         } else {
             animals = animalViewModel.sortedGroupDogs
         }
-        let filteredAnimals = animals.filter { ($0.group ?? "No Group") == group }
-        print("Filtered \(filteredAnimals.count) animals in group \(group) for \(species)")
-        return filteredAnimals
-    }
-    
-    var allAnimals: [Animal] {
-        let allAnimals: [Animal]
-        if species == "Cat" {
-            allAnimals = animalViewModel.cats
-        } else {
-            allAnimals = animalViewModel.dogs
+        
+        switch groupCategory {
+        case "Color":
+            return animals.filter { ($0.colorGroup ?? "No Group") == groupSelection }
+        case "Building":
+            return animals.filter { ($0.buildingGroup ?? "No Group") == groupSelection }
+        case "Behavior":
+            return animals.filter { ($0.behaviorGroup ?? "No Group") == groupSelection }
+        default:
+            return animals
         }
-        return allAnimals
     }
 
+    var allAnimals: [Animal] {
+        species == "Cat" ? animalViewModel.cats : animalViewModel.dogs
+    }
 
     var paginatedAnimals: [Animal] {
         let startIndex = (currentPage - 1) * cardsPerPage
-        let endIndex = min(startIndex + cardsPerPage, animalsInGroup.count)
+        let endIndex = min(startIndex + cardsPerPage, filteredAnimals.count)
 
-        guard startIndex < animalsInGroup.count else { return [] }
-        let paginated = Array(animalsInGroup[startIndex..<endIndex])
+        guard startIndex < filteredAnimals.count else { return [] }
+        let paginated = Array(filteredAnimals[startIndex..<endIndex])
         print("Paginated animals count: \(paginated.count) for page \(currentPage)")
         return paginated
     }
 
     var totalPages: Int {
-        let total = Int(ceil(Double(animalsInGroup.count) / Double(cardsPerPage)))
-
+        let total = Int(ceil(Double(filteredAnimals.count) / Double(cardsPerPage)))
         print("Total pages: \(total)")
         return total
     }
+
+//    var filterSelectionOptions: [String] {
+//        var options: [String] = []
+//        
+//        let animalsToCheck = finalFilterCategory == "None" ? animalsInGroup : animalsInGroup
+//        
+//        for animal in animalsToCheck {
+//            let group: String?
+//            switch finalFilterCategory {
+//            case "Color":
+//                group = animal.colorGroup
+//            case "Building":
+//                group = animal.buildingGroup
+//            case "Behavior":
+//                group = animal.behaviorGroup
+//            default:
+//                group = nil
+//            }
+//            if let group = group, !options.contains(group) {
+//                options.append(group)
+//            }
+//        }
+//        
+//        print("Filter options for category \(finalFilterCategory): \(options)")
+//        return options
+//    }
+
+    var filteredAnimals: [Animal] {
+        guard finalFilterCategory != "None", !finalFilterSelections.isEmpty else {
+            return animalsInGroup
+        }
+        
+        return animalsInGroup.filter { animal in
+            switch finalFilterCategory {
+            case "Color":
+                return finalFilterSelections.contains(animal.colorGroup ?? "")
+            case "Building":
+                return finalFilterSelections.contains(animal.buildingGroup ?? "")
+            case "Behavior":
+                return finalFilterSelections.contains(animal.behaviorGroup ?? "")
+            default:
+                return false
+            }
+        }
+    }
+
+    var filterTitle: String {
+           var title = ""
+           if finalFilterCategory != "None" {
+               title += "\(finalFilterCategory)"
+               if !finalFilterSelections.isEmpty {
+                   let selections = finalFilterSelections.sorted().joined(separator: " or ")
+                   title += " is \(selections)"
+               }
+           }
+           return title
+       }
 
     var body: some View {
         ScrollView {
@@ -64,28 +124,163 @@ struct GroupsView: View {
                 if showBulkTakeOut {
                     BulkOutlineButton(viewModel: cardViewModel, animals: animalsInGroup, showLoading: $showLoading)
                 }
-                if !animalsInGroup.isEmpty {
+                if showFilterOptions {
+                    DisclosureGroup(isExpanded: $isFilterOptionsExpanded) {
+                        AnimalFilterView(finalFilterCategory: $finalFilterCategory, finalFilterSelections: $finalFilterSelections, currentPage: $currentPage, animals: animalsInGroup)
+                    } label: {
+                        HStack {
+                            Text("User Filter: ")
+                                .bold()
+                            Text(filterTitle)
+                        }
+                        .foregroundStyle(Color(uiColor: .systemGray))
+                        .font(.title2)
+                    }
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 20).fill(.regularMaterial))
+                    .padding()
+                }
+                
+                if !filteredAnimals.isEmpty {
                     PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)
                 }
                 AnimalGridView(allAnimals: allAnimals, animals: paginatedAnimals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
 
-                if !animalsInGroup.isEmpty {
+                if !filteredAnimals.isEmpty {
                     PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)
                 }
             }
         }
-        .navigationTitle(group)
+        .navigationTitle(groupSelection)
         .navigationBarTitleDisplayMode(.large)
         .onAppear {
             currentPage = 1
-            print("GroupsView appeared. Title: \(species), Group: \(group)")
+            print("GroupsView appeared. Title: \(species), Group: \(groupSelection)")
+        }
+        .onChange(of: finalFilterCategory) { newValue in
+            print("Selected filter category: \(newValue)")
         }
     }
 }
 
+struct AnimalFilterView: View {
+    @Binding var finalFilterCategory: String
+    @Binding var finalFilterSelections: Set<String>
+    @Binding var currentPage: Int
+    let animals: [Animal]
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                VStack {
+                    HStack {
+                        Text("Filter Category: ")
+                            .bold()
+                            .foregroundStyle(.secondary)
+                        Picker("Filter Category: ", selection: $finalFilterCategory) {
+                            ForEach(["None"] + validCategories(), id: \.self) { category in
+                                Text(category)
+                            }
+                        }
+                        .onChange(of: finalFilterCategory) { _ in
+                            currentPage = 1
+                            finalFilterSelections.removeAll()
+                        }
+                    }
+                }
+                .padding(.leading)
+                
+                if finalFilterCategory != "None" && !filterSelectionOptions(for: finalFilterCategory).isEmpty {
+                    VStack(alignment: .leading) {
+                        Text("Filter Selections: ")
+                            .bold()
+                            .foregroundStyle(.secondary)
+                        ForEach(filterSelectionOptions(for: finalFilterCategory), id: \.self) { option in
+                            HStack {
+                                Button(action: {
+                                    if finalFilterSelections.contains(option) {
+                                        finalFilterSelections.remove(option)
+                                    } else {
+                                        finalFilterSelections.insert(option)
+                                    }
+                                    currentPage = 1
+                                }) {
+                                    HStack {
+                                        Text(option)
+                                            .foregroundStyle(Color(uiColor: .systemGray))
+                                        Spacer()
+                                        if finalFilterSelections.contains(option) {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(.blue)
+                                        } else {
+                                            Image(systemName: "circle")
+                                                .foregroundColor(.gray)
+                                        }
+                                    }
+                                    .contentShape(Rectangle()) // Makes the entire row tappable
+                                }
+                            }
+                            .padding()
+                            Divider()
+                        }
+                    }
+                    .padding(.leading)
+                }
+            }
+            Spacer()
+        }
+    }
+
+    private func validCategories() -> [String] {
+        var categories: [String] = []
+        
+        if !filterSelectionOptions(for: "Color").isEmpty {
+            categories.append("Color")
+        }
+        if !filterSelectionOptions(for: "Building").isEmpty {
+            categories.append("Building")
+        }
+        if !filterSelectionOptions(for: "Behavior").isEmpty {
+            categories.append("Behavior")
+        }
+        
+        return categories
+    }
+
+    private func filterSelectionOptions(for category: String) -> [String] {
+        var options: Set<String> = []
+        
+        for animal in animals {
+            switch category {
+            case "Color":
+                if let colorGroup = animal.colorGroup {
+                    options.insert(colorGroup)
+                }
+            case "Building":
+                if let buildingGroup = animal.buildingGroup {
+                    options.insert(buildingGroup)
+                }
+            case "Behavior":
+                if let behaviorGroup = animal.behaviorGroup {
+                    options.insert(behaviorGroup)
+                }
+            default:
+                break
+            }
+        }
+        
+        return Array(options).sorted()
+    }
+}
+
+
+
+
 struct BulkOutlineButton: View {
     let viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     var animals: [Animal]
     @Binding var showLoading: Bool
     @AppStorage("minimumDuration") var minimumDuration = 5
@@ -105,7 +300,7 @@ struct BulkOutlineButton: View {
     @State private var tickCountPressing: CGFloat = 0
     @State private var tickCountNotPressing: CGFloat = 75 // Starts from the end.
     
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("lastCatSync") var lastCatSync: String = ""
     @AppStorage("lastDogSync") var lastDogSync: String = ""
     @AppStorage("requireName") var requireName = false
@@ -250,7 +445,7 @@ struct BulkOutlineButton: View {
         let majorityInCage = inCageCount > notInCageCount
         
         for animal in filteredAnimals {
-            let animalRef = db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType)s").document(animal.id)
+            let animalRef = db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType)s").document(animal.id)
             if majorityInCage {
                 if animal.inCage && animal.canPlay && animal.alert.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
                     batch.updateData(["inCage": false, "startTime": Date().timeIntervalSince1970], forDocument: animalRef)
@@ -280,3 +475,6 @@ struct BulkOutlineButton: View {
         return t * t
     }
 }
+
+
+

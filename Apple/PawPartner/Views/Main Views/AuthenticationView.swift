@@ -1,61 +1,102 @@
-//
-//  AuthenticationView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/27/23.
-//
-
+import FirebaseAuth
 import SwiftUI
+import CoreLocation
+import FirebaseFirestore
 
 struct AuthenticationView: View {
     @ObservedObject var viewModel = AuthenticationViewModel.shared
-    @AppStorage("mode") var mode = "volunteer"
+    @AppStorage("adminMode") var adminMode = true
+    @ObservedObject var locationManager = LocationManager()
 
-    
     var body: some View {
         if viewModel.isSignedIn {
-            switch mode {
-            case "volunteerAdmin":
+            switch viewModel.accountType {
+            case "admin":
+                if !adminMode {
+                    TabView {
+                        AnimalView()
+                            .tabItem {
+                                Label("Volunteer", systemImage: "pawprint.fill")
+                            }
+                        VisitorView()
+                            .tabItem {
+                                Label("Visitor", systemImage: "person.2.circle.fill")
+                            }
+                    }
+                    .onAppear {
+                        print("Admin")
+                        print(viewModel.shelterID)
+                        print(viewModel.accountType)
+                    }
+                } else {
+                    TabView {
+                        AnimalView()
+                            .tabItem {
+                                Label("Volunteer", systemImage: "pawprint.fill")
+                            }
+                        VisitorView()
+                            .tabItem {
+                                Label("Visitor", systemImage: "person.2.circle.fill")
+                            }
+                        SettingsView()
+                            .tabItem {
+                                Label("Settings", systemImage: "gearshape.fill")
+                            }
+                    }
+                    .onAppear {
+                        print("Admin")
+                        print(viewModel.shelterID)
+                        print(viewModel.accountType)
+                    }
+                }
+            case "volunteer":
+                if viewModel.locationSettings.enabled && !locationManager.isWithinBounds(center: CLLocationCoordinate2D(latitude: viewModel.locationSettings.center.latitude, longitude: viewModel.locationSettings.center.longitude), radius: viewModel.locationSettings.radius) {
+                    GeoRestrictionView()
+                } else {
+                    TabView {
+                        AnimalView()
+                            .tabItem {
+                                Label("Volunteer", systemImage: "pawprint.fill")
+                            }
+                        VisitorView()
+                            .tabItem {
+                                Label("Visitor", systemImage: "person.2.circle.fill")
+                            }
+                        VisitorSettingsView()
+                            .tabItem {
+                                Label("Settings", systemImage: "gearshape.fill")
+                            }
+                    }
+                    .onAppear {
+                        print("Volunteer")
+                        print(viewModel.shelterID)
+                        print(viewModel.accountType)
+                    }
+
+                }
+                
+            default:
                 TabView {
                     AnimalView()
                         .tabItem {
-                            Label("Animals", systemImage: "pawprint.fill")
-//                            Image(systemName: "pawprint.fill")
+                            Label("Volunteer", systemImage: "pawprint.fill")
                         }
-                    SettingsView()
-                        .tabItem {
-                            Label("Settings", systemImage: "gearshape.fill")
-//                            Image(systemName: "gearshape.fill")
-                        }
-                }
-            case "visitorAdmin":
-                TabView {
                     VisitorView()
                         .tabItem {
-                            Label("Animals", systemImage: "pawprint.fill")
-                        }
-                    SettingsView()
-                        .tabItem {
-                            Label("Settings", systemImage: "gearshape.fill")
+                            Label("Visitor", systemImage: "person.2.circle.fill")
                         }
                 }
-                
-            
-            case "volunteer":
-                AnimalView()
-            case "visitor":
-                VisitorView()
-            default:
-                AnimalView()
+                .onAppear {
+                    print("Other")
+                    print(viewModel.shelterID)
+                    print(viewModel.accountType)
+                }
             }
         } else {
             LoginView()
+                .onAppear {
+                    viewModel.signOut()
+                }
         }
-    }
-}
-
-struct AuthenticationView_Previews: PreviewProvider {
-    static var previews: some View {
-        AuthenticationView()
     }
 }

@@ -30,7 +30,7 @@ struct LoginView: View {
     @State private var showLoginError = false
     @State private var loginError = ""
     @State private var isLoginInProgress = false  // New property
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("lastSync") var lastSync: String = ""
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -89,8 +89,8 @@ struct LoginView: View {
                                 fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
                                     switch result {
                                     case .success(let societyID):
-                                        let tempSocietyID = societyID
-                                        storedSocietyID = tempSocietyID
+//                                        _ = societyID
+//                                        storedSocietyID = tempSocietyID
                                         print("User signed in successfully")
                                         print("SocietyID: \(societyID)")
                                     case .failure(let error):
@@ -102,7 +102,7 @@ struct LoginView: View {
                     .font(.largeTitle)
                     .buttonStyle(.bordered)
                     .fontWeight(.bold)
-                    .tint(.blue)
+                    .tint(.customBlue)
 //                    Text("In order to create an account, please fill out the following form and I will get back to you as soon as possible.")
 //                        .foregroundColor(.secondary)
 //                        .multilineTextAlignment(.center)
@@ -171,8 +171,4 @@ struct LoginView: View {
             }
         }
     }
-}
-
-#Preview {
-    LoginView()
 }

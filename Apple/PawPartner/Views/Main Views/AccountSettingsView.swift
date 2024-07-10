@@ -15,22 +15,28 @@ struct AccountSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink("Early Reasons", destination: ReasonsForEarlyPutBackView())
-            } header: {
-                HStack {
-                    Text("Reasons for early put back")
-                    Button {
-                        popoverReasons = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
+                    NavigationLink(destination: AccountSetupView()) {
+                            Text("Account Setup")
                     }
-                    .popover(isPresented: $popoverReasons) {
-                        Text("Set the reasons a volunteer can select from why they had to put an animal back.")
-                            .padding()
-                            .textCase(nil)
-                    }
+                    NavigationLink(destination: VolunteerAccountsView()) {
+                            Text("Volunteer Accounts")
+                        }
+                    
+                
+                    NavigationLink(destination: ScheduledReportsView()) {
+                            Text("Scheduled Reports")
+                        }
+                    
+                
+                NavigationLink(destination: TagsView(species: .Cat)) {
+                        Text("Cat Tags")
                 }
-            }
+                NavigationLink(destination: TagsView(species: .Dog)) {
+                        Text("Dog Tags")
+                }
+                NavigationLink("Early Reasons", destination: ReasonsForEarlyPutBackView())
+            } 
         }
+        .navigationTitle("Account Settings")
     }
 }

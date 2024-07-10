@@ -1,5 +1,6 @@
 import SwiftUI
 import Kingfisher
+import FirebaseFirestore
 
 
 struct CardView: View {
@@ -107,20 +108,21 @@ struct CardView: View {
                             Image(systemName: symbol)
                                 .foregroundStyle(
                                     symbolColor == "red" ? .red :
-                                    symbolColor == "green" ? .green :
-                                    symbolColor == "blue" ? .blue:
-                                    symbolColor == "white" ? .white :
-                                    symbolColor == "gray" ? .gray :
-                                    symbolColor == "black" ? .black :
-                                    symbolColor == "silver" ? .gray :
-                                    symbolColor == "yellow" ? .yellow :
+                                        symbolColor == "brown" ? .brown :
+                                        symbolColor == "green" ? .green :
+                                        symbolColor == "blue" ? .blue :
+                                        symbolColor == "white" ? .white :
+                                        symbolColor == "gray" ? .gray :
+                                        symbolColor == "black" ? .black :
+                                        symbolColor == "silver" ? .gray :
+                                        symbolColor == "yellow" ? .yellow :
                                         symbolColor == "pink" ? Color(red: 255/255, green: 105/255, blue: 180/255) :
-                                    symbolColor == "orange" ? .orange :
+                                        symbolColor == "orange" ? .orange :
                                         symbolColor == "purple" ? .purple :
-                                        .clear)
+                                            .clear)
                                 .font(.title)
-//                                .opacity(0.5)
-     
+                            //                                .opacity(0.5)
+                            
                         }
                     }
                         .lineLimit(1)
@@ -214,6 +216,7 @@ struct CardView: View {
 struct OutlinedButton: View {
     let viewModel: CardViewModel
     @ObservedObject var animalViewModel = AnimalViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     @Binding var showPopover: Bool
     var animal: Animal
     @State private var isImageCached: Bool = false
@@ -233,7 +236,7 @@ struct OutlinedButton: View {
     @State private var tickCountPressing: CGFloat = 0
     @State private var tickCountNotPressing: CGFloat = 75 // Starts from the end.
     
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("lastCatSync") var lastCatSync: String = ""
     @AppStorage("lastDogSync") var lastDogSync: String = ""
     @AppStorage("requireName") var requireName = false
@@ -330,10 +333,23 @@ struct OutlinedButton: View {
                                     
                                 } else {
                                     if requireName {
-                                        animalViewModel.animal = animal
-                                        animalViewModel.showRequireName = true
+                                        if !authViewModel.name.isEmpty {
+                                            let db = Firestore.firestore()
+                                            db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+                                                "lastVolunteer": authViewModel.name,
+                                            ]){ err in
+                                                if let err = err {
+                                                    print("Error updating document: \(err)")
+                                                } else {
+                                                    print("Document successfully updated")
+                                                }
+                                            }
+                                            viewModel.takeOut(animal: animal)
+                                        } else {
+                                            animalViewModel.animal = animal
+                                            animalViewModel.showRequireName = true
+                                        }
                                     } else {
-                                        
                                         viewModel.takeOut(animal: animal)
                                     }
                                 }

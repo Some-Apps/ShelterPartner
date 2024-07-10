@@ -16,10 +16,11 @@ struct VisitorView: View {
     @AppStorage("latestVersion") var latestVersion: String = ""
     @AppStorage("updateAppURL") var updateAppURL: String = ""
     @AppStorage("animalType") var animalType = AnimalType.Cat
-    @AppStorage("societyID") var storedSocietyID: String = ""
-    @AppStorage("mode") var mode = "volunteer"
+//    @AppStorage("societyID") var storedSocietyID: String = ""
+    @AppStorage("animalMode") var animalMode = "visitor"
     @AppStorage("feedbackURL") var feedbackURL: String = ""
     @AppStorage("reportProblemURL") var reportProblemURL: String = ""
+    @AppStorage("adminMode") var adminMode = true
 
     
     @State private var screenWidth: CGFloat = 500
@@ -79,12 +80,12 @@ struct VisitorView: View {
                         }
                     }
                     .sheet(isPresented: $showingFeedbackForm) {
-                        if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(storedSocietyID)") {
+                        if let feedbackURL = URL(string: "\(feedbackURL)/?societyid=\(authViewModel.shelterID)") {
                             WebView(url: feedbackURL)
                         }
                     }
                     Spacer()
-                    if mode != "volunteerAdmin" && mode != "visitorAdmin" {
+                    if !adminMode && authViewModel.accountType == "admin" {
                         Button("Switch To Admin") {
                             showingPasswordPrompt = true
                         }
@@ -94,7 +95,7 @@ struct VisitorView: View {
                                     if isCorrect {
                                         // The password is correct. Enable the feature here.
                                         //                                        volunteerMode.toggle()
-                                        mode = "volunteerAdmin"
+                                        adminMode = true
                                     } else {
                                         // The password is incorrect. Show an error message.
                                         print("Incorrect Password")
@@ -105,23 +106,41 @@ struct VisitorView: View {
                             }
                         }
                         Spacer()
-                        
                     }
-                    if mode == "volunteerAdmin" || mode == "visitorAdmin" {
-                        Button("Turn Off Admin") {
-                            mode = "volunteer"
-                        }
-                        Spacer()
-                    }
+//                    if mode != "volunteerAdmin" && mode != "visitorAdmin" {
+//                        Button("Switch To Admin") {
+//                            showingPasswordPrompt = true
+//                        }
+//                        .sheet(isPresented: $showingPasswordPrompt) {
+//                            PasswordPromptView(isShowing: $showingPasswordPrompt, passwordInput: $passwordInput, showIncorrectPassword: $showIncorrectPassword) {
+//                                authViewModel.verifyPassword(password: passwordInput) { isCorrect in
+//                                    if isCorrect {
+//                                        // The password is correct. Enable the feature here.
+//                                        //                                        volunteerMode.toggle()
+//                                        mode = "volunteerAdmin"
+//                                    } else {
+//                                        // The password is incorrect. Show an error message.
+//                                        print("Incorrect Password")
+//                                        showIncorrectPassword.toggle()
+//                                        passwordInput = ""
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        Spacer()
+//                        
+//                    }
+//                    if mode == "volunteerAdmin" || mode == "visitorAdmin" {
+//                        Button("Turn Off Admin") {
+//                            mode = "volunteer"
+//                        }
+//                        Spacer()
+//                    }
                    
-                        Button("Switch To Volunteer") {
-                            if mode == "visitorAdmin" {
-                                mode = "volunteerAdmin"
-                            } else {
-                                mode = "volunteer"
-                            }
-                        }
-                        Spacer()
+//                        Button("Switch To Volunteer") {
+//                            animalMode = "volunteer"
+//                        }
+//                        Spacer()
                    
                     
                     Button {
@@ -133,7 +152,7 @@ struct VisitorView: View {
                         }
                     }
                     .sheet(isPresented: $showingReportForm) {
-                        if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(storedSocietyID)") {
+                        if let reportProblemURL = URL(string: "\(reportProblemURL)/?societyid=\(authViewModel.shelterID)") {
                             WebView(url: reportProblemURL)
                             
                         }
@@ -162,6 +181,8 @@ struct VisitorView: View {
 //                            }
 //                        }
 //                    }
+                if !(viewModel.dogs.isEmpty || viewModel.cats.isEmpty) {
+                    
                     Picker("Animal Type", selection: $animalType) {
                         ForEach(AnimalType.allCases, id: \.self) { animalType in
                             Text("\(animalType.rawValue)s").tag(animalType)
@@ -169,7 +190,7 @@ struct VisitorView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding([.horizontal, .top])
-                
+                }
                 
                 ScrollView {
                     switch animalType {
@@ -223,7 +244,7 @@ struct VisitorView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(maxHeight: 100)
-                        .id("bottom")  // Identifier for scroll-to-bottom
+                        .id("bottom")
                 }
             }
         }
@@ -231,11 +252,16 @@ struct VisitorView: View {
             AlertToast(displayMode: .alert, type: .loading)
         }
         .onAppear {
-            if storedSocietyID == "" && Auth.auth().currentUser?.uid != nil {
+            if viewModel.cats.isEmpty {
+                animalType = .Dog
+            } else if viewModel.dogs.isEmpty {
+                animalType = .Cat
+            }
+            if authViewModel.shelterID == "" && Auth.auth().currentUser?.uid != nil {
                 viewModel.fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
                     switch result {
                     case .success(let id):
-                        storedSocietyID = id
+                        authViewModel.shelterID = id
                         viewModel.listenForSocietyLastSyncUpdate(societyID: id)
                         
                     case .failure(let error):
@@ -246,8 +272,8 @@ struct VisitorView: View {
             viewModel.fetchCatData() { _ in }
             viewModel.fetchDogData() { _ in }
             viewModel.fetchLatestVersion()
-            if storedSocietyID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
-                viewModel.postAppVersion(societyID: storedSocietyID, installedVersion: "\(appVersion) (\(buildNumber))")
+            if authViewModel.shelterID.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+                viewModel.postAppVersion(societyID: authViewModel.shelterID, installedVersion: "\(appVersion) (\(buildNumber))")
             }
         }
 
