@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SetupView: View {
-    @ObservedObject var viewModel = SettingsViewModel.shared
+    @ObservedObject var viewModel = AuthenticationViewModel.shared
     
     @AppStorage("filterPicker") var filterPicker: Bool = false
     
@@ -17,7 +17,7 @@ struct SetupView: View {
             Section {
                 Toggle("Filter Picker", isOn: $filterPicker)
                     .disabled(viewModel.filterOptions.isEmpty)
-                    .tint(.blue)
+                    .tint(.customBlue)
             } header: {
                 Text("Filter Picker")
             } footer: {

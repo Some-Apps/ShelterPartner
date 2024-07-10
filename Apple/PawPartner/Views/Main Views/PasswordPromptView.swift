@@ -35,7 +35,7 @@ struct PasswordPromptView: View {
             }
             .font(.title3)
             .buttonStyle(.bordered)
-            .tint(.blue)
+            .tint(.customBlue)
             Spacer()
         }
         .padding([.leading, .trailing, .bottom])

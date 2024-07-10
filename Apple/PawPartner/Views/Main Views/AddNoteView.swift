@@ -1,13 +1,13 @@
 import FirebaseFirestore
 import SwiftUI
 import Kingfisher
-import GoogleMobileAds
 
 
 struct AddNoteView: View {
     @ObservedObject var viewModel = AddNoteViewModel()
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
     let animal: Animal
     @Environment(\.dismiss) var dismiss
     @State private var note = ""
@@ -24,10 +24,21 @@ struct AddNoteView: View {
     var body: some View {
         Form {
             if requireName {
-                Section("Name of Volunteer") {
-                    TextField("Name", text: $name)
-                        .focused($isNameFieldFocused)
+                if !authViewModel.name.isEmpty {
+                    Section("Name of Volunteer") {
+                        Text(authViewModel.name)
+                            .foregroundStyle(.secondary)
+                            .onAppear {
+                                name = authViewModel.name
+                            }
+                    }
+                } else {
+                    Section("Name of Volunteer") {
+                        TextField("Name", text: $name)
+                            .focused($isNameFieldFocused)
+                    }
                 }
+                
             }
             
             Section("Note for \(animal.name)") {
@@ -36,12 +47,12 @@ struct AddNoteView: View {
             }
             
             
-            if animal.animalType == .Cat && !settingsViewModel.catTags.isEmpty {
+            if animal.animalType == .Cat && !authViewModel.catTags.isEmpty {
                 Section("Tags") {
                     HStack {
                         ScrollView {
                             LazyVGrid(columns: gridLayout) {
-                                ForEach(settingsViewModel.catTags, id: \.self) { tag in
+                                ForEach(authViewModel.catTags, id: \.self) { tag in
                                     Text(tag)
                                         .lineLimit(1)
                                         .frame(maxWidth: .infinity)
@@ -65,12 +76,12 @@ struct AddNoteView: View {
                     }
                     .frame(height: 175)
                 }
-            } else if animal.animalType == .Dog && !settingsViewModel.dogTags.isEmpty {
+            } else if animal.animalType == .Dog && !authViewModel.dogTags.isEmpty {
                 Section("Tags") {
                     HStack {
                         ScrollView {
                             LazyVGrid(columns: gridLayout) {
-                                ForEach(settingsViewModel.dogTags, id: \.self) { tag in
+                                ForEach(authViewModel.dogTags, id: \.self) { tag in
                                     Text(tag)
                                         .lineLimit(1)
                                         .frame(maxWidth: .infinity)
@@ -138,19 +149,16 @@ struct AddNoteView: View {
    
 
 
-#Preview {
-    AddNoteView(viewModel: AddNoteViewModel(), animalViewModel: AnimalViewModel.shared, animal: Animal.dummyAnimal)
-}
 
 
-struct BannerAdView: UIViewRepresentable {
-    func makeUIView(context: Context) -> GADBannerView {
-        let bannerView = GADBannerView(adSize: GADAdSizeLargeBanner)
-        bannerView.adUnitID = "ad_unit"
-        bannerView.rootViewController = UIApplication.shared.windows.first?.rootViewController
-        bannerView.load(GADRequest())
-        return bannerView
-    }
-
-    func updateUIView(_ uiView: GADBannerView, context: Context) {}
-}
+//struct BannerAdView: UIViewRepresentable {
+//    func makeUIView(context: Context) -> GADBannerView {
+//        let bannerView = GADBannerView(adSize: GADAdSizeLargeBanner)
+//        bannerView.adUnitID = "ad_unit"
+//        bannerView.rootViewController = UIApplication.shared.windows.first?.rootViewController
+//        bannerView.load(GADRequest())
+//        return bannerView
+//    }
+//
+//    func updateUIView(_ uiView: GADBannerView, context: Context) {}
+//}

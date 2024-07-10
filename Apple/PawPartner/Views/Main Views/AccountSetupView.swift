@@ -20,8 +20,8 @@ struct AccountSetupView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Shelter Name", text: $viewModel.shelter)
-                    Picker("Management Software", selection: $viewModel.software) {
+                    TextField("Shelter Name", text: $authViewModel.shelter)
+                    Picker("Management Software", selection: $authViewModel.software) {
                         ForEach(managementSoftwareOptions, id: \.self) {
                             Text($0)
                         }
@@ -33,7 +33,7 @@ struct AccountSetupView: View {
                 }
                 Section {
                     Button("Save") {
-                        viewModel.updateAccountSettings(shelter: viewModel.shelter, software: viewModel.software, apiKey: viewModel.apiKey, mainFilter: viewModel.mainFilter)
+                        viewModel.updateAccountSettings(shelter: authViewModel.shelter, software: authViewModel.software, apiKey: authViewModel.apiKey, mainFilter: authViewModel.mainFilter)
                         dismiss()
                         viewModel.showAccountUpdated = true
                     }

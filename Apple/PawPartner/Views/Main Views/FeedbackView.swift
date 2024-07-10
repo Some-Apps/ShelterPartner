@@ -13,9 +13,10 @@ struct FeedbackView: View {
     @State private var feedback = ""
     @FocusState private var isFocused: Bool
     @State private var showSuccess = false
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     
     @StateObject var viewModel = ViewFeedbackViewModel()
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
 
     private var sortedFeedback: [Feedback] {
         viewModel.feedback.sorted(by: { $1.id < $0.id })
@@ -115,7 +116,7 @@ struct FeedbackView: View {
         // Create a new document with the provided data and the specified document ID
         let newFeedbackRef = feedbackRef.document(documentId)
         newFeedbackRef.setData([
-            "societyID": storedSocietyID,
+            "societyID": authViewModel.shelterID,
             "feedback": feedback,
             "developerResponse": ""
         ]) { error in
@@ -142,8 +143,8 @@ extension DateFormatter {
 
 class ViewFeedbackViewModel: ObservableObject {
     @Published var feedback: [Feedback] = []
-    @AppStorage("societyID") var storedSocietyID: String = ""
-
+//    @AppStorage("societyID") var storedSocietyID: String = ""
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
 
     private var feedbackListenerRegistration: ListenerRegistration?
 
@@ -153,7 +154,7 @@ class ViewFeedbackViewModel: ObservableObject {
         self.feedbackListenerRegistration?.remove()
         
         self.feedbackListenerRegistration = feedbackRef
-            .whereField("societyID", isEqualTo: storedSocietyID)
+            .whereField("societyID", isEqualTo: authViewModel.shelterID)
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
                     print("Error fetching feedback: \(error)")

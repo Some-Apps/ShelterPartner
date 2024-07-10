@@ -13,7 +13,8 @@ struct RequireNameView: View {
     @State private var name: String = ""
     @ObservedObject var cardViewModel = CardViewModel()
     @ObservedObject var viewModel = AnimalViewModel.shared
-    @AppStorage("societyID") var storedSocietyID: String = ""
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @FocusState private var focusField: Bool
     let animal: Animal
 
@@ -39,7 +40,7 @@ struct RequireNameView: View {
                 Button("Submit") {
                     viewModel.showRequireName = false
                     let db = Firestore.firestore()
-                    db.collection("Societies").document(storedSocietyID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
+                    db.collection("Societies").document(authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
                         "lastVolunteer": name,
                     ]){ err in
                         if let err = err {

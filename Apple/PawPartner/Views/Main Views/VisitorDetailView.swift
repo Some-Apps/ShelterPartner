@@ -50,7 +50,7 @@ struct VisitorDetailView: View {
         return formatter
     }()
     
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     @State private var isFullScreen = false
     @State private var selectedImageIndex = 0
 

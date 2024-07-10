@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ReasonsForEarlyPutBackView: View {
     @ObservedObject var viewModel = SettingsViewModel.shared
+    @ObservedObject var authViewModel = AuthenticationViewModel.shared
 
     @State private var newReason = ""
     
@@ -25,9 +26,9 @@ struct ReasonsForEarlyPutBackView: View {
                     .disabled(newReason.trimmingCharacters(in: .whitespacesAndNewlines) == "")
                 }
             }
-            if (!viewModel.earlyReasons.isEmpty) {
+            if (!authViewModel.earlyReasons.isEmpty) {
                 Section("Reasons") {
-                    ForEach(viewModel.earlyReasons, id: \.self) { reason in
+                    ForEach(authViewModel.earlyReasons, id: \.self) { reason in
                         HStack {
                             Text(reason)
                                 .font(.title3)

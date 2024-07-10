@@ -15,7 +15,7 @@ struct ThankYouView: View {
     let animal: Animal
     
     @AppStorage("lastSync") var lastSync: String = ""
-    @AppStorage("societyID") var storedSocietyID: String = ""
+//    @AppStorage("societyID") var storedSocietyID: String = ""
     
     @State private var showCustomQR = false
     @State private var showCustomLink = false
