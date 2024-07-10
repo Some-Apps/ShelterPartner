@@ -1,10 +1,3 @@
-//
-//  AuthenticationViewModel.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/27/23.
-//
-
 import FirebaseFirestore
 import Foundation
 import SwiftUI
@@ -34,7 +27,8 @@ class AuthenticationViewModel: ObservableObject {
     @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
     @AppStorage("QRMode") var QRMode = true
     @AppStorage("adminMode") var adminMode = true
-    
+    @AppStorage("showFilterOptions") var showFilterOptions = false
+
     @Published var isSignedIn = false
     @Published var showLoginSuccess = false
     @Published var signUpForm = ""
@@ -54,40 +48,28 @@ class AuthenticationViewModel: ObservableObject {
     @Published var groupOptions: [String] = []
     
     @Published var shelterID = ""
-    @Published var accountType = "volunteer"
+    @AppStorage("accountType") var accountType = "volunteer"
     @Published var name = ""
     
     @AppStorage("volunteerVideo") var volunteerVideo = ""
     @AppStorage("staffVideo") var staffVideo = ""
     @AppStorage("guidedAccessVideo") var guidedAccessVideo = ""
     
+    @Published var locationSettings = LocationSettings(center: GeoPoint(latitude: 0, longitude: 0), enabled: false, radius: 0, zoomLevel: 0)
+    
     var handle: AuthStateDidChangeListenerHandle?
     var signUpListener: ListenerRegistration?
     var userListener: ListenerRegistration?
     var dataListener: ListenerRegistration?
     var volunteerSettingsListener: ListenerRegistration?
+    
+    private var listenersSetUp = false // Flag to check if listeners are already set up
 
     init() {
         isSignedIn = Auth.auth().currentUser != nil
         
         handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
-            if let user = user {
-                print("User \(user.uid) signed in")
-                self?.isSignedIn = true
-                self?.fetchSocietyID(forUser: user.uid) { (result) in
-                    switch result {
-                    case .success(let id):
-                        self?.shelterID = id
-                        print("Shelter ID: \(id)")
-                        self?.setupListeners(theUserID: user.uid)
-                    default:
-                        print("failed")
-                    }
-                }
-            } else {
-                print("User signed out")
-                self?.isSignedIn = false
-            }
+            self?.handleAuthStateChange(user: user)
         }
     }
     
@@ -101,8 +83,9 @@ class AuthenticationViewModel: ObservableObject {
         signUpListener?.remove()
         dataListener?.remove()
         volunteerSettingsListener?.remove()
+        listenersSetUp = false // Reset flag when listeners are removed
     }
-        
+    
     func fetchSignUpForm() {
         signUpListener = Firestore.firestore().collection("Stats").document("AppInformation").addSnapshotListener { [weak self] (documentSnapshot, error) in
             guard let document = documentSnapshot else {
@@ -123,6 +106,9 @@ class AuthenticationViewModel: ObservableObject {
     func signOut() {
         do {
             try Auth.auth().signOut()
+            removeListeners()  // Ensure listeners are removed on sign out
+            shelterID = ""     // Reset shelterID on sign out
+            isSignedIn = false // Update isSignedIn status
         } catch let signOutError as NSError {
             print("Error signing out: %@", signOutError)
         }
@@ -144,8 +130,35 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
     
+    private func handleAuthStateChange(user: User?) {
+        if let user = user {
+            print("User \(user.uid) signed in")
+            self.isSignedIn = true
+            fetchSocietyID(forUser: user.uid) { (result) in
+                switch result {
+                case .success(let id):
+                    self.shelterID = id
+                    print("Shelter ID: \(id)")
+                    self.setupListeners(theUserID: user.uid)
+                case .failure(let error):
+                    print("Failed to fetch society ID: \(error.localizedDescription)")
+                    self.shelterID = ""
+                }
+            }
+        } else {
+            print("User signed out")
+            self.isSignedIn = false
+            removeListeners()
+            self.shelterID = ""
+        }
+    }
+    
     func setupListeners(theUserID: String) {
+        guard !listenersSetUp else { return } // Return if listeners are already set up
+
         print("Setting up listeners")
+        listenersSetUp = true // Set the flag to true once listeners are set up
+
         userListener = Firestore.firestore().collection("Users").document(theUserID)
             .addSnapshotListener { [weak self] snapshot, error in
                 if let error = error {
@@ -163,22 +176,22 @@ class AuthenticationViewModel: ObservableObject {
                 if self?.accountType == "volunteer" {
                     self?.setupVolunteerSettingsListener()
                 }
-            }
-        dataListener = Firestore.firestore().collection("Societies").document(shelterID)
-            .addSnapshotListener { [weak self] snapshot, error in
-                if let error = error {
-                    print("Error fetching society data: \(error)")
-                    return
+                
+                // Ensure shelterID is not empty before setting up the data listener
+                if let shelterID = self?.shelterID, !shelterID.isEmpty {
+                    self?.setupDataListener(shelterID: shelterID)
+                } else {
+                    print("shelterID is empty, skipping data listener setup")
                 }
-                guard let data = snapshot?.data() else {
-                    print("No data found for document")
-                    return
-                }
-                self?.updateProperties(with: data)
             }
     }
     
     private func setupVolunteerSettingsListener() {
+        guard !shelterID.isEmpty else {
+            print("Shelter ID is empty, skipping volunteer settings listener setup")
+            return
+        }
+        
         volunteerSettingsListener = Firestore.firestore().collection("Societies").document(shelterID).addSnapshotListener { [weak self] snapshot, error in
             if let error = error {
                 print("Error fetching volunteer settings: \(error)")
@@ -192,6 +205,26 @@ class AuthenticationViewModel: ObservableObject {
                 self?.updateVolunteerSettings(with: data)
             }
         }
+    }
+    
+    private func setupDataListener(shelterID: String) {
+        guard !shelterID.isEmpty else {
+            print("Shelter ID is empty, skipping data listener setup")
+            return
+        }
+
+        dataListener = Firestore.firestore().collection("Societies").document(shelterID)
+            .addSnapshotListener { [weak self] snapshot, error in
+                if let error = error {
+                    print("Error fetching society data: \(error)")
+                    return
+                }
+                guard let data = snapshot?.data() else {
+                    print("No data found for document")
+                    return
+                }
+                self?.updateProperties(with: data)
+            }
     }
     
     private func updateVolunteerSettings(with data: [String: Any]) {
@@ -214,6 +247,10 @@ class AuthenticationViewModel: ObservableObject {
             self.apiKey = data["apiKey"] as? String ?? ""
             self.secondarySortOptions = data["secondarySortOptions"] as? [String] ?? []
             self.groupOptions = data["groupOptions"] as? [String] ?? []
+            
+            if let locationData = data["georestriction"] as? [String: Any] {
+                self.locationSettings = LocationSettings(from: locationData)
+            }
         }
     }
     
@@ -273,6 +310,7 @@ struct VolunteerSettings {
     var automaticPutBackIgnoreVisit: Bool
     var groupOption: String
     var showBulkTakeOut: Bool
+    var showFilterOptions: Bool
     
     init(from data: [String: Any]) {
         self.adminMode = data["adminMode"] as? Bool ?? false
@@ -295,6 +333,7 @@ struct VolunteerSettings {
         self.automaticPutBackIgnoreVisit = data["automaticPutBackIgnoreVisit"] as? Bool ?? true
         self.groupOption = data["groupOption"] as? String ?? ""
         self.showBulkTakeOut = data["showBulkTakeOut"] as? Bool ?? false
+        self.showFilterOptions = data["showFilterOptions"] as? Bool ?? false
     }
     
     func applyToUserDefaults() {
@@ -318,5 +357,27 @@ struct VolunteerSettings {
         UserDefaults.standard.set(automaticPutBackIgnoreVisit, forKey: "automaticPutBackIgnoreVisit")
         UserDefaults.standard.set(groupOption, forKey: "groupOption")
         UserDefaults.standard.set(showBulkTakeOut, forKey: "showBulkTakeOut")
+        UserDefaults.standard.set(showFilterOptions, forKey: "showFilterOptions")
+    }
+}
+
+struct LocationSettings {
+    var center: GeoPoint
+    var enabled: Bool
+    var radius: Double
+    var zoomLevel: Double
+    
+    init(center: GeoPoint = GeoPoint(latitude: 0, longitude: 0), enabled: Bool = false, radius: Double = 0, zoomLevel: Double = 0) {
+        self.center = center
+        self.enabled = enabled
+        self.radius = radius
+        self.zoomLevel = zoomLevel
+    }
+    
+    init(from data: [String: Any]) {
+        self.center = data["center"] as? GeoPoint ?? GeoPoint(latitude: 0, longitude: 0)
+        self.enabled = data["enabled"] as? Bool ?? false
+        self.radius = data["radius"] as? Double ?? 0
+        self.zoomLevel = data["zoomLevel"] as? Double ?? 0
     }
 }
