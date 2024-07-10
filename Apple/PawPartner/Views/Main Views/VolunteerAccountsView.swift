@@ -14,21 +14,33 @@ struct Volunteer: Identifiable {
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
-    
     @Published var location: CLLocationCoordinate2D?
-    
+    @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
+
     override init() {
         super.init()
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        locationManager.distanceFilter = 100
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
             self.location = location.coordinate
-            locationManager.stopUpdatingLocation()
         }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        self.authorizationStatus = status
+    }
+
+    func isWithinBounds(center: CLLocationCoordinate2D, radius: Double) -> Bool {
+        guard let currentLocation = location else { return false }
+        let centerLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
+        let currentCLLocation = CLLocation(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
+        let distance = centerLocation.distance(from: currentCLLocation)
+        return distance <= radius
     }
 }
 
