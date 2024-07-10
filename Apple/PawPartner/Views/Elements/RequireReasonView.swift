@@ -5,23 +5,27 @@ struct RequireReasonView: View {
     
     @ObservedObject var cardViewModel = CardViewModel()
     @ObservedObject var viewModel = AnimalViewModel.shared
-//    @ObservedObject var settingsViewModel = SettingsViewModel.shared
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
-//    @AppStorage("societyID") var storedSocietyID: String = ""
     @FocusState private var focusField: Bool
     let animal: Animal
 
     var body: some View {
         VStack {
             Text("Please select the reason you put this animal back before the minimum duration.")
-            Picker("Reason", selection: $cardViewModel.shortReason) {
-                Text("").tag("")
-                ForEach(authViewModel.earlyReasons, id: \.self) {
-                    Text($0)
+            
+            if authViewModel.earlyReasons.isEmpty {
+                Text("No reasons available.")
+                    .foregroundColor(.red)
+            } else {
+                Picker("Reason", selection: $cardViewModel.shortReason) {
+                    Text("").tag("")
+                    ForEach(authViewModel.earlyReasons, id: \.self) {
+                        Text($0)
+                    }
                 }
+                .pickerStyle(.wheel)
             }
-
-            .pickerStyle(.wheel)
+            
             HStack {
                 Button("Nevermind") {
                     viewModel.showRequireReason = false
@@ -30,6 +34,7 @@ struct RequireReasonView: View {
                 }
                 .italic()
                 .tint(.accentColor)
+                
                 Button("Submit") {
                     cardViewModel.putBack(animal: animal)
                     viewModel.showRequireReason = false
@@ -39,7 +44,7 @@ struct RequireReasonView: View {
                     }
                 }
                 .tint(.green)
-                .disabled(cardViewModel.shortReason.count < 1)
+                .disabled(cardViewModel.shortReason.isEmpty)
                 .bold()
             }
             .buttonStyle(.bordered)
@@ -55,4 +60,3 @@ struct RequireReasonView: View {
         .padding()
     }
 }
-
