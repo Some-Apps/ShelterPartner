@@ -42,33 +42,25 @@ struct DeviceSettingsView: View {
     @State private var shareItems: [Any] = []
     @State private var showShareSheet = false
 
-    @State private var showPopover1 = false
-    @State private var showPopover2 = false
-    @State private var showPopover3 = false
-    @State private var showPopover4 = false
-    @State private var showPopover5 = false
-    @State private var showPopover6 = false
-    @State private var showPopover7 = false
-    @State private var showPopover8 = false
-    @State private var showPopover9 = false
-    @State private var showPopover10 = false
-    @State private var showPopover11 = false
-    @State private var showPopover12 = false
-    @State private var showPopover13 = false // show sort options
-
     let linkTypes = ["QR Code", "Open In App"]
 
     var body: some View {
         Form {
             Section {
-                Toggle("Apply Device Settings To Volunteer Accounts", isOn: $volunteerSettingsEnabled)
+                Toggle(isOn: $volunteerSettingsEnabled) {
+                    SettingElement(title: "Apply Device Settings To Volunteer Accounts: \(volunteerSettingsEnabled ? "Enabled" : "Disabled")", explanation: "Apply all the settings on this page your volunteer accounts.")
+                }
                     .tint(.customBlue)
                     .onChange(of: volunteerSettingsEnabled) { _ in saveSettings() }
             }
-            Toggle("Admin Mode", isOn: $adminMode)
+            Toggle(isOn: $adminMode) {
+                SettingElement(title: "Admin Mode: \(adminMode ? "Enabled" : "Disabled")", explanation: "Turn on when allowing someone else to use your device. This will disable settings and destructive actions until you enter your password.")
+            }
                 .tint(.customBlue)
                 .onChange(of: adminMode) { _ in saveSettings() }
-            Toggle("QR Codes", isOn: $QRMode)
+            Toggle(isOn: $QRMode) {
+                SettingElement(title: "QR Codes: \(QRMode ? "Enabled" : "Disabled")", explanation: "Allow users to add photos by scanning a QR Code when the device is in Admin Mode")
+            }
                 .tint(.customBlue)
                 .onChange(of: QRMode) { _ in saveSettings() }
             Picker(selection: $sortBy) {
@@ -77,138 +69,72 @@ struct DeviceSettingsView: View {
                 }
                 .onChange(of: sortBy) { _ in saveSettings() }
             } label: {
-                Text("Sort Options")
+                Button { } label: {
+                    SettingElement(title: "Sort Options", explanation: "Decide how the animals should be sorted. \"Last Let Out\" is the recommended setting.")
+                        .foregroundStyle(.black)
+                }
             }
             Button {
                 downloadAllData()
             } label: {
-                Text("Download All Data")
+                SettingElement(title: "Download All Data", explanation: "Download all data for all of your animals in a .csv file")
             }
             Section {
-                Stepper(minimumDuration == 1 ? "\(minimumDuration) minute" : "\(minimumDuration) minutes", value: $minimumDuration, in: 0...30, step: 1)
-                    .onChange(of: minimumDuration) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Minimum Log Duration")
-                    Button {
-                        showPopover1 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover1) {
-                        Text("This sets the minimum duration for a visit. If a volunteer takes out an animal for a visit lasting less than this amount, it will show an error and not count the visit.")
-                            .padding()
-                            .textCase(nil)
-                    }
+                Stepper(value: $minimumDuration, in: 0...30, step: 1) {
+                    SettingElement(title: "Minimum Log Duration: \(minimumDuration == 1 ? "\(minimumDuration) minute" : "\(minimumDuration) minutes")", explanation: "Sets the minimum duration for a visit. If a volunteer takes out an animal for a visit lasting less than this amount, it will show an error.")
                 }
+                    .onChange(of: minimumDuration) { _ in saveSettings() }
             }
             
             Section {
-                Toggle(enableAutomaticPutBack ? "Enabled" : "Disabled", isOn: $enableAutomaticPutBack)
+                Toggle(isOn: $enableAutomaticPutBack) {
+                    SettingElement(title: "Automatically Put Back Animals: \(enableAutomaticPutBack ? "Enabled" : "Disabled")", explanation: "Automatically put back animals that have been out of their kennel for a period of time.")
+                }
                     .tint(.customBlue)
                     .onChange(of: enableAutomaticPutBack) { _ in saveSettings() }
-                Toggle(automaticPutBackIgnoreVisit ? "Ignore Visit: Enabled" : "Ignore Visit: Disabled", isOn: $automaticPutBackIgnoreVisit)
+                Toggle(isOn: $automaticPutBackIgnoreVisit) {
+                    SettingElement(title: "Ignore Visit When Automatically Put Back: \(automaticPutBackIgnoreVisit ? "Enabled" : "Disabled")", explanation: "Ignore the visit and don't create a log when an animal is automatically put back.")
+                }
                     .tint(.customBlue)
                     .disabled(!enableAutomaticPutBack)
                     .onChange(of: automaticPutBackIgnoreVisit) { _ in saveSettings() }
-                Stepper(automaticPutBackHours == 1 ? "\(automaticPutBackHours) hour" : "\(automaticPutBackHours) hours", value: $automaticPutBackHours, in: 1...24, step: 1)
+                Stepper(value: $automaticPutBackHours, in: 1...24, step: 1) {
+                    SettingElement(title: "Put Back After: \(automaticPutBackHours == 1 ? "\(automaticPutBackHours) hour" : "\(automaticPutBackHours) hours")", explanation: "Automatically put back animals that have been out of their kennel for a period of time.")
+                }
                     .disabled(!enableAutomaticPutBack)
                     .onChange(of: automaticPutBackHours) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Automatic Put Back")
-                    Button {
-                        showPopover12 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover12) {
-                        Text("This setting will automatically put back animals who are out of their kennel after a certain period of time. This is so that if someone forgets to put them back, they won't stay orange all day.")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
-            }
+            } 
+
             
             Section {
-                Toggle(requireReason ? "Enabled" : "Disabled", isOn: $requireReason)
+                Toggle(isOn: $requireReason) {
+                    SettingElement(title: "Require Reason When Under Minimum Duration: \(requireReason ? "Enabled" : "Disabled")", explanation: "Require users to a add a reason for why they put the animal back before the minimum duration. You can create a list of reasons for them to choose from in Shelter Setttings.")
+                }
                     .tint(.customBlue)
                     .onChange(of: requireReason) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Require Reason When Under Minimum Duration")
-                    Button {
-                        showPopover8 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover8) {
-                        Text("This will require users to add a reason for why they put the animal back before the minimum duration.")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
             }
             
             Section {
-                Toggle(createLogsAlways ? "Enabled" : "Disabled", isOn: $createLogsAlways)
+                Toggle(isOn: $createLogsAlways) {
+                    SettingElement(title: "Create Logs Even Under Minimum Duration: \(createLogsAlways ? "Enabled" : "Disabled")", explanation: "Create logs for animals that are put back before the minimum duration.")
+                }
                     .tint(.customBlue)
                     .onChange(of: createLogsAlways) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Create Logs Even Under Minimum Duration")
-                    Button {
-                        showPopover7 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover7) {
-                        Text("This will create a log for animals that are put back before the minimum duration.")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
             }
 
             Section {
-                Stepper(cardsPerPage == 1 ? "\(cardsPerPage) card per page" : "\(cardsPerPage) cards per page", value: $cardsPerPage, in: 1...200, step: 1)
-                    .onChange(of: cardsPerPage) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Cards Per Page")
-                    Button {
-                        showPopover2 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover2) {
-                        Text("Cards are split into pages to ensure smooth performance. Depending on your device, you may be able to raise this number. However, if you notice the app is running slowing, you should lower this number until it runs smoothly.")
-                            .padding()
-                            .textCase(nil)
-                    }
+                Stepper(value: $cardsPerPage, in: 1...200, step: 1) {
+                    SettingElement(title: "Cards Per Page: \(cardsPerPage)", explanation: "Cards are split into pages to ensure smooth performance. Depending on your device, you may be able to raise this number. However, if you notice the app is running slowing, you should lower this number until it runs smoothly.")
                 }
+                    .onChange(of: cardsPerPage) { _ in saveSettings() }
             }
-            
             Section {
-                Toggle(showNoteDates ? "Enabled" : "Disabled", isOn: $showNoteDates)
+                Toggle(isOn: $showNoteDates) {
+                    SettingElement(title: "Show Note Dates: \(showNoteDates ? "Enabled" : "Disabled")", explanation: "Display the date notes were created")
+                }
                     .tint(.customBlue)
                     .onChange(of: showNoteDates) { _ in saveSettings() }
-            } header: {
-                HStack {
-                    Text("Show Note Dates")
-                    Button {
-                        showPopover4 = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .popover(isPresented: $showPopover4) {
-                        Text("This displays the date a note was created")
-                            .padding()
-                            .textCase(nil)
-                    }
-                }
             }
-            
             Section {
                 Toggle(isOn: $requireName) {
                     SettingElement(title: "Require Name: \(requireName ? "Enabled" : "Disabled")", explanation: "Before an animal can be taken out, you must enter your name if you are not logged in to your volunteer account.")
