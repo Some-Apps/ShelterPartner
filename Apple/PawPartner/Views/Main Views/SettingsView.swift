@@ -106,11 +106,18 @@ struct SettingsView: View {
                         }
                     }
                 Section {
-                    NavigationLink(destination: AccountSettingsView()) {
-                        Text("Account Settings")
+                    NavigationLink(destination: ShelterSettingsView()) {
+                        HStack {
+                            Image(systemName: "cloud")
+                            Text("Shelter Settings")
+                        }
                     }
                     NavigationLink(destination: DeviceSettingsView()) {
-                        Text("Device Settings")
+                        HStack {
+                            Image(systemName: "ipad")
+                            Text("Device Settings")
+                        }
+                        
                     }
                 }
                     Section(header: Text("Account")) {
