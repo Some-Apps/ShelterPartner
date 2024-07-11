@@ -23,5 +23,3 @@ You can use the following login credentials on your local build.
 Email: developer@pawpartner.app
 
 Password: password
-
-change
