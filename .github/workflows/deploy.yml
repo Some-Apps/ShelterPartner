@@ -23,9 +23,9 @@ jobs:
 
     - name: Push to Deployment Repository
       run: |
-        git config --global user.email "your-email@example.com"
-        git config --global user.name "your-username"
-        git remote add deployment https://your-deployment-repo-url
+        git config --global user.email "jonesjar222@gmail.com"
+        git config --global user.name "JaredDanielJones"
+        git remote add deployment https://github.com/Some-Apps/PawPartner_ReleaseVersion
         git checkout -b sync-branch
         git add .
         git commit -m "Sync changes from public repo"
