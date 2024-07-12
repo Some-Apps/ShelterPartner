@@ -13,7 +13,7 @@ jobs:
     - name: Checkout Public Repository
       uses: actions/checkout@v2
       with:
-        repository: your-username/public-repo-name
+        repository: Some-Apps/PawPartner
         ref: main
 
     - name: Copy sensitive files
