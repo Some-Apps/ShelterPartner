@@ -21,16 +21,28 @@ jobs:
         # Copy sensitive files that are not in the public repo
         # cp -r /path/to/sensitive/files .
 
-    - name: Push to Deployment Repository
+    - name: Setup Deployment Repository
       run: |
         git config --global user.email "jonesjar222@gmail.com"
         git config --global user.name "JaredDanielJones"
-        git remote add deployment https://github.com/Some-Apps/PawPartner_ReleaseVersion
-        git checkout -b sync-branch
-        git add .
-        git commit -m "Sync changes from public repo"
-        git push deployment sync-branch:main --force
+        git remote add deployment https://${{ secrets.DEPLOYMENT_REPO_PAT }}@github.com/${{ secrets.DEPLOYMENT_REPO }}.git
+        git fetch deployment
+        git checkout -b sync-branch deployment/main
+
+    - name: Push to Deployment Repository
+      run: |
+        git add -A
+        git status
+
+    - name: Commit and Push Changes
+      if: success()
+      run: |
+        if ! git diff-index --quiet HEAD; then
+          git commit -m "Sync changes from public repo"
+          git push deployment sync-branch:main --force
+        else
+          echo "No changes to commit"
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        DEPLOYMENT_REPO: ${{ secrets.DEPLOYMENT_REPO }}
-        DEPLOYMENT_REPO_PAT: ${{ secrets.DEPLOYMENT_REPO_PAT }}
+
