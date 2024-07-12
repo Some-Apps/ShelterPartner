@@ -24,7 +24,7 @@ jobs:
     - name: Checkout Deployment Repository
       uses: actions/checkout@v2
       with:
-        repository: Some-Apps/PawPartner-Deployment
+        repository: Some-Apps/PawPartner_ReleaseVersion
         ref: main
         token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
         path: deployment-repo
