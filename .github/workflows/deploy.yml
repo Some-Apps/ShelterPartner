@@ -27,7 +27,7 @@ jobs:
         repository: Some-Apps/PawPartner_ReleaseVersion
         ref: main
         token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
-        path: deployment-repo
+        path: PawPartner
 
     - name: Sync changes to Deployment Repository
       run: |
