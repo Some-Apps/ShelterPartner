@@ -1,16 +1,8 @@
-//
-//  LoginView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/27/23.
-//
-
 import AlertToast
 import FirebaseFirestore
 import FirebaseAuth
 import SwiftUI
 import SafariServices
-
 
 struct SafariView: UIViewControllerRepresentable {
     let url: URL
@@ -24,13 +16,16 @@ struct SafariView: UIViewControllerRepresentable {
 }
 
 struct LoginView: View {
-    @State private var showSafariView = false
+    @State private var showNewShelterForm = false
+    @State private var showTutorials = false
     @State private var email = ""
     @State private var password = ""
     @State private var showLoginError = false
     @State private var loginError = ""
-    @State private var isLoginInProgress = false  // New property
-//    @AppStorage("societyID") var storedSocietyID: String = ""
+    @State private var isLoginInProgress = false
+    @State private var newShelterForm = ""
+    @State private var tutorialsURL = ""
+
     @AppStorage("lastSync") var lastSync: String = ""
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -39,7 +34,8 @@ struct LoginView: View {
         return formatter
     }()
     @State private var showVideo = false
-    @ObservedObject var authViewModel = AuthenticationViewModel.shared
+
+    var loginListener: ListenerRegistration?
 
     var body: some View {
         GeometryReader { geometry in
@@ -56,7 +52,7 @@ struct LoginView: View {
                     Text("Login")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                    
+
                     VStack(alignment: .leading) {
                         Text("Email")
                             .font(.headline)
@@ -77,57 +73,61 @@ struct LoginView: View {
                             .cornerRadius(10)
                     }
                     Button("Login", action: {
-                            isLoginInProgress = true
-                            Auth.auth().signIn(withEmail: self.email, password: self.password) { authResult, error in
-                                isLoginInProgress = false
-                                if let error = error {
-                                    print("Error logging in user: \(error.localizedDescription)")
-                                    loginError = error.localizedDescription
-                                    showLoginError.toggle()
-                                    return
-                                }
-                                fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
-                                    switch result {
-                                    case .success(let societyID):
-//                                        _ = societyID
-//                                        storedSocietyID = tempSocietyID
-                                        print("User signed in successfully")
-                                        print("SocietyID: \(societyID)")
-                                    case .failure(let error):
-                                        print("Error fetching societyID: \(error)")
-                                    }
+                        isLoginInProgress = true
+                        Auth.auth().signIn(withEmail: self.email, password: self.password) { authResult, error in
+                            isLoginInProgress = false
+                            if let error = error {
+                                print("Error logging in user: \(error.localizedDescription)")
+                                loginError = error.localizedDescription
+                                showLoginError.toggle()
+                                return
+                            }
+                            fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
+                                switch result {
+                                case .success(let societyID):
+                                    print("User signed in successfully")
+                                    print("SocietyID: \(societyID)")
+                                case .failure(let error):
+                                    print("Error fetching societyID: \(error)")
                                 }
                             }
-                        })
+                        }
+                    })
                     .font(.largeTitle)
                     .buttonStyle(.bordered)
                     .fontWeight(.bold)
                     .tint(.customBlue)
-//                    Text("In order to create an account, please fill out the following form and I will get back to you as soon as possible.")
-//                        .foregroundColor(.secondary)
-//                        .multilineTextAlignment(.center)
                     HStack {
-                        if let url = URL(string: authViewModel.signUpForm) {
+                        if let url = URL(string: newShelterForm) {
                             Button(action: {
-                                showSafariView = true
+                                showNewShelterForm = true
                             }) {
-                                Text("Request Account")
+                                Text("Create New Shelter")
                             }
-                            .sheet(isPresented: $showSafariView) {
+                            .sheet(isPresented: $showNewShelterForm) {
                                 SafariView(url: url)
                             }
                         } else {
                             Text("Invalid URL")
                         }
-                        Button {
-                            showVideo = true
-                        } label: {
-                            Text("App Walkthrough")
+                        
+                        if let url = URL(string: tutorialsURL) {
+                            Button(action: {
+                                showTutorials = true
+                            }) {
+                                Text("Tutorials/Documentation")
+                            }
+                            .sheet(isPresented: $showTutorials) {
+                                SafariView(url: url)
+                            }
+                        } else {
+                            Text("Invalid URL")
                         }
+        
                     }
                     .buttonStyle(.bordered)
                     .tint(.secondary)
-                    Text("This app is not meant to be used on personal devices. If you are a volunteer, this app should only be used on a shelter owned iPad. The iPhone version of this app is only for animal shelter staff.")
+                    Text("Please do not share your login with anybody. You can request an additional admin account by emailing me or create volunteer accounts from within the app.")
                         .multilineTextAlignment(.center)
                 }
                 .padding()
@@ -145,19 +145,16 @@ struct LoginView: View {
             AlertToast(type: .loading)
         }
         .onAppear {
-            authViewModel.fetchSignUpForm()
+            fetchSignUpForm()
         }
         .onDisappear {
-            authViewModel.removeListeners()
-        }
-        .sheet(isPresented: $showVideo) {
-            YoutubeVideoView(videoID: authViewModel.staffVideo)
+            loginListener?.remove()
         }
     }
-    
+
     func fetchSocietyID(forUser userID: String, completion: @escaping (Result<String, Error>) -> Void) {
         let db = Firestore.firestore()
-        
+
         db.collection("Users").document(userID).getDocument { (document, error) in
             if let error = error {
                 completion(.failure(error))
@@ -168,6 +165,23 @@ struct LoginView: View {
                 } else {
                     completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "SocietyID not found"])))
                 }
+            }
+        }
+    }
+
+    func fetchSignUpForm() {
+        Firestore.firestore().collection("Stats").document("AppInformation").addSnapshotListener { (documentSnapshot, error) in
+            guard let document = documentSnapshot else {
+                print("Error fetching document: \(error!)")
+                return
+            }
+            guard let data = document.data() else {
+                print("Document data was empty.")
+                return
+            }
+            DispatchQueue.main.async {
+                self.newShelterForm = data["signUpForm"] as? String ?? ""
+                self.tutorialsURL = data["tutorialsURL"] as? String ?? ""
             }
         }
     }
