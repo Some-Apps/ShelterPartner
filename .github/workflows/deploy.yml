@@ -31,8 +31,8 @@ jobs:
 
     - name: Sync changes to Deployment Repository
       run: |
-        rsync -av --exclude='.git' ./ deployment-repo/
-        cd deployment-repo
+        rsync -av --exclude='.git' --exclude='.github' ./ Public/
+        cd Public
         git config --global user.email "jonesjar222@gmail.com"
         git config --global user.name "JaredDanielJones"
         git add -A
@@ -43,3 +43,4 @@ jobs:
         else
           echo "No changes to commit"
         fi
+
