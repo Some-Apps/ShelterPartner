@@ -19,7 +19,7 @@ jobs:
     - name: Copy sensitive files
       run: |
         # Copy sensitive files that are not in the public repo
-        cp -r /path/to/sensitive/files .
+        # cp -r /path/to/sensitive/files .
 
     - name: Push to Deployment Repository
       run: |
