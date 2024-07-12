@@ -211,7 +211,7 @@ struct VolunteerAccountsView: View {
     }
 
     private func generateRandomPassword() -> String {
-        let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let characters = "abcdefghijklmnopqrstuvwxyz"
         return String((0..<6).map { _ in characters.randomElement()! })
     }
 
