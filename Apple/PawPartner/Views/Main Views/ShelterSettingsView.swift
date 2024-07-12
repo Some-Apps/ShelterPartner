@@ -55,6 +55,6 @@ struct ShelterSettingsView: View {
                 }
             }
         }
-        .navigationTitle("Account Settings")
+        .navigationTitle("Shelter Settings")
     }
 }

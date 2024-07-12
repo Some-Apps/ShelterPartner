@@ -7,7 +7,7 @@ import UIKit
 struct SettingsView: View {
     // MARK: - Properties
     @Environment(\.dismiss) var dismiss
-    @Environment(\.isSearching) private var isSearching
+//    @Environment(\.isSearching) private var isSearching
 
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
     @StateObject var viewModel = SettingsViewModel.shared
@@ -24,7 +24,7 @@ struct SettingsView: View {
     @AppStorage("latestVersion") var latestVersion: String = ""
     @AppStorage("adminMode") var adminMode = true
 
-    @State private var searchText = ""
+//    @State private var searchText = ""
     @State private var showGuidedAccessVideo = false
     @State private var showLoading = false
     @State private var showStaffVideo = false
@@ -171,7 +171,7 @@ struct SettingsView: View {
                     }
                 
             }
-            .searchable(text: $searchText)
+//            .searchable(text: $searchText)
             .navigationTitle("Settings")
             .onAppear {
                 animalViewModel.fetchLatestVersion()
