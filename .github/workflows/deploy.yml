@@ -1,0 +1,46 @@
+name: Sync Public Repo with Deployment Repo
+
+on:
+  push:
+    branches:
+      - main  # Change to your main branch if different
+
+jobs:
+  sync-repo:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Public Repository
+      uses: actions/checkout@v2
+      with:
+        repository: Some-Apps/PawPartner
+        ref: main
+
+    - name: Copy sensitive files
+      run: |
+        # Copy sensitive files that are not in the public repo
+        # cp -r /path/to/sensitive/files .
+
+    - name: Checkout Deployment Repository
+      uses: actions/checkout@v2
+      with:
+        repository: Some-Apps/PawPartner_ReleaseVersion
+        ref: main
+        token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
+        path: deployment-repo
+
+    - name: Sync changes to Deployment Repository
+      run: |
+        rsync -av --delete --exclude='.git' --exclude='.github' ./ deployment-repo/Public/
+        cd deployment-repo
+        git config --global user.email "jonesjar222@gmail.com"
+        git config --global user.name "JaredDanielJones"
+        git add Public/
+        git status
+        if ! git diff-index --quiet HEAD; then
+          git commit -m "Sync changes from public repo to Public directory"
+          git push origin main --force
+        else
+          echo "No changes to commit"
+        fi
+
