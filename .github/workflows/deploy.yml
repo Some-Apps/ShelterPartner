@@ -1,0 +1,36 @@
+name: Sync Public Repo with Deployment Repo
+
+on:
+  push:
+    branches:
+      - main  # Change to your main branch if different
+
+jobs:
+  sync-repo:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Public Repository
+      uses: actions/checkout@v2
+      with:
+        repository: your-username/public-repo-name
+        ref: main
+
+    - name: Copy sensitive files
+      run: |
+        # Copy sensitive files that are not in the public repo
+        cp -r /path/to/sensitive/files .
+
+    - name: Push to Deployment Repository
+      run: |
+        git config --global user.email "your-email@example.com"
+        git config --global user.name "your-username"
+        git remote add deployment https://your-deployment-repo-url
+        git checkout -b sync-branch
+        git add .
+        git commit -m "Sync changes from public repo"
+        git push deployment sync-branch:main --force
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEPLOYMENT_REPO: ${{ secrets.DEPLOYMENT_REPO }}
+        DEPLOYMENT_REPO_PAT: ${{ secrets.DEPLOYMENT_REPO_PAT }}
