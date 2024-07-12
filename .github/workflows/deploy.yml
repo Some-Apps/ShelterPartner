@@ -27,12 +27,12 @@ jobs:
         repository: Some-Apps/PawPartner_ReleaseVersion
         ref: main
         token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
-        path: Public
+        path: deployment-repo
 
     - name: Sync changes to Deployment Repository
       run: |
-        rsync -av --exclude='.git' --exclude='.github' ./ Public/
-        cd Public
+        rsync -av --exclude='.git' --exclude='.github' ./ deployment-repo/Public/
+        cd deployment-repo
         git config --global user.email "jonesjar222@gmail.com"
         git config --global user.name "JaredDanielJones"
         git add -A
