@@ -29,6 +29,7 @@ struct Animal: Codable, Identifiable, Hashable {
     var secondarySort: Int?
     var colorSort: Int?
     var behaviorSort: Int?
+    var buildingSort: Int?
     
     var colorGroup: String?
     var behaviorGroup: String?

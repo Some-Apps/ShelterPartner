@@ -177,6 +177,24 @@ class AnimalViewModel: ObservableObject {
                                    }
                                }
                                return ($0.behaviorSort ?? 100) < ($1.behaviorSort ?? 100)
+                           } else if secondarySortOption == "Building" {
+                               if $0.behaviorSort == $1.behaviorSort {
+//                                   return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                                   switch sortBy {
+                                   case .lastLetOut:
+                                       return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
+                                   case .playtime24Hours:
+                                       return $0.playtimeLast24Hours < $1.playtimeLast24Hours
+                                   case .playtime7Days:
+                                       return $0.playtimeLast7Days < $1.playtimeLast7Days
+                                   case .playtime30Days:
+                                       return $0.playtimeLast30Days < $1.playtimeLast30Days
+                                   case .playtime90Days:
+                                       return $0.playtimeLast90Days < $1.playtimeLast90Days
+                                   }
+                               }
+                               return ($0.behaviorSort ?? 100) < ($1.behaviorSort ?? 100)
+
                            } else {
                                if $0.secondarySort == $1.secondarySort {
 //                                   return $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
