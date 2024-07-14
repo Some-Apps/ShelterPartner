@@ -16,10 +16,9 @@ jobs:
         repository: Some-Apps/PawPartner
         ref: main
 
-    - name: Copy sensitive files
+    - name: Create Public Directory in Deployment Repo
       run: |
-        # Copy sensitive files that are not in the public repo
-        # cp -r /path/to/sensitive/files .
+        mkdir -p private-repo/Public
 
     - name: Checkout Deployment Repository
       uses: actions/checkout@v2
@@ -27,12 +26,12 @@ jobs:
         repository: Some-Apps/PawPartner_ReleaseVersion
         ref: main
         token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
-        path: deployment-repo
+        path: private-repo
 
-    - name: Sync changes to Deployment Repository
+    - name: Sync changes to Public Directory in Deployment Repository
       run: |
-        rsync -av --delete --exclude='.git' --exclude='.github' ./ deployment-repo/Public/
-        cd deployment-repo
+        rsync -av --delete --exclude='.git' --exclude='.github' --exclude='private-repo' ./ private-repo/Public/
+        cd private-repo
         git config --global user.email "jonesjar222@gmail.com"
         git config --global user.name "JaredDanielJones"
         git add Public/
@@ -43,4 +42,3 @@ jobs:
         else
           echo "No changes to commit"
         fi
-
