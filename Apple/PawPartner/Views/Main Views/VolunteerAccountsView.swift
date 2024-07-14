@@ -87,6 +87,7 @@ struct VolunteerAccountsView: View {
                     Button("Send Invite") {
                         sendInvite()
                     }
+                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !email.localizedStandardContains("@") || !email.localizedStandardContains("."))
                 }
                 if !volunteers.isEmpty {
                     Section("Volunteers") {
