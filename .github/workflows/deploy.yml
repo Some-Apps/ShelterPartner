@@ -1,4 +1,4 @@
-name: Sync Public Repo with Deployment Repo and Deploy MkDocs
+name: Sync Public Repo with Deployment Repo
 
 on:
   push:
@@ -41,23 +41,4 @@ jobs:
           git push origin main --force
         else
           echo "No changes to commit"
-
-    - name: Install Python and MkDocs
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install MkDocs and Material Theme
-      run: |
-        pip install mkdocs mkdocs-material
-
-    - name: Build MkDocs Site
-      run: |
-        mkdocs build
-
-    - name: Copy Site to /docs Directory
-      run: |
-        rsync -av --delete site/ Documentation/
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+        fi
