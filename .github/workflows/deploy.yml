@@ -57,7 +57,7 @@ jobs:
 
     - name: Copy Site to /docs Directory
       run: |
-        rsync -av --delete site/ docs/
+        rsync -av --delete site/ Documentation/
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
