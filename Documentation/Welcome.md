@@ -1,3 +1,3 @@
 # Welcome
 
-Welcome to the PawPartner Wiki
+Welcome to the PawPartner Wiki.
