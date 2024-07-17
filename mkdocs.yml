@@ -1,0 +1,8 @@
+site_name: My Wiki
+docs_dir: Documentation
+
+theme:
+  name: readthedocs
+
+nav:
+  - Home: index.md
