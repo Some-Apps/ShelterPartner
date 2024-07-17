@@ -1,4 +1,4 @@
-name: Sync Public Repo with Deployment Repo
+name: Sync Public Repo with Deployment Repo and Deploy MkDocs
 
 on:
   push:
@@ -55,8 +55,9 @@ jobs:
       run: |
         mkdocs build
 
-    - name: Deploy MkDocs to GitHub Pages
+    - name: Copy Site to /docs Directory
       run: |
-        mkdocs gh-deploy --force
+        rsync -av --delete site/ docs/
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
