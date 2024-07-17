@@ -41,4 +41,22 @@ jobs:
           git push origin main --force
         else
           echo "No changes to commit"
-        fi
+
+    - name: Install Python and MkDocs
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install MkDocs and Material Theme
+      run: |
+        pip install mkdocs mkdocs-material
+
+    - name: Build MkDocs Site
+      run: |
+        mkdocs build
+
+    - name: Deploy MkDocs to GitHub Pages
+      run: |
+        mkdocs gh-deploy --force
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
