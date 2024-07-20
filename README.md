@@ -29,8 +29,17 @@ Password: password
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/JaredDanielJones"><img src="https://avatars.githubusercontent.com/u/84288718?v=4?s=100" width="100px;" alt="Jared Jones"/><br /><sub><b>Jared Jones</b></sub></a><br /><a href="#doc-JaredDanielJones" title="Documentation">📖</a></td>
+    </tr>
+  </tbody>
+</table>
+
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 
