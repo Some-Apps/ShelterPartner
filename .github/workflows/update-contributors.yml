@@ -22,12 +22,24 @@ jobs:
 
       - name: Fetch contributors
         run: |
-          curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | jq -r '.[] | "* [\(.login)](\(.html_url)) - \(.contributions) contributions"' > CONTRIBUTORS.md
+          response=$(curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100")
+          if [ $? -ne 0 ]; then
+            echo "Failed to fetch contributors"
+            exit 1
+          fi
+          echo "$response" | jq -r '.[] | "* [\(.login)](\(.html_url)) - \(.contributions) contributions"' > CONTRIBUTORS.md
 
       - name: Update README
         run: |
           sed -i '/## Contributors/,$d' README.md
           echo -e "## Contributors\n\n$(cat CONTRIBUTORS.md)" >> README.md
+
+      - name: Check for changes
+        run: |
+          if git diff --exit-code; then
+            echo "No changes to commit"
+            exit 0
+          fi
 
       - name: Commit changes
         run: |
@@ -36,4 +48,4 @@ jobs:
           git add README.md CONTRIBUTORS.md
           git commit -m 'docs: update contributors'
           git push
-
+        if: success() && steps.check-for-changes.outputs.result != 'unchanged'
