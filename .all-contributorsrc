@@ -1,7 +1,21 @@
 {
   "projectName": "PawPartner",
   "projectOwner": "Some-Apps",
-  "files": ["README.md"],
-  "contributors": []
+  "files": [
+    "README.md"
+  ],
+  "contributors": [
+    {
+      "login": "JaredDanielJones",
+      "name": "Jared Jones",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84288718?v=4",
+      "profile": "https://github.com/JaredDanielJones",
+      "contributions": [
+        "doc"
+      ]
+    }
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7
 }
-
