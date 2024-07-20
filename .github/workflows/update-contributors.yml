@@ -1,25 +1,30 @@
 name: Update Contributors
+
 on:
   schedule:
     - cron: '0 0 * * 1' # Runs every Monday
   workflow_dispatch:
+
 jobs:
   update-contributors:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - name: Install dependencies
-        run: npm install @all-contributors/cli
-      - name: Generate contributors
-        run: npx all-contributors generate
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Fetch contributors
+        run: |
+          curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | jq -r '.[] | "* [\(.login)](\(.html_url)) - \(.contributions) contributions"' > CONTRIBUTORS.md
+
+      - name: Update README
+        run: |
+          sed -i '/## Contributors/,$d' README.md
+          echo -e "## Contributors\n\n$(cat CONTRIBUTORS.md)" >> README.md
+
       - name: Commit changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add README.md .all-contributorsrc
+          git add README.md CONTRIBUTORS.md
           git commit -m 'docs: update contributors'
           git push
