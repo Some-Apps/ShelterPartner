@@ -1,5 +1,8 @@
 # Welcome To [PawPartner](https://pawpartner.app)!
 
+ ![GitHub contributors](https://img.shields.io/github/contributors/Some-Apps/PawPartner/)
+
+
 ## How to contribute
 
 ### Existing Issues
