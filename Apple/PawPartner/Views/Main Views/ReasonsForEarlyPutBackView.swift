@@ -20,7 +20,7 @@ struct ReasonsForEarlyPutBackView: View {
                 
                 if newReason.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
                     Button("Add Reason") {
-                        viewModel.addReason(reason: newReason)
+                        viewModel.addItem(title: newReason, category: "earlyReasons")
                         newReason = ""
                     }
                     .disabled(newReason.trimmingCharacters(in: .whitespacesAndNewlines) == "")

@@ -19,48 +19,22 @@ class SettingsViewModel: ObservableObject {
     @Published var showShareSheet = false
     @Published var fileToShare: URL? = nil
     @Published var isFetchingData = false // New property
-//    @AppStorage("societyID") var storedSocietyID: String = ""
-    
-//    @Published var reportsDay: String = "Never"
-//    @Published var reportsEmail: String = ""
-//    
-//    @Published var catTags: [String] = []
-//    @Published var dogTags: [String] = []
-//    @Published var earlyReasons: [String] = []
-//    @Published var filterOptions: [String] = []
-//    @Published var software: String = ""
-//    @Published var shelter: String = ""
-//    @Published var mainFilter: String = ""
-//    @Published var syncFrequency: String = ""
-//    @Published var apiKey: String = ""
-//    @Published var secondarySortOptions: [String] = []
-//    @Published var groupOptions: [String] = []
-//    
-//    var listener: ListenerRegistration?
-//    
-//    init() {
-//        setupListener()
-//    }
-    
-    
-//    deinit {
-//        listener?.remove() // Stop listening to changes when the object is deinitialized
-//    }
 
 
-    func addReason(reason: String) {
+
+    func addItem(title: String, category: String) {
         let db = Firestore.firestore()
         let societyRef = db.collection("Societies").document(authViewModel.shelterID)
         
         societyRef.updateData([
-            "earlyReasons": FieldValue.arrayUnion([reason])
+            category: FieldValue.arrayUnion([title])
         ]) { err in
             if let err = err {
                 print("Error updating document: \(err)")
             } else {
                 print("Document successfully updated")
                 print(self.authViewModel.shelterID)
-                print(reason)
+                print(title)
             }
         }
     }
@@ -107,9 +81,24 @@ class SettingsViewModel: ObservableObject {
         authViewModel.earlyReasons.remove(atOffsets: offsets)
     }
     
+    func deleteItem(at offsets: IndexSet) {
+        for index in offsets {
+            let type = authViewModel.letOutTypes[index]
+            Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData([
+                "letOutTypes": FieldValue.arrayRemove([type])
+            ])
+        }
+        authViewModel.letOutTypes.remove(atOffsets: offsets)
+    }
+    
     func moveReason(from source: IndexSet, to destination: Int) {
         authViewModel.earlyReasons.move(fromOffsets: source, toOffset: destination)
         Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData(["earlyReasons": authViewModel.earlyReasons])
+    }
+    
+    func moveItem(from source: IndexSet, to destination: Int) {
+        authViewModel.letOutTypes.move(fromOffsets: source, toOffset: destination)
+        Firestore.firestore().collection("Societies").document(authViewModel.shelterID).updateData(["letOutTypes": authViewModel.letOutTypes])
     }
 
     func deleteTag(at offsets: IndexSet, species: AnimalType) {

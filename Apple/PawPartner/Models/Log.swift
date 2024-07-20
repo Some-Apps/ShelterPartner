@@ -13,6 +13,7 @@ struct Log: Codable, Equatable, Hashable {
     var endTime: Double
     var user: String?
     var shortReason: String?
+    var letOutType: String?
     
     var durationInMinutes: Int {
         let startTimeDate = Date(timeIntervalSince1970: startTime)
