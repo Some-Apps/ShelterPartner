@@ -1,10 +1,4 @@
 {
   "projectName": "PawPartner",
   "projectOwner": "Some-Apps",
-  "repoType": "github",
-  "files": ["README.md"],
-  "imageSize": 100,
-  "commit": false,
-  "contributorsPerLine": 7,
-  "contributors": []
 }
