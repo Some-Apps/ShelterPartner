@@ -1,28 +1,22 @@
 # Welcome To [PawPartner](https://pawpartner.app)!
 
-## How to contribute
-
-### Existing Issues
-1. Find an issue you'd like to solve that hasn't been assigned to anybody
+## How To Contribute On GitHub
+1. Create an issue in the Some-Apps/PawPartner repository or select an existing issue
 2. Comment on the issue that you would like to work on it
-3. Once you are assigned an issue, fork the repository and try to solve it
-4. Once you're done, create a pull request
+3. Once you have been assigned the issue, fork to the repository into a branch containing the issue number
+4. When you are ready, submit a pull request from this branch
+5. Your code will be reviewed and then either be approved or have changes requested
+6. Once the pull request has been approved, you can safely delete your branch and start on a new issue.
 
-### Submit an Issue
-Feel free to submit your own issues.
+Feel free to use your issue thread to communicate.
 
-### Architecture
+Here are the login credentials for you local build.
+> Email: developer@pawpartner.app\
+> Password: password
 
-[Lucidchart document](https://lucid.app/documents/embedded/2d805f3f-4314-4d6a-9015-b6e659d66bcd)
+## Contributor Incentives
 
-### Dummy Data
-This repo doesn't allow access to any real data. The credentials only allow access to a dummy database
-
-You can use the following login credentials on your local build.
-
-Email: developer@pawpartner.app
-
-Password: password
+Contributors who make an average of 1 pull request or more per month will be given a desk in a [virtual office building](gather.town). This will allow you to interact with other contributors while you work or just talk and play online mini games.
 
 ## Contributors
 
