@@ -12,6 +12,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
       - name: Fetch contributors
         run: |
           curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | jq -r '.[] | "* [\(.login)](\(.html_url)) - \(.contributions) contributions"' > CONTRIBUTORS.md
@@ -28,3 +33,4 @@ jobs:
           git add README.md CONTRIBUTORS.md
           git commit -m 'docs: update contributors'
           git push
+
