@@ -11,11 +11,11 @@
 ### Submit an Issue
 Feel free to submit your own issues.
 
-## Architecture
+### Architecture
 
 [Lucidchart document](https://lucid.app/documents/embedded/2d805f3f-4314-4d6a-9015-b6e659d66bcd)
 
-## Dummy Data
+### Dummy Data
 This repo doesn't allow access to any real data. The credentials only allow access to a dummy database
 
 You can use the following login credentials on your local build.
