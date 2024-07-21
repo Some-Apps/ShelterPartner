@@ -17,6 +17,7 @@ class AuthenticationViewModel: ObservableObject {
     @AppStorage("showAllAnimals") var showAllAnimals = false
     @AppStorage("createLogsAlways") var createLogsAlways = false
     @AppStorage("requireReason") var requireReason = false
+    @AppStorage("requireLetOutType") var requireLetOutType = false
     @AppStorage("showSearchBar") var showSearchBar = false
     @AppStorage("secondarySortOption") var secondarySortOption = ""
     @AppStorage("enableAutomaticPutBack") var enableAutomaticPutBack = false
@@ -38,6 +39,7 @@ class AuthenticationViewModel: ObservableObject {
     @Published var catTags: [String] = []
     @Published var dogTags: [String] = []
     @Published var earlyReasons: [String] = []
+    @Published var letOutTypes: [String] = []
     @Published var filterOptions: [String] = []
     @Published var software: String = ""
     @Published var shelter: String = ""
@@ -238,6 +240,7 @@ class AuthenticationViewModel: ObservableObject {
             self.reportsDay = data["reportsDay"] as? String ?? ""
             self.reportsEmail = data["reportsEmail"] as? String ?? ""
             self.earlyReasons = data["earlyReasons"] as? [String] ?? []
+            self.letOutTypes = data["letOutTypes"] as? [String] ?? []
             self.catTags = data["catTags"] as? [String] ?? []
             self.dogTags = data["dogTags"] as? [String] ?? []
             self.software = data["software"] as? String ?? ""
@@ -305,6 +308,7 @@ struct VolunteerSettings {
     var showAllAnimals: Bool
     var createLogsAlways: Bool
     var requireReason: Bool
+    var requireLetOutType: Bool
     var showSearchBar: Bool
     var secondarySortOption: String
     var enableAutomaticPutBack: Bool
@@ -328,6 +332,7 @@ struct VolunteerSettings {
         self.showAllAnimals = data["showAllAnimals"] as? Bool ?? false
         self.createLogsAlways = data["createLogsAlways"] as? Bool ?? false
         self.requireReason = data["requireReason"] as? Bool ?? false
+        self.requireLetOutType = data["requireLetOutType"] as? Bool ?? false
         self.showSearchBar = data["showSearchBar"] as? Bool ?? false
         self.secondarySortOption = data["secondarySortOption"] as? String ?? ""
         self.enableAutomaticPutBack = data["enableAutomaticPutBack"] as? Bool ?? false
@@ -352,6 +357,7 @@ struct VolunteerSettings {
         UserDefaults.standard.set(showAllAnimals, forKey: "showAllAnimals")
         UserDefaults.standard.set(createLogsAlways, forKey: "createLogsAlways")
         UserDefaults.standard.set(requireReason, forKey: "requireReason")
+        UserDefaults.standard.set(requireLetOutType, forKey: "requireLetOutType")
         UserDefaults.standard.set(showSearchBar, forKey: "showSearchBar")
         UserDefaults.standard.set(secondarySortOption, forKey: "secondarySortOption")
         UserDefaults.standard.set(enableAutomaticPutBack, forKey: "enableAutomaticPutBack")

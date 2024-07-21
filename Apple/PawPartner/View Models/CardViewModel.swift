@@ -17,10 +17,10 @@ class CardViewModel: ObservableObject {
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("requireName") var requireName = false
     @AppStorage("createLogsAlways") var createLogsAlways = false
-//    @AppStorage("shortReason") var shortReason = ""
     @AppStorage("automaticPutBackIgnoreVisit") var automaticPutBackIgnoreVisit = true
 
     @Published var shortReason = ""
+    @Published var letOutType = ""
 
     // Test if this works
     func takeOut(animal: Animal) {
@@ -32,7 +32,7 @@ class CardViewModel: ObservableObject {
             if let err = err {
                 print("Error updating document: \(err)")
             } else {
-                print("Document successfully updated")
+                print("Document successfully updated: Animal taken out")
             }
         }
     }
@@ -164,9 +164,11 @@ class CardViewModel: ObservableObject {
 //                    print(Date())
                     var lastVolunteer = ""
                     lastVolunteer = data["lastVolunteer"] as? String ?? ""
+                    var lastLetOutType = data["lastLetOutType"] as? String ?? ""
+                    lastLetOutType = data["lastLetOutType"] as? String ?? ""
                     // Create a new log
                     let id = UUID().uuidString
-                    let newLog = Log(id: id, startTime: startTime, endTime: Date().timeIntervalSince1970, user: lastVolunteer, shortReason: self.shortReason)
+                    let newLog = Log(id: id, startTime: startTime, endTime: Date().timeIntervalSince1970, user: lastVolunteer, shortReason: self.shortReason, letOutType: lastLetOutType)
                     
                     // Convert newLog to a dictionary
                     let logDict: [String: Any] = [
@@ -174,10 +176,12 @@ class CardViewModel: ObservableObject {
                         "startTime": newLog.startTime,
                         "endTime": newLog.endTime,
                         "user": newLog.user ?? "",
-                        "shortReason": newLog.shortReason ?? ""
+                        "shortReason": newLog.shortReason ?? "",
+                        "letOutType": newLog.letOutType ?? ""
                     ]
                     db.collection("Societies").document(self.authViewModel.shelterID).collection("\(animal.animalType.rawValue)s").document(animal.id).updateData([
                         "lastVolunteer": "",
+                        "lastLetOutType": ""
                     ]){ err in
                         if let err = err {
                             print("Error updating document: \(err)")

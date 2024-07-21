@@ -19,7 +19,7 @@ class AnimalViewModel: ObservableObject {
 //    @AppStorage("groupsEnabled") var groupsEnabled = false
     @AppStorage("groupOption") var groupOption = ""
 
-
+    @Published var showRequireLetOutType = false
     @Published var showRequireReason = false
     @Published var showRequireName = false
     @Published var showLogTooShort = false

@@ -221,6 +221,7 @@ struct OutlinedButton: View {
     var animal: Animal
     @State private var isImageCached: Bool = false
     @AppStorage("requireReason") var requireReason = false
+    @AppStorage("requireLetOutType") var requireLetOutType = false
 
     @State private var progress: CGFloat = 0
     @State private var timer: Timer? = nil
@@ -344,13 +345,23 @@ struct OutlinedButton: View {
                                                     print("Document successfully updated")
                                                 }
                                             }
-                                            viewModel.takeOut(animal: animal)
+                                            if requireLetOutType {
+                                                animalViewModel.animal = animal
+                                                animalViewModel.showRequireLetOutType = true
+                                            } else {
+                                                viewModel.takeOut(animal: animal)
+                                            }
                                         } else {
                                             animalViewModel.animal = animal
                                             animalViewModel.showRequireName = true
                                         }
                                     } else {
-                                        viewModel.takeOut(animal: animal)
+                                        if requireLetOutType {
+                                            animalViewModel.animal = animal
+                                            animalViewModel.showRequireLetOutType = true
+                                        } else {
+                                            viewModel.takeOut(animal: animal)
+                                        }
                                     }
                                 }
                             }
