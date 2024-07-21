@@ -8,7 +8,7 @@
 5. Your code will be reviewed and then either be approved or have changes requested
 6. Once the pull request has been approved, you can safely delete your branch and start on a new issue.
 
-Feel free to use your issue thread to communicate.
+Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time. I'll assign myself multiple issues just because some of them can only be done by me.
 
 Here are the login credentials for you local build.
 > Email: developer@pawpartner.app\
