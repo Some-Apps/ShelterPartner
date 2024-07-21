@@ -354,7 +354,7 @@ struct DeviceSettingsView: View {
                 return
             }
             
-            var csvString = "id,name,species,note,note date,note person,log start,log end,log person\n"
+            var csvString = "id,name,species,note,note date,note person,log start,log end,log person,short reason,log type\n"
             
             fetchAllAnimals(from: documentRef.collection("Cats")) { catCSV in
                 csvString.append(contentsOf: catCSV)
@@ -470,7 +470,7 @@ struct DeviceSettingsView: View {
                 print("Missing required fields in logData: \(logData)")
                 return nil
             }
-            return Log(id: id, startTime: startTime, endTime: endTime, user: logData["user"] as? String, shortReason: logData["shortReason"] as? String)
+            return Log(id: id, startTime: startTime, endTime: endTime, user: logData["user"] as? String, shortReason: logData["shortReason"] as? String, letOutType: logData["letOutType"] as? String)
         }
         
         let tags = data["tags"] as? [String: Int] ?? [:]
@@ -510,7 +510,7 @@ struct DeviceSettingsView: View {
             let logStartDateString = log != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: log!.startTime)) : ""
             let logEndDateString = log != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: log!.endTime)) : ""
             
-            let row = "\(i == 0 ? escapeCSV(animal.id) : ""),\(i == 0 ? escapeCSV(animal.name) : ""),\(i == 0 ? escapeCSV(animal.animalType.rawValue) : ""),\(escapeCSV(note?.note ?? "")),\(noteDateString),\(escapeCSV(note?.user ?? "")),\(logStartDateString),\(logEndDateString),\(escapeCSV(log?.user ?? "")),\(escapeCSV(log?.shortReason ?? ""))\n"
+            let row = "\(i == 0 ? escapeCSV(animal.id) : ""),\(i == 0 ? escapeCSV(animal.name) : ""),\(i == 0 ? escapeCSV(animal.animalType.rawValue) : ""),\(escapeCSV(note?.note ?? "")),\(noteDateString),\(escapeCSV(note?.user ?? "")),\(logStartDateString),\(logEndDateString),\(escapeCSV(log?.user ?? "")),\(escapeCSV(log?.shortReason ?? "")),\(escapeCSV(log?.letOutType ?? ""))\n"
             csvRows.append(row)
         }
         
