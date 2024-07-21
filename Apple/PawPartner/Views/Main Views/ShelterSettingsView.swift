@@ -53,6 +53,12 @@ struct ShelterSettingsView: View {
                             .foregroundStyle(.black)
                     }
                 }
+                NavigationLink(destination: LetOutTypesView()) {
+                    Button { } label: {
+                        SettingElement(title: "Let Out Types", explanation: "Different reasons for taking out an animal")
+                            .foregroundStyle(.black)
+                    }
+                }
             }
         }
         .navigationTitle("Shelter Settings")

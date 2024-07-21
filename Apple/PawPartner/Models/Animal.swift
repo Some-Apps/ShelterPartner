@@ -22,6 +22,7 @@ struct Animal: Codable, Identifiable, Hashable {
     var breed: String?
     var filters: [String]?
     var lastVolunteer: String?
+    var lastLetOutType: String?
 //    var group: String?
     var extraInfo: String?
     var fullLocation: String?

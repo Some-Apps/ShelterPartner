@@ -68,6 +68,8 @@
 		C0ECD90B2A1E6FB7001F82C3 /* AddNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90A2A1E6FB6001F82C3 /* AddNoteView.swift */; };
 		C0ECD90D2A1E7225001F82C3 /* AddNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90C2A1E7225001F82C3 /* AddNoteViewModel.swift */; };
 		C0ECD90F2A1E7656001F82C3 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90E2A1E7656001F82C3 /* NoteView.swift */; };
+		C0FE53362C4C72D400935E48 /* LetOutTypesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FE53352C4C72D400935E48 /* LetOutTypesView.swift */; };
+		C0FE53382C4C774B00935E48 /* RequireLetOutTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FE53372C4C774B00935E48 /* RequireLetOutTypeView.swift */; };
 		C0FFA1BA2B34D89E00D71021 /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFA1B92B34D89E00D71021 /* TagsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -127,6 +129,8 @@
 		C0ECD90A2A1E6FB6001F82C3 /* AddNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNoteView.swift; sourceTree = "<group>"; };
 		C0ECD90C2A1E7225001F82C3 /* AddNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNoteViewModel.swift; sourceTree = "<group>"; };
 		C0ECD90E2A1E7656001F82C3 /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
+		C0FE53352C4C72D400935E48 /* LetOutTypesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetOutTypesView.swift; sourceTree = "<group>"; };
+		C0FE53372C4C774B00935E48 /* RequireLetOutTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequireLetOutTypeView.swift; sourceTree = "<group>"; };
 		C0FFA1B92B34D89E00D71021 /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -208,6 +212,7 @@
 				C055E0162C2E056B006A0370 /* VolunteerAccountsView.swift */,
 				C0953A792C37529700E803C1 /* GeoRestrictionView.swift */,
 				C08A3C882C13B85B00D99EF9 /* ShelterSettingsView.swift */,
+				C0FE53352C4C72D400935E48 /* LetOutTypesView.swift */,
 				C0C316942B5582B300192C89 /* DeviceSettingsView.swift */,
 				C0E4AB352C0FA421007146BA /* AccountSetupView.swift */,
 				C0E4AB372C0FB30B007146BA /* FilterView.swift */,
@@ -232,6 +237,7 @@
 				C09CFEED2B1C038F00AE8560 /* AnimalAlertView.swift */,
 				C0AB96162BE54BA40000D76C /* RequireNameView.swift */,
 				C08A3C842C0D1BE700D99EF9 /* RequireReasonView.swift */,
+				C0FE53372C4C774B00935E48 /* RequireLetOutTypeView.swift */,
 				C09CFEEB2B1C036D00AE8560 /* ThankYouView.swift */,
 				C0E513742A181B2000941E3A /* CardView.swift */,
 				C09CFEEF2B1D04EA00AE8560 /* QRCodeView.swift */,
@@ -374,6 +380,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0953A762C31C62E00E803C1 /* VisitorSettingsView.swift in Sources */,
+				C0FE53382C4C774B00935E48 /* RequireLetOutTypeView.swift in Sources */,
 				C01B0A552A2277F10062994D /* ChangePasswordView.swift in Sources */,
 				C09CFEE62B1BF56500AE8560 /* Log.swift in Sources */,
 				C09CFEEE2B1C038F00AE8560 /* AnimalAlertView.swift in Sources */,
@@ -416,6 +423,7 @@
 				C0837B3D2C03A238006AA375 /* AnimalDetailsSection.swift in Sources */,
 				C08785E72A53221600A91C49 /* CreditsView.swift in Sources */,
 				C09CFEEC2B1C036D00AE8560 /* ThankYouView.swift in Sources */,
+				C0FE53362C4C72D400935E48 /* LetOutTypesView.swift in Sources */,
 				C08A3C852C0D1BE700D99EF9 /* RequireReasonView.swift in Sources */,
 				C0AB96152BE535A70000D76C /* SetupView.swift in Sources */,
 				C00611122B6C1A0700E28AD0 /* Photo.swift in Sources */,

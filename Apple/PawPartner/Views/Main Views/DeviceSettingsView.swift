@@ -34,6 +34,7 @@ struct DeviceSettingsView: View {
     @AppStorage("QRMode") var QRMode = true
     @AppStorage("adminMode") var adminMode = true
     @AppStorage("showFilterOptions") var showFilterOptions = false
+    @AppStorage("requireLetOutType") var requireLetOutType = false
 
     @ObservedObject var viewModel = AuthenticationViewModel.shared
     @ObservedObject var animalViewModel = AnimalViewModel.shared
@@ -105,6 +106,14 @@ struct DeviceSettingsView: View {
                     .onChange(of: automaticPutBackHours) { _ in saveSettings() }
             } 
 
+            Section {
+                Toggle(isOn: $requireLetOutType) {
+                    SettingElement(title: "Show \"Let Out Type\" Prompt: \(requireLetOutType ? "Enabled" : "Disabled")", explanation: "When a user takes out an animal, they will be prompted to specify what the animal will be doing. For example, whether they'll be going for a walk or in a playgroup. You can specify these options in Shelter Settings")
+                }
+                .tint(.customBlue)
+                .onChange(of: requireLetOutType) { _ in saveSettings() }
+
+            }
             
             Section {
                 Toggle(isOn: $requireReason) {
@@ -285,7 +294,8 @@ struct DeviceSettingsView: View {
             "automaticPutBackIgnoreVisit": automaticPutBackIgnoreVisit,
             "showFilterOptions": showFilterOptions,
             "groupOption": groupOption,
-            "showBulkTakeOut": showBulkTakeOut
+            "showBulkTakeOut": showBulkTakeOut,
+            "requireLetOutType": requireLetOutType
         ]
         db.collection("Societies").document(viewModel.shelterID).setData(["VolunteerSettings": settings], merge: true) { error in
             if let error = error {
@@ -323,6 +333,7 @@ struct DeviceSettingsView: View {
                     self.showFilterOptions = data["showFilterOptions"] as? Bool ?? false
                     self.groupOption = data["groupOption"] as? String ?? ""
                     self.showBulkTakeOut = data["showBulkTakeOut"] as? Bool ?? false
+                    self.requireLetOutType = data["requireLetOutType"] as? Bool ?? false
                 }
             } else {
                 print("Document does not exist")
@@ -343,7 +354,7 @@ struct DeviceSettingsView: View {
                 return
             }
             
-            var csvString = "id,name,species,note,note date,note person,log start,log end,log person\n"
+            var csvString = "id,name,species,note,note date,note person,log start,log end,log person,short reason,log type\n"
             
             fetchAllAnimals(from: documentRef.collection("Cats")) { catCSV in
                 csvString.append(contentsOf: catCSV)
@@ -459,7 +470,7 @@ struct DeviceSettingsView: View {
                 print("Missing required fields in logData: \(logData)")
                 return nil
             }
-            return Log(id: id, startTime: startTime, endTime: endTime, user: logData["user"] as? String, shortReason: logData["shortReason"] as? String)
+            return Log(id: id, startTime: startTime, endTime: endTime, user: logData["user"] as? String, shortReason: logData["shortReason"] as? String, letOutType: logData["letOutType"] as? String)
         }
         
         let tags = data["tags"] as? [String: Int] ?? [:]
@@ -499,7 +510,7 @@ struct DeviceSettingsView: View {
             let logStartDateString = log != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: log!.startTime)) : ""
             let logEndDateString = log != nil ? dateFormatter.string(from: Date(timeIntervalSince1970: log!.endTime)) : ""
             
-            let row = "\(i == 0 ? escapeCSV(animal.id) : ""),\(i == 0 ? escapeCSV(animal.name) : ""),\(i == 0 ? escapeCSV(animal.animalType.rawValue) : ""),\(escapeCSV(note?.note ?? "")),\(noteDateString),\(escapeCSV(note?.user ?? "")),\(logStartDateString),\(logEndDateString),\(escapeCSV(log?.user ?? "")),\(escapeCSV(log?.shortReason ?? ""))\n"
+            let row = "\(i == 0 ? escapeCSV(animal.id) : ""),\(i == 0 ? escapeCSV(animal.name) : ""),\(i == 0 ? escapeCSV(animal.animalType.rawValue) : ""),\(escapeCSV(note?.note ?? "")),\(noteDateString),\(escapeCSV(note?.user ?? "")),\(logStartDateString),\(logEndDateString),\(escapeCSV(log?.user ?? "")),\(escapeCSV(log?.shortReason ?? "")),\(escapeCSV(log?.letOutType ?? ""))\n"
             csvRows.append(row)
         }
         

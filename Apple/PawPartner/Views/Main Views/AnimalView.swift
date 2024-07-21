@@ -396,6 +396,9 @@ struct AnimalView: View {
         .present(isPresented: $viewModel.showRequireReason, type: .alert, duration: 60, closeOnTap: false, closeOnTapOutside: false) {
             RequireReasonView(animal: viewModel.animal)
         }
+        .present(isPresented: $viewModel.showRequireLetOutType, type: .alert, duration: 60, closeOnTap: false, closeOnTapOutside: false) {
+            RequireLetOutTypeView(animal: viewModel.animal)
+        }
         .sheet(isPresented: $viewModel.showAddNote) {
             AddNoteView(animal: viewModel.animal)
         }
