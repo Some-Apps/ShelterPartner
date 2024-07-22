@@ -662,7 +662,7 @@ struct CollapsibleSection: View {
                         )
                         .frame(height: 25)
                     }
-                        .allowsHitTesting(true)
+                        .allowsHitTesting(false)
                 )
             }
         }
