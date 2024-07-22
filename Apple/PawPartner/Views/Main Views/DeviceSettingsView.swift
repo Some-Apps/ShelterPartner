@@ -181,7 +181,7 @@ struct DeviceSettingsView: View {
             
             Section {
                 Toggle(isOn: $showAllAnimals) {
-                    SettingElement(title: "Display All Animals \(showAllAnimals ? "Enabled" : "Disabled")", explanation: "Display all animals including ones you've selected to filter out. Filtered animals will be gray and won't be able to be taken out.")
+                    SettingElement(title: "Display All Animals: \(showAllAnimals ? "Enabled" : "Disabled")", explanation: "Display all animals including ones you've selected to filter out. Filtered animals will be gray and won't be able to be taken out.")
                 }
                     .tint(.customBlue)
                     .onChange(of: showAllAnimals) { _ in saveSettings() }
