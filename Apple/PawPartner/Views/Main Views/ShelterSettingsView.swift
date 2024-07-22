@@ -37,7 +37,7 @@ struct ShelterSettingsView: View {
                 
                 NavigationLink(destination: TagsView(species: .Cat)) {
                     Button { } label: {
-                        SettingElement(title: "Dog Tags", explanation: "Tags that users can add to cats")
+                        SettingElement(title: "Cat Tags", explanation: "Tags that users can add to cats")
                             .foregroundStyle(.black)
                     }
                 }
