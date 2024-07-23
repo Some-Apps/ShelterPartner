@@ -2,33 +2,29 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>525264306861-75d7l1aie7j9roo4mqefs830j9kcpoa2.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.525264306861-75d7l1aie7j9roo4mqefs830j9kcpoa2</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBjZcLU0HK6mwzw5uD7hne6MaO-1tVArMI</string>
+	<string>AIzaSyBPY-O2MZPBoXwQPcA4VIih0nrpmYyLEUc</string>
 	<key>GCM_SENDER_ID</key>
-	<string>525264306861</string>
+	<string>888225267212</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>me.jareddanieljones.HumaneSociety</string>
+	<string>app.pawpartner.develop</string>
 	<key>PROJECT_ID</key>
-	<string>humanesociety-21855</string>
+	<string>pawpartnerdevelopment</string>
 	<key>STORAGE_BUCKET</key>
-	<string>humanesociety-21855.appspot.com</string>
+	<string>pawpartnerdevelopment.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:525264306861:ios:2197df30d095a7b4803c24</string>
+	<string>1:888225267212:ios:c15e345d9270c8962af829</string>
 </dict>
 </plist>
