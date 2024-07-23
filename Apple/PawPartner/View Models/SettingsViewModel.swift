@@ -21,6 +21,39 @@ class SettingsViewModel: ObservableObject {
     @Published var isFetchingData = false // New property
 
 
+    func addKey(name: String, key: String) {
+        let db = Firestore.firestore()
+        let societyRef = db.collection("Societies").document(authViewModel.shelterID)
+        
+        let newKey = ["key": key, "name": name]
+        
+        societyRef.updateData([
+            "keys": FieldValue.arrayUnion([newKey])
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+            }
+        }
+    }
+    
+    func deleteKey(_ key: APIKey) {
+        let db = Firestore.firestore()
+        let societyRef = db.collection("Societies").document(authViewModel.shelterID)
+            
+            societyRef.updateData([
+                "keys": FieldValue.arrayRemove([["key": key.key, "name": key.name]])
+            ]) { err in
+                if let err = err {
+                    print("Error removing document: \(err)")
+                } else {
+                    print("Document successfully removed")
+                    self.authViewModel.apiKeys.removeAll { $0.id == key.id }
+                }
+            }
+        }
+
 
     func addItem(title: String, category: String) {
         let db = Firestore.firestore()
