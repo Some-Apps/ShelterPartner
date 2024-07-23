@@ -38,6 +38,11 @@ class AuthenticationViewModel: ObservableObject {
     @Published var reportsEmail: String = ""
     @Published var catTags: [String] = []
     @Published var dogTags: [String] = []
+    @Published var apiKeys: [APIKey] = []
+    
+    @Published var rateLimit: Int = 0
+    @Published var requestCount: Int = 0
+    
     @Published var earlyReasons: [String] = []
     @Published var letOutTypes: [String] = []
     @Published var filterOptions: [String] = []
@@ -241,6 +246,21 @@ class AuthenticationViewModel: ObservableObject {
             self.reportsEmail = data["reportsEmail"] as? String ?? ""
             self.earlyReasons = data["earlyReasons"] as? [String] ?? []
             self.letOutTypes = data["letOutTypes"] as? [String] ?? []
+            
+            if let keysData = data["keys"] as? [[String: String]] {
+                self.apiKeys = keysData.compactMap { dict in
+                    if let key = dict["key"], let name = dict["name"] {
+                        return APIKey(key: key, name: name)
+                    }
+                    return nil
+                }.sorted { $0.name.lowercased() < $1.name.lowercased() }
+            } else {
+                self.apiKeys = []
+            }
+            
+            self.rateLimit = data["rate_limit"] as? Int ?? 0
+            self.requestCount = data["request_count"] as? Int ?? 0
+            
             self.catTags = data["catTags"] as? [String] ?? []
             self.dogTags = data["dogTags"] as? [String] ?? []
             self.software = data["software"] as? String ?? ""
@@ -293,6 +313,13 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
 }
+
+struct APIKey: Identifiable {
+    var id = UUID()
+    let key: String
+    let name: String
+}
+
 
 struct VolunteerSettings {
     var adminMode: Bool
