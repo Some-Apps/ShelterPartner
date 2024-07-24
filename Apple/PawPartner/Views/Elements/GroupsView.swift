@@ -10,7 +10,6 @@ struct GroupsView: View {
     let cardViewModel: CardViewModel
     let cardView: (Animal) -> CardView
     @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
-
     @State private var currentPage = 1
     @State private var finalFilterCategory = "None"
     @State private var finalFilterSelections: Set<String> = []
