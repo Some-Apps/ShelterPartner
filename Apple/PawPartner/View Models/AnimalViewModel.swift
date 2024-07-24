@@ -116,15 +116,15 @@ class AnimalViewModel: ObservableObject {
         }
     
     func groupAndSortAnimals(_ animals: [Animal]) -> [Animal] {
-           var groupedAnimals: [String: [Animal]] = ["No Group": animals]
+           var groupedAnimals: [String: [Animal]] = ["Unknown Group": animals]
            
         if groupOption != "" {
             if groupOption == "Color" {
-                groupedAnimals = Dictionary(grouping: animals, by: { $0.colorGroup ?? "No Group" })
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.colorGroup ?? "Unknown Group" })
             } else if groupOption == "Behavior" {
-                groupedAnimals = Dictionary(grouping: animals, by: { $0.behaviorGroup ?? "No Group" })
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.behaviorGroup ?? "Unknown Group" })
             } else if groupOption == "Building" {
-                groupedAnimals = Dictionary(grouping: animals, by: { $0.buildingGroup ?? "No Group" })
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.buildingGroup ?? "Unknown Group" })
             }
         
         }

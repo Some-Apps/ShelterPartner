@@ -64,6 +64,6 @@ struct Animal: Codable, Identifiable, Hashable {
             .reduce(0) { $0 + $1.durationInMinutes }
     }
 
-    static let dummyAnimal = Animal(id: "50", aggressionRating: 1, name: "Butterscotch", animalType: .Cat, location: "A1", alert: "Likes to be brushed. And probably some other stuff too. I'm just making this really long to test out how it displays.", canPlay: true, inCage: true, startTime: Date().timeIntervalSince1970, notes: [Note.dummyNote], logs: [Log.dummyLog], tags: ["Shy": 1, "Lap Cat": 1], photos: [Photo(url: "www.google.com", privateURL: "www.google.com", timestamp: 156)])
+    static let dummyAnimal = Animal(id: UUID().uuidString, aggressionRating: 1, name: "placeholderanimal", animalType: .Cat, location: "A1", alert: "Likes to be brushed. And probably some other stuff too. I'm just making this really long to test out how it displays.", canPlay: true, inCage: true, startTime: Date().timeIntervalSince1970, notes: [Note.dummyNote], logs: [Log.dummyLog], tags: ["Shy": 1, "Lap Cat": 1], photos: [Photo(url: "www.google.com", privateURL: "www.google.com", timestamp: 156)])
 }
 

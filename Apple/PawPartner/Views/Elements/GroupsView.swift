@@ -30,11 +30,11 @@ struct GroupsView: View {
         
         switch groupCategory {
         case "Color":
-            return animals.filter { ($0.colorGroup ?? "No Group") == groupSelection }
+            return animals.filter { ($0.colorGroup ?? "Unknown Group") == groupSelection }
         case "Building":
-            return animals.filter { ($0.buildingGroup ?? "No Group") == groupSelection }
+            return animals.filter { ($0.buildingGroup ?? "Unknown Group") == groupSelection }
         case "Behavior":
-            return animals.filter { ($0.behaviorGroup ?? "No Group") == groupSelection }
+            return animals.filter { ($0.behaviorGroup ?? "Unknown Group") == groupSelection }
         default:
             return animals
         }
@@ -94,11 +94,11 @@ struct GroupsView: View {
         return animalsInGroup.filter { animal in
             switch finalFilterCategory {
             case "Color":
-                return finalFilterSelections.contains(animal.colorGroup ?? "")
+                return finalFilterSelections.contains(animal.colorGroup ?? "Unknown Group")
             case "Building":
-                return finalFilterSelections.contains(animal.buildingGroup ?? "")
+                return finalFilterSelections.contains(animal.buildingGroup ?? "Unknown Group")
             case "Behavior":
-                return finalFilterSelections.contains(animal.behaviorGroup ?? "")
+                return finalFilterSelections.contains(animal.behaviorGroup ?? "Unknown Group")
             default:
                 return false
             }

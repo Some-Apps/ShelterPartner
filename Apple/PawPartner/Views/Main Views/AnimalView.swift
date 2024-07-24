@@ -59,7 +59,11 @@ struct AnimalView: View {
     @State private var searchQueryFinished = ""
     @State private var selectedFilterAttribute = "Name"
     @State private var isSearching = false
-    @State private var expandedGroups: Set<String> = []
+
+    @AppStorage("expandedGroupsStorageCats") private var expandedGroupsStorageCats: String = ""
+    @AppStorage("expandedGroupsStorageeDogs") private var expandedGroupsStorageDogs: String = ""
+    @State private var expandedGroupsCats: Set<String> = []
+    @State private var expandedGroupsDogs: Set<String> = []
 
     @State private var currentPage = 1
 
@@ -209,6 +213,7 @@ struct AnimalView: View {
                             UserDefaults.standard.set(newValue.rawValue, forKey: "animalType")
                             updateFilteredAnimals()
                             currentPage = 1 // Reset to page 1 when animal type is changed
+                            print(filteredCatsList.count)
                         }
                     }
                     
@@ -260,7 +265,7 @@ struct AnimalView: View {
 
                                 columns: columns,
                                 cardViewModel: cardViewModel,
-                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }, expandedGroups: $expandedGroups
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }, expandedGroups: $expandedGroupsDogs
                             )
                         }
                     case .Cat:
@@ -281,7 +286,7 @@ struct AnimalView: View {
 
                                 columns: columns,
                                 cardViewModel: cardViewModel,
-                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }, expandedGroups: $expandedGroups
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }, expandedGroups: $expandedGroupsCats
                             )
                         }
                     }
@@ -329,9 +334,16 @@ struct AnimalView: View {
                 self.shouldPresentThankYouView = false
             }
         }
-        .onChange(of: expandedGroups) { _ in
+        .onChange(of: expandedGroupsCats) { newValue in
+            expandedGroupsStorageCats = newValue.joined(separator: ",")
             updateFilteredAnimals()
         }
+
+        .onChange(of: expandedGroupsDogs) { newValue in
+            expandedGroupsStorageDogs = newValue.joined(separator: ",")
+            updateFilteredAnimals()
+        }
+
         .onChange(of: isImageLoaded) { _ in
             updatePresentationState()
         }
@@ -342,6 +354,9 @@ struct AnimalView: View {
             viewModel.removeListeners()
         }
         .onAppear {
+            expandedGroupsCats = Set(expandedGroupsStorageCats.split(separator: ",").map { String($0) })
+            expandedGroupsDogs = Set(expandedGroupsStorageDogs.split(separator: ",").map { String($0) })
+
             if viewModel.cats.isEmpty {
                 animalType = .Dog
             } else if viewModel.dogs.isEmpty {
@@ -408,13 +423,10 @@ struct AnimalView: View {
         }
     }
 
-//    // MARK: - Methods
     private func updatePresentationState() {
         shouldPresentThankYouView = viewModel.showLogCreated && isImageLoaded
     }
     
-    
-
     private func updateFilteredAnimals() {
         let searchQueryMatches: (Animal) -> Bool = { animal in
             searchQueryFinished.isEmpty || animal.matchesSearch(query: searchQueryFinished, attribute: selectedFilterAttribute)
@@ -427,19 +439,14 @@ struct AnimalView: View {
             (finalFilterCategory == "Behavior" && finalFilterSelections.contains(animal.behaviorGroup ?? ""))
         }
 
-        let isInExpandedGroup: (String) -> Bool = { group in
-            expandedGroups.isEmpty || expandedGroups.contains(group)
-        }
-
         filteredCatsList = viewModel.sortedGroupCats.filter { animal in
             let group = groupOption == "Color" ? (animal.colorGroup ?? "Unknown Group") :
                         groupOption == "Building" ? (animal.buildingGroup ?? "Unknown Group") :
                         groupOption == "Behavior" ? (animal.behaviorGroup ?? "Unknown Group") : "Unknown Group"
             
-            let isInKnownGroup = group != "Unknown Group"
-            let isInExpandedUnknownGroup = group == "Unknown Group" && expandedGroups.contains("Unknown Group")
-            
-            return (isInKnownGroup || isInExpandedUnknownGroup) && searchQueryMatches(animal) && filterCategoryMatches(animal) && isInExpandedGroup(group)
+            let isInExpandedGroup = expandedGroupsCats.contains(group)
+
+            return isInExpandedGroup && searchQueryMatches(animal) && filterCategoryMatches(animal)
         }
 
         filteredDogsList = viewModel.sortedGroupDogs.filter { animal in
@@ -447,11 +454,70 @@ struct AnimalView: View {
                         groupOption == "Building" ? (animal.buildingGroup ?? "Unknown Group") :
                         groupOption == "Behavior" ? (animal.behaviorGroup ?? "Unknown Group") : "Unknown Group"
             
-            let isInKnownGroup = group != "Unknown Group"
-            let isInExpandedUnknownGroup = group == "Unknown Group" && expandedGroups.contains("Unknown Group")
-            
-            return (isInKnownGroup || isInExpandedUnknownGroup) && searchQueryMatches(animal) && filterCategoryMatches(animal) && isInExpandedGroup(group)
+            let isInExpandedGroup = expandedGroupsDogs.contains(group)
+
+            return isInExpandedGroup && searchQueryMatches(animal) && filterCategoryMatches(animal)
         }
+
+        // Ensure each group has at least one placeholder animal if it is empty
+        func addPlaceholderAnimalIfEmpty(filteredAnimals: inout [Animal], sortedGroupAnimals: [Animal]) {
+            let groups = Set(sortedGroupAnimals.map { animal in
+                groupOption == "Color" ? (animal.colorGroup ?? "Unknown Group") :
+                groupOption == "Building" ? (animal.buildingGroup ?? "Unknown Group") :
+                groupOption == "Behavior" ? (animal.behaviorGroup ?? "Unknown Group") : "Unknown Group"
+            })
+
+            for group in groups {
+                if !filteredAnimals.contains(where: { animal in
+                    (groupOption == "Color" && animal.colorGroup == group) ||
+                    (groupOption == "Building" && animal.buildingGroup == group) ||
+                    (groupOption == "Behavior" && animal.behaviorGroup == group)
+                }) {
+                    var placeholderAnimal = Animal.dummyAnimal // Create a placeholder animal as per your implementation
+                    placeholderAnimal.name = "placeholderanimal"
+                    switch groupOption {
+                    case "Color":
+                        placeholderAnimal.colorGroup = group
+                    case "Building":
+                        placeholderAnimal.buildingGroup = group
+                    case "Behavior":
+                        placeholderAnimal.behaviorGroup = group
+                    default:
+                        placeholderAnimal.colorGroup = group
+                    }
+                    filteredAnimals.append(placeholderAnimal)
+                }
+            }
+        }
+
+        addPlaceholderAnimalIfEmpty(filteredAnimals: &filteredCatsList, sortedGroupAnimals: viewModel.sortedGroupCats)
+        addPlaceholderAnimalIfEmpty(filteredAnimals: &filteredDogsList, sortedGroupAnimals: viewModel.sortedGroupDogs)
+
+        // Remove placeholder animals if there are other animals in the group
+        func removePlaceholderIfNecessary(filteredAnimals: inout [Animal]) {
+            var groupsToRemovePlaceholder: Set<String> = []
+
+            for animal in filteredAnimals {
+                let group = groupOption == "Color" ? (animal.colorGroup ?? "Unknown Group") :
+                            groupOption == "Building" ? (animal.buildingGroup ?? "Unknown Group") :
+                            groupOption == "Behavior" ? (animal.behaviorGroup ?? "Unknown Group") : "Unknown Group"
+
+                if animal.name != "placeholderanimal" {
+                    groupsToRemovePlaceholder.insert(group)
+                }
+            }
+
+            filteredAnimals.removeAll { animal in
+                let group = groupOption == "Color" ? (animal.colorGroup ?? "Unknown Group") :
+                            groupOption == "Building" ? (animal.buildingGroup ?? "Unknown Group") :
+                            groupOption == "Behavior" ? (animal.behaviorGroup ?? "Unknown Group") : "Unknown Group"
+
+                return animal.name == "placeholderanimal" && groupsToRemovePlaceholder.contains(group)
+            }
+        }
+
+        removePlaceholderIfNecessary(filteredAnimals: &filteredCatsList)
+        removePlaceholderIfNecessary(filteredAnimals: &filteredDogsList)
 
         // Ensure pagination is consistent
         let allFilteredAnimals: [Animal] = animalType == .Cat ? filteredCatsList : filteredDogsList
@@ -459,14 +525,16 @@ struct AnimalView: View {
         currentPage = min(currentPage, max(1, totalPageCount))
     }
 
+
+
+
+
+
     private func totalPages(_ animals: [Animal]) -> Int {
         let animalCount = animals.count
         let pages = Double(animalCount) / Double(cardsPerPage)
         return max(1, Int(ceil(pages)))
     }
-
-
-
 
     private func paginatedAnimals(_ animals: [Animal]) -> [Animal] {
         let startIndex = max(0, (currentPage - 1) * cardsPerPage)
@@ -553,41 +621,30 @@ struct GroupAnimalGridView: View {
         } else {
             ScrollView {
                 LazyVStack(alignment: .leading) {
-                    ForEach(groupAnimals().sorted(by: { (lhs, rhs) in
-                        switch (lhs.key, rhs.key) {
-                        case ("Unknown Group", _):
-                            return false
-                        case (_, "Unknown Group"):
-                            return true
-                        default:
-                            return lhs.key ?? "" < rhs.key ?? ""
-                        }
-                    }), id: \.key) { group, animals in
+                    ForEach(groupAnimals().sorted(by: { $0.key < $1.key }), id: \.key) { group, animals in
                         Section(
                             header: NavigationLink {
-                                GroupsView(species: species, groupCategory: groupOption, groupSelection: group ?? "No Group", columns: columns, cardViewModel: cardViewModel, cardView: cardView)
+                                GroupsView(species: species, groupCategory: groupOption, groupSelection: group, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
                             } label: {
                                 HStack {
-                                    Text(group ?? "Unknown Group" + " ")
+                                    Text(group)
                                     Button {
-                                        if let group = group {
-                                            if expandedGroups.contains(group) {
-                                                expandedGroups.remove(group)
-                                            } else {
-                                                expandedGroups.insert(group)
-                                            }
+                                        if expandedGroups.contains(group) {
+                                            expandedGroups.remove(group)
+                                        } else {
+                                            expandedGroups.insert(group)
                                         }
                                     } label: {
-                                        Image(systemName: expandedGroups.contains(group ?? "") ? "chevron.down" : "chevron.right")
+                                        Image(systemName: expandedGroups.contains(group) ? "chevron.down" : "chevron.right")
                                     }
                                 }
                                 .foregroundStyle(.black)
-                                .fontWeight(.black)
+                                .fontWeight(.bold)
                                 .font(.title)
                                 .padding([.leading, .trailing, .top])
                             }
                         ) {
-                            if expandedGroups.contains(group ?? "") {
+                            if expandedGroups.contains(group) {
                                 LazyVGrid(columns: columns) {
                                     ForEach(animals, id: \.id) { animal in
                                         cardView(animal)
@@ -604,8 +661,8 @@ struct GroupAnimalGridView: View {
         }
     }
 
-    private func groupAnimals() -> [String?: [Animal]] {
-        let groupedAnimals: [String?: [Animal]]
+    private func groupAnimals() -> [String: [Animal]] {
+        let groupedAnimals: [String: [Animal]]
         switch groupOption {
         case "Color":
             groupedAnimals = Dictionary(grouping: animals, by: { $0.colorGroup ?? "Unknown Group" })
@@ -617,38 +674,28 @@ struct GroupAnimalGridView: View {
             groupedAnimals = Dictionary(grouping: animals, by: { _ in "Unknown Group" })
         }
 
-        // Ensure all groups are included even if they have no animals after filtering
-        let allGroups: [String] = Array(Set(groupedAnimals.keys.compactMap { $0 }).union(Set(allAnimals.flatMap { animal in
-            switch groupOption {
-            case "Color":
-                return [animal.colorGroup ?? "Unknown Group"]
-            case "Building":
-                return [animal.buildingGroup ?? "Unknown Group"]
-            case "Behavior":
-                return [animal.behaviorGroup ?? "Unknown Group"]
-            default:
-                return ["Unknown Group"]
-            }
-        })))
+        // Ensure all groups are included
+        let allGroups: Set<String> = Set(groupedAnimals.keys).union(
+            Set(animals.compactMap { animal in
+                switch groupOption {
+                case "Color":
+                    return animal.colorGroup ?? "Unknown Group"
+                case "Building":
+                    return animal.buildingGroup ?? "Unknown Group"
+                case "Behavior":
+                    return animal.behaviorGroup ?? "Unknown Group"
+                default:
+                    return "Unknown Group"
+                }
+            })
+        )
 
-        var result: [String?: [Animal]] = [:]
-        for group in allGroups {
+        var result: [String: [Animal]] = [:]
+        for group in allGroups.sorted() {
             result[group] = groupedAnimals[group] ?? []
         }
 
-        // Sort the groups to ensure "Unknown Group" is last
-        let sortedResult = result.sorted { (lhs, rhs) -> Bool in
-            switch (lhs.key, rhs.key) {
-            case ("Unknown Group", _):
-                return false
-            case (_, "Unknown Group"):
-                return true
-            default:
-                return lhs.key ?? "" < rhs.key ?? ""
-            }
-        }
-        
-        return Dictionary(uniqueKeysWithValues: sortedResult)
+        return result
     }
 }
 
@@ -778,5 +825,29 @@ extension Animal {
         default:
             return false
         }
+    }
+}
+
+
+@propertyWrapper
+struct UserDefaultSetString: DynamicProperty {
+    let key: String
+    let defaultValue: Set<String>
+
+    var wrappedValue: Set<String> {
+        get {
+            let savedString = UserDefaults.standard.string(forKey: key) ?? ""
+            let items = savedString.split(separator: ",").map { String($0) }
+            return Set(items)
+        }
+        set {
+            let savedString = newValue.joined(separator: ",")
+            UserDefaults.standard.set(savedString, forKey: key)
+        }
+    }
+
+    init(key: String, defaultValue: Set<String> = []) {
+        self.key = key
+        self.defaultValue = defaultValue
     }
 }
