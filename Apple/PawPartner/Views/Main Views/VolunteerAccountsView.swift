@@ -63,6 +63,7 @@ struct VolunteerAccountsView: View {
     @State private var showingAlert = false
     @State private var alertMessage = ""
     @State private var showToast = false
+    @State private var showingErrorAlert = false
     @State private var volunteers: [Volunteer] = []
     @State private var volunteerToDelete: Volunteer?
     @State private var isDeleting = false
@@ -99,6 +100,7 @@ struct VolunteerAccountsView: View {
                                         Text(" (\(volunteer.email))")
                                             .foregroundStyle(.secondary)
                                     }
+                                    .lineLimit(1)
                                 }
                             }
                             .onDelete(perform: showDeleteConfirmation)
@@ -155,6 +157,9 @@ struct VolunteerAccountsView: View {
                     secondaryButton: .cancel()
                 )
             }
+            .toast(isPresenting: $showingErrorAlert) {
+                AlertToast(displayMode: .alert, type: .complete(.green), title: alertMessage)
+            }
             .toast(isPresenting: $showingAlert) {
                 AlertToast(displayMode: .alert, type: .complete(.green), title: alertMessage)
             }
@@ -190,7 +195,7 @@ struct VolunteerAccountsView: View {
             DispatchQueue.main.async {
                 if let error = error {
                     self.alertMessage = "Error sending invite: \(error.localizedDescription)"
-                    self.showingAlert = true
+                    self.showingErrorAlert = true
                     self.showToast = false
                     return
                 }
@@ -204,7 +209,7 @@ struct VolunteerAccountsView: View {
                     self.fetchVolunteers() // Refresh the list after adding a new volunteer
                 } else {
                     self.alertMessage = "Failed to send invite."
-                    self.showingAlert = true
+                    self.showingErrorAlert = true
                     self.showToast = false
                 }
             }
@@ -226,7 +231,7 @@ struct VolunteerAccountsView: View {
                 DispatchQueue.main.async {
                     if let error = error {
                         self.alertMessage = "Error fetching volunteers: \(error.localizedDescription)"
-                        self.showingAlert = true
+                        self.showingErrorAlert = true
                     } else {
                         self.volunteers = snapshot?.documents.compactMap { doc in
                             let data = doc.data()
@@ -274,7 +279,7 @@ struct VolunteerAccountsView: View {
         ], merge: true) { error in
             if let error = error {
                 self.alertMessage = "Error updating georestriction settings: \(error.localizedDescription)"
-                self.showingAlert = true
+                self.showingErrorAlert = true
             }
         }
     }
@@ -293,7 +298,7 @@ struct VolunteerAccountsView: View {
             DispatchQueue.main.async {
                 if let error = error {
                     self.alertMessage = "Error deleting volunteer: \(error.localizedDescription)"
-                    self.showingAlert = true
+                    self.showingErrorAlert = true
                     self.isDeleting = false
                 } else {
                     self.callDeleteUserFunction(uid: volunteer.id) // Call cloud function to delete from Firebase Auth
@@ -322,13 +327,13 @@ struct VolunteerAccountsView: View {
             DispatchQueue.main.async {
                 if let error = error {
                     self.alertMessage = "Error deleting volunteer: \(error.localizedDescription)"
-                    self.showingAlert = true
+                    self.showingErrorAlert = true
                 } else if let response = response as? HTTPURLResponse, response.statusCode == 200 {
                     self.alertMessage = "Volunteer deleted successfully!"
                     self.showingAlert = true
                 } else {
                     self.alertMessage = "Failed to delete volunteer."
-                    self.showingAlert = true
+                    self.showingErrorAlert = true
                 }
                 self.isDeleting = false
             }
@@ -336,13 +341,6 @@ struct VolunteerAccountsView: View {
     }
 }
 
-struct VolunteerDetailView: View {
-    var volunteer: Volunteer
-
-    var body: some View {
-        Text("Detail view for \(volunteer.name)")
-    }
-}
 
 struct MapView: UIViewRepresentable {
     @Binding var centerCoordinate: CLLocationCoordinate2D
