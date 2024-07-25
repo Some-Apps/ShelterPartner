@@ -67,6 +67,7 @@
 		C0ECD90B2A1E6FB7001F82C3 /* AddNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90A2A1E6FB6001F82C3 /* AddNoteView.swift */; };
 		C0ECD90D2A1E7225001F82C3 /* AddNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90C2A1E7225001F82C3 /* AddNoteViewModel.swift */; };
 		C0ECD90F2A1E7656001F82C3 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD90E2A1E7656001F82C3 /* NoteView.swift */; };
+		C0FAF3CF2C52F7CD007D8CB8 /* VolunteerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FAF3CE2C52F7CD007D8CB8 /* VolunteerDetailView.swift */; };
 		C0FE53362C4C72D400935E48 /* LetOutTypesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FE53352C4C72D400935E48 /* LetOutTypesView.swift */; };
 		C0FE53382C4C774B00935E48 /* RequireLetOutTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FE53372C4C774B00935E48 /* RequireLetOutTypeView.swift */; };
 		C0FE533E2C4F25F400935E48 /* GenerateKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FE533D2C4F25F400935E48 /* GenerateKeyView.swift */; };
@@ -130,6 +131,7 @@
 		C0ECD90A2A1E6FB6001F82C3 /* AddNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNoteView.swift; sourceTree = "<group>"; };
 		C0ECD90C2A1E7225001F82C3 /* AddNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNoteViewModel.swift; sourceTree = "<group>"; };
 		C0ECD90E2A1E7656001F82C3 /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
+		C0FAF3CE2C52F7CD007D8CB8 /* VolunteerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolunteerDetailView.swift; sourceTree = "<group>"; };
 		C0FE53352C4C72D400935E48 /* LetOutTypesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetOutTypesView.swift; sourceTree = "<group>"; };
 		C0FE53372C4C774B00935E48 /* RequireLetOutTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequireLetOutTypeView.swift; sourceTree = "<group>"; };
 		C0FE533D2C4F25F400935E48 /* GenerateKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateKeyView.swift; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 				C08A3C8A2C13BEE400D99EF9 /* ReasonsForEarlyPutBackView.swift */,
 				C01B0A392A1979F30062994D /* SettingsView.swift */,
 				C055E0162C2E056B006A0370 /* VolunteerAccountsView.swift */,
+				C0FAF3CE2C52F7CD007D8CB8 /* VolunteerDetailView.swift */,
 				C0953A792C37529700E803C1 /* GeoRestrictionView.swift */,
 				C08A3C882C13B85B00D99EF9 /* ShelterSettingsView.swift */,
 				C0FE533D2C4F25F400935E48 /* GenerateKeyView.swift */,
@@ -403,6 +406,7 @@
 				C09CFEF02B1D04EA00AE8560 /* QRCodeView.swift in Sources */,
 				C0241EBE2A75545600581A88 /* FeedbackView.swift in Sources */,
 				C0E4AB3C2C0FBAB0007146BA /* FilterCondition.swift in Sources */,
+				C0FAF3CF2C52F7CD007D8CB8 /* VolunteerDetailView.swift in Sources */,
 				C07B39FF2A23E39F00D13917 /* PasswordPromptView.swift in Sources */,
 				C0ECD8EE2A17E84F001F82C3 /* PawPartnerApp.swift in Sources */,
 				C08A3C8B2C13BEE400D99EF9 /* ReasonsForEarlyPutBackView.swift in Sources */,
