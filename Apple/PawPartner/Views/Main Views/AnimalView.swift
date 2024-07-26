@@ -16,6 +16,7 @@ struct AnimalView: View {
     @ObservedObject var settingsViewModel = SettingsViewModel.shared
     @AppStorage("showAllAnimals") var showAllAnimals = false
     @AppStorage("secondarySortOption") var secondarySortOption = ""
+    @AppStorage("showSearchBar") var showSearchBar = false
 
     @AppStorage("filterPicker") var filterPicker: Bool = false
     @AppStorage("filter") var filter: String = "No Filter"
@@ -294,7 +295,7 @@ struct AnimalView: View {
                     if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
                         PageNavigationElement(currentPage: $currentPage, totalPages: totalPages(animalType == .Cat ? filteredCatsList : filteredDogsList))
 
-                        if authViewModel.accountType == "Admin" {
+                        if authViewModel.accountType == "admin" {
                             Button {
                                 showTutorialQRCode = true
                             } label: {
@@ -453,7 +454,7 @@ struct AnimalView: View {
             
             let isInExpandedGroup = expandedGroupsCats.contains(group)
 
-            return isInExpandedGroup && searchQueryMatches(animal) && filterCategoryMatches(animal)
+            return (isInExpandedGroup || groupOption == "") && (searchQueryMatches(animal) || !showSearchBar) && (filterCategoryMatches(animal) || !showFilterOptions)
         }
 
         filteredDogsList = viewModel.sortedGroupDogs.filter { animal in
@@ -463,7 +464,7 @@ struct AnimalView: View {
             
             let isInExpandedGroup = expandedGroupsDogs.contains(group)
 
-            return isInExpandedGroup && searchQueryMatches(animal) && filterCategoryMatches(animal)
+            return (isInExpandedGroup || groupOption == "") && (searchQueryMatches(animal) || !showSearchBar) && (filterCategoryMatches(animal) || !showFilterOptions)
         }
 
         // Ensure each group has at least one placeholder animal if it is empty

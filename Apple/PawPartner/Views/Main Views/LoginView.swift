@@ -40,101 +40,102 @@ struct LoginView: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
-                VStack(spacing: 20) {
+                VStack {
+                    HStack {
+                        Spacer()
+                    }
+                    Spacer() // Top spacer
                     Image("Dog")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: geometry.size.width * 0.3, height: geometry.size.width * 0.3)
-                        .cornerRadius(20)
+                        .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.3 : geometry.size.width * 0.9)
+                    
                         .onAppear {
                             lastSync = dateFormatter.string(from: Date())
                         }
-                    Text("Login")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-
-                    VStack(alignment: .leading) {
-                        Text("Email")
-                            .font(.headline)
-                        TextField("Email", text: $email)
-                            .padding()
-                            .background(Color(.secondarySystemBackground))
-                            .cornerRadius(10)
-                            .autocapitalization(.none)
-                            .keyboardType(.emailAddress)
-                            .disableAutocorrection(true)
-                    }
-                    VStack(alignment: .leading) {
-                        Text("Password")
-                            .font(.headline)
-                        SecureField("Password", text: $password)
-                            .padding()
-                            .background(Color(.secondarySystemBackground))
-                            .cornerRadius(10)
-                    }
-                    Button("Login", action: {
-                        isLoginInProgress = true
-                        Auth.auth().signIn(withEmail: self.email, password: self.password) { authResult, error in
-                            isLoginInProgress = false
-                            if let error = error {
-                                print("Error logging in user: \(error.localizedDescription)")
-                                loginError = error.localizedDescription
-                                showLoginError.toggle()
-                                return
-                            }
-                            fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
-                                switch result {
-                                case .success(let societyID):
-                                    print("User signed in successfully")
-                                    print("SocietyID: \(societyID)")
-                                case .failure(let error):
-                                    print("Error fetching societyID: \(error)")
+                        .padding(.bottom)
+                    VStack(spacing: 20) {
+                        VStack(alignment: .leading) {
+                            Text("Email")
+                                .font(.headline)
+                            TextField("Email", text: $email)
+                                .padding()
+                                .background(Color(.secondarySystemBackground))
+                                .cornerRadius(10)
+                                .autocapitalization(.none)
+                                .keyboardType(.emailAddress)
+                                .disableAutocorrection(true)
+                        }
+                        VStack(alignment: .leading) {
+                            Text("Password")
+                                .font(.headline)
+                            SecureField("Password", text: $password)
+                                .padding()
+                                .background(Color(.secondarySystemBackground))
+                                .cornerRadius(10)
+                        }
+                        Button("Login", action: {
+                            isLoginInProgress = true
+                            Auth.auth().signIn(withEmail: self.email, password: self.password) { authResult, error in
+                                isLoginInProgress = false
+                                if let error = error {
+                                    print("Error logging in user: \(error.localizedDescription)")
+                                    loginError = error.localizedDescription
+                                    showLoginError.toggle()
+                                    return
+                                }
+                                fetchSocietyID(forUser: Auth.auth().currentUser!.uid) { (result) in
+                                    switch result {
+                                    case .success(let societyID):
+                                        print("User signed in successfully")
+                                        print("SocietyID: \(societyID)")
+                                    case .failure(let error):
+                                        print("Error fetching societyID: \(error)")
+                                    }
                                 }
                             }
+                        })
+                        .font(.largeTitle)
+                        .buttonStyle(.bordered)
+                        .fontWeight(.bold)
+                        .tint(.customBlue)
+                        HStack {
+                            if let url = URL(string: newShelterForm) {
+                                Button(action: {
+                                    showNewShelterForm = true
+                                }) {
+                                    Text("Create New Shelter")
+                                }
+                                .sheet(isPresented: $showNewShelterForm) {
+                                    SafariView(url: url)
+                                }
+                            } else {
+//                                Text("Invalid URL")
+                            }
+                            if let url = URL(string: tutorialsURL) {
+                                Button(action: {
+                                    showTutorials = true
+                                }) {
+                                    Text("Tutorials/Documentation")
+                                }
+                                .sheet(isPresented: $showTutorials) {
+                                    SafariView(url: url)
+                                }
+                            } else {
+//                                Text("Invalid URL")
+                            }
                         }
-                    })
-                    .font(.largeTitle)
-                    .buttonStyle(.bordered)
-                    .fontWeight(.bold)
-                    .tint(.customBlue)
-                    HStack {
-                        if let url = URL(string: newShelterForm) {
-                            Button(action: {
-                                showNewShelterForm = true
-                            }) {
-                                Text("Create New Shelter")
-                            }
-                            .sheet(isPresented: $showNewShelterForm) {
-                                SafariView(url: url)
-                            }
-                        } else {
-                            Text("Invalid URL")
-                        }
-                        
-                        if let url = URL(string: tutorialsURL) {
-                            Button(action: {
-                                showTutorials = true
-                            }) {
-                                Text("Tutorials/Documentation")
-                            }
-                            .sheet(isPresented: $showTutorials) {
-                                SafariView(url: url)
-                            }
-                        } else {
-                            Text("Invalid URL")
-                        }
-        
+                        .buttonStyle(.bordered)
+                        .tint(.secondary)
+                        Text("Please do not share your login with anybody. You can request an additional admin account by emailing me or create volunteer accounts from within the app.")
+                            .multilineTextAlignment(.center)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.secondary)
-                    Text("Please do not share your login with anybody. You can request an additional admin account by emailing me or create volunteer accounts from within the app.")
-                        .multilineTextAlignment(.center)
+                    .frame(maxWidth: 500)
+                    Spacer() // Bottom spacer
                 }
-                .padding()
-                .frame(maxWidth: 500)
+                .frame(minHeight: geometry.size.height)
+                .padding(.horizontal, 20)
             }
-            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
-            .padding(.top, geometry.safeAreaInsets.top)
             .background(Color(.systemBackground))
         }
         .edgesIgnoringSafeArea(.bottom)

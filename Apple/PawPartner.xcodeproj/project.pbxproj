@@ -580,7 +580,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PawPartner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "PawPartner Dev";
+				INFOPLIST_KEY_CFBundleDisplayName = "ShelterPartner Dev";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawPartner needs your location to determine if you are near your animal shelter";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -620,7 +620,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PawPartner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "PawPartner Dev";
+				INFOPLIST_KEY_CFBundleDisplayName = "ShelterPartner Dev";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawPartner needs your location to determine if you are near your animal shelter";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
