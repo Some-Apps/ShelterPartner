@@ -62,7 +62,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if !authViewModel.shelterID.isEmpty {
+                        if !authViewModel.shelter.isEmpty {
                             HStack {
                                 Text("Shelter:")
                                     .bold()

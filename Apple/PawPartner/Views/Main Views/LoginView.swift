@@ -132,8 +132,9 @@ struct LoginView: View {
                     }
                     .frame(maxWidth: 500)
                     Spacer() // Bottom spacer
+                    Spacer()
                 }
-                .frame(minHeight: geometry.size.height)
+                .frame(minHeight: geometry.size.height * 1.25)
                 .padding(.horizontal, 20)
             }
             .background(Color(.systemBackground))
