@@ -306,7 +306,9 @@ struct AnimalView: View {
                                 .fontWeight(.black)
                             }
                         } else {
-                            Link("Tutorials", destination: URL(string: "https://shelterpartner.org/tutorials")!)
+                            Link(destination: URL(string: "https://shelterpartner.org/tutorials")!) {
+                                Label("Tutorials", systemImage: "globe")
+                            }
 
                         }
                     }
