@@ -1,7 +1,7 @@
-# Welcome To [PawPartner](https://pawpartner.app)!
+# Welcome To [ShelterPartner](https://shelterpartner.org)!
 
 ## How To Contribute On GitHub
-1. Create an issue in the Some-Apps/PawPartner repository or select an existing issue
+1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue
 2. Comment on the issue that you would like to work on it
 3. Once you have been assigned the issue, fork to the repository into a branch containing the issue number
 4. When you are ready, submit a pull request from this branch
@@ -11,7 +11,7 @@
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time. I'll assign myself multiple issues just because some of them can only be done by me.
 
 Here are the login credentials for you local build.
-> Email: developer@pawpartner.app\
+> Email: developer@shelterpartner.org\
 > Password: password
 
 ## Contributor Incentives
