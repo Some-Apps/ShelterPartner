@@ -13,7 +13,7 @@ jobs:
     - name: Checkout Public Repository
       uses: actions/checkout@v2
       with:
-        repository: Some-Apps/PawPartner
+        repository: Some-Apps/ShelterPartner
         ref: main
 
     - name: Create Public Directory in Deployment Repo
@@ -23,7 +23,7 @@ jobs:
     - name: Checkout Deployment Repository
       uses: actions/checkout@v2
       with:
-        repository: Some-Apps/PawPartner_ReleaseVersion
+        repository: Some-Apps/ShelterPartner_ReleaseVersion
         ref: main
         token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
         path: private-repo
