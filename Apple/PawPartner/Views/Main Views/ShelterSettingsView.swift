@@ -61,7 +61,7 @@ struct ShelterSettingsView: View {
                 }
                 NavigationLink(destination: GenerateKeyView()) {
                     Button { } label: {
-                        SettingElement(title: "API Keys", explanation: "This will allow you to access the PawPartner API")
+                        SettingElement(title: "API Keys", explanation: "This will allow you to access the ShelterPartner API")
                             .foregroundStyle(.black)
                     }
                 }

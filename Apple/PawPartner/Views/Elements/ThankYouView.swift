@@ -123,7 +123,7 @@ struct ThankYouView: View {
                 CustomQRCodeView(url: customFormURL)
             }
             .sheet(isPresented: $showCustomLink) {
-                WebView(url: URL(string: customFormURL) ?? URL(string: "https://pawpartner.app")!)
+                WebView(url: URL(string: customFormURL) ?? URL(string: "https://shelterpartner.org")!)
             }
         }
     }

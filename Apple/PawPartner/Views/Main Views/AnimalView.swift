@@ -294,15 +294,20 @@ struct AnimalView: View {
                     if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
                         PageNavigationElement(currentPage: $currentPage, totalPages: totalPages(animalType == .Cat ? filteredCatsList : filteredDogsList))
 
-                        Button {
-                            showTutorialQRCode = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "qrcode")
-                                Text("Tutorials")
+                        if authViewModel.accountType == "Admin" {
+                            Button {
+                                showTutorialQRCode = true
+                            } label: {
+                                HStack {
+                                    Image(systemName: "qrcode")
+                                    Text("Tutorials")
+                                }
+                                .padding()
+                                .fontWeight(.black)
                             }
-                            .padding()
-                            .fontWeight(.black)
+                        } else {
+                            Link("Tutorials", destination: URL(string: "https://shelterpartner.org/tutorials")!)
+
                         }
                     }
 
@@ -403,7 +408,7 @@ struct AnimalView: View {
             QRCodeView(animal: viewModel.animal)
         }
         .sheet(isPresented: $showTutorialQRCode) {
-            Image(uiImage: generateQRCode(from: "https://pawpartner.app/tutorials"))
+            Image(uiImage: generateQRCode(from: "https://shelterpartner.org/tutorials"))
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()
