@@ -16,7 +16,7 @@ Here are the login credentials for you local build.
 
 ## Contributor Incentives
 
-Contributors who make an average of 1 pull request or more per month will be given a desk in a [virtual office building](https://gather.town). This will allow you to interact with other contributors while you work or just talk and play online mini games.
+Contributors who make an average of 1 pull request or more per month will be given a desk in a [virtual office building](https://gather.town). This will allow you to interact with other contributors while you work or just talk and play online mini games. An invite will be sent after your first contribution. From there, if you don't make a contribution for a least 2 months, the invite will be revoked. But if you make another contribution, the invite will be sent again.
 
 Although not gauranteed, if I get to the point where this or other apps allow me to hire an employee, contributors will be considered first. I do not care about college degrees.
 
