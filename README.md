@@ -18,6 +18,8 @@ Here are the login credentials for you local build.
 
 Contributors who make an average of 1 pull request or more per month will be given a desk in a [virtual office building](https://gather.town). This will allow you to interact with other contributors while you work or just talk and play online mini games.
 
+Although not gaurunteed, if I get to the point where this or other apps allow me to hire an employee, contributors will be considered first. I do not care about college degrees.
+
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
