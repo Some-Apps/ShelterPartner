@@ -25,7 +25,7 @@ class AddNoteViewModel: ObservableObject {
             "id": newNote.id,
             "date": newNote.date,
             "note": newNote.note.trimmingCharacters(in: .whitespacesAndNewlines),
-            "user": user
+            "user": user as Any
         ]
         
         // Start a Firestore transaction

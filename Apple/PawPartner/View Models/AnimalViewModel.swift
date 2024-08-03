@@ -214,7 +214,7 @@ class AnimalViewModel: ObservableObject {
                                return ($0.secondarySort ?? 100) < ($1.secondarySort ?? 100)
                            }
                        })
-                   } else if true {
+                   } else {
                        // Sort by let-out time only if primary sorting is enabled
                        sortedAnimalsInGroup = animalsInGroup.sorted(by: {
 //                           $0.logs.last?.endTime ?? 0 < $1.logs.last?.endTime ?? 0
@@ -231,9 +231,6 @@ class AnimalViewModel: ObservableObject {
                                return $0.playtimeLast90Days < $1.playtimeLast90Days
                            }
                        })
-                   } else {
-                       // If no sorting is enabled, keep the original order
-                       sortedAnimalsInGroup = animalsInGroup
                    }
                    
                    // Append sorted animals to the final list
