@@ -23,6 +23,9 @@ struct AnimalDetailsSection: View {
                         if let age = animal.age {
                             DetailCard(title: "Age", detail: age)
                         }
+                        if let intakeDate = animal.intakeDate {
+                            DetailCard(title: "Intake", detail: intakeDate)
+                        }
                     }
                     .padding()
                 }
