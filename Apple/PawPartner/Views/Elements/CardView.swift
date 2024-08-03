@@ -21,7 +21,9 @@ struct CardView: View {
     @State private var isAnimating: Bool = false
 
     @AppStorage("societyID") var societyID = ""
-    @AppStorage("QRMode") var QRMode = true
+    @AppStorage("allowPhotoUploads") var allowPhotoUploads = true
+    @AppStorage("accountType") var accountType = "volunteer"
+
     let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     
     var backgroundColor: Color {
@@ -73,7 +75,7 @@ struct CardView: View {
                             NavigationLink(destination: ViewInfoView(animal: animal), label: {
                                 Label("Details", systemImage: "ellipsis.circle")
                             })
-                            if QRMode {
+                            if allowPhotoUploads && (accountType == "admin") {
                                 Button {
                                     animalViewModel.animal = animal
                                     animalViewModel.showQRCode = true
@@ -98,12 +100,12 @@ struct CardView: View {
                                 .font(.title)
 
                         }
-                        if animal.animalType == .Dog && (societyID == "ChIJ8WVKpxEfAIgRIMOBoCkxBtY" || societyID == "ChIJgbjU6bBRBogRKBb3KxOJGn8") {
-                            Image(systemName: animal.aggressionRating == 1 ? "1.circle.fill" : animal.aggressionRating == 2 ? "2.square.fill" : animal.aggressionRating == 3 ? "3.circle.fill" : "")
-                                .font(.title)
-                                .foregroundColor(animal.aggressionRating == 1 ? .green : animal.aggressionRating == 2 ? .orange : animal.aggressionRating == 3 ? .red : .primary.opacity(0.2))
-
-                        }
+//                        if animal.animalType == .Dog && (societyID == "ChIJ8WVKpxEfAIgRIMOBoCkxBtY" || societyID == "ChIJgbjU6bBRBogRKBb3KxOJGn8") {
+//                            Image(systemName: animal.aggressionRating == 1 ? "1.circle.fill" : animal.aggressionRating == 2 ? "2.square.fill" : animal.aggressionRating == 3 ? "3.circle.fill" : "")
+//                                .font(.title)
+//                                .foregroundColor(animal.aggressionRating == 1 ? .green : animal.aggressionRating == 2 ? .orange : animal.aggressionRating == 3 ? .red : .primary.opacity(0.2))
+//
+//                        }
                         if let symbol = animal.symbol, let symbolColor = animal.symbolColor {
                             Image(systemName: symbol)
                                 .foregroundStyle(
@@ -121,8 +123,6 @@ struct CardView: View {
                                         symbolColor == "purple" ? .purple :
                                             .clear)
                                 .font(.title)
-                            //                                .opacity(0.5)
-                            
                         }
                     }
                         .lineLimit(1)
@@ -145,7 +145,6 @@ struct CardView: View {
                             Text(animal.fullLocation ?? animal.location)
                         }
                         .foregroundStyle(.black)
-//                        Label(animal.location, systemImage: "mappin.square")
                         if let extraInfo = animal.extraInfo {
                             if !extraInfo.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 Label(extraInfo, systemImage: "square.grid.2x2")
