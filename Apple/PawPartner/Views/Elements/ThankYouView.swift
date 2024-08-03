@@ -11,28 +11,15 @@ struct ThankYouView: View {
     @AppStorage("customFormURL") var customFormURL = ""
     @AppStorage("isCustomFormOn") var isCustomFormOn = false
     @AppStorage("linkType") var linkType = "QR Code"
+    @AppStorage("appendAnimalData") var appendAnimalData = false
+
 
     let animal: Animal
     
     @AppStorage("lastSync") var lastSync: String = ""
-//    @AppStorage("societyID") var storedSocietyID: String = ""
     
     @State private var showCustomQR = false
     @State private var showCustomLink = false
-
-//    var imageUrl: URL? {
-//        if let safeAnimalName = animal.id.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed),
-//           var urlComponents = URLComponents(string: "https://firebasestorage.googleapis.com/v0/b/humanesociety-21855.appspot.com/o/\(storedSocietyID)%2F\(safeAnimalName).jpeg?alt=media") {
-//            // Append a unique query parameter to the URL
-//            let queryItem = URLQueryItem(name: "v", value: lastSync)
-//            let mediaItem = URLQueryItem(name: "alt", value: "media")
-//            urlComponents.queryItems = [mediaItem, queryItem]
-//
-//            let url = urlComponents.url
-//            return url
-//        }
-//        return nil
-//    }
     
     var body: some View {
         ZStack {
@@ -120,10 +107,10 @@ struct ThankYouView: View {
                 AddNoteView(animal: viewModel.animal)
             }
             .sheet(isPresented: $showCustomQR) {
-                CustomQRCodeView(url: customFormURL)
+                CustomQRCodeView(url: appendAnimalData ? "\(customFormURL)?animalID=\(animal.id)&animalName=\(animal.name)&logStart=\(animal.startTime)&logEnd=\(Date().timeIntervalSince1970)&logType=\(String(describing: animal.lastLetOutType))&logPerson=\(String(describing: animal.lastVolunteer))" : customFormURL)
             }
             .sheet(isPresented: $showCustomLink) {
-                WebView(url: URL(string: customFormURL) ?? URL(string: "https://shelterpartner.org")!)
+                WebView(url: URL(string: appendAnimalData ? "\(customFormURL)?animalID=\(animal.id)&animalName=\(animal.name)&logStart=\(animal.startTime)&logEnd=\(Date().timeIntervalSince1970)&logType=\(String(describing: animal.lastLetOutType))&logPerson=\(String(describing: animal.lastVolunteer))" : customFormURL) ?? URL(string: "https://shelterpartner.org")!)
             }
         }
     }

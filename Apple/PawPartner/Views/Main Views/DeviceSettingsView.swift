@@ -16,8 +16,11 @@ struct DeviceSettingsView: View {
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("cardsPerPage") var cardsPerPage = 30
     @AppStorage("customFormURL") var customFormURL = ""
+    
     @AppStorage("isCustomFormOn") var isCustomFormOn = false
     @AppStorage("linkType") var linkType = "QR Code"
+    @AppStorage("appendAnimalData") var appendAnimalData = false
+
     @AppStorage("showNoteDates") var showNoteDates = true
     @AppStorage("requireName") var requireName = false
     @AppStorage("showAllAnimals") var showAllAnimals = false
@@ -177,6 +180,12 @@ struct DeviceSettingsView: View {
                 }
                 .foregroundStyle(isCustomFormOn ? .primary : .secondary)
                 .onChange(of: linkType) { _ in saveSettings() }
+                Toggle(isOn: $appendAnimalData) {
+                    SettingElement(title: "Append Animal Data To URL", explanation: "Enabling this will automatically append the current animals data to the url as arguments.")
+                }
+                .tint(.customBlue)
+
+                .disabled(!isCustomFormOn)
             }
             
             Section {
@@ -282,6 +291,7 @@ struct DeviceSettingsView: View {
             "customFormURL": customFormURL,
             "isCustomFormOn": isCustomFormOn,
             "linkType": linkType,
+            "appendAnimalData": appendAnimalData,
             "showNoteDates": showNoteDates,
             "requireName": requireName,
             "showAllAnimals": showAllAnimals,
@@ -320,6 +330,7 @@ struct DeviceSettingsView: View {
                     self.customFormURL = data["customFormURL"] as? String ?? ""
                     self.isCustomFormOn = data["isCustomFormOn"] as? Bool ?? false
                     self.linkType = data["linkType"] as? String ?? "QR Code"
+                    self.appendAnimalData = data["appendAnimalData"] as? Bool ?? false
                     self.showNoteDates = data["showNoteDates"] as? Bool ?? true
                     self.requireName = data["requireName"] as? Bool ?? false
                     self.showAllAnimals = data["showAllAnimals"] as? Bool ?? false
