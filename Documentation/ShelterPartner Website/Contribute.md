@@ -16,10 +16,8 @@ $1050
 * Donations - Monthly
 * Donations - Yearly
 * Donations - Github Contributions
-* Active Shelters
-15
-* Demo Shelters
-150
+* Active Shelters - 15
+* Demo Shelters - 150
 ## Contributors
 * Lisa Leiterman - Donation
 * Renee Jones - Github
