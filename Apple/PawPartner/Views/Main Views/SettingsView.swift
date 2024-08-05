@@ -15,7 +15,7 @@ struct SettingsView: View {
     @ObservedObject var authenticationViewModel = AuthenticationViewModel()
 
     @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
-    @AppStorage("QRMode") var QRMode = true
+    @AppStorage("allowPhotoUploads") var allowPhotoUploads = true
     @AppStorage("volunteerVideo") var volunteerVideo: String = ""
     @AppStorage("staffVideo") var staffVideo: String = ""
     @AppStorage("guidedAccessVideo") var guidedAccessVideo: String = ""

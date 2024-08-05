@@ -1,20 +1,12 @@
-//
-//  NoteView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 5/24/23.
-//
-
 import FirebaseFirestore
 import SwiftUI
 import Kingfisher
 
 struct NoteView: View {
-    let note: Note
+    @Binding var note: Note
+    let onDelete: () -> Void
     let animal: Animal
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
-//    @AppStorage("societyID") var storedSocietyID: String = ""
-//    @AppStorage("accountType") var accountType = "volunteer"
     @AppStorage("showNoteDates") var showNoteDates = true
     @AppStorage("adminMode") var adminMode = true
 
@@ -48,7 +40,8 @@ struct NoteView: View {
                             }
                             .confirmationDialog("Are you sure?", isPresented: $confirmDeleteNote) {
                                 Button("I'm sure", role: .destructive) {
-                                    deleteNote()
+//                                    deleteNote()
+                                        onDelete()
                                 }
                             } message: {
                                 Text("Are you sure you want to delete this note? This cannot be undone.")
@@ -100,6 +93,4 @@ struct NoteView: View {
             }
         }
     }
-
-
 }

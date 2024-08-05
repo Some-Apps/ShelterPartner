@@ -34,7 +34,7 @@ struct DeviceSettingsView: View {
     @AppStorage("groupOption") var groupOption = ""
     @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
     @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
-    @AppStorage("QRMode") var QRMode = true
+    @AppStorage("allowPhotoUploads") var allowPhotoUploads = true
     @AppStorage("adminMode") var adminMode = true
     @AppStorage("showFilterOptions") var showFilterOptions = false
     @AppStorage("requireLetOutType") var requireLetOutType = false
@@ -62,11 +62,11 @@ struct DeviceSettingsView: View {
             }
                 .tint(.customBlue)
                 .onChange(of: adminMode) { _ in saveSettings() }
-            Toggle(isOn: $QRMode) {
-                SettingElement(title: "QR Codes: \(QRMode ? "Enabled" : "Disabled")", explanation: "Allow users to add photos by scanning a QR Code when the device is in Admin Mode")
+            Toggle(isOn: $allowPhotoUploads) {
+                SettingElement(title: "Photo Uploads: \(allowPhotoUploads ? "Enabled" : "Disabled")", explanation: "Allow users to add photos by scanning a QR Code when the device is an Admin Account or directly from the device when a Volunteer Account")
             }
                 .tint(.customBlue)
-                .onChange(of: QRMode) { _ in saveSettings() }
+                .onChange(of: allowPhotoUploads) { _ in saveSettings() }
             Picker(selection: $sortBy) {
                 ForEach(SortBy.allCases, id: \.self) { sortOption in
                     Text(sortOption.rawValue).tag(sortOption)
@@ -284,7 +284,7 @@ struct DeviceSettingsView: View {
         let db = Firestore.firestore()
         let settings: [String: Any] = [
             "adminMode": adminMode,
-            "QRMode": QRMode,
+            "allowPhotoUploads": allowPhotoUploads,
             "sortBy": sortBy.rawValue,
             "minimumDuration": minimumDuration,
             "cardsPerPage": cardsPerPage,
@@ -322,7 +322,7 @@ struct DeviceSettingsView: View {
                 let data = document.data()?["VolunteerSettings"] as? [String: Any] ?? [:]
                 DispatchQueue.main.async {
                     self.adminMode = true
-                    self.QRMode = data["QRMode"] as? Bool ?? true
+                    self.allowPhotoUploads = data["allowPhotoUploads"] as? Bool ?? true
                     self.sortBy = SortBy(rawValue: data["sortBy"] as? String ?? SortBy.lastLetOut.rawValue) ?? .lastLetOut
                     
                     self.minimumDuration = data["minimumDuration"] as? Int ?? 5

@@ -26,7 +26,7 @@ class AuthenticationViewModel: ObservableObject {
     @AppStorage("groupOption") var groupOption = ""
     @AppStorage("showBulkTakeOut") var showBulkTakeOut = false
     @AppStorage("sortBy") var sortBy: SortBy = .lastLetOut
-    @AppStorage("QRMode") var QRMode = true
+    @AppStorage("allowPhotoUploads") var allowPhotoUploads = true
     @AppStorage("adminMode") var adminMode = true
     @AppStorage("showFilterOptions") var showFilterOptions = false
 
@@ -323,7 +323,7 @@ struct APIKey: Identifiable {
 
 struct VolunteerSettings {
     var adminMode: Bool
-    var QRMode: Bool
+    var allowPhotoUploads: Bool
     var sortBy: SortBy
     var minimumDuration: Int
     var cardsPerPage: Int
@@ -347,7 +347,7 @@ struct VolunteerSettings {
 
     init(from data: [String: Any]) {
         self.adminMode = data["adminMode"] as? Bool ?? false
-        self.QRMode = data["QRMode"] as? Bool ?? true
+        self.allowPhotoUploads = data["allowPhotoUploads"] as? Bool ?? true
         self.sortBy = SortBy(rawValue: data["sortOption"] as? String ?? SortBy.lastLetOut.rawValue) ?? .lastLetOut
         self.minimumDuration = data["minimumDuration"] as? Int ?? 5
         self.cardsPerPage = data["cardsPerPage"] as? Int ?? 30
@@ -372,7 +372,7 @@ struct VolunteerSettings {
 
     func applyToUserDefaults() {
         UserDefaults.standard.set(adminMode, forKey: "adminMode")
-        UserDefaults.standard.set(QRMode, forKey: "QRMode")
+        UserDefaults.standard.set(allowPhotoUploads, forKey: "allowPhotoUploads")
         UserDefaults.standard.set(sortBy.rawValue, forKey: "sortBy")
         UserDefaults.standard.set(minimumDuration, forKey: "minimumDuration")
         UserDefaults.standard.set(cardsPerPage, forKey: "cardsPerPage")
