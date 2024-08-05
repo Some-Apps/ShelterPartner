@@ -106,7 +106,7 @@ struct AddNoteView: View {
                     }
                 }
                 
-                if allowPhotoUploads && authViewModel.accountType == "admin" {
+                if allowPhotoUploads && authViewModel.accountType == "volunteer" {
                     Button(action: {
                         DispatchQueue.main.async {
                             showImagePicker.toggle()
