@@ -56,8 +56,6 @@ struct LoginView: View {
                         .padding(.bottom)
                     VStack(spacing: 20) {
                         VStack(alignment: .leading) {
-                            Text("Email")
-                                .font(.headline)
                             TextField("Email", text: $email)
                                 .padding()
                                 .background(Color(.secondarySystemBackground))
@@ -67,8 +65,6 @@ struct LoginView: View {
                                 .disableAutocorrection(true)
                         }
                         VStack(alignment: .leading) {
-                            Text("Password")
-                                .font(.headline)
                             SecureField("Password", text: $password)
                                 .padding()
                                 .background(Color(.secondarySystemBackground))
@@ -99,6 +95,9 @@ struct LoginView: View {
                         .buttonStyle(.bordered)
                         .fontWeight(.bold)
                         .tint(.customBlue)
+                        
+                        Text("Please do not share your login with anybody. You can request an additional admin account by emailing me or create volunteer accounts from within the app.")
+                            .multilineTextAlignment(.center)
                         HStack {
                             if let url = URL(string: newShelterForm) {
                                 Button(action: {
@@ -127,8 +126,6 @@ struct LoginView: View {
                         }
                         .buttonStyle(.bordered)
                         .tint(.secondary)
-                        Text("Please do not share your login with anybody. You can request an additional admin account by emailing me or create volunteer accounts from within the app.")
-                            .multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: 500)
                     Spacer() // Bottom spacer
