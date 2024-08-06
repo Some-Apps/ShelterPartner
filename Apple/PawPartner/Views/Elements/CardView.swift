@@ -72,7 +72,7 @@ struct CardView: View {
                         }
                             
                         Menu {
-                            NavigationLink(destination: ViewInfoView(animal: animal), label: {
+                            NavigationLink(destination: ViewInfoView(viewModel: ViewInfoViewModel(animal: animal)), label: {
                                 Label("Details", systemImage: "ellipsis.circle")
                             })
                             if allowPhotoUploads && (accountType == "admin") {
@@ -189,7 +189,7 @@ struct CardView: View {
             .foregroundColor(backgroundColor)
             .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2))
         .sheet(isPresented: $showViewInfo) {
-            ViewInfoView(animal: animal)
+            ViewInfoView(viewModel: ViewInfoViewModel(animal: animal))
         }
         .sheet(isPresented: $showAddNote) {
             AddNoteView(animal: animal)
