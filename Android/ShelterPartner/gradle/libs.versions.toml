@@ -17,6 +17,7 @@ ui = "<version>"
 firebaseFirestoreKtx = "25.0.0"
 firebaseAuthKtx = "23.0.0"
 
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
@@ -46,4 +47,5 @@ firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx",
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 
