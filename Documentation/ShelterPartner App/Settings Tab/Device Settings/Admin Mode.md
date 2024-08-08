@@ -1,0 +1,1 @@
+When enabled, you will have full access to settings and deleting photos, notes, and tags. When volunteers are using the app, Admin Mode should be turned off. The ensures that they can't change any settings.
