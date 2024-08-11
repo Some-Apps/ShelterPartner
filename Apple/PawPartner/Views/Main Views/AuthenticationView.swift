@@ -62,9 +62,9 @@ struct AuthenticationView: View {
                             .tabItem {
                                 Label("Volunteer", systemImage: "pawprint.fill")
                             }
-                        VisitorView()
+                        StatsView()
                             .tabItem {
-                                Label("Visitor", systemImage: "person.2.circle.fill")
+                                Label("Stats", systemImage: "chart.pie.fill")
                             }
                         VisitorSettingsView()
                             .tabItem {
