@@ -30,6 +30,7 @@
 		C041B7AB2C3DD87D00AE181C /* SettingElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041B7AA2C3DD87300AE181C /* SettingElement.swift */; };
 		C04E1C9C2C042880007E0AE0 /* GroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E1C9B2C042880007E0AE0 /* GroupsView.swift */; };
 		C055E0172C2E056B006A0370 /* VolunteerAccountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C055E0162C2E056B006A0370 /* VolunteerAccountsView.swift */; };
+		C05E06B22C696F2B00189CE6 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05E06B12C696F2B00189CE6 /* StatsView.swift */; };
 		C07AFBA72B914B1B00DC9DF8 /* VisitorDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07AFBA62B914B1B00DC9DF8 /* VisitorDetailView.swift */; };
 		C07AFBA92B94BE9400DC9DF8 /* VisitorNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07AFBA82B94BE9400DC9DF8 /* VisitorNoteView.swift */; };
 		C07B39FF2A23E39F00D13917 /* PasswordPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07B39FE2A23E39F00D13917 /* PasswordPromptView.swift */; };
@@ -96,6 +97,7 @@
 		C041B7AA2C3DD87300AE181C /* SettingElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingElement.swift; sourceTree = "<group>"; };
 		C04E1C9B2C042880007E0AE0 /* GroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsView.swift; sourceTree = "<group>"; };
 		C055E0162C2E056B006A0370 /* VolunteerAccountsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolunteerAccountsView.swift; sourceTree = "<group>"; };
+		C05E06B12C696F2B00189CE6 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		C07AFBA62B914B1B00DC9DF8 /* VisitorDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorDetailView.swift; sourceTree = "<group>"; };
 		C07AFBA82B94BE9400DC9DF8 /* VisitorNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorNoteView.swift; sourceTree = "<group>"; };
 		C07B39FE2A23E39F00D13917 /* PasswordPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordPromptView.swift; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 				C08785E62A53221600A91C49 /* CreditsView.swift */,
 				C01B0A542A2277F10062994D /* ChangePasswordView.swift */,
 				C01B0A582A227B730062994D /* AuthenticationView.swift */,
+				C05E06B12C696F2B00189CE6 /* StatsView.swift */,
 				C0953A752C31C62E00E803C1 /* VisitorSettingsView.swift */,
 				C0ECD8EF2A17E84F001F82C3 /* AnimalView.swift */,
 				C01B0A102A192E0E0062994D /* ViewInfoView.swift */,
@@ -408,6 +411,7 @@
 				C0ECD90B2A1E6FB7001F82C3 /* AddNoteView.swift in Sources */,
 				C0E4AB362C0FA421007146BA /* AccountSetupView.swift in Sources */,
 				C0FE533E2C4F25F400935E48 /* GenerateKeyView.swift in Sources */,
+				C05E06B22C696F2B00189CE6 /* StatsView.swift in Sources */,
 				C0C316952B5582B300192C89 /* DeviceSettingsView.swift in Sources */,
 				C09CFEF02B1D04EA00AE8560 /* QRCodeView.swift in Sources */,
 				C0241EBE2A75545600581A88 /* FeedbackView.swift in Sources */,
@@ -588,7 +592,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PawPartner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "ShelterPartner Dev";
+				INFOPLIST_KEY_CFBundleDisplayName = ShelterPartner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawPartner needs your location to determine if you are near your animal shelter";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -628,7 +632,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PawPartner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "ShelterPartner Dev";
+				INFOPLIST_KEY_CFBundleDisplayName = ShelterPartner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawPartner needs your location to determine if you are near your animal shelter";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
