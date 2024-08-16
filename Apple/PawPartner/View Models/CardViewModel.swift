@@ -13,7 +13,6 @@ import SwiftUI
 class CardViewModel: ObservableObject {
     @ObservedObject var animalViewModel = AnimalViewModel.shared
     @ObservedObject var authViewModel = AuthenticationViewModel.shared
-//    @AppStorage("societyID") var storedSocietyID: String = ""
     @AppStorage("minimumDuration") var minimumDuration = 5
     @AppStorage("requireName") var requireName = false
     @AppStorage("createLogsAlways") var createLogsAlways = false
@@ -100,9 +99,9 @@ class CardViewModel: ObservableObject {
                 if !self.automaticPutBackIgnoreVisit {
                     let components = Calendar.current.dateComponents([.minute], from: Date(timeIntervalSince1970: animal.startTime), to: Date())
                     self.createSilentLog(for: animal)
-                    if components.minute ?? 0 >= 5 {
-                        self.createLog(for: animal)
-                    }
+//                    if components.minute ?? 0 >= 5 {
+//                        self.createLog(for: animal)
+//                    }
                 }
                 
             }
@@ -122,13 +121,22 @@ class CardViewModel: ObservableObject {
                     
                     // Create a new log
                     let id = UUID().uuidString
-                    let newLog = Log(id: id, startTime: startTime, endTime: startTime + 3600)
+                    
+                    var lastVolunteer = ""
+                    lastVolunteer = data["lastVolunteer"] as? String ?? ""
+                    var lastLetOutType = data["lastLetOutType"] as? String ?? ""
+                    lastLetOutType = data["lastLetOutType"] as? String ?? ""
+                    
+                    let newLog = Log(id: id, startTime: startTime, endTime: startTime + 3600, user: lastVolunteer, shortReason: self.shortReason, letOutType: lastLetOutType)
                     
                     // Convert newLog to a dictionary
                     let logDict: [String: Any] = [
                         "id": newLog.id,
                         "startTime": newLog.startTime,
-                        "endTime": newLog.endTime
+                        "endTime": newLog.endTime,
+                        "user": newLog.user ?? "",
+                        "shortReason": newLog.shortReason ?? "Animal automatically put back",
+                        "letOutType": newLog.letOutType ?? ""
                     ]
                     
                     // Add newLog to the logs array in the specified animal's document
