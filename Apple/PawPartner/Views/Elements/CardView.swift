@@ -130,21 +130,36 @@ struct CardView: View {
 
 
                     VStack(alignment: .leading) {
-                        if animal.tags != nil && animal.tags != [:] {
-                            HStack {
-                                Image(systemName: "tag")
-                                ForEach(topTags(for: animal, count: 3), id: \.self) {
-                                    Text($0)
-                                        .background(.ultraThinMaterial)
-                                        .clipShape(.containerRelative)
-                                }
-                            }
-                            .lineLimit(1)
-                        }
-                        Menu(animal.location, systemImage: "mappin.square") {
+//                        if animal.tags != nil && animal.tags != [:] {
+//                            HStack {
+//                                Image(systemName: "tag")
+//                                ForEach(topTags(for: animal, count: 3), id: \.self) {
+//                                    Text($0)
+//                                        .background(.ultraThinMaterial)
+////                                        .clipShape(.containerRelative)
+//                                }
+//                            }
+//                            .lineLimit(1)
+//                        }
+                        Menu(animal.location, systemImage: "mappin.circle") {
                             Text(animal.fullLocation ?? animal.location)
                         }
                         .foregroundStyle(.black)
+                        if let medicalGroup = animal.medicalGroup {
+                            if !medicalGroup.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                Label(medicalGroup, systemImage: "stethoscope.circle")
+                            }
+                        }
+                        if let behaviorGroup = animal.behaviorGroup {
+                            if !behaviorGroup.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                Label(behaviorGroup, systemImage: "face.dashed")
+                            }
+                        }
+                        if let adoptionGroup = animal.adoptionGroup {
+                            if !adoptionGroup.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                Label(adoptionGroup, systemImage: "bag.circle")
+                            }
+                        }
                         if let extraInfo = animal.extraInfo {
                             if !extraInfo.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 Label(extraInfo, systemImage: "square.grid.2x2")
