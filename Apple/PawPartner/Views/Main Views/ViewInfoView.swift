@@ -146,7 +146,7 @@ struct ViewInfoView: View {
             }
         }
         .fullScreenCover(isPresented: $viewModel.isFullScreen) {
-            ZStack(alignment: .topTrailing) {
+            ZStack(alignment: .bottom) {
                 TabView(selection: $viewModel.selectedImageIndex) {
                     ForEach(viewModel.photos.indices, id: \.self) { index in
                         if let url = viewModel.dailyCacheBustedURL(for: viewModel.photos[index].url) {
@@ -164,7 +164,7 @@ struct ViewInfoView: View {
                     viewModel.isFullScreen = false // This dismisses the full screen cover
                 }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.largeTitle)
+                        .font(.title)
                         .padding()
                         .foregroundStyle(.red.opacity(0.8))
                         .background(.regularMaterial)
@@ -172,6 +172,8 @@ struct ViewInfoView: View {
                         .shadow(radius: 4)
                         .padding()
                 }
+//                .padding(.top)
+                .padding(.bottom)  // Adjust the padding as needed to fit within the safe area
             }
             .ignoresSafeArea(.all)
         }

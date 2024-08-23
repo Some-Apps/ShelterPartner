@@ -148,23 +148,22 @@ struct VisitorDetailView: View {
                     .background(Color.white)
                     
                     Button(action: {
-                        isFullScreen = false // This dismisses the full screen cover
+                        isFullScreen = false
                     }) {
-                        Image(systemName: "xmark.circle.fill") // Using a system image for the button
+                        Image(systemName: "xmark.circle.fill")
                             .font(.largeTitle)
-                            .padding() // Add some padding to make the button easier to tap
                             .foregroundStyle(.red.opacity(0.8))
                             .background(.regularMaterial)
                             .clipShape(Circle())
                             .shadow(radius: 4)
-                            .padding()
-                            .padding()
-
+                            
                     }
                 }
                 .ignoresSafeArea(.all)
 
             }
+            .padding(.top, 20)  // Adjust the padding as needed to fit within the safe area
+            .padding(.trailing, 20)
         }
     }
     
