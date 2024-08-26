@@ -130,17 +130,17 @@ struct CardView: View {
 
 
                     VStack(alignment: .leading) {
-//                        if animal.tags != nil && animal.tags != [:] {
-//                            HStack {
-//                                Image(systemName: "tag")
-//                                ForEach(topTags(for: animal, count: 3), id: \.self) {
-//                                    Text($0)
-//                                        .background(.ultraThinMaterial)
-////                                        .clipShape(.containerRelative)
-//                                }
-//                            }
-//                            .lineLimit(1)
-//                        }
+                        if animal.tags != nil && animal.tags != [:] {
+                            HStack {
+                                Image(systemName: "tag")
+                                ForEach(topTags(for: animal, count: 3), id: \.self) {
+                                    Text($0)
+                                        .background(.ultraThinMaterial)
+//                                        .clipShape(.containerRelative)
+                                }
+                            }
+                            .lineLimit(1)
+                        }
                         Menu(animal.location, systemImage: "mappin.circle") {
                             Text(animal.fullLocation ?? animal.location)
                         }
