@@ -72,6 +72,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose.vversion)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.volley)
+    implementation(libs.coil.compose)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

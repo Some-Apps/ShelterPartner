@@ -24,9 +24,16 @@ data class Animal(
     val colorGroup: String? = null,
     val medicalGroup: String? = null,
     val behaviorGroup: String? = null,
-    val buildingGroup: String = ""
+    val buildingGroup: String = "",
+    val photos: List<Photo> = emptyList()
 )
 
 enum class AnimalType {
     Cat, Dog
 }
+
+data class Photo(
+    val url: String = "",
+    val privateURL: String = "",
+    val timestamp: Double = 0.0
+)
