@@ -81,6 +81,8 @@ class AnimalViewModel: ObservableObject {
                     return cat1.playtimeLast30Days < cat2.playtimeLast30Days
                 case .playtime90Days:
                     return cat1.playtimeLast90Days < cat2.playtimeLast90Days
+                case .alphabetical:
+                    return cat1.name < cat2.name
                 }
             })
 
@@ -105,6 +107,8 @@ class AnimalViewModel: ObservableObject {
                     return dog1.playtimeLast30Days < dog2.playtimeLast30Days
                 case .playtime90Days:
                     return dog1.playtimeLast90Days < dog2.playtimeLast90Days
+                case .alphabetical:
+                    return dog1.name < dog2.name
                 }
             })
             
@@ -125,6 +129,10 @@ class AnimalViewModel: ObservableObject {
                 groupedAnimals = Dictionary(grouping: animals, by: { $0.behaviorGroup ?? "\u{200B}Unknown Group" })
             } else if groupOption == "Building" {
                 groupedAnimals = Dictionary(grouping: animals, by: { $0.buildingGroup ?? "\u{200B}Unknown Group" })
+            } else if groupOption == "Adoption" {
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.adoptionGroup ?? "\u{200B}Unknown Group" })
+            } else if groupOption == "Medical" {
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.medicalGroup ?? "\u{200B}Unknown Group" })
             }
         
         }
@@ -157,6 +165,8 @@ class AnimalViewModel: ObservableObject {
                                        return $0.playtimeLast30Days < $1.playtimeLast30Days
                                    case .playtime90Days:
                                        return $0.playtimeLast90Days < $1.playtimeLast90Days
+                                   case .alphabetical:
+                                       return $0.name < $1.name
                                    }
                                }
                                return ($0.colorSort ?? 100) < ($1.colorSort ?? 100)
@@ -174,6 +184,8 @@ class AnimalViewModel: ObservableObject {
                                        return $0.playtimeLast30Days < $1.playtimeLast30Days
                                    case .playtime90Days:
                                        return $0.playtimeLast90Days < $1.playtimeLast90Days
+                                   case .alphabetical:
+                                       return $0.name < $1.name
                                    }
                                }
                                return ($0.behaviorSort ?? 100) < ($1.behaviorSort ?? 100)
@@ -191,6 +203,8 @@ class AnimalViewModel: ObservableObject {
                                        return $0.playtimeLast30Days < $1.playtimeLast30Days
                                    case .playtime90Days:
                                        return $0.playtimeLast90Days < $1.playtimeLast90Days
+                                   case .alphabetical:
+                                       return $0.name < $1.name
                                    }
                                }
                                return ($0.behaviorSort ?? 100) < ($1.behaviorSort ?? 100)
@@ -209,6 +223,8 @@ class AnimalViewModel: ObservableObject {
                                        return $0.playtimeLast30Days < $1.playtimeLast30Days
                                    case .playtime90Days:
                                        return $0.playtimeLast90Days < $1.playtimeLast90Days
+                                   case .alphabetical:
+                                       return $0.name < $1.name
                                    }
                                }
                                return ($0.secondarySort ?? 100) < ($1.secondarySort ?? 100)
@@ -229,6 +245,8 @@ class AnimalViewModel: ObservableObject {
                                return $0.playtimeLast30Days < $1.playtimeLast30Days
                            case .playtime90Days:
                                return $0.playtimeLast90Days < $1.playtimeLast90Days
+                           case .alphabetical:
+                               return $0.name < $1.name
                            }
                        })
                    }

@@ -18,4 +18,5 @@ enum SortBy: String, CaseIterable, Codable {
     case playtime7Days = "Playtime (Past 7 Days)"
     case playtime30Days = "Playtime (Past 30 Days)"
     case playtime90Days = "Playtime (Past 90 Days)"
+    case alphabetical = "Alphabetical"
 }
