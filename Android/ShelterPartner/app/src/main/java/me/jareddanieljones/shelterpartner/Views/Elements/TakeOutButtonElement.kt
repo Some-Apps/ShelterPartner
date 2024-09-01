@@ -1,89 +1,147 @@
 package me.jareddanieljones.shelterpartner.Views.Elements
 
-import android.media.Image
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import me.jareddanieljones.shelterpartner.R
+import me.jareddanieljones.shelterpartner.Data.Animal
+import kotlin.math.pow
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TakeOutButtonElement(photo: String, onComplete: () -> Unit) {
-    var isPressed by remember { mutableStateOf(false) }
+fun TakeOutButtonElement(
+    animal: Animal,
+    function: () -> Unit,
+) {
     var progress by remember { mutableStateOf(0f) }
+    var isPressed by remember { mutableStateOf(false) }
 
-    val coroutineScope = rememberCoroutineScope()
+    val imageURL = animal.photos.first().url
 
-    Surface(
+    val width = 100.dp
+    val height = 100.dp
+    val lineWidth = 25.dp
+
+    var tickCountPressing by remember { mutableStateOf(0f) }
+    var tickCountNotPressing by remember { mutableStateOf(75f) }
+    var lastEaseValue by remember { mutableStateOf(0f) }
+    val scope = rememberCoroutineScope()
+
+    // Manually set colors
+    val primaryColor = Color(0xFF6200EE) // Replace with your desired color
+    val transparentPrimaryColor = primaryColor.copy(alpha = 0.2f)
+
+    Box(
         modifier = Modifier
-            .size(100.dp)
-            .border(
-                width = 8.dp,  // Thicker border
-                color = if (isPressed) Color.Cyan else Color.Gray,
-                shape = CircleShape
-            )
-            .background(MaterialTheme.colorScheme.background, CircleShape)
+            .size(width, height)
             .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = {
-                        isPressed = true
-                        progress = 0f
-                        coroutineScope.launch {
-                            while (progress < 1f) {
-                                delay(40)  // Slower progress
-                                progress += 0.01f
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(PointerEventPass.Initial)
+                        if (event.changes.any { it.pressed }) {
+                            isPressed = true
+                            tickCountPressing = 0f
+                            lastEaseValue = easeIn(0f)
+
+                            scope.launch {
+                                while (isPressed && isActive) {
+                                    val t = tickCountPressing / 75f
+                                    val currentEaseValue = easeIn(t)
+                                    val increment = currentEaseValue - lastEaseValue
+                                    progress += increment
+                                    lastEaseValue = currentEaseValue
+                                    tickCountPressing += 1
+
+                                    if (progress >= 1f) {
+                                        progress = 0f
+                                        onCompleteHold(animal)
+                                        break
+                                    } else if (progress > 0.97f) {
+                                        progress = 1f
+                                    }
+
+                                    kotlinx.coroutines.delay(20L) // Move delay outside restricted scope
+                                }
                             }
-                            onComplete()
-                        }
-                        awaitRelease()
-                        isPressed = false
-                        coroutineScope.launch {
-                            while (progress > 0f) {
-                                delay(10)  // Slightly faster reset
-                                progress -= 0.05f
+                        } else {
+                            isPressed = false
+                            tickCountNotPressing = 75f
+                            lastEaseValue = easeIn(1f)
+
+                            scope.launch {
+                                while (progress > 0f && isActive) {
+                                    val t = tickCountNotPressing / 75f
+                                    val currentEaseValue = easeIn(t)
+                                    val decrement = lastEaseValue - currentEaseValue
+                                    progress -= decrement
+                                    lastEaseValue = currentEaseValue
+                                    tickCountNotPressing -= 1
+
+                                    if (progress <= 0f) {
+                                        progress = 0f
+                                        break
+                                    }
+
+                                    kotlinx.coroutines.delay(20L)
+                                }
                             }
-                            progress = 0f  // Ensure it goes back to 0
                         }
                     }
-                )
+                }
             },
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.background,
+        contentAlignment = Alignment.Center
     ) {
-        Box(contentAlignment = androidx.compose.ui.Alignment.Center) {
-            CircularProgressIndicator(
-                progress = progress,
-                strokeWidth = 8.dp,
-                modifier = Modifier.size(100.dp),
-                color = if (isPressed) Color.Cyan else Color.Gray
+        Canvas(modifier = Modifier.size(width)) {
+            drawCircle(
+                color = transparentPrimaryColor,
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = lineWidth.toPx())
             )
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(photo)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier.size(90.dp),
-                contentScale = ContentScale.Crop
+            drawArc(
+                color = if (animal.inCage) Color(0xFFFFA726) else Color(0xFF008080),
+                startAngle = -90f,
+                sweepAngle = progress * 360f,
+                useCenter = false,
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = lineWidth.toPx())
             )
         }
+
+        AsyncImage(
+            model = imageURL,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(width, height)
+                .clip(CircleShape)
+                .graphicsLayer {
+                    scaleX = if (isPressed) 1f else 1.025f
+                    scaleY = if (isPressed) 1f else 1.025f
+                    shadowElevation = if (isPressed) 0.075.dp.toPx() else 2.dp.toPx()
+                }
+                .background(Color.White.copy(alpha = if (isPressed) 0.95f else 1f))
+        )
     }
+}
+
+private fun easeIn(t: Float): Float {
+    return t.pow(2)
+}
+
+private fun onCompleteHold(
+    animal: Animal
+) {
+    // Logic to be added here later
 }

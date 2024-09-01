@@ -4,24 +4,18 @@ import me.jareddanieljones.shelterpartner.Data.Animal
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import me.jareddanieljones.shelterpartner.R
 
 @Composable
@@ -43,6 +37,7 @@ fun CardElement(animal: Animal) {
         Column(
             modifier = Modifier
                 .weight(1f)
+                .align(Alignment.Top)
         ) {
             Text(
                 text = animal.name,
@@ -64,9 +59,19 @@ fun CardElement(animal: Animal) {
 
         // Load the first image from animal.photos using AsyncImage
         if (animal.photos.isNotEmpty()) {
-            TakeOutButtonElement(photo = animal.photos.first().url) {
-                println("button pressed")
+            Box(
+                modifier = Modifier
+                    .padding(10.dp)  // Apply padding here
+            ) {
+                TakeOutButtonElement(
+                    animal = animal
+                ) {
+                    println("button pressed")
+                }
             }
+
+
+
 
         } else {
             // Fallback or placeholder if no photo is available
@@ -74,7 +79,7 @@ fun CardElement(animal: Animal) {
                 painter = painterResource(id = R.drawable.ic_launcher_background), // Replace with your placeholder resource
                 contentDescription = null,
                 modifier = Modifier.size(90.dp),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.FillBounds
             )
         }
     }
