@@ -120,6 +120,24 @@ struct AnimalView: View {
                 if let behaviorGroup = animal.behaviorGroup, !options.contains(behaviorGroup) {
                     options.append(behaviorGroup)
                 }
+            } 
+        } else if finalFilterCategory == "Adoption" {
+            for animal in animals {
+                if let adoptionGroup = animal.adoptionGroup, !options.contains(adoptionGroup) {
+                    options.append(adoptionGroup)
+                }
+            }
+        } else if finalFilterCategory == "Medical" {
+            for animal in animals {
+                if let medicalGroup = animal.medicalGroup, !options.contains(medicalGroup) {
+                    options.append(medicalGroup)
+                }
+            }
+        } else if finalFilterCategory == "Location" {
+            for animal in animals {
+                if let locationGroup = animal.locationGroup, !options.contains(locationGroup) {
+                    options.append(locationGroup)
+                }
             }
         }
         
@@ -446,13 +464,19 @@ struct AnimalView: View {
             finalFilterCategory == "None" || finalFilterSelections.isEmpty ||
             (finalFilterCategory == "Color" && finalFilterSelections.contains(animal.colorGroup ?? "")) ||
             (finalFilterCategory == "Building" && finalFilterSelections.contains(animal.buildingGroup ?? "")) ||
+            (finalFilterCategory == "Adoption" && finalFilterSelections.contains(animal.adoptionGroup ?? "")) ||
+            (finalFilterCategory == "Medical" && finalFilterSelections.contains(animal.medicalGroup ?? "")) ||
+            (finalFilterCategory == "Location" && finalFilterSelections.contains(animal.locationGroup ?? "")) ||
             (finalFilterCategory == "Behavior" && finalFilterSelections.contains(animal.behaviorGroup ?? ""))
         }
-
+        
         filteredCatsList = viewModel.sortedGroupCats.filter { animal in
             let group = groupOption == "Color" ? (animal.colorGroup ?? "\u{200B}Unknown Group") :
-                        groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
-                        groupOption == "Behavior" ? (animal.behaviorGroup ?? "\u{200B}Unknown Group") : "\u{200B}Unknown Group"
+            groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
+            groupOption == "Adoption" ? (animal.adoptionGroup ?? "\u{200B}Unknown Group") :
+            groupOption == "Medical" ? (animal.medicalGroup ?? "\u{200B}Unknown Group") :
+            groupOption == "Location" ? (animal.locationGroup ?? "\u{200B}Unknown Group") :
+            groupOption == "Behavior" ? (animal.behaviorGroup ?? "\u{200B}Unknown Group") : "\u{200B}Unknown Group"
             
             let isInExpandedGroup = expandedGroupsCats.contains(group)
 
@@ -462,6 +486,9 @@ struct AnimalView: View {
         filteredDogsList = viewModel.sortedGroupDogs.filter { animal in
             let group = groupOption == "Color" ? (animal.colorGroup ?? "\u{200B}Unknown Group") :
                         groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
+            groupOption == "Adoption" ? (animal.adoptionGroup ?? "\u{200B}Unknown Group") :
+            groupOption == "Medical" ? (animal.medicalGroup ?? "\u{200B}Unknown Group") :
+            groupOption == "Location" ? (animal.locationGroup ?? "\u{200B}Unknown Group") :
                         groupOption == "Behavior" ? (animal.behaviorGroup ?? "\u{200B}Unknown Group") : "\u{200B}Unknown Group"
             
             let isInExpandedGroup = expandedGroupsDogs.contains(group)
@@ -474,6 +501,9 @@ struct AnimalView: View {
             let groups = Set(sortedGroupAnimals.map { animal in
                 groupOption == "Color" ? (animal.colorGroup ?? "\u{200B}Unknown Group") :
                 groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Adoption" ? (animal.adoptionGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Medical" ? (animal.medicalGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Location" ? (animal.locationGroup ?? "\u{200B}Unknown Group") :
                 groupOption == "Behavior" ? (animal.behaviorGroup ?? "\u{200B}Unknown Group") : "\u{200B}Unknown Group"
             })
 
@@ -481,6 +511,9 @@ struct AnimalView: View {
                 if !filteredAnimals.contains(where: { animal in
                     (groupOption == "Color" && animal.colorGroup == group) ||
                     (groupOption == "Building" && animal.buildingGroup == group) ||
+                    (groupOption == "Medical" && animal.medicalGroup == group) ||
+                    (groupOption == "Adoption" && animal.adoptionGroup == group) ||
+                    (groupOption == "Location" && animal.location == group) ||
                     (groupOption == "Behavior" && animal.behaviorGroup == group)
                 }) {
                     var placeholderAnimal = Animal.dummyAnimal // Create a placeholder animal as per your implementation
@@ -492,6 +525,12 @@ struct AnimalView: View {
                         placeholderAnimal.buildingGroup = group
                     case "Behavior":
                         placeholderAnimal.behaviorGroup = group
+                    case "Adoption":
+                        placeholderAnimal.adoptionGroup = group
+                    case "Medical":
+                        placeholderAnimal.medicalGroup = group
+                    case "Location":
+                        placeholderAnimal.location = group
                     default:
                         placeholderAnimal.colorGroup = group
                     }
@@ -510,6 +549,9 @@ struct AnimalView: View {
             for animal in filteredAnimals {
                 let group = groupOption == "Color" ? (animal.colorGroup ?? "\u{200B}Unknown Group") :
                             groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
                             groupOption == "Behavior" ? (animal.behaviorGroup ?? "\u{200B}Unknown Group") : "\u{200B}Unknown Group"
 
                 if animal.name != "placeholderanimal" {
@@ -520,6 +562,9 @@ struct AnimalView: View {
             filteredAnimals.removeAll { animal in
                 let group = groupOption == "Color" ? (animal.colorGroup ?? "\u{200B}Unknown Group") :
                             groupOption == "Building" ? (animal.buildingGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Adoption" ? (animal.adoptionGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Medical" ? (animal.medicalGroup ?? "\u{200B}Unknown Group") :
+                groupOption == "Location" ? (animal.locationGroup ?? "\u{200B}Unknown Group") :
                             groupOption == "Behavior" ? (animal.behaviorGroup ?? "\u{200B}Unknown Group") : "\u{200B}Unknown Group"
 
                 return animal.name == "placeholderanimal" && groupsToRemovePlaceholder.contains(group)
@@ -680,6 +725,12 @@ struct GroupAnimalGridView: View {
             groupedAnimals = Dictionary(grouping: animals, by: { $0.buildingGroup ?? "\u{200B}Unknown Group" })
         case "Behavior":
             groupedAnimals = Dictionary(grouping: animals, by: { $0.behaviorGroup ?? "\u{200B}Unknown Group" })
+        case "Adoption":
+            groupedAnimals = Dictionary(grouping: animals, by: { $0.adoptionGroup ?? "\u{200B}Unknown Group" })
+        case "Medical":
+            groupedAnimals = Dictionary(grouping: animals, by: { $0.medicalGroup ?? "\u{200B}Unknown Group" })
+        case "Location":
+            groupedAnimals = Dictionary(grouping: animals, by: { $0.locationGroup ?? "\u{200B}Unknown Group" })
         default:
             groupedAnimals = Dictionary(grouping: animals, by: { _ in "\u{200B}Unknown Group" })
         }
@@ -694,6 +745,12 @@ struct GroupAnimalGridView: View {
                     return animal.buildingGroup ?? "\u{200B}Unknown Group"
                 case "Behavior":
                     return animal.behaviorGroup ?? "\u{200B}Unknown Group"
+                case "Adoption":
+                    return animal.adoptionGroup ?? "\u{200B}Unknown Group"
+                case "Medical":
+                    return animal.medicalGroup ?? "\u{200B}Unknown Group"
+                case "Location":
+                    return animal.locationGroup ?? "\u{200B}Unknown Group"
                 default:
                     return "\u{200B}Unknown Group"
                 }

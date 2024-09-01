@@ -38,6 +38,7 @@ struct Animal: Codable, Identifiable, Hashable {
     var medicalGroup: String?
     var behaviorGroup: String?
     var buildingGroup: String?
+    var locationGroup: String?
 
     var allPhotos: [String] {
         return photos.map { $0.url }
