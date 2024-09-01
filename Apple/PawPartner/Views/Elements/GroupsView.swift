@@ -35,6 +35,12 @@ struct GroupsView: View {
             return animals.filter { ($0.buildingGroup ?? "\u{200B}Unknown Group") == groupSelection }
         case "Behavior":
             return animals.filter { ($0.behaviorGroup ?? "\u{200B}Unknown Group") == groupSelection }
+        case "Adoption":
+            return animals.filter { ($0.adoptionGroup ?? "\u{200B}Unknown Group") == groupSelection }
+        case "Medical":
+            return animals.filter { ($0.medicalGroup ?? "\u{200B}Unknown Group") == groupSelection }
+        case "Location":
+            return animals.filter { ($0.locationGroup ?? "\u{200B}Unknown Group") == groupSelection }
         default:
             return animals
         }
@@ -99,6 +105,12 @@ struct GroupsView: View {
                 return finalFilterSelections.contains(animal.buildingGroup ?? "\u{200B}Unknown Group")
             case "Behavior":
                 return finalFilterSelections.contains(animal.behaviorGroup ?? "\u{200B}Unknown Group")
+            case "Adoption":
+                return finalFilterSelections.contains(animal.adoptionGroup ?? "\u{200B}Unknown Group")
+            case "Medical":
+                return finalFilterSelections.contains(animal.medicalGroup ?? "\u{200B}Unknown Group")
+            case "Location":
+                return finalFilterSelections.contains(animal.locationGroup ?? "\u{200B}Unknown Group")
             default:
                 return false
             }
@@ -263,6 +275,18 @@ struct AnimalFilterView: View {
             case "Behavior":
                 if let behaviorGroup = animal.behaviorGroup {
                     options.insert(behaviorGroup)
+                }
+            case "Adoption":
+                if let adoptionGroup = animal.adoptionGroup {
+                    options.insert(adoptionGroup)
+                }
+            case "Medical":
+                if let medicalGroup = animal.medicalGroup {
+                    options.insert(medicalGroup)
+                }
+            case "Location":
+                if let locationGroup = animal.locationGroup {
+                    options.insert(locationGroup)
                 }
             default:
                 break

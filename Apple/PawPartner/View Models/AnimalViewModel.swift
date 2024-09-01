@@ -133,8 +133,10 @@ class AnimalViewModel: ObservableObject {
                 groupedAnimals = Dictionary(grouping: animals, by: { $0.adoptionGroup ?? "\u{200B}Unknown Group" })
             } else if groupOption == "Medical" {
                 groupedAnimals = Dictionary(grouping: animals, by: { $0.medicalGroup ?? "\u{200B}Unknown Group" })
+            } else if groupOption == "Location" {
+                groupedAnimals = Dictionary(grouping: animals, by: { $0.locationGroup ?? "\u{200B}Unknown Group" })
+
             }
-        
         }
            
            // Sort the keys (group names)
