@@ -66,21 +66,13 @@ fun CardElement(animal: Animal) {
                 TakeOutButtonElement(
                     animal = animal
                 ) {
-                    println("button pressed")
+                    println("[LOG]: the button pressed")
                 }
             }
 
 
 
 
-        } else {
-            // Fallback or placeholder if no photo is available
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background), // Replace with your placeholder resource
-                contentDescription = null,
-                modifier = Modifier.size(90.dp),
-                contentScale = ContentScale.FillBounds
-            )
         }
     }
 }

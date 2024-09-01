@@ -16,6 +16,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.Data.Animal
@@ -41,6 +42,9 @@ fun TakeOutButtonElement(
     var lastEaseValue by remember { mutableStateOf(0f) }
     val scope = rememberCoroutineScope()
 
+    // Keep track of the current coroutine job
+    var currentJob by remember { mutableStateOf<Job?>(null) }
+
     // Manually set colors
     val primaryColor = Color(0xFF6200EE) // Replace with your desired color
     val transparentPrimaryColor = primaryColor.copy(alpha = 0.2f)
@@ -57,7 +61,10 @@ fun TakeOutButtonElement(
                             tickCountPressing = 0f
                             lastEaseValue = easeIn(0f)
 
-                            scope.launch {
+                            // Cancel any existing coroutine
+                            currentJob?.cancel()
+
+                            currentJob = scope.launch {
                                 while (isPressed && isActive) {
                                     val t = tickCountPressing / 75f
                                     val currentEaseValue = easeIn(t)
@@ -68,7 +75,7 @@ fun TakeOutButtonElement(
 
                                     if (progress >= 1f) {
                                         progress = 0f
-                                        onCompleteHold(animal)
+                                        onCompleteHold(animal, function)
                                         break
                                     } else if (progress > 0.97f) {
                                         progress = 1f
@@ -82,7 +89,10 @@ fun TakeOutButtonElement(
                             tickCountNotPressing = 75f
                             lastEaseValue = easeIn(1f)
 
-                            scope.launch {
+                            // Cancel any existing coroutine
+                            currentJob?.cancel()
+
+                            currentJob = scope.launch {
                                 while (progress > 0f && isActive) {
                                     val t = tickCountNotPressing / 75f
                                     val currentEaseValue = easeIn(t)
@@ -141,7 +151,10 @@ private fun easeIn(t: Float): Float {
 }
 
 private fun onCompleteHold(
-    animal: Animal
+    animal: Animal,
+    function: () -> Unit
 ) {
     // Logic to be added here later
+    println("[LOG]: button pressed")
+    function()
 }
