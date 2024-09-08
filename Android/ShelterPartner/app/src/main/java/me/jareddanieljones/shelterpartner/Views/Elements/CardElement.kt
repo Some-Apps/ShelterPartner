@@ -17,14 +17,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import me.jareddanieljones.shelterpartner.R
+import me.jareddanieljones.shelterpartner.ViewModels.VolunteerViewModel
 
 @Composable
-fun CardElement(animal: Animal) {
+fun CardElement(
+    animal: Animal,
+    viewModel: VolunteerViewModel
+) {
     val backgroundColor = when {
         animal.canPlay && animal.inCage -> Color(0xFF89CFE0)
         animal.canPlay -> Color(0xFFEBCA96)
         else -> Color(0xFFC8C8C8)
     }
+
+    val currentInCage by rememberUpdatedState(newValue = animal.inCage)
+
 
     Row(
         modifier = Modifier
@@ -57,22 +64,19 @@ fun CardElement(animal: Animal) {
             )
         }
 
-        // Load the first image from animal.photos using AsyncImage
         if (animal.photos.isNotEmpty()) {
             Box(
-                modifier = Modifier
-                    .padding(10.dp)  // Apply padding here
+                modifier = Modifier.padding(10.dp)
             ) {
                 TakeOutButtonElement(
-                    animal = animal
+                    viewModel = viewModel,
+                    animalId = animal.id
                 ) {
                     println("[LOG]: the button pressed")
+                    viewModel.toggleInCage(animalId = animal.id, inKennel = animal.inCage)
                 }
             }
-
-
-
-
         }
     }
 }
+

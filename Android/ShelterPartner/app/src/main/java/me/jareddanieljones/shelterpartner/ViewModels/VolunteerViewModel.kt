@@ -38,4 +38,19 @@ class VolunteerViewModel(
             }
         }
     }
+
+    fun toggleInCage(animalId: String, inKennel: Boolean) {
+        viewModelScope.launch {
+            val newInCageValue = !inKennel
+            val success = repository.toggleInCage(animalId, newInCageValue)
+
+            if (success) {
+                _animals.value = _animals.value.map {
+                    if (it.id == animalId) it.copy(inCage = newInCageValue) else it
+                }
+            }
+        }
+    }
+
+
 }

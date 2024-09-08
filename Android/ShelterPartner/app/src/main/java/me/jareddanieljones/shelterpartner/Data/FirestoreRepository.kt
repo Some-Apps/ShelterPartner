@@ -12,7 +12,7 @@ import kotlinx.coroutines.tasks.await
 
 class FirestoreRepository {
 
-    private val firestore = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
     suspend fun getShelterID(): String? {
@@ -22,7 +22,7 @@ class FirestoreRepository {
             return null
         }
 
-        val userDoc = firestore.collection("Users").document(uid).get().await()
+        val userDoc = db.collection("Users").document(uid).get().await()
         if (!userDoc.exists()) {
             Log.e("FirestoreRepository", "User document does not exist.")
             return null
@@ -39,22 +39,38 @@ class FirestoreRepository {
         FirebaseAuth.getInstance().signOut()
     }
 
-    fun getAnimalsStream(shelterID: String, animalType: String): Flow<List<Animal>> = callbackFlow {
-        val listenerRegistration = firestore.collection("Societies")
-            .document(shelterID)
-            .collection(animalType)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null || snapshot == null) {
-                    close(e) // Close the flow in case of an error
-                    return@addSnapshotListener
+    fun getAnimalsStream(shelterID: String, animalType: String): Flow<List<Animal>> {
+        return callbackFlow {
+            val listener = db.collection("Societies").document(shelterID).collection(animalType)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshot != null) {
+                        val animalsList = snapshot.documents.mapNotNull { it.toObject(Animal::class.java) }
+                        trySend(animalsList).isSuccess
+                    }
                 }
 
-                val animalList = snapshot.documents.mapNotNull { document ->
-                    document.toObject(Animal::class.java)
-                }
-                trySend(animalList).isSuccess
-            }
+            awaitClose { listener.remove() }
+        }
+    }
 
-        awaitClose { listenerRegistration.remove() }
+    suspend fun toggleInCage(animalId: String, newInCageValue: Boolean): Boolean {
+        return try {
+            println("[LOG] inKennel = $newInCageValue")
+            db.collection("Societies")
+                .document("demo1")
+                .collection("Dogs")
+                .document(animalId)
+                .update("inCage", newInCageValue)
+                .await() // Ensure this is awaited to complete the operation
+            true  // Return true if update succeeds
+        } catch (e: Exception) {
+            println("[LOG] inKennel = $newInCageValue")
+            false // Return false if update fails
+        }
     }
 }

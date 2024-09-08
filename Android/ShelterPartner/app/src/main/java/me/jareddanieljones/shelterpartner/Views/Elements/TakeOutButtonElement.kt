@@ -20,141 +20,143 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.Data.Animal
+import me.jareddanieljones.shelterpartner.ViewModels.VolunteerViewModel
 import kotlin.math.pow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TakeOutButtonElement(
-    animal: Animal,
+    viewModel: VolunteerViewModel = VolunteerViewModel(),
+    animalId: String,  // Pass the animal ID instead of the whole animal
     function: () -> Unit,
 ) {
-    var progress by remember { mutableStateOf(0f) }
-    var isPressed by remember { mutableStateOf(false) }
+    // Observe the animal list from the ViewModel and find the animal by ID
+    val animals by viewModel.animals.collectAsState()
+    val animal = animals.find { it.id == animalId }
 
-    val imageURL = animal.photos.first().url
+    animal?.let { currentAnimal ->  // Ensure animal is not null
+        var progress by remember { mutableStateOf(0f) }
+        var isPressed by remember { mutableStateOf(false) }
 
-    val width = 100.dp
-    val height = 100.dp
-    val lineWidth = 25.dp
+        val imageURL = currentAnimal.photos.first().url
 
-    var tickCountPressing by remember { mutableStateOf(0f) }
-    var tickCountNotPressing by remember { mutableStateOf(75f) }
-    var lastEaseValue by remember { mutableStateOf(0f) }
-    val scope = rememberCoroutineScope()
+        val width = 100.dp
+        val height = 100.dp
+        val lineWidth = 25.dp
 
-    // Keep track of the current coroutine job
-    var currentJob by remember { mutableStateOf<Job?>(null) }
+        var tickCountPressing by remember { mutableStateOf(0f) }
+        var tickCountNotPressing by remember { mutableStateOf(75f) }
+        var lastEaseValue by remember { mutableStateOf(0f) }
+        val scope = rememberCoroutineScope()
 
-    // Manually set colors
-    val primaryColor = Color(0xFF6200EE) // Replace with your desired color
-    val transparentPrimaryColor = primaryColor.copy(alpha = 0.2f)
+        var currentJob by remember { mutableStateOf<Job?>(null) }
 
-    Box(
-        modifier = Modifier
-            .size(width, height)
-            .pointerInput(Unit) {
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent(PointerEventPass.Initial)
-                        if (event.changes.any { it.pressed }) {
-                            isPressed = true
-                            tickCountPressing = 0f
-                            lastEaseValue = easeIn(0f)
+        val primaryColor = Color(0xFF6200EE)
+        val transparentPrimaryColor = primaryColor.copy(alpha = 0.2f)
 
-                            // Cancel any existing coroutine
-                            currentJob?.cancel()
+        Box(
+            modifier = Modifier
+                .size(width, height)
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent(PointerEventPass.Initial)
+                            if (event.changes.any { it.pressed }) {
+                                isPressed = true
+                                tickCountPressing = 0f
+                                lastEaseValue = easeIn(0f)
 
-                            currentJob = scope.launch {
-                                while (isPressed && isActive) {
-                                    val t = tickCountPressing / 75f
-                                    val currentEaseValue = easeIn(t)
-                                    val increment = currentEaseValue - lastEaseValue
-                                    progress += increment
-                                    lastEaseValue = currentEaseValue
-                                    tickCountPressing += 1
+                                currentJob?.cancel()
 
-                                    if (progress >= 1f) {
-                                        progress = 0f
-                                        onCompleteHold(animal, function)
-                                        break
-                                    } else if (progress > 0.97f) {
-                                        progress = 1f
+                                currentJob = scope.launch {
+                                    while (isPressed && isActive) {
+                                        val t = tickCountPressing / 75f
+                                        val currentEaseValue = easeIn(t)
+                                        val increment = currentEaseValue - lastEaseValue
+                                        progress += increment
+                                        lastEaseValue = currentEaseValue
+                                        tickCountPressing += 1
+
+                                        if (progress >= 1f) {
+                                            progress = 0f
+                                            onCompleteHold(function)
+                                            break
+                                        } else if (progress > 0.97f) {
+                                            progress = 1f
+                                        }
+
+                                        kotlinx.coroutines.delay(20L)
                                     }
-
-                                    kotlinx.coroutines.delay(20L) // Move delay outside restricted scope
                                 }
-                            }
-                        } else {
-                            isPressed = false
-                            tickCountNotPressing = 75f
-                            lastEaseValue = easeIn(1f)
+                            } else {
+                                isPressed = false
+                                tickCountNotPressing = 75f
+                                lastEaseValue = easeIn(1f)
 
-                            // Cancel any existing coroutine
-                            currentJob?.cancel()
+                                currentJob?.cancel()
 
-                            currentJob = scope.launch {
-                                while (progress > 0f && isActive) {
-                                    val t = tickCountNotPressing / 75f
-                                    val currentEaseValue = easeIn(t)
-                                    val decrement = lastEaseValue - currentEaseValue
-                                    progress -= decrement
-                                    lastEaseValue = currentEaseValue
-                                    tickCountNotPressing -= 1
+                                currentJob = scope.launch {
+                                    while (progress > 0f && isActive) {
+                                        val t = tickCountNotPressing / 75f
+                                        val currentEaseValue = easeIn(t)
+                                        val decrement = lastEaseValue - currentEaseValue
+                                        progress -= decrement
+                                        lastEaseValue = currentEaseValue
+                                        tickCountNotPressing -= 1
 
-                                    if (progress <= 0f) {
-                                        progress = 0f
-                                        break
+                                        if (progress <= 0f) {
+                                            progress = 0f
+                                            break
+                                        }
+
+                                        kotlinx.coroutines.delay(20L)
                                     }
-
-                                    kotlinx.coroutines.delay(20L)
                                 }
                             }
                         }
                     }
-                }
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(modifier = Modifier.size(width)) {
-            drawCircle(
-                color = transparentPrimaryColor,
-                style = androidx.compose.ui.graphics.drawscope.Stroke(width = lineWidth.toPx())
-            )
-            drawArc(
-                color = if (animal.inCage) Color(0xFFFFA726) else Color(0xFF008080),
-                startAngle = -90f,
-                sweepAngle = progress * 360f,
-                useCenter = false,
-                style = androidx.compose.ui.graphics.drawscope.Stroke(width = lineWidth.toPx())
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Canvas(modifier = Modifier.size(width)) {
+                drawCircle(
+                    color = transparentPrimaryColor,
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = lineWidth.toPx())
+                )
+                drawArc(
+                    color = if (currentAnimal.inCage) Color(0xFFFFA726) else Color(0xFF4FFFFF),
+                    startAngle = -90f,
+                    sweepAngle = progress * 360f,
+                    useCenter = false,
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = lineWidth.toPx())
+                )
+            }
+
+            AsyncImage(
+                model = imageURL,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(width, height)
+                    .clip(CircleShape)
+                    .graphicsLayer {
+                        scaleX = if (isPressed) 1f else 1.025f
+                        scaleY = if (isPressed) 1f else 1.025f
+                        shadowElevation = if (isPressed) 0.075.dp.toPx() else 2.dp.toPx()
+                    }
+                    .background(Color.White.copy(alpha = if (isPressed) 0.95f else 1f))
             )
         }
-
-        AsyncImage(
-            model = imageURL,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(width, height)
-                .clip(CircleShape)
-                .graphicsLayer {
-                    scaleX = if (isPressed) 1f else 1.025f
-                    scaleY = if (isPressed) 1f else 1.025f
-                    shadowElevation = if (isPressed) 0.075.dp.toPx() else 2.dp.toPx()
-                }
-                .background(Color.White.copy(alpha = if (isPressed) 0.95f else 1f))
-        )
     }
 }
 
-private fun easeIn(t: Float): Float {
-    return t.pow(2)
-}
-
 private fun onCompleteHold(
-    animal: Animal,
     function: () -> Unit
 ) {
-    // Logic to be added here later
-    println("[LOG]: button pressed")
     function()
+}
+
+
+private fun easeIn(t: Float): Float {
+    return t.pow(2)
 }

@@ -13,7 +13,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,7 +26,7 @@ import me.jareddanieljones.shelterpartner.Views.Elements.CardElement
 
 @Composable
 fun VolunteerView(viewModel: VolunteerViewModel = viewModel()) {
-    val animals = viewModel.animals.collectAsState()
+    val animals by viewModel.animals.collectAsState()
     val selectedAnimalType = viewModel.selectedAnimalType.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -33,13 +35,22 @@ fun VolunteerView(viewModel: VolunteerViewModel = viewModel()) {
             selectedOption = selectedAnimalType.value,
             onOptionSelected = { viewModel.onAnimalTypeChange(it) }
         )
+
+
+
         LazyColumn {
-            items(animals.value) { animal ->
-                CardElement(animal = animal)
+            // Use a key to uniquely identify each item for recomposition efficiency
+            items(animals, key = { it.id }) { animal ->
+                CardElement(animal = animal, viewModel = viewModel)
+                DisposableEffect(animal.inCage) {
+                    println("[LOG] inCage value changed: ${animal.inCage} for ${animal.name}")
+                    onDispose { }
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun SegmentedControl(
