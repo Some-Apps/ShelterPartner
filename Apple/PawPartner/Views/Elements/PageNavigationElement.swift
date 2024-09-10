@@ -4,6 +4,7 @@ import SwiftUI
 struct PageNavigationElement: View {
     @Binding var currentPage: Int
     let totalPages: Int
+    let onPageChange: (Int) -> Void // New callback for page change
     
     var body: some View {
         HStack {
