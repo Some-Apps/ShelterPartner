@@ -142,7 +142,7 @@ struct SettingsView: View {
                 
 
                     Section(header: Text("About")) {
-                        Link("Tutorials", destination: URL(string: "https://shelterpartner.org/tutorials")!)
+                        Link("Tutorials", destination: URL(string: "https://shelterpartner.org/wiki")!)
                         
                         HStack {
                             Image(systemName: "info.circle")

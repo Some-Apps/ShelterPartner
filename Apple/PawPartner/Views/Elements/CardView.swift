@@ -54,8 +54,18 @@ struct CardView: View {
         let timeElapsed: String = {
             let interval = Date().timeIntervalSince(Date(timeIntervalSince1970: animal.startTime))
             let minutes = Int(interval) / 60
-            return "\(minutes) \(minutes != 1 ? "minutes" : "minute")"
+            let hours = minutes / 60
+            let days = hours / 24
+            
+            if days > 0 {
+                return "\(days) \(days != 1 ? "days" : "day")"
+            } else if hours > 0 {
+                return "\(hours) \(hours != 1 ? "hours" : "hour")"
+            } else {
+                return "\(minutes) \(minutes != 1 ? "minutes" : "minute")"
+            }
         }()
+
         
         VStack(alignment: .leading) {
             HStack(alignment: .top) {
