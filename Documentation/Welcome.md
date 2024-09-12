@@ -1,4 +1,4 @@
-# Welcome to the SheterPartner Wiki.
+# Welcome
 
 Welcome to the official ShelterPartner Wiki, your go-to resource for all things related to the ShelterPartner platform and app. Whether you're a volunteer, shelter staff, or developer, this wiki is designed to provide you with comprehensive and up-to-date information about how to get the most out of ShelterPartner.
 
