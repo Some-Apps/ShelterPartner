@@ -39,18 +39,28 @@ class VolunteerViewModel(
         }
     }
 
-    fun toggleInCage(animalId: String, inKennel: Boolean) {
-        viewModelScope.launch {
-            val newInCageValue = !inKennel
-            val success = repository.toggleInCage(animalId, newInCageValue)
 
-            if (success) {
-                _animals.value = _animals.value.map {
-                    if (it.id == animalId) it.copy(inCage = newInCageValue) else it
+
+    fun toggleInCage(animalId: String) {
+        viewModelScope.launch {
+            // Fetch the shelter ID first (you might want to cache this)
+            val shelterID = repository.getShelterID()
+            val animalType = _selectedAnimalType.value
+
+            if (shelterID != null) {
+                // Fetch the latest state from Firestore before toggling
+                val currentAnimal = repository.getAnimalById(animalId, shelterID, animalType)
+                if (currentAnimal != null) {
+                    val newInCageValue = !currentAnimal.inCage
+                    val success = repository.toggleInCage(animalId, newInCageValue)
+
+
+                    // Let Firestore handle updating the UI through the real-time listener
                 }
             }
         }
     }
+
 
 
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
@@ -31,7 +32,7 @@ fun TakeOutButtonElement(
     function: () -> Unit,
 ) {
     // Observe the animal list from the ViewModel and find the animal by ID
-    val animals by viewModel.animals.collectAsState()
+    val animals by viewModel.animals.collectAsStateWithLifecycle()
     val animal = animals.find { it.id == animalId }
 
     animal?.let { currentAnimal ->  // Ensure animal is not null

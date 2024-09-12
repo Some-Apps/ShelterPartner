@@ -41,7 +41,9 @@ class FirestoreRepository {
 
     fun getAnimalsStream(shelterID: String, animalType: String): Flow<List<Animal>> {
         return callbackFlow {
-            val listener = db.collection("Societies").document(shelterID).collection(animalType)
+            val listener = db.collection("Societies")
+                .document(shelterID)
+                .collection(animalType)
                 .addSnapshotListener { snapshot, error ->
                     if (error != null) {
                         close(error)
@@ -50,6 +52,7 @@ class FirestoreRepository {
 
                     if (snapshot != null) {
                         val animalsList = snapshot.documents.mapNotNull { it.toObject(Animal::class.java) }
+                        println("[LOG] Firestore listener received updated animal list")
                         trySend(animalsList).isSuccess
                     }
                 }
@@ -58,19 +61,36 @@ class FirestoreRepository {
         }
     }
 
-    suspend fun toggleInCage(animalId: String, newInCageValue: Boolean): Boolean {
+
+    suspend fun getAnimalById(animalId: String, shelterID: String, animalType: String): Animal? {
         return try {
-            println("[LOG] inKennel = $newInCageValue")
+            val document = db.collection("Societies")
+                .document(shelterID)
+                .collection(animalType)
+                .document(animalId)
+                .get()
+                .await()
+
+            document.toObject(Animal::class.java)
+        } catch (e: Exception) {
+            println("[LOG] Error fetching animal by ID: ${e.message}")
+            null
+        }
+    }
+
+
+    suspend fun toggleInCage(animalId: String, newInCageValue: Boolean) {
+        // Update Firestore with the new value
+        try {
             db.collection("Societies")
-                .document("demo1")
+                .document("demo1") // Replace with actual shelter ID
                 .collection("Dogs")
                 .document(animalId)
                 .update("inCage", newInCageValue)
-                .await() // Ensure this is awaited to complete the operation
-            true  // Return true if update succeeds
+                .await()
         } catch (e: Exception) {
-            println("[LOG] inKennel = $newInCageValue")
-            false // Return false if update fails
+            println("[LOG] Error toggling inCage: ${e.message}")
         }
     }
+
 }

@@ -30,9 +30,6 @@ fun CardElement(
         else -> Color(0xFFC8C8C8)
     }
 
-    val currentInCage by rememberUpdatedState(newValue = animal.inCage)
-
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +70,7 @@ fun CardElement(
                     animalId = animal.id
                 ) {
                     println("[LOG]: the button pressed")
-                    viewModel.toggleInCage(animalId = animal.id, inKennel = animal.inCage)
+                    viewModel.toggleInCage(animalId = animal.id)
                 }
             }
         }

@@ -18,6 +18,7 @@ ui = "<version>"
 firebaseFirestoreKtx = "25.0.0"
 firebaseAuthKtx = "23.0.0"
 volley = "1.2.1"
+lifecycleRuntimeComposeAndroid = "2.8.5"
 
 
 [libraries]
@@ -47,6 +48,7 @@ ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
+androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

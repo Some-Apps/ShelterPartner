@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.ViewModels.VolunteerViewModel
@@ -26,8 +27,8 @@ import me.jareddanieljones.shelterpartner.Views.Elements.CardElement
 
 @Composable
 fun VolunteerView(viewModel: VolunteerViewModel = viewModel()) {
-    val animals by viewModel.animals.collectAsState()
-    val selectedAnimalType = viewModel.selectedAnimalType.collectAsState()
+    val animals by viewModel.animals.collectAsStateWithLifecycle()
+    val selectedAnimalType = viewModel.selectedAnimalType.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
         SegmentedControl(

@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.volley)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
 
 
     testImplementation(libs.junit)
