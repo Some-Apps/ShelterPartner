@@ -64,7 +64,7 @@ fun TakeOutButtonElement(
         var currentJob by remember { mutableStateOf<Job?>(null) }
 
         val primaryColor = Color(0xFF6200EE)
-        val transparentPrimaryColor = primaryColor.copy(alpha = 0.2f)
+        val transparentGray = Color.Gray.copy(alpha = 0.5f)
 
         Box(
             modifier = Modifier
@@ -132,11 +132,11 @@ fun TakeOutButtonElement(
         ) {
             Canvas(modifier = Modifier.size(width)) {
                 drawCircle(
-                    color = transparentPrimaryColor,
+                    color = transparentGray,
                     style = androidx.compose.ui.graphics.drawscope.Stroke(width = lineWidth.toPx())
                 )
                 drawArc(
-                    color = if (currentAnimal.inCage) Color(0xFFFFA726) else Color(0xFF4FFFFF),
+                    color = if (currentAnimal.inCage) Color(0xFFFF9800) else Color(0xFF00BCD4),
                     startAngle = -90f,
                     sweepAngle = progress * 360f,
                     useCenter = false,

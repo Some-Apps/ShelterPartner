@@ -5,7 +5,10 @@ import me.jareddanieljones.shelterpartner.Data.Animal
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,13 +46,41 @@ fun CardElement(
                 .weight(1f)
                 .align(Alignment.Top)
         ) {
-            Text(
-                text = animal.name,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    textDecoration = TextDecoration.Underline
+            Row(
+                verticalAlignment = Alignment.CenterVertically, // Align content vertically
+            ) {
+                Text(
+                    text = animal.name,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    modifier = Modifier.padding(end = 8.dp) // Optional padding to add space between name and icon
                 )
-            )
+
+                Box(
+                    modifier = Modifier
+                        .size(25.dp) // Adjust size of the circle
+                        .background(
+                            color = Color.Gray.copy(alpha = 0.2f), // Gray circle with transparency
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center // Center the icon inside the circle
+                ) {
+                    IconButton(onClick = {
+                        // Navigate to AnimalDetailView with animal as a parameter
+                        // navController.navigate("animal_detail/${animal.id}")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert, // 3-dot ellipses icon
+                            contentDescription = "More options"
+                        )
+                    }
+                }
+            }
+
+
+
             Text(
                 text = animal.location,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
