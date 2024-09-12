@@ -1,5 +1,6 @@
 package me.jareddanieljones.shelterpartner.Views.Elements
 
+import android.app.Application
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,23 +15,33 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.Data.Animal
 import me.jareddanieljones.shelterpartner.ViewModels.VolunteerViewModel
+import me.jareddanieljones.shelterpartner.ViewModels.VolunteerViewModelFactory
 import kotlin.math.pow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TakeOutButtonElement(
-    viewModel: VolunteerViewModel = VolunteerViewModel(),
-    animalId: String,  // Pass the animal ID instead of the whole animal
-    function: () -> Unit,
+    animalId: String,
+    function: () -> Unit
 ) {
+    // Get the Application Context and cast it to Application
+    val application = LocalContext.current.applicationContext as Application
+
+    // Create the ViewModel with Application Context
+    val viewModel: VolunteerViewModel = viewModel(
+        factory = VolunteerViewModelFactory(application)
+    )
+
     // Observe the animal list from the ViewModel and find the animal by ID
     val animals by viewModel.animals.collectAsStateWithLifecycle()
     val animal = animals.find { it.id == animalId }

@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.volley)
     implementation(libs.coil.compose)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
+    implementation(libs.androidx.datastore.preferences)
 
 
     testImplementation(libs.junit)

@@ -66,7 +66,6 @@ fun CardElement(
                 modifier = Modifier.padding(10.dp)
             ) {
                 TakeOutButtonElement(
-                    viewModel = viewModel,
                     animalId = animal.id
                 ) {
                     println("[LOG]: the button pressed")
