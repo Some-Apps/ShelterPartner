@@ -56,14 +56,38 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                 val currentAnimal = repository.getAnimalById(animalId, shelterID, animalType)
                 if (currentAnimal != null) {
                     val newInCageValue = !currentAnimal.inCage
-                    val success = repository.toggleInCage(animalId, newInCageValue)
-
-                    // Let Firestore handle updating the UI through the real-time listener
+//                    val success = repository.toggleInCage(animalId, newInCageValue)
+                    if (newInCageValue) {
+                        takeOutAnimal(animalId = animalId)
+                    } else {
+                        putBackAnimal(animalId = animalId)
+                    }
                 }
             }
         }
     }
+
+    fun takeOutAnimal(animalId: String) {
+        // check if requireLetOutType is true
+        // check if requireName is true
+        // else just toggle the animal
+        viewModelScope.launch {
+            // if shelterSettings.requireLetOutType is true show a popup with a picker for each element in letOutTypes. Once the user has selected an item and tapped "submit", the popup disappears and toggleInCage is called with false. they can also tap "nevermind" to just dimiss the popup
+            repository.toggleInCage(animalId = animalId, newInCageValue = false)
+        }
+    }
+
+    fun putBackAnimal(animalId: String) {
+        viewModelScope.launch {
+            repository.toggleInCage(animalId = animalId, newInCageValue = true)
+
+        }
+    }
+
 }
+
+
+
 
 class VolunteerViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

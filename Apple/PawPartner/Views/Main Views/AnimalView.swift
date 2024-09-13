@@ -457,7 +457,7 @@ struct AnimalView: View {
                 .frame(maxWidth: 500)
         }
         .present(isPresented: $viewModel.showRequireName, type: .alert, duration: 60, closeOnTap: false, closeOnTapOutside: false) {
-            RequireNameView(animal: viewModel.animal)
+            RequireNameView(animal: viewModel.animal, shouldTakeOutAfter: viewModel.showRequireLetOutType)
         }
         .present(isPresented: $viewModel.showRequireReason, type: .alert, duration: 60, closeOnTap: false, closeOnTapOutside: false) {
             RequireReasonView(animal: viewModel.animal)

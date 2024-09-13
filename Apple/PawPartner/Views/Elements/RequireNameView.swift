@@ -17,6 +17,7 @@ struct RequireNameView: View {
 //    @AppStorage("societyID") var storedSocietyID: String = ""
     @FocusState private var focusField: Bool
     let animal: Animal
+    let shouldTakeOutAfter: Bool
 
     var body: some View {
         VStack {
@@ -49,9 +50,16 @@ struct RequireNameView: View {
                             print("Document successfully updated")
                         }
                     }
-                    cardViewModel.takeOut(animal: animal)
-                    name = ""
-                    focusField = false
+                    if shouldTakeOutAfter {
+                        cardViewModel.takeOut(animal: animal)
+                        name = ""
+                        focusField = false
+                    } else {
+                        viewModel.showRequireLetOutType = true
+                        name = ""
+                        focusField = false
+                    }
+                    
                 }
                 .tint(.green)
                 .disabled(name.count < 1)
