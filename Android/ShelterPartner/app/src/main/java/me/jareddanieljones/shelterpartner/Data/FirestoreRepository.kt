@@ -70,6 +70,24 @@ class FirestoreRepository(private val context: Context) {
         FirebaseAuth.getInstance().signOut()
     }
 
+    suspend fun getUserName(): String? {
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            try {
+                val userDoc = db.collection("Users").document(uid).get().await()
+                if (userDoc.exists()) {
+                    return userDoc.getString("name")
+                }
+            } catch (e: Exception) {
+                println("[LOG] Error fetching user name: ${e.message}")
+            }
+        } else {
+            println("[LOG] User is not logged in.")
+        }
+        return null
+    }
+
+
     fun getSettingsStream(shelterID: String): Flow<ShelterSettings?> {
         return callbackFlow {
             val listener = db.collection("Societies")
@@ -81,8 +99,11 @@ class FirestoreRepository(private val context: Context) {
                     }
 
                     if (snapshot != null && snapshot.exists()) {
-                        // Extract the "Volunteer Settings" field as a Map
+                        // Extract the "VolunteerSettings" field as a Map
                         val volunteerSettingsMap = snapshot.get("VolunteerSettings") as? Map<String, Any>
+
+                        // Extract the "letOutTypes" attribute as a List of Strings
+                        val letOutTypes = snapshot.get("letOutTypes") as? List<String> ?: emptyList()
 
                         // Map it to ShelterSettings if it's not null
                         val shelterSettings = volunteerSettingsMap?.let {
@@ -91,17 +112,17 @@ class FirestoreRepository(private val context: Context) {
                                 adminMode = it["adminMode"] as? Boolean ?: false,
                                 allowPhotoUploads = it["allowPhotoUploads"] as? Boolean ?: false,
                                 appendAnimalData = it["appendAnimalData"] as? Boolean ?: false,
-                                automaticPutBackHours = (it["automaticPutBackHours"] as? Long)?.toInt() ?: 3, // Handle Long to Int
+                                automaticPutBackHours = (it["automaticPutBackHours"] as? Long)?.toInt() ?: 3,
                                 automaticPutBackIgnoreVisit = it["automaticPutBackIgnoreVisit"] as? Boolean ?: true,
-                                cardsPerPage = (it["cardsPerPage"] as? Long)?.toInt() ?: 30, // Handle Long to Int
+                                cardsPerPage = (it["cardsPerPage"] as? Long)?.toInt() ?: 30,
                                 createLogsAlways = it["createLogsAlways"] as? Boolean ?: true,
                                 customFormURL = it["customFormURL"] as? String ?: "",
                                 enableAutomaticPutBack = it["enableAutomaticPutBack"] as? Boolean ?: true,
                                 groupOption = it["groupOption"] as? String ?: "",
                                 isCustomFormOn = it["isCustomFormOn"] as? Boolean ?: false,
                                 linkType = it["linkType"] as? String ?: "QR Code",
-                                minimumDuration = (it["minimumDuration"] as? Long)?.toInt() ?: 10, // Handle Long to Int
-                                requireLetOutType = it["requireLetOutType"] as? Boolean ?: false,
+                                minimumDuration = (it["minimumDuration"] as? Long)?.toInt() ?: 10,
+                                requireLetOutType = it["showLetOutTypePrompt"] as? Boolean ?: false,
                                 requireName = it["requireName"] as? Boolean ?: false,
                                 requireReason = it["requireReason"] as? Boolean ?: false,
                                 secondarySortOption = it["secondarySortOption"] as? String ?: "",
@@ -110,7 +131,8 @@ class FirestoreRepository(private val context: Context) {
                                 showFilterOptions = it["showFilterOptions"] as? Boolean ?: false,
                                 showNoteDates = it["showNoteDates"] as? Boolean ?: true,
                                 showSearchBar = it["showSearchBar"] as? Boolean ?: false,
-                                sortBy = it["sortBy"] as? String ?: "Last Let Out"
+                                sortBy = it["sortBy"] as? String ?: "Last Let Out",
+                                letOutTypes = letOutTypes // Include letOutTypes here
                             )
                         }
 
@@ -124,6 +146,7 @@ class FirestoreRepository(private val context: Context) {
             awaitClose { listener.remove() }
         }
     }
+
 
 
 
@@ -168,6 +191,22 @@ class FirestoreRepository(private val context: Context) {
         }
     }
 
+    suspend fun updateAnimalField(
+        shelterID: String,
+        animalType: String,
+        animalId: String,
+        fieldName: String,
+        value: Any?
+    ): Boolean {
+        val path = "Societies/$shelterID/$animalType/$animalId"
+        val docRef = db.document(path)
+        return try {
+            docRef.update(fieldName, value).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     suspend fun toggleInCage(animalId: String, newInCageValue: Boolean) {
         try {

@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.Data.Animal
 import android.content.Context
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import me.jareddanieljones.shelterpartner.Data.ShelterSettings
 
 
 class VolunteerViewModel(application: Application) : AndroidViewModel(application) {
@@ -23,8 +27,31 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     private val _selectedAnimalType = MutableStateFlow("Dogs")
     val selectedAnimalType: StateFlow<String> get() = _selectedAnimalType
 
+    private val _shelterSettings = MutableStateFlow<ShelterSettings?>(null)
+    val shelterSettings = _shelterSettings.asStateFlow()
+
+    // State variables for dialogs and user inputs
+    private val _showNameDialog = MutableStateFlow(false)
+    val showNameDialog: StateFlow<Boolean> get() = _showNameDialog
+
+    private val _showLetOutTypeDialog = MutableStateFlow(false)
+    val showLetOutTypeDialog: StateFlow<Boolean> get() = _showLetOutTypeDialog
+
+    var name: String = ""
+
+    private val _volunteerName = MutableStateFlow("")
+    val volunteerName: StateFlow<String> get() = _volunteerName
+
+    private val _selectedLetOutType = MutableStateFlow("")
+    val selectedLetOutType: StateFlow<String> get() = _selectedLetOutType
+
+    private var currentAnimalId: String? = null
+
+
     init {
         fetchAnimals()
+        fetchShelterSettings()
+        fetchVolunteerName()
     }
 
     fun onAnimalTypeChange(type: String) {
@@ -57,7 +84,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                 if (currentAnimal != null) {
                     val newInCageValue = !currentAnimal.inCage
 //                    val success = repository.toggleInCage(animalId, newInCageValue)
-                    if (newInCageValue) {
+                    if (!newInCageValue) {
                         takeOutAnimal(animalId = animalId)
                     } else {
                         putBackAnimal(animalId = animalId)
@@ -68,19 +95,134 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun takeOutAnimal(animalId: String) {
-        // check if requireLetOutType is true
-        // check if requireName is true
-        // else just toggle the animal
+        currentAnimalId = animalId
         viewModelScope.launch {
-            // if shelterSettings.requireLetOutType is true show a popup with a picker for each element in letOutTypes. Once the user has selected an item and tapped "submit", the popup disappears and toggleInCage is called with false. they can also tap "nevermind" to just dimiss the popup
-            repository.toggleInCage(animalId = animalId, newInCageValue = false)
+            val requireName = shelterSettings.value?.requireName == true
+            val requireLetOutType = shelterSettings.value?.requireLetOutType == true
+
+            if (requireName && requireLetOutType) {
+                if (name.isBlank()) {
+                    _showNameDialog.value = true
+                } else {
+                    _showLetOutTypeDialog.value = true
+                }
+            } else if (requireName) {
+                println("[LOG]: should require name")
+                if (_volunteerName.value.isBlank()) {
+                    _showNameDialog.value = true
+                } else {
+                    toggleAnimalOut()
+                }
+            } else if (requireLetOutType) {
+                _showLetOutTypeDialog.value = true
+            } else {
+                toggleAnimalOut()
+            }
         }
     }
+
+    private fun toggleAnimalOut() {
+        currentAnimalId?.let { animalId ->
+            viewModelScope.launch {
+                repository.toggleInCage(animalId = animalId, newInCageValue = false)
+            }
+        }
+    }
+
 
     fun putBackAnimal(animalId: String) {
         viewModelScope.launch {
             repository.toggleInCage(animalId = animalId, newInCageValue = true)
 
+        }
+    }
+
+    private fun fetchShelterSettings() {
+        viewModelScope.launch {
+            repository.getStoredShelterID()?.let {
+                repository.getSettingsStream(it)
+                    .onEach { settings ->
+                        _shelterSettings.value = settings
+                    }
+                    .launchIn(this)
+            }
+        }
+    }
+
+    private fun fetchVolunteerName() {
+        viewModelScope.launch {
+            val tempName = repository.getUserName()
+            if (tempName != null) {
+                name = tempName
+                _volunteerName.value = tempName
+            }
+        }
+    }
+
+
+    fun onVolunteerNameSubmit(name: String) {
+        viewModelScope.launch {
+            _volunteerName.value = name
+            _showNameDialog.value = false
+            val requireLetOutType = shelterSettings.value?.requireLetOutType == true
+            if (requireLetOutType) {
+                _showLetOutTypeDialog.value = true
+            } else {
+                updateAnimalWithVolunteerName()
+                currentAnimalId?.let { repository.toggleInCage(animalId = it, newInCageValue = false) }
+            }
+        }
+    }
+
+    fun onLetOutTypeSubmit(letOutType: String) {
+        viewModelScope.launch {
+            _selectedLetOutType.value = letOutType
+            _showLetOutTypeDialog.value = false
+            updateAnimalWithLetOutType()
+            if (shelterSettings.value?.requireName == true && _volunteerName.value.isNotBlank()) {
+                updateAnimalWithVolunteerName()
+            }
+            currentAnimalId?.let { repository.toggleInCage(animalId = it, newInCageValue = false) }
+        }
+    }
+
+    fun onNameDialogDismiss() {
+        _showNameDialog.value = false
+    }
+
+    fun onLetOutTypeDialogDismiss() {
+        _showLetOutTypeDialog.value = false
+    }
+
+    private suspend fun updateAnimalWithVolunteerName() {
+        currentAnimalId?.let { animalId ->
+            val shelterID = repository.getStoredShelterID()
+            val animalType = _selectedAnimalType.value
+            if (shelterID != null) {
+                repository.updateAnimalField(
+                    shelterID,
+                    animalType,
+                    animalId,
+                    "lastVolunteer",
+                    _volunteerName.value
+                )
+            }
+        }
+    }
+
+    private suspend fun updateAnimalWithLetOutType() {
+        currentAnimalId?.let { animalId ->
+            val shelterID = repository.getStoredShelterID()
+            val animalType = _selectedAnimalType.value
+            if (shelterID != null) {
+                repository.updateAnimalField(
+                    shelterID,
+                    animalType,
+                    animalId,
+                    "lastLetOutType",
+                    _selectedLetOutType.value
+                )
+            }
         }
     }
 

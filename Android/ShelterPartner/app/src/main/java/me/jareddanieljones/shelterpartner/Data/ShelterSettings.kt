@@ -24,5 +24,6 @@ data class ShelterSettings(
     val showFilterOptions: Boolean = false,
     val showNoteDates: Boolean = true,
     val showSearchBar: Boolean = false,
-    val sortBy: String = "Last Let Out"
+    val sortBy: String = "Last Let Out",
+    val letOutTypes: List<String> = emptyList() // Add this line
 )
