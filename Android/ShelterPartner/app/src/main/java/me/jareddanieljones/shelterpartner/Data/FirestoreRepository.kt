@@ -14,6 +14,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.google.firebase.firestore.FieldValue
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "shelter_preferences")
 
@@ -85,6 +86,36 @@ class FirestoreRepository(private val context: Context) {
             println("[LOG] User is not logged in.")
         }
         return null
+    }
+
+    suspend fun addLog(
+        shelterID: String,
+        animalType: String,
+        animalId: String,
+        log: me.jareddanieljones.shelterpartner.Data.Log
+    ) {
+        val animalDocRef = db.collection("Societies")
+            .document(shelterID)
+            .collection(animalType)
+            .document(animalId)
+
+        animalDocRef.update("logs", FieldValue.arrayUnion(log))
+            .await()
+    }
+
+    suspend fun addNote(
+        shelterID: String,
+        animalType: String,
+        animalId: String,
+        note: Note
+    ) {
+        val animalDocRef = db.collection("Societies")
+            .document(shelterID)
+            .collection(animalType)
+            .document(animalId)
+
+        animalDocRef.update("notes", FieldValue.arrayUnion(note))
+            .await()
     }
 
 
@@ -196,28 +227,41 @@ class FirestoreRepository(private val context: Context) {
         animalType: String,
         animalId: String,
         fieldName: String,
-        value: Any?
-    ): Boolean {
-        val path = "Societies/$shelterID/$animalType/$animalId"
-        val docRef = db.document(path)
-        return try {
-            docRef.update(fieldName, value).await()
-            true
+        value: Any
+    ) {
+        val animalDocRef = db.collection("Societies")
+            .document(shelterID)
+            .collection(animalType)
+            .document(animalId)
+
+        try {
+            Log.d("FirestoreRepository", "Attempting to update field '$fieldName' with value '$value' for animalId '$animalId'")
+            animalDocRef.update(fieldName, value).await()
+            Log.d("FirestoreRepository", "Successfully updated field '$fieldName'")
         } catch (e: Exception) {
-            false
+            Log.e("FirestoreRepository", "Error updating field '$fieldName'", e)
         }
     }
 
-    suspend fun toggleInCage(animalId: String, newInCageValue: Boolean) {
+
+    suspend fun toggleInCage(animalId: String, animalType: String, newInCageValue: Boolean) {
         try {
             getStoredShelterID()?.let {
                 db.collection("Societies")
                     .document(it) // Replace with actual shelter ID
-                    .collection("Dogs")
+                    .collection(animalType)
                     .document(animalId)
                     .update("inCage", newInCageValue)
                     .await()
+                updateAnimalField(
+                    it,
+                    animalType,
+                    animalId,
+                    "startTime",
+                    System.currentTimeMillis().toDouble()
+                )
             }
+
         } catch (e: Exception) {
             println("[LOG] Error toggling inCage: ${e.message}")
         }

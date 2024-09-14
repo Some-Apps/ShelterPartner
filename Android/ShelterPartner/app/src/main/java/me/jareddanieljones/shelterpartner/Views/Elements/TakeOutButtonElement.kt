@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -32,6 +33,7 @@ import kotlin.math.pow
 @Composable
 fun TakeOutButtonElement(
     animalId: String,
+    enabled: Boolean = true, // Added enabled parameter
     function: () -> Unit
 ) {
     // Get the Application Context and cast it to Application
@@ -66,66 +68,81 @@ fun TakeOutButtonElement(
         val primaryColor = Color(0xFF6200EE)
         val transparentGray = Color.Gray.copy(alpha = 0.5f)
 
+        // Reset progress and cancel animations when enabled changes to false
+        LaunchedEffect(enabled) {
+            if (!enabled) {
+                progress = 0f
+                isPressed = false
+                currentJob?.cancel()
+            }
+        }
+
         Box(
             modifier = Modifier
                 .size(width, height)
-                .pointerInput(Unit) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent(PointerEventPass.Initial)
-                            if (event.changes.any { it.pressed }) {
-                                isPressed = true
-                                tickCountPressing = 0f
-                                lastEaseValue = easeIn(0f)
+                .let { baseModifier ->
+                    if (enabled) {
+                        baseModifier.pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                                    if (event.changes.any { it.pressed }) {
+                                        isPressed = true
+                                        tickCountPressing = 0f
+                                        lastEaseValue = easeIn(0f)
 
-                                currentJob?.cancel()
+                                        currentJob?.cancel()
 
-                                currentJob = scope.launch {
-                                    while (isPressed && isActive) {
-                                        val t = tickCountPressing / 75f
-                                        val currentEaseValue = easeIn(t)
-                                        val increment = currentEaseValue - lastEaseValue
-                                        progress += increment
-                                        lastEaseValue = currentEaseValue
-                                        tickCountPressing += 1
+                                        currentJob = scope.launch {
+                                            while (isPressed && isActive) {
+                                                val t = tickCountPressing / 75f
+                                                val currentEaseValue = easeIn(t)
+                                                val increment = currentEaseValue - lastEaseValue
+                                                progress += increment
+                                                lastEaseValue = currentEaseValue
+                                                tickCountPressing += 1
 
-                                        if (progress >= 1f) {
-                                            progress = 0f
-                                            onCompleteHold(function)
-                                            break
-                                        } else if (progress > 0.97f) {
-                                            progress = 1f
+                                                if (progress >= 1f) {
+                                                    progress = 0f
+                                                    onCompleteHold(function)
+                                                    break
+                                                } else if (progress > 0.97f) {
+                                                    progress = 1f
+                                                }
+
+                                                kotlinx.coroutines.delay(20L)
+                                            }
                                         }
+                                    } else {
+                                        isPressed = false
+                                        tickCountNotPressing = 75f
+                                        lastEaseValue = easeIn(1f)
 
-                                        kotlinx.coroutines.delay(20L)
-                                    }
-                                }
-                            } else {
-                                isPressed = false
-                                tickCountNotPressing = 75f
-                                lastEaseValue = easeIn(1f)
+                                        currentJob?.cancel()
 
-                                currentJob?.cancel()
+                                        currentJob = scope.launch {
+                                            while (progress > 0f && isActive) {
+                                                val t = tickCountNotPressing / 75f
+                                                val currentEaseValue = easeIn(t)
+                                                val decrement = lastEaseValue - currentEaseValue
+                                                progress -= decrement
+                                                lastEaseValue = currentEaseValue
+                                                tickCountNotPressing -= 1
 
-                                currentJob = scope.launch {
-                                    while (progress > 0f && isActive) {
-                                        val t = tickCountNotPressing / 75f
-                                        val currentEaseValue = easeIn(t)
-                                        val decrement = lastEaseValue - currentEaseValue
-                                        progress -= decrement
-                                        lastEaseValue = currentEaseValue
-                                        tickCountNotPressing -= 1
+                                                if (progress <= 0f) {
+                                                    progress = 0f
+                                                    break
+                                                }
 
-                                        if (progress <= 0f) {
-                                            progress = 0f
-                                            break
+                                                kotlinx.coroutines.delay(20L)
+                                            }
                                         }
-
-                                        kotlinx.coroutines.delay(20L)
                                     }
                                 }
                             }
                         }
+                    } else {
+                        baseModifier // Do not apply pointerInput when disabled
                     }
                 },
             contentAlignment = Alignment.Center
@@ -157,6 +174,13 @@ fun TakeOutButtonElement(
                         shadowElevation = if (isPressed) 0.075.dp.toPx() else 2.dp.toPx()
                     }
                     .background(Color.White.copy(alpha = if (isPressed) 0.95f else 1f))
+//                    .let { baseModifier ->
+//                        if (!enabled) {
+//                            baseModifier.alpha(0.5f) // Adjust alpha when disabled
+//                        } else {
+//                            baseModifier
+//                        }
+//                    }
             )
         }
     }
@@ -167,7 +191,6 @@ private fun onCompleteHold(
 ) {
     function()
 }
-
 
 private fun easeIn(t: Float): Float {
     return t.pow(2)

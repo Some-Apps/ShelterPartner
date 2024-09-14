@@ -90,6 +90,7 @@ fun CardElement(
                 text = "Some additional info here",
                 style = MaterialTheme.typography.bodyMedium
             )
+            Text(text = animal.timeSinceLastLetOut)
         }
 
         if (animal.photos.isNotEmpty()) {
@@ -97,7 +98,8 @@ fun CardElement(
                 modifier = Modifier.padding(10.dp)
             ) {
                 TakeOutButtonElement(
-                    animalId = animal.id
+                    animalId = animal.id,
+                    enabled = animal.canPlay // Pass the enabled state here
                 ) {
                     println("[LOG]: the button pressed")
                     viewModel.toggleInCage(animalId = animal.id)

@@ -10,11 +10,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.Data.Animal
-import android.content.Context
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import me.jareddanieljones.shelterpartner.Data.Log
+import me.jareddanieljones.shelterpartner.Data.Note
 import me.jareddanieljones.shelterpartner.Data.ShelterSettings
+import java.util.UUID
 
 
 class VolunteerViewModel(application: Application) : AndroidViewModel(application) {
@@ -37,7 +39,11 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     private val _showLetOutTypeDialog = MutableStateFlow(false)
     val showLetOutTypeDialog: StateFlow<Boolean> get() = _showLetOutTypeDialog
 
-    var name: String = ""
+    private val _showThankYouDialog = MutableStateFlow(false)
+    val showThankYouDialog: StateFlow<Boolean> get() = _showThankYouDialog
+
+    private val _showAddNoteDialog = MutableStateFlow(false)
+    val showAddNoteDialog: StateFlow<Boolean> get() = _showAddNoteDialog
 
     private val _volunteerName = MutableStateFlow("")
     val volunteerName: StateFlow<String> get() = _volunteerName
@@ -45,8 +51,8 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     private val _selectedLetOutType = MutableStateFlow("")
     val selectedLetOutType: StateFlow<String> get() = _selectedLetOutType
 
-    private var currentAnimalId: String? = null
-
+    private val _currentAnimalId = MutableStateFlow<String?>(null)
+    val currentAnimalId: StateFlow<String?> get() = _currentAnimalId
 
     init {
         fetchAnimals()
@@ -70,20 +76,15 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-
-
     fun toggleInCage(animalId: String) {
         viewModelScope.launch {
-            // Fetch the shelter ID first (you might want to cache this)
             val shelterID = repository.getShelterID()
             val animalType = _selectedAnimalType.value
 
             if (shelterID != null) {
-                // Fetch the latest state from Firestore before toggling
                 val currentAnimal = repository.getAnimalById(animalId, shelterID, animalType)
                 if (currentAnimal != null) {
                     val newInCageValue = !currentAnimal.inCage
-//                    val success = repository.toggleInCage(animalId, newInCageValue)
                     if (!newInCageValue) {
                         takeOutAnimal(animalId = animalId)
                     } else {
@@ -95,19 +96,18 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun takeOutAnimal(animalId: String) {
-        currentAnimalId = animalId
+        _currentAnimalId.value = animalId
         viewModelScope.launch {
             val requireName = shelterSettings.value?.requireName == true
             val requireLetOutType = shelterSettings.value?.requireLetOutType == true
 
             if (requireName && requireLetOutType) {
-                if (name.isBlank()) {
+                if (_volunteerName.value.isBlank()) {
                     _showNameDialog.value = true
                 } else {
                     _showLetOutTypeDialog.value = true
                 }
             } else if (requireName) {
-                println("[LOG]: should require name")
                 if (_volunteerName.value.isBlank()) {
                     _showNameDialog.value = true
                 } else {
@@ -115,25 +115,114 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             } else if (requireLetOutType) {
                 _showLetOutTypeDialog.value = true
+
             } else {
                 toggleAnimalOut()
             }
         }
     }
 
+
     private fun toggleAnimalOut() {
-        currentAnimalId?.let { animalId ->
+        _currentAnimalId.value?.let { animalId ->
             viewModelScope.launch {
-                repository.toggleInCage(animalId = animalId, newInCageValue = false)
+                repository.toggleInCage(animalId = animalId, animalType = selectedAnimalType.value, newInCageValue = false)
+                // Update startTime in Firestore
+                val shelterID = repository.getStoredShelterID()
+                val animalType = _selectedAnimalType.value
+                if (shelterID != null) {
+                    repository.updateAnimalField(
+                        shelterID,
+                        animalType,
+                        animalId,
+                        "startTime",
+                        System.currentTimeMillis().toDouble()
+                    )
+                }
             }
         }
     }
 
-
     fun putBackAnimal(animalId: String) {
+        /*
+        - The animal should be put back in their cage
+        - The createLog function should be called
+        - Show a popup with the animal's first photo clipped in a circle. Below that it says "Thank You!" and below that are two buttons; "Dismiss" and "Add Note"
+        - If the user selected "Add Note" the popup will be dismissed and a new popup will be displayed.
+        - The new popup will have a text field allowing the user to add notes and a "Save" button.
+        - Tapping the save adds the note to firestore and then dismisses the view
+        - Firestore Path for note: Societies/$shelterID/$animalType/$animalID/ (this is an array of map)
+         */
+        _currentAnimalId.value = animalId
         viewModelScope.launch {
-            repository.toggleInCage(animalId = animalId, newInCageValue = true)
+            val shelterID = repository.getStoredShelterID()
+            val animalType = _selectedAnimalType.value
+            if (shelterID != null) {
+                // Update the animal's inCage status to true
+                repository.updateAnimalField(
+                    shelterID,
+                    animalType,
+                    animalId,
+                    "inCage",
+                    true
+                )
+                // Call createLog function
+                createLog(animalId)
+                // Show the Thank You popup
+                _showThankYouDialog.value = true
+            }
+        }
+    }
 
+    fun createLog(animalId: String) {
+        /*
+        - A log should be created for the animal and appended to logs in firestore
+        - Log.startTime is the startTime attribute in the animal's document
+        - Log.endTime is now
+        - Log.user is the lastVolunteer attribute in the animal's document
+        - Log.shortReason should just be an empty string for now
+        - Log.letOutType is the lastLetOutType attribute in the animal's document
+        - Firestore Path for logs: Societies/$shelterID/$animalType/$animalID/ (this is an array of Map)
+        - The lastVolunteer and lastLetOutType attributes in the animal's document should be reset to an empty string
+         */
+        viewModelScope.launch {
+            val shelterID = repository.getStoredShelterID()
+            val animalType = _selectedAnimalType.value
+            if (shelterID != null) {
+                val animal = repository.getAnimalById(animalId, shelterID, animalType)
+                if (animal != null) {
+                    val log = Log(
+                        id = UUID.randomUUID().toString(),
+                        startTime = animal.startTime,
+                        endTime = System.currentTimeMillis().toDouble(),
+                        user = animal.lastVolunteer,
+                        shortReason = "",  // Empty string for now
+                        letOutType = animal.lastLetOutType
+                    )
+                    // Append the log to the logs collection in Firestore
+                    repository.addLog(
+                        shelterID = shelterID,
+                        animalType = animalType,
+                        animalId = animalId,
+                        log = log
+                    )
+                    // Reset lastVolunteer and lastLetOutType in the animal's document
+                    repository.updateAnimalField(
+                        shelterID = shelterID,
+                        animalType = animalType,
+                        animalId,
+                        "lastVolunteer",
+                        ""
+                    )
+                    repository.updateAnimalField(
+                        shelterID = shelterID,
+                        animalType = animalType,
+                        animalId,
+                        "lastLetOutType",
+                        ""
+                    )
+                }
+            }
         }
     }
 
@@ -153,7 +242,6 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             val tempName = repository.getUserName()
             if (tempName != null) {
-                name = tempName
                 _volunteerName.value = tempName
             }
         }
@@ -169,7 +257,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                 _showLetOutTypeDialog.value = true
             } else {
                 updateAnimalWithVolunteerName()
-                currentAnimalId?.let { repository.toggleInCage(animalId = it, newInCageValue = false) }
+                _currentAnimalId.value?.let { repository.toggleInCage(animalId = it, animalType = selectedAnimalType.value, newInCageValue = false) }
             }
         }
     }
@@ -182,7 +270,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
             if (shelterSettings.value?.requireName == true && _volunteerName.value.isNotBlank()) {
                 updateAnimalWithVolunteerName()
             }
-            currentAnimalId?.let { repository.toggleInCage(animalId = it, newInCageValue = false) }
+            _currentAnimalId.value?.let { repository.toggleInCage(animalId = it, animalType = selectedAnimalType.value, newInCageValue = false) }
         }
     }
 
@@ -194,8 +282,47 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
         _showLetOutTypeDialog.value = false
     }
 
+    fun onThankYouDialogDismiss() {
+        _showThankYouDialog.value = false
+        _currentAnimalId.value = null
+    }
+
+    fun onAddNoteSelected() {
+        _showThankYouDialog.value = false
+        _showAddNoteDialog.value = true
+    }
+
+    fun onAddNoteDismiss() {
+        _showAddNoteDialog.value = false
+        _currentAnimalId.value = null
+    }
+
+    fun onAddNoteSubmit(noteText: String) {
+        viewModelScope.launch {
+            val shelterID = repository.getStoredShelterID()
+            val animalType = _selectedAnimalType.value
+            val animalId = _currentAnimalId.value
+            if (shelterID != null && animalId != null) {
+                val note = Note(
+                    id = UUID.randomUUID().toString(),
+                    date = System.currentTimeMillis().toDouble(),
+                    note = noteText,
+                    user = _volunteerName.value
+                )
+                repository.addNote(
+                    shelterID = shelterID,
+                    animalType = animalType,
+                    animalId = animalId,
+                    note = note
+                )
+            }
+            _showAddNoteDialog.value = false
+            _currentAnimalId.value = null
+        }
+    }
+
     private suspend fun updateAnimalWithVolunteerName() {
-        currentAnimalId?.let { animalId ->
+        _currentAnimalId.value?.let { animalId ->
             val shelterID = repository.getStoredShelterID()
             val animalType = _selectedAnimalType.value
             if (shelterID != null) {
@@ -211,7 +338,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private suspend fun updateAnimalWithLetOutType() {
-        currentAnimalId?.let { animalId ->
+        _currentAnimalId.value?.let { animalId ->
             val shelterID = repository.getStoredShelterID()
             val animalType = _selectedAnimalType.value
             if (shelterID != null) {
@@ -225,8 +352,8 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
     }
-
 }
+
 
 
 
