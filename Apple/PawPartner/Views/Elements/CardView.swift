@@ -20,6 +20,7 @@ struct CardView: View {
     @State private var showPopover = false
     @State private var isAnimating: Bool = false
     @State private var showLocationPopover = false
+    @State private var showNamePopover = false
 
     @AppStorage("societyID") var societyID = ""
     @AppStorage("allowPhotoUploads") var allowPhotoUploads = true
@@ -72,14 +73,18 @@ struct CardView: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 7) {
                     HStack(alignment: .center) {
-                        Menu {
+                        Text(animal.name)
+                            .font(.title)
+                            .bold()
+                            .underline()
+                            .foregroundStyle(.black)
+                        .onTapGesture {
+                            showNamePopover.toggle()
+                        }
+                        .popover(isPresented: $showNamePopover, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom) {
                             Text(animal.name)
-                        } label: {
-                            Text(animal.name)
-                                .font(.title)
-                                .bold()
-                                .underline()
-                                .foregroundStyle(.black)
+                                .padding()
+                                .presentationCompactAdaptation((.popover))
                         }
                             
                         Menu {
@@ -139,7 +144,9 @@ struct CardView: View {
                                 Image(systemName: "tag")
                                 ForEach(topTags(for: animal, count: 3), id: \.self) {
                                     Text($0)
-                                        .background(.ultraThinMaterial)
+                                        .padding(.horizontal, 7)
+                                        .background(.regularMaterial)
+                                        .clipShape(.capsule)
 //                                        .clipShape(.containerRelative)
                                 }
                             }
@@ -152,6 +159,7 @@ struct CardView: View {
                         }
                         .popover(isPresented: $showLocationPopover, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom) {
                             Text(animal.fullLocation ?? animal.location)
+                                .padding()
                                 .presentationCompactAdaptation((.popover))
                         }
 
