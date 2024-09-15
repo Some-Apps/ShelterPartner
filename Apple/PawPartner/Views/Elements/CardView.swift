@@ -19,6 +19,7 @@ struct CardView: View {
     @State private var showEditInfo = false
     @State private var showPopover = false
     @State private var isAnimating: Bool = false
+    @State private var showLocationPopover = false
 
     @AppStorage("societyID") var societyID = ""
     @AppStorage("allowPhotoUploads") var allowPhotoUploads = true
@@ -108,14 +109,7 @@ struct CardView: View {
                             Image(systemName: "ellipsis.circle")
                                 .foregroundStyle(.black.opacity(0.5))
                                 .font(.title)
-
                         }
-//                        if animal.animalType == .Dog && (societyID == "ChIJ8WVKpxEfAIgRIMOBoCkxBtY" || societyID == "ChIJgbjU6bBRBogRKBb3KxOJGn8") {
-//                            Image(systemName: animal.aggressionRating == 1 ? "1.circle.fill" : animal.aggressionRating == 2 ? "2.square.fill" : animal.aggressionRating == 3 ? "3.circle.fill" : "")
-//                                .font(.title)
-//                                .foregroundColor(animal.aggressionRating == 1 ? .green : animal.aggressionRating == 2 ? .orange : animal.aggressionRating == 3 ? .red : .primary.opacity(0.2))
-//
-//                        }
                         if let symbol = animal.symbol, let symbolColor = animal.symbolColor {
                             Image(systemName: symbol)
                                 .foregroundStyle(
@@ -151,10 +145,16 @@ struct CardView: View {
                             }
                             .lineLimit(1)
                         }
-                        Menu(animal.location, systemImage: "mappin.circle") {
-                            Text(animal.fullLocation ?? animal.location)
-                        }
+                        Label(animal.location, systemImage: "mappin.circle")
                         .foregroundStyle(.black)
+                        .onTapGesture {
+                            showLocationPopover.toggle()
+                        }
+                        .popover(isPresented: $showLocationPopover, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom) {
+                            Text(animal.fullLocation ?? animal.location)
+                                .presentationCompactAdaptation((.popover))
+                        }
+
                         if let medicalGroup = animal.medicalGroup {
                             if !medicalGroup.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 Label(medicalGroup, systemImage: "stethoscope.circle")
