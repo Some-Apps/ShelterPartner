@@ -258,7 +258,7 @@ class FirestoreRepository(private val context: Context) {
                     animalType,
                     animalId,
                     "startTime",
-                    System.currentTimeMillis().toDouble()
+                    System.currentTimeMillis().toDouble() / 1000.0
                 )
             }
 

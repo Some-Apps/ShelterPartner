@@ -136,7 +136,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                         animalType,
                         animalId,
                         "startTime",
-                        System.currentTimeMillis().toDouble()
+                        System.currentTimeMillis().toDouble() / 1000.0
                     )
                 }
             }
@@ -194,7 +194,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                     val log = Log(
                         id = UUID.randomUUID().toString(),
                         startTime = animal.startTime,
-                        endTime = System.currentTimeMillis().toDouble(),
+                        endTime = System.currentTimeMillis().toDouble() / 1000.0,
                         user = animal.lastVolunteer,
                         shortReason = "",  // Empty string for now
                         letOutType = animal.lastLetOutType
@@ -305,7 +305,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
             if (shelterID != null && animalId != null) {
                 val note = Note(
                     id = UUID.randomUUID().toString(),
-                    date = System.currentTimeMillis().toDouble(),
+                    date = System.currentTimeMillis().toDouble() / 1000.0,
                     note = noteText,
                     user = _volunteerName.value
                 )

@@ -13,6 +13,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -33,79 +36,107 @@ fun CardElement(
         else -> Color(0xFFC8C8C8)
     }
 
-    Row(
+    val cornerRadius = 20.dp
+    val shadowColor = Color.Black.copy(alpha = 0.5f)
+    val shadowElevation = 2.dp  // This corresponds to the blur radius in SwiftUI
+    val shadowOffsetX = 1.dp
+    val shadowOffsetY = 2.dp
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(backgroundColor, RoundedCornerShape(20.dp))
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
+        // Shadow Layer
+        Box(
             modifier = Modifier
-                .weight(1f)
-                .align(Alignment.Top)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically, // Align content vertically
-            ) {
-                Text(
-                    text = animal.name,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        textDecoration = TextDecoration.Underline
-                    ),
-                    modifier = Modifier.padding(end = 8.dp) // Optional padding to add space between name and icon
+                .matchParentSize()
+                .offset(
+                    x = shadowOffsetX,
+                    y = shadowOffsetY
                 )
+                .background(
+                    color = shadowColor,
+                    shape = RoundedCornerShape(cornerRadius)
+                )
+                .blur(radius = shadowElevation)
+        )
 
-                Box(
-                    modifier = Modifier
-                        .size(25.dp) // Adjust size of the circle
-                        .background(
-                            color = Color.Gray.copy(alpha = 0.2f), // Gray circle with transparency
-                            shape = CircleShape
-                        ),
-                    contentAlignment = Alignment.Center // Center the icon inside the circle
+        // Content Layer
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = backgroundColor,
+                    shape = RoundedCornerShape(cornerRadius)
+                )
+                .clip(RoundedCornerShape(cornerRadius))
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.Top)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = {
-                        // Navigate to AnimalDetailView with animal as a parameter
-                        // navController.navigate("animal_detail/${animal.id}")
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert, // 3-dot ellipses icon
-                            contentDescription = "More options"
-                        )
+                    Text(
+                        text = animal.name,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            textDecoration = TextDecoration.Underline
+                        ),
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .size(25.dp)
+                            .background(
+                                color = Color.Gray.copy(alpha = 0.2f),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(onClick = {
+                            // Navigate to AnimalDetailView with animal as a parameter
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options"
+                            )
+                        }
                     }
                 }
+
+                Text(
+                    text = animal.location,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Some additional info here",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(text = animal.timeSinceLastLetOut)
+                // add a for each or list that displays all the logs for this animal
             }
 
-
-
-            Text(
-                text = animal.location,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Some additional info here",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(text = animal.timeSinceLastLetOut)
-        }
-
-        if (animal.photos.isNotEmpty()) {
-            Box(
-                modifier = Modifier.padding(10.dp)
-            ) {
-                TakeOutButtonElement(
-                    animalId = animal.id,
-                    enabled = animal.canPlay // Pass the enabled state here
+            if (animal.photos.isNotEmpty()) {
+                Box(
+                    modifier = Modifier.padding(10.dp)
                 ) {
-                    println("[LOG]: the button pressed")
-                    viewModel.toggleInCage(animalId = animal.id)
+                    TakeOutButtonElement(
+                        animalId = animal.id,
+                        enabled = animal.canPlay
+                    ) {
+                        println("[LOG]: the button pressed")
+                        viewModel.toggleInCage(animalId = animal.id)
+                    }
                 }
             }
         }
     }
 }
-

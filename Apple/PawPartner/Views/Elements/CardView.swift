@@ -220,7 +220,7 @@ struct CardView: View {
         .padding()
         .background(RoundedRectangle(cornerRadius: 20)
             .foregroundColor(backgroundColor)
-            .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2))
+            .shadow(color: .black.opacity(0.5), radius: 1, x: 1, y: 2))
         .sheet(isPresented: $showViewInfo) {
             ViewInfoView(viewModel: ViewInfoViewModel(animal: animal))
         }

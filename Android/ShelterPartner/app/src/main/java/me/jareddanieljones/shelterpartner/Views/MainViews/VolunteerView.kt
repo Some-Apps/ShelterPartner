@@ -63,7 +63,10 @@ fun VolunteerView(viewModel: VolunteerViewModel = viewModel()) {
 
         LazyColumn {
             items(animals, key = { it.id }) { animal ->
-                CardElement(animal = animal, viewModel = viewModel)
+                CardElement(
+                    animal = animal,
+                    viewModel = viewModel,
+                )
             }
         }
 
