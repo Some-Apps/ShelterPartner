@@ -1,5 +1,8 @@
 package me.jareddanieljones.shelterpartner.Views.MainViews
 
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.Column
@@ -14,15 +17,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,11 +43,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.Data.Animal
+import me.jareddanieljones.shelterpartner.Data.ShelterSettings
 import me.jareddanieljones.shelterpartner.ViewModels.VolunteerViewModel
 import me.jareddanieljones.shelterpartner.Views.Elements.CardElement
 
@@ -92,11 +104,19 @@ fun VolunteerView(viewModel: VolunteerViewModel = viewModel()) {
         }
 
         if (showThankYouDialog && currentAnimal != null) {
-            ThankYouDialog(
-                animal = currentAnimal,
-                onDismiss = { viewModel.onThankYouDialogDismiss() },
-                onAddNote = { viewModel.onAddNoteSelected() }
-            )
+//            ThankYouDialog(
+//                animal = currentAnimal,
+//                onDismiss = { viewModel.onThankYouDialogDismiss() },
+//                onAddNote = { viewModel.onAddNoteSelected() }
+//            )
+            shelterSettings?.let {
+                ThankYouDialog(
+                    animal = currentAnimal,
+                    onDismiss = { viewModel.onThankYouDialogDismiss() },
+                    onAddNote = { viewModel.onAddNoteSelected() },
+                    shelterSettings = it
+                )
+            }
         }
 
         if (showAddNoteDialog) {
@@ -112,43 +132,158 @@ fun VolunteerView(viewModel: VolunteerViewModel = viewModel()) {
 fun ThankYouDialog(
     animal: Animal,
     onDismiss: () -> Unit,
-    onAddNote: () -> Unit
+    onAddNote: () -> Unit,
+    shelterSettings: ShelterSettings
 ) {
+    var showQRCodeDialog by remember { mutableStateOf(false) }
+    var showOpenLink by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(true) } // State to control whether to show the dialog
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+                onDismiss()
+            },
+            title = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    val imageURL = animal.photos.firstOrNull()?.url
+                    if (imageURL != null) {
+                        AsyncImage(
+                            model = imageURL,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(CircleShape)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Thank You!", style = MaterialTheme.typography.titleLarge)
+                }
+            },
+            text = {},
+            confirmButton = {
+                Row {
+                    TextButton(onClick = {
+                        showDialog = false
+                        onDismiss()
+                    }) {
+                        Text("Dismiss")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    TextButton(onClick = onAddNote) {
+                        Text("Add Note")
+                    }
+
+                    // Conditionally display "Custom Form" button based on isCustomFormOn setting
+                    if (shelterSettings.isCustomFormOn) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TextButton(onClick = {
+                            showDialog = false // Hide the dialog before showing the sheet
+                            if (shelterSettings.linkType == "QR Code") {
+                                showQRCodeDialog = true // Trigger QR Code dialog
+                            } else {
+                                showOpenLink = true // Show WebView sheet
+                            }
+                        }) {
+                            Text("Custom Form")
+                        }
+                    }
+                }
+            },
+            dismissButton = {}
+        )
+    }
+
+    // Show QR Code dialog if the state is true
+    if (showQRCodeDialog) {
+        showQRCodeDialog(shelterSettings.customFormURL, onDismiss = { showQRCodeDialog = false })
+    }
+
+    // Show WebView sheet if the state is true
+    if (showOpenLink) {
+        WebViewSheet(url = shelterSettings.customFormURL) {
+            showOpenLink = false // Hide WebView when dismissed
+        }
+    }
+}
+
+@Composable
+fun showQRCodeDialog(url: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                // Display the animal's first photo clipped in a circle
-                val imageURL = animal.photos.firstOrNull()?.url
-                if (imageURL != null) {
-                    AsyncImage(
-                        model = imageURL,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape)
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Thank You!", style = MaterialTheme.typography.titleLarge)
-            }
+        title = { Text("Scan QR Code") },
+        text = {
+            // Load the QR Code image from a URL or a generated image
+            // Here we are using a third-party service to generate the QR code
+            val qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data=$url&size=200x200"
+            Image(
+                painter = rememberAsyncImagePainter(model = qrCodeUrl),
+                contentDescription = "QR Code",
+                modifier = Modifier.fillMaxWidth()
+            )
         },
-        text = {},
         confirmButton = {
-            Row {
-                TextButton(onClick = onDismiss) {
-                    Text("Dismiss")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                TextButton(onClick = onAddNote) {
-                    Text("Add Note")
-                }
+            TextButton(onClick = onDismiss) {
+                Text("Done")
             }
-        },
-        dismissButton = {}
+        }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@Composable
+fun WebViewSheet(url: String, onDismiss: () -> Unit) {
+    // Correctly handle ModalBottomSheetState
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true // Whether to allow a partially expanded state
+    )
+    val coroutineScope = rememberCoroutineScope()
+
+    // Launch the bottom sheet automatically on the first composition
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            sheetState.show()
+        }
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = {
+            coroutineScope.launch { sheetState.hide() }
+            onDismiss()
+        }, // Handle dismiss by hiding the sheet
+        sheetState = sheetState // Use sheetState to control the modal bottom sheet
+    ) {
+        // Back handler or close button to exit the webview
+        var canGoBack by remember { mutableStateOf(false) }
+
+        AndroidView(
+            factory = { context ->
+                WebView(context).apply {
+                    webViewClient = WebViewClient() // Ensures the URL loads within WebView and not an external browser
+                    settings.javaScriptEnabled = true // Enable JavaScript if needed
+                    loadUrl(url)
+
+                    setOnKeyListener { _, keyCode, _ ->
+                        if (keyCode == android.view.KeyEvent.KEYCODE_BACK && canGoBack) {
+                            goBack()
+                            true
+                        } else {
+                            onDismiss()
+                            false
+                        }
+                    }
+                }
+            },
+            update = { webView ->
+                canGoBack = webView.canGoBack()
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
 
 @Composable
 fun AddNoteDialog(
