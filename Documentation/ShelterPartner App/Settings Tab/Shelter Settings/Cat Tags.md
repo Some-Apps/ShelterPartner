@@ -1,3 +1,2 @@
 # Cat Tags
-Form that includes space for
-- New Tag 
+This page allows you to create new cat tags.
