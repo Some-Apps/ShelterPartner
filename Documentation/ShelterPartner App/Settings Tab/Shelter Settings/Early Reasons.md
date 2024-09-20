@@ -1,3 +1,2 @@
 # Early Put Back Reasons
-Form with a space for
-- New Reason
+This page allows you to create new "Early Put Back Reasons".
