@@ -1,3 +1,2 @@
 # Let Out Types
-Form with a space for
-- New Let Out Type 
+This page allows you to create new "Let Out Types" options.
