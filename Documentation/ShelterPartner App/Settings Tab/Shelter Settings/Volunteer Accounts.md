@@ -1,4 +1,1 @@
-On this page is a 
-- Form titled ADD VOLUNTEER. It includes Volunteer Name, Volunteer Email, Send Invite.
-- Form titled GEO-RESTRICTION. It includes an on/off slide button called Enable Geo-Restriction.
-  
+Here you can add new volunteers, their email and send them an invite. Here you can also choose to enable or disable geo-restriction for volunteer accounts.
