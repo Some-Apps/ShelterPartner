@@ -1,3 +1,2 @@
 # Dog Tags
-Form with a space for
-- New Tag
+This page allows you to create new dog tags.
