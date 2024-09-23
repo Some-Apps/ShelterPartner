@@ -77,7 +77,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.firebase.firestore)
-
+    implementation(libs.accompanist.permissions)
+    implementation(libs.coil.compose.v230)
+    implementation(libs.firebase.storage)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

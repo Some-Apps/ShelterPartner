@@ -1,6 +1,12 @@
 package me.jareddanieljones.shelterpartner.Data
 
 import android.util.Log
+import android.net.Uri
+import android.app.Application
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
+import kotlinx.coroutines.tasks.await
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
@@ -71,6 +77,54 @@ class FirestoreRepository(private val context: Context) {
         FirebaseAuth.getInstance().signOut()
     }
 
+    private suspend fun uploadImageToFirebaseStorage(
+        imageUri: Uri,
+        shelterID: String,
+        animalId: String,
+        noteId: String
+    ): Map<String, Any>? {
+        return try {
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.reference
+
+            val storagePath = "$shelterID/$animalId/$noteId.jpeg"
+            val imageRef = storageRef.child(storagePath)
+
+            // Get the application context
+//            val context = getApplication<Application>().applicationContext
+
+            // Open the input stream from the URI
+            val inputStream = context.contentResolver.openInputStream(imageUri)
+
+            if (inputStream != null) {
+                val metadata = StorageMetadata.Builder()
+                    .setContentType("image/jpeg")
+                    .build()
+
+                // Upload the image data
+                imageRef.putStream(inputStream, metadata).await()
+
+                // Get the download URL
+                val downloadUrl = imageRef.downloadUrl.await()
+
+                // Create the photoDict
+                val photoDict = mapOf(
+                    "url" to downloadUrl.toString(),
+                    "privateURL" to storagePath,
+                    "timestamp" to System.currentTimeMillis().toDouble() / 1000.0
+                )
+                photoDict
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            // Handle any errors
+            Log.e("VolunteerViewModel", "Error uploading image", e)
+            null
+        }
+    }
+
+
     suspend fun getUserName(): String? {
         val uid = auth.currentUser?.uid
         if (uid != null) {
@@ -107,16 +161,35 @@ class FirestoreRepository(private val context: Context) {
         shelterID: String,
         animalType: String,
         animalId: String,
-        note: Note
+        note: Note,
+        photoDict: Map<String, Any>? = null
     ) {
         val animalDocRef = db.collection("Societies")
             .document(shelterID)
             .collection(animalType)
             .document(animalId)
 
-        animalDocRef.update("notes", FieldValue.arrayUnion(note))
-            .await()
+        db.runTransaction { transaction ->
+            val snapshot = transaction.get(animalDocRef)
+            val currentNotes = snapshot.get("notes") as? List<Map<String, Any>> ?: emptyList()
+            val updatedNotes = currentNotes + note.toMap()
+
+            val updates = mutableMapOf<String, Any>(
+                "notes" to updatedNotes
+            )
+
+            // If photoDict is provided, update the "photos" field
+            if (photoDict != null) {
+                val currentPhotos = snapshot.get("photos") as? List<Map<String, Any>> ?: emptyList()
+                val updatedPhotos = currentPhotos + photoDict
+                updates["photos"] = updatedPhotos
+            }
+
+            // Apply the updates
+            transaction.update(animalDocRef, updates)
+        }.await()
     }
+
 
 
     fun getSettingsStream(shelterID: String): Flow<ShelterSettings?> {

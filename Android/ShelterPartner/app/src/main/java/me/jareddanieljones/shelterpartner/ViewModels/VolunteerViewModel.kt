@@ -1,10 +1,13 @@
 package me.jareddanieljones.shelterpartner.ViewModels
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import me.jareddanieljones.shelterpartner.Data.FirestoreRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +16,7 @@ import me.jareddanieljones.shelterpartner.Data.Animal
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.tasks.await
 import me.jareddanieljones.shelterpartner.Data.Log
 import me.jareddanieljones.shelterpartner.Data.Note
 import me.jareddanieljones.shelterpartner.Data.ShelterSettings
@@ -297,29 +301,85 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
         _currentAnimalId.value = null
     }
 
-    fun onAddNoteSubmit(noteText: String) {
+    fun onAddNoteSubmit(noteText: String, imageUri: Uri?) {
         viewModelScope.launch {
             val shelterID = repository.getStoredShelterID()
             val animalType = _selectedAnimalType.value
             val animalId = _currentAnimalId.value
+
             if (shelterID != null && animalId != null) {
+                val noteId = UUID.randomUUID().toString()
                 val note = Note(
-                    id = UUID.randomUUID().toString(),
+                    id = noteId,
                     date = System.currentTimeMillis().toDouble() / 1000.0,
-                    note = noteText,
+                    note = noteText.trim(),
                     user = _volunteerName.value
                 )
+
+                var photoDict: Map<String, Any>? = null
+
+                if (imageUri != null) {
+                    // You might want to show a progress indicator here
+                    photoDict = uploadImageToFirebaseStorage(
+                        imageUri = imageUri,
+                        shelterID = shelterID,
+                        animalId = animalId,
+                        noteId = noteId
+                    )
+                }
+
                 repository.addNote(
                     shelterID = shelterID,
                     animalType = animalType,
                     animalId = animalId,
-                    note = note
+                    note = note,
+                    photoDict = photoDict
                 )
             }
             _showAddNoteDialog.value = false
             _currentAnimalId.value = null
         }
     }
+
+    private suspend fun uploadImageToFirebaseStorage(
+        imageUri: Uri,
+        shelterID: String,
+        animalId: String,
+        noteId: String
+    ): Map<String, Any>? {
+        return try {
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.reference
+
+            val storagePath = "$shelterID/$animalId/$noteId.jpeg"
+            val imageRef = storageRef.child(storagePath)
+
+            val context = getApplication<Application>().applicationContext
+            val inputStream = context.contentResolver.openInputStream(imageUri)
+
+            if (inputStream != null) {
+                val metadata = StorageMetadata.Builder()
+                    .setContentType("image/jpeg")
+                    .build()
+
+                imageRef.putStream(inputStream, metadata).await()
+                val downloadUrl = imageRef.downloadUrl.await()
+
+                val photoDict = mapOf(
+                    "url" to downloadUrl.toString(),
+                    "privateURL" to storagePath,
+                    "timestamp" to System.currentTimeMillis().toDouble() / 1000.0
+                )
+                photoDict
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+//            Log("VolunteerViewModel", "Error uploading image", e)
+            null
+        }
+    }
+
 
     private suspend fun updateAnimalWithVolunteerName() {
         _currentAnimalId.value?.let { animalId ->

@@ -1,6 +1,8 @@
 [versions]
+accompanistPermissions = "0.30.1"
 agp = "8.5.2"
 coilCompose = "2.4.0"
+coilComposeVersion = "2.3.0"
 datastorePreferences = "1.1.1"
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
@@ -22,9 +24,11 @@ firebaseAuthKtx = "23.0.0"
 volley = "1.2.1"
 lifecycleRuntimeComposeAndroid = "2.8.5"
 firebaseFirestore = "25.1.0"
+firebaseStorage = "21.0.0"
 
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
@@ -33,6 +37,7 @@ androidx-material-icons-core = { module = "androidx.compose.material:material-ic
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-navigation-compose-vversion = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+coil-compose-v230 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -55,6 +60,7 @@ firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx",
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

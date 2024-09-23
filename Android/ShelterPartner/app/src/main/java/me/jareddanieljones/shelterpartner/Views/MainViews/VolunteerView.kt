@@ -1,9 +1,13 @@
 package me.jareddanieljones.shelterpartner.Views.MainViews
 
 import android.app.Application
+import android.net.Uri
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.Column
@@ -33,6 +37,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -50,6 +56,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import android.os.Build
+
+import com.google.accompanist.permissions.rememberPermissionState
+
+
 import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.Data.Animal
 import me.jareddanieljones.shelterpartner.Data.ShelterSettings
@@ -130,9 +143,10 @@ fun VolunteerView(
         if (showAddNoteDialog) {
             AddNoteDialog(
                 onDismiss = { viewModel.onAddNoteDismiss() },
-                onSubmit = { noteText -> viewModel.onAddNoteSubmit(noteText) }
+                onSubmit = { noteText, imageUri -> viewModel.onAddNoteSubmit(noteText, imageUri) }
             )
         }
+
     }
 }
 
@@ -293,25 +307,75 @@ fun WebViewSheet(url: String, onDismiss: () -> Unit) {
 }
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddNoteDialog(
     onDismiss: () -> Unit,
-    onSubmit: (String) -> Unit
+    onSubmit: (String, Uri?) -> Unit
 ) {
     var noteText by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    // Permissions
+    val storagePermissionState = rememberPermissionState(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            android.Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+    )
+
+    // Declare the launcher outside of the onClick lambda
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            uri?.let { selectedImageUri = it }
+        }
+    )
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Add Note") },
         text = {
-            TextField(
-                value = noteText,
-                onValueChange = { noteText = it },
-                label = { Text("Note") }
-            )
+            Column {
+                TextField(
+                    value = noteText,
+                    onValueChange = { noteText = it },
+                    label = { Text("Note") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Image selection
+                Button(onClick = {
+                    if (storagePermissionState.status.isGranted) {
+                        // Open image picker directly
+                        launcher.launch("image/*")
+                    } else {
+                        storagePermissionState.launchPermissionRequest()
+                    }
+                }) {
+                    Text("Select Image")
+                }
+
+                // Show selected image preview
+                selectedImageUri?.let { uri ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Image(
+                        painter = rememberAsyncImagePainter(uri),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .background(Color.Gray)
+                    )
+                }
+            }
         },
         confirmButton = {
-            TextButton(onClick = { onSubmit(noteText) }) {
+            TextButton(onClick = {
+                onSubmit(noteText, selectedImageUri)
+            }) {
                 Text("Save")
             }
         },
@@ -322,6 +386,23 @@ fun AddNoteDialog(
         }
     )
 }
+
+
+// Helper function to open image picker
+@Composable
+fun selectImage(onImageSelected: (Uri) -> Unit) {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            uri?.let { onImageSelected(it) }
+        }
+    )
+    SideEffect {
+        launcher.launch("image/*")
+    }
+}
+
+
 
 
 @Composable
