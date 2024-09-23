@@ -21,10 +21,52 @@ class VolunteerSettingsViewModel(application: Application) : AndroidViewModel(ap
     private val _shelterSettings = MutableStateFlow<ShelterSettings?>(null)
     val shelterSettings = _shelterSettings.asStateFlow()
 
+    private val _catTags = MutableStateFlow<List<String>>(emptyList())
+    val catTags = _catTags.asStateFlow()
+
+    private val _dogTags = MutableStateFlow<List<String>>(emptyList())
+    val dogTags = _dogTags.asStateFlow()
+
+    // State to hold selected tags
+    private val _selectedTags = MutableStateFlow<Set<String>>(emptySet())
+    val selectedTags = _selectedTags.asStateFlow()
+
     init {
-        fetchShelterSettings()
+//        fetchShelterSettings()
+        viewModelScope.launch {
+            val shelterID = repository.getShelterID()
+            if (shelterID != null) {
+                // Fetch shelter settings
+                repository.getSettingsStream(shelterID)
+                    .collect { settings ->
+                        _shelterSettings.value = settings
+                    }
+
+                // Fetch tags
+                repository.getTagsStream(shelterID)
+                    .collect { (catTags, dogTags) ->
+                        _catTags.value = catTags
+                        _dogTags.value = dogTags
+                    }
+            }
+        }
     }
 
+
+    fun onTagSelected(tag: String) {
+        val currentTags = _selectedTags.value.toMutableSet()
+        if (currentTags.contains(tag)) {
+            currentTags.remove(tag)
+        } else {
+            currentTags.add(tag)
+        }
+        _selectedTags.value = currentTags
+    }
+
+    // Function to clear selected tags (e.g., when dialog is dismissed)
+    fun clearSelectedTags() {
+        _selectedTags.value = emptySet()
+    }
     // Function to fetch settings stream from Firestore
     private fun fetchShelterSettings() {
         println("[LOG]: fetching shelter settings")
@@ -48,6 +90,8 @@ class VolunteerSettingsViewModel(application: Application) : AndroidViewModel(ap
     fun signOut() {
         repository.signOut()
     }
+
+
 }
 class VolunteerSettingsViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

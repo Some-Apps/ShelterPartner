@@ -59,6 +59,11 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import android.os.Build
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 import com.google.accompanist.permissions.rememberPermissionState
 
@@ -85,6 +90,11 @@ fun VolunteerView(
     val showAddNoteDialog by viewModel.showAddNoteDialog.collectAsStateWithLifecycle()
     val currentAnimalId by viewModel.currentAnimalId.collectAsStateWithLifecycle()
     val currentAnimal = animals.find { it.id == currentAnimalId }
+
+    val catTags by viewModel.catTags.collectAsStateWithLifecycle()
+    val dogTags by viewModel.dogTags.collectAsStateWithLifecycle()
+    val selectedTags by viewModel.selectedTags.collectAsStateWithLifecycle()
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         SegmentedControl(
@@ -142,6 +152,11 @@ fun VolunteerView(
 
         if (showAddNoteDialog) {
             AddNoteDialog(
+                animalType = selectedAnimalType,
+                catTags = catTags,
+                dogTags = dogTags,
+                selectedTags = selectedTags,
+                onTagSelected = { tag -> viewModel.onTagSelected(tag) },
                 onDismiss = { viewModel.onAddNoteDismiss() },
                 onSubmit = { noteText, imageUri -> viewModel.onAddNoteSubmit(noteText, imageUri) }
             )
@@ -307,9 +322,16 @@ fun WebViewSheet(url: String, onDismiss: () -> Unit) {
 }
 
 
+// VolunteerView.kt
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddNoteDialog(
+    animalType: String,
+    catTags: List<String>,
+    dogTags: List<String>,
+    selectedTags: Set<String>,
+    onTagSelected: (String) -> Unit,
     onDismiss: () -> Unit,
     onSubmit: (String, Uri?) -> Unit
 ) {
@@ -325,7 +347,6 @@ fun AddNoteDialog(
         }
     )
 
-    // Declare the launcher outside of the onClick lambda
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
@@ -346,10 +367,38 @@ fun AddNoteDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
+                val tags = if (animalType == "Cats") catTags else dogTags
+                if (tags.isNotEmpty()) {
+                    Text("Tags", style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 100.dp),
+                        modifier = Modifier.height(175.dp)
+                    ) {
+                        items(tags) { tag ->
+                            val isSelected = selectedTags.contains(tag)
+                            Text(
+                                text = tag,
+                                maxLines = 1,
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .background(
+                                        if (isSelected) Color(0xFF90EE90)
+                                        else Color.LightGray,
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                                    .clickable { onTagSelected(tag) }
+                                    .padding(vertical = 5.dp, horizontal = 5.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 // Image selection
                 Button(onClick = {
                     if (storagePermissionState.status.isGranted) {
-                        // Open image picker directly
                         launcher.launch("image/*")
                     } else {
                         storagePermissionState.launchPermissionRequest()
@@ -386,6 +435,7 @@ fun AddNoteDialog(
         }
     )
 }
+
 
 
 // Helper function to open image picker

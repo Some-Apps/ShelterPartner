@@ -58,10 +58,49 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     private val _currentAnimalId = MutableStateFlow<String?>(null)
     val currentAnimalId: StateFlow<String?> get() = _currentAnimalId
 
+    private val _catTags = MutableStateFlow<List<String>>(emptyList())
+    val catTags: StateFlow<List<String>> get() = _catTags
+
+    private val _dogTags = MutableStateFlow<List<String>>(emptyList())
+    val dogTags: StateFlow<List<String>> get() = _dogTags
+
+    private val _selectedTags = MutableStateFlow<Set<String>>(emptySet())
+    val selectedTags: StateFlow<Set<String>> get() = _selectedTags
+
     init {
         fetchAnimals()
         fetchShelterSettings()
         fetchVolunteerName()
+        fetchTags() // Add this function call
+    }
+
+    private fun fetchTags() {
+        viewModelScope.launch {
+            val shelterID = repository.getShelterID()
+            if (shelterID != null) {
+                repository.getTagsStream(shelterID)
+                    .collect { (catTags, dogTags) ->
+                        _catTags.value = catTags
+                        _dogTags.value = dogTags
+                    }
+            }
+        }
+    }
+
+    // Function to update selected tags
+    fun onTagSelected(tag: String) {
+        val currentTags = _selectedTags.value.toMutableSet()
+        if (currentTags.contains(tag)) {
+            currentTags.remove(tag)
+        } else {
+            currentTags.add(tag)
+        }
+        _selectedTags.value = currentTags
+    }
+
+    // Function to clear selected tags (e.g., when dialog is dismissed)
+    fun clearSelectedTags() {
+        _selectedTags.value = emptySet()
     }
 
     fun onAnimalTypeChange(type: String) {
@@ -319,7 +358,6 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                 var photoDict: Map<String, Any>? = null
 
                 if (imageUri != null) {
-                    // You might want to show a progress indicator here
                     photoDict = uploadImageToFirebaseStorage(
                         imageUri = imageUri,
                         shelterID = shelterID,
@@ -328,18 +366,23 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                     )
                 }
 
+                // Pass the selected tags to the repository
                 repository.addNote(
                     shelterID = shelterID,
                     animalType = animalType,
                     animalId = animalId,
                     note = note,
+                    selectedTags = _selectedTags.value.toList(),
                     photoDict = photoDict
                 )
             }
             _showAddNoteDialog.value = false
             _currentAnimalId.value = null
+            clearSelectedTags() // Clear selected tags after submitting
         }
     }
+
+
 
     private suspend fun uploadImageToFirebaseStorage(
         imageUri: Uri,

@@ -162,6 +162,7 @@ class FirestoreRepository(private val context: Context) {
         animalType: String,
         animalId: String,
         note: Note,
+        selectedTags: List<String>,
         photoDict: Map<String, Any>? = null
     ) {
         val animalDocRef = db.collection("Societies")
@@ -178,17 +179,27 @@ class FirestoreRepository(private val context: Context) {
                 "notes" to updatedNotes
             )
 
-            // If photoDict is provided, update the "photos" field
             if (photoDict != null) {
                 val currentPhotos = snapshot.get("photos") as? List<Map<String, Any>> ?: emptyList()
                 val updatedPhotos = currentPhotos + photoDict
                 updates["photos"] = updatedPhotos
             }
 
-            // Apply the updates
+            // Update the tags map
+            val currentTagsMap = snapshot.get("tags") as? Map<String, Long> ?: emptyMap()
+            val newTagsMap = currentTagsMap.toMutableMap()
+
+            for (tag in selectedTags) {
+                val currentCount = newTagsMap[tag] ?: 0
+                newTagsMap[tag] = currentCount + 1
+            }
+
+            updates["tags"] = newTagsMap
+
             transaction.update(animalDocRef, updates)
         }.await()
     }
+
 
 
 
@@ -337,6 +348,29 @@ class FirestoreRepository(private val context: Context) {
 
         } catch (e: Exception) {
             println("[LOG] Error toggling inCage: ${e.message}")
+        }
+    }
+
+    fun getTagsStream(shelterID: String): Flow<Pair<List<String>, List<String>>> {
+        return callbackFlow {
+            val listener = db.collection("Societies")
+                .document(shelterID)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        val catTags = snapshot.get("catTags") as? List<String> ?: emptyList()
+                        val dogTags = snapshot.get("dogTags") as? List<String> ?: emptyList()
+                        trySend(Pair(catTags, dogTags)).isSuccess
+                    } else {
+                        trySend(Pair(emptyList(), emptyList())).isSuccess
+                    }
+                }
+
+            awaitClose { listener.remove() }
         }
     }
 
