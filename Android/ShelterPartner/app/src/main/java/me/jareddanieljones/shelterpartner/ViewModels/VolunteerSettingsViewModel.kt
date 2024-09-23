@@ -27,10 +27,16 @@ class VolunteerSettingsViewModel(application: Application) : AndroidViewModel(ap
 
     // Function to fetch settings stream from Firestore
     private fun fetchShelterSettings() {
+        println("[LOG]: fetching shelter settings")
         viewModelScope.launch {
-            repository.getStoredShelterID()?.let {
+            println("[LOG]: fetching settings")
+
+            repository.getShelterID()?.let {
+
                 repository.getSettingsStream(it) // Replace with actual shelter ID
+
                     .onEach { settings ->
+                        println("[LOG]: $settings")
                         _shelterSettings.value = settings // Update the state with new settings
                     }
                     .launchIn(this)

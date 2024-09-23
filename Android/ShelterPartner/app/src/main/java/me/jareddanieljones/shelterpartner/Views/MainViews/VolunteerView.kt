@@ -1,5 +1,6 @@
 package me.jareddanieljones.shelterpartner.Views.MainViews
 
+import android.app.Application
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,10 +54,15 @@ import kotlinx.coroutines.launch
 import me.jareddanieljones.shelterpartner.Data.Animal
 import me.jareddanieljones.shelterpartner.Data.ShelterSettings
 import me.jareddanieljones.shelterpartner.ViewModels.VolunteerViewModel
+import me.jareddanieljones.shelterpartner.ViewModels.VolunteerViewModelFactory
 import me.jareddanieljones.shelterpartner.Views.Elements.CardElement
 
 @Composable
-fun VolunteerView(viewModel: VolunteerViewModel = viewModel()) {
+fun VolunteerView(
+    viewModel: VolunteerViewModel = viewModel(
+        factory = VolunteerViewModelFactory(LocalContext.current.applicationContext as Application)
+    )
+) {
     val animals by viewModel.animals.collectAsStateWithLifecycle()
     val selectedAnimalType by viewModel.selectedAnimalType.collectAsStateWithLifecycle()
     val showNameDialog by viewModel.showNameDialog.collectAsStateWithLifecycle()
@@ -74,6 +81,7 @@ fun VolunteerView(viewModel: VolunteerViewModel = viewModel()) {
         )
 
         LazyColumn {
+            println("[LOG]: $animals")
             items(animals, key = { it.id }) { animal ->
                 CardElement(
                     animal = animal,

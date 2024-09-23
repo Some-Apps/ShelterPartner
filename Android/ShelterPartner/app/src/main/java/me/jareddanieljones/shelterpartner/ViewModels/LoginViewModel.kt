@@ -17,6 +17,7 @@ class LoginViewModel : ViewModel() {
                 if (document != null && document.exists()) {
                     val societyID = document.getString("societyID")
                     if (societyID != null) {
+                        println("[LOG]: $societyID[")
                         callback(Result.success(societyID))
                     } else {
                         callback(Result.failure(Exception("SocietyID not found")))

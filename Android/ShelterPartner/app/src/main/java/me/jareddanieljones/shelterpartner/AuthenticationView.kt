@@ -41,6 +41,7 @@ class AuthenticationView : ComponentActivity() {
                 var isAuthenticated by remember { mutableStateOf(auth.currentUser != null) }
 
                 DisposableEffect(auth) {
+                    println("[LOG]: ${auth.currentUser?.uid}")
                     val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
                         isAuthenticated = firebaseAuth.currentUser != null
                     }

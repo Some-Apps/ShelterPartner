@@ -39,7 +39,7 @@ data class Animal(
 
             if (!inCage) {
                 // Animal is out; calculate duration since `startTime`
-                val startTimeSeconds = startTime / 1000.0 // Convert to seconds if necessary
+                val startTimeSeconds = startTime // Already in seconds
                 if (startTimeSeconds > 0) {
                     val timeDifferenceSeconds = currentTimeSeconds - startTimeSeconds
                     return formatTimeDifference(timeDifferenceSeconds)
@@ -56,8 +56,9 @@ data class Animal(
                 if (validLogs.isNotEmpty()) {
                     val lastLog = validLogs.maxByOrNull { it.endTime!! }
                     if (lastLog != null) {
-                        val endTimeSeconds = lastLog.endTime!! / 1000.0 // Convert to seconds if necessary
+                        val endTimeSeconds = lastLog.endTime!! // Already in seconds
                         val timeDifferenceSeconds = currentTimeSeconds - endTimeSeconds
+
                         return formatTimeDifference(timeDifferenceSeconds) + " ago"
                     }
                 }
@@ -67,11 +68,12 @@ data class Animal(
             }
         }
 
+
     private fun formatTimeDifference(timeDifferenceSeconds: Double): String {
         val days = (timeDifferenceSeconds / 86400).toInt() // 86400 seconds in a day
         val hours = ((timeDifferenceSeconds % 86400) / 3600).toInt() // 3600 seconds in an hour
         val minutes = ((timeDifferenceSeconds % 3600) / 60).toInt() // 60 seconds in a minute
-
+        println("[LOG]: $days")
         return when {
             days >= 1 -> {
                 val dayLabel = if (days == 1) "day" else "days"
@@ -88,31 +90,6 @@ data class Animal(
             else -> "0 minutes"
         }
     }
-
-
-
-//    // Function to display the largest applicable time unit, with minutes being the smallest.
-//    private fun formatTimeDifference(timeDifferenceSeconds: Double): String {
-//        val days = (timeDifferenceSeconds / 86400).toInt() // 86400 seconds in a day
-//        val hours = ((timeDifferenceSeconds % 86400) / 3600).toInt() // 3600 seconds in an hour
-//        val minutes = ((timeDifferenceSeconds % 3600) / 60).toInt() // 60 seconds in a minute
-//
-//        return when {
-//            days >= 1 -> {
-//                val dayLabel = if (days == 1) "day" else "days"
-//                "$days $dayLabel"
-//            }
-//            hours >= 1 -> {
-//                val hourLabel = if (hours == 1) "hour" else "hours"
-//                "$hours $hourLabel"
-//            }
-//            minutes >= 1 -> {
-//                val minuteLabel = if (minutes == 1) "minute" else "minutes"
-//                "$minutes $minuteLabel"
-//            }
-//            else -> "0 minutes" // If less than a minute, default to "0 minutes"
-//        }
-//    }
 }
 
 
