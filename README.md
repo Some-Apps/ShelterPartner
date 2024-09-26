@@ -1,7 +1,7 @@
 # Welcome To [ShelterPartner](https://shelterpartner.org)!
 
 ## How To Contribute On GitHub
-1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue
+1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues that I've labeled as "up next" are higher priority but you're welcome to work on anything even if it isn't marked as "up next".
 2. Comment on the issue that you would like to work on it
 3. Once you have been assigned the issue, fork to the repository into a branch containing the issue number
 4. When you are ready, submit a pull request from this branch
