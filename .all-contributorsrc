@@ -1,5 +1,5 @@
 {
-  "projectName": "PawPartner",
+  "projectName": "ShelterPartner",
   "projectOwner": "Some-Apps",
   "files": [
     "README.md"
@@ -22,6 +22,15 @@
       "profile": "https://github.com/rhjones777",
       "contributions": [
         "design",
+        "doc"
+      ]
+    },
+    {
+      "login": "kateoconn1",
+      "name": "kateoconn1",
+      "avatar_url": "https://avatars.githubusercontent.com/u/112118523?v=4",
+      "profile": "https://github.com/kateoconn1",
+      "contributions": [
         "doc"
       ]
     }
