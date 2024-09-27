@@ -67,6 +67,10 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     private val _selectedTags = MutableStateFlow<Set<String>>(emptySet())
     val selectedTags: StateFlow<Set<String>> get() = _selectedTags
 
+    private val _showMinimumDurationDialog = MutableStateFlow(false)
+    val showMinimumDurationDialog: StateFlow<Boolean> get() = _showMinimumDurationDialog
+
+
     init {
         fetchAnimals()
         fetchShelterSettings()
@@ -187,21 +191,52 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun putBackAnimal(animalId: String) {
-        /*
-        - The animal should be put back in their cage
-        - The createLog function should be called
-        - Show a popup with the animal's first photo clipped in a circle. Below that it says "Thank You!" and below that are two buttons; "Dismiss" and "Add Note"
-        - If the user selected "Add Note" the popup will be dismissed and a new popup will be displayed.
-        - The new popup will have a text field allowing the user to add notes and a "Save" button.
-        - Tapping the save adds the note to firestore and then dismisses the view
-        - Firestore Path for note: Societies/$shelterID/$animalType/$animalID/ (this is an array of map)
-         */
         _currentAnimalId.value = animalId
         viewModelScope.launch {
             val shelterID = repository.getStoredShelterID()
             val animalType = _selectedAnimalType.value
             if (shelterID != null) {
-                // Update the animal's inCage status to true
+                val animal = repository.getAnimalById(animalId, shelterID, animalType)
+                if (animal != null) {
+                    val currentTimeSeconds = System.currentTimeMillis() / 1000.0
+                    val startTime = animal.startTime
+                    val durationMinutes = (currentTimeSeconds - startTime) / 60.0
+                    val minimumDuration = shelterSettings.value?.minimumDuration?.toDouble() ?: 5.0
+                    if (durationMinutes >= minimumDuration) {
+                        // Proceed with putting back the animal
+                        proceedWithPutBack(animalId)
+                    } else {
+                        // Show confirmation dialog
+                        _showMinimumDurationDialog.value = true
+                    }
+                }
+            }
+        }
+    }
+
+    fun onMinimumDurationDialogConfirmed() {
+        val createLogsAlways = shelterSettings.value?.createLogsAlways ?: true
+        val animalId = _currentAnimalId.value
+        if (animalId != null) {
+            if (createLogsAlways) {
+                proceedWithPutBack(animalId, createLog = true)
+            } else {
+                proceedWithPutBack(animalId, createLog = false)
+            }
+        }
+        _showMinimumDurationDialog.value = false
+    }
+
+    fun onMinimumDurationDialogDismissed() {
+        _showMinimumDurationDialog.value = false
+    }
+
+
+    private fun proceedWithPutBack(animalId: String, createLog: Boolean = true) {
+        viewModelScope.launch {
+            val shelterID = repository.getStoredShelterID()
+            val animalType = _selectedAnimalType.value
+            if (shelterID != null) {
                 repository.updateAnimalField(
                     shelterID,
                     animalType,
@@ -209,13 +244,14 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                     "inCage",
                     true
                 )
-                // Call createLog function
-                createLog(animalId)
-                // Show the Thank You popup
+                if (createLog) {
+                    createLog(animalId)
+                }
                 _showThankYouDialog.value = true
             }
         }
     }
+
 
     fun createLog(animalId: String) {
         /*

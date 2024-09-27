@@ -84,6 +84,7 @@ fun VolunteerView(
     val animals by viewModel.animals.collectAsStateWithLifecycle()
     val selectedAnimalType by viewModel.selectedAnimalType.collectAsStateWithLifecycle()
     val showNameDialog by viewModel.showNameDialog.collectAsStateWithLifecycle()
+    val showMinimumDurationDialog by viewModel.showMinimumDurationDialog.collectAsStateWithLifecycle()
     val showLetOutTypeDialog by viewModel.showLetOutTypeDialog.collectAsStateWithLifecycle()
     val shelterSettings by viewModel.shelterSettings.collectAsStateWithLifecycle()
     val showThankYouDialog by viewModel.showThankYouDialog.collectAsStateWithLifecycle()
@@ -162,8 +163,48 @@ fun VolunteerView(
             )
         }
 
+        if (showMinimumDurationDialog) {
+            val animal = currentAnimal ?: animals.find { it.id == currentAnimalId }
+            animal?.let {
+                MinimumDurationDialog(
+                    animalName = it.name,
+                    minimumDuration = shelterSettings?.minimumDuration ?: 5,
+                    onConfirm = { viewModel.onMinimumDurationDialogConfirmed() },
+                    onDismiss = { viewModel.onMinimumDurationDialogDismissed() }
+                )
+            }
+        }
+
+
     }
 }
+
+@Composable
+fun MinimumDurationDialog(
+    animalName: String,
+    minimumDuration: Int,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Minimum Duration Not Met") },
+        text = {
+            Text("$animalName was not let out for the minimum duration of $minimumDuration minutes. If you tap \"Put Back\", this visit may be ignored.")
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Put Back")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
 
 @Composable
 fun ThankYouDialog(
