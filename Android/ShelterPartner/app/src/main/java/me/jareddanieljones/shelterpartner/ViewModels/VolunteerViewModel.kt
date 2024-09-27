@@ -381,6 +381,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     fun onThankYouDialogDismiss() {
         _showThankYouDialog.value = false
         _currentAnimalId.value = null
+        _volunteerName.value = "" // Reset the volunteer name
     }
 
     fun onAddNoteSelected() {
