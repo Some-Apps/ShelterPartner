@@ -1,1 +1,1 @@
-To provide PawPartner with feedback on how this app could be improved, tap the ‘Give Feedback’ button in the top left corner. Feel free to provide your email address if you’d like a reply or to be updated on the status of your feedback. We would love to hear from you!
+To provide ShelterPartner with feedback on how this app could be improved, tap the ‘Give Feedback’ button in the top left corner. Feel free to provide your email address if you’d like a reply or to be updated on the status of your feedback. We would love to hear from you!
