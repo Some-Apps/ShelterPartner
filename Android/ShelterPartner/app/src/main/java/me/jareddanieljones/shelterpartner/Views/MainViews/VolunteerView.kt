@@ -174,7 +174,14 @@ fun ThankYouDialog(
 ) {
     var showQRCodeDialog by remember { mutableStateOf(false) }
     var showOpenLink by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(true) } // State to control whether to show the dialog
+    var showDialog by remember { mutableStateOf(true) }
+
+    // Compute the modified URL
+    val modifiedUrl = if (shelterSettings.appendAnimalData) {
+        getModifiedUrl(shelterSettings.customFormURL, animal)
+    } else {
+        shelterSettings.customFormURL
+    }
 
     if (showDialog) {
         AlertDialog(
@@ -213,15 +220,14 @@ fun ThankYouDialog(
                         Text("Add Note")
                     }
 
-                    // Conditionally display "Custom Form" button based on isCustomFormOn setting
                     if (shelterSettings.isCustomFormOn) {
                         Spacer(modifier = Modifier.width(8.dp))
                         TextButton(onClick = {
-                            showDialog = false // Hide the dialog before showing the sheet
+                            showDialog = false
                             if (shelterSettings.linkType == "QR Code") {
-                                showQRCodeDialog = true // Trigger QR Code dialog
+                                showQRCodeDialog = true
                             } else {
-                                showOpenLink = true // Show WebView sheet
+                                showOpenLink = true
                             }
                         }) {
                             Text("Custom Form")
@@ -233,18 +239,29 @@ fun ThankYouDialog(
         )
     }
 
-    // Show QR Code dialog if the state is true
     if (showQRCodeDialog) {
-        showQRCodeDialog(shelterSettings.customFormURL, onDismiss = { showQRCodeDialog = false })
+        showQRCodeDialog(modifiedUrl, onDismiss = { showQRCodeDialog = false })
     }
 
-    // Show WebView sheet if the state is true
     if (showOpenLink) {
-        WebViewSheet(url = shelterSettings.customFormURL) {
-            showOpenLink = false // Hide WebView when dismissed
+        WebViewSheet(url = modifiedUrl) {
+            showOpenLink = false
         }
     }
 }
+fun getModifiedUrl(url: String, animal: Animal): String {
+    val logEnd = (System.currentTimeMillis() / 1000).toString()
+
+    val uri = Uri.parse(url).buildUpon()
+    uri.appendQueryParameter("animalID", animal.id)
+    uri.appendQueryParameter("animalName", animal.name)
+    uri.appendQueryParameter("logStart", animal.startTime.toString())
+    uri.appendQueryParameter("logEnd", logEnd)
+    uri.appendQueryParameter("logType", animal.lastLetOutType ?: "")
+    uri.appendQueryParameter("logPerson", animal.lastVolunteer ?: "")
+    return uri.build().toString()
+}
+
 
 @Composable
 fun showQRCodeDialog(url: String, onDismiss: () -> Unit) {
