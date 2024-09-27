@@ -82,6 +82,10 @@ fun VolunteerView(
     )
 ) {
     val animals by viewModel.animals.collectAsStateWithLifecycle()
+    // In VolunteerView.kt
+
+    val showEarlyReasonDialog by viewModel.showEarlyReasonDialog.collectAsStateWithLifecycle()
+
     val selectedAnimalType by viewModel.selectedAnimalType.collectAsStateWithLifecycle()
     val showNameDialog by viewModel.showNameDialog.collectAsStateWithLifecycle()
     val showMinimumDurationDialog by viewModel.showMinimumDurationDialog.collectAsStateWithLifecycle()
@@ -175,9 +179,61 @@ fun VolunteerView(
             }
         }
 
+        if (showEarlyReasonDialog) {
+            val earlyReasons = shelterSettings?.earlyReasons ?: emptyList()
+            EarlyReasonDialog(
+                earlyReasons = earlyReasons,
+                onSubmit = { selectedReason ->
+                    viewModel.onEarlyReasonSelected(selectedReason)
+                },
+                onDismiss = {
+                    viewModel.onEarlyReasonDialogDismissed()
+                }
+            )
+        }
+
+
 
     }
 }
+
+@Composable
+fun EarlyReasonDialog(
+    earlyReasons: List<String>,
+    onSubmit: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var selectedReason by remember { mutableStateOf(earlyReasons.firstOrNull() ?: "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Select Early Put Back Reason") },
+        text = {
+            Column {
+                earlyReasons.forEach { reason ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(
+                            selected = selectedReason == reason,
+                            onClick = { selectedReason = reason }
+                        )
+                        Text(text = reason)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSubmit(selectedReason) }) {
+                Text("Done")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
 
 @Composable
 fun MinimumDurationDialog(

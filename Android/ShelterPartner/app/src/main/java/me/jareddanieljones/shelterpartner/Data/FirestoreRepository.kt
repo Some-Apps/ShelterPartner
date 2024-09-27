@@ -219,7 +219,7 @@ class FirestoreRepository(private val context: Context) {
 
                         // Extract the "letOutTypes" attribute as a List of Strings
                         val letOutTypes = snapshot.get("letOutTypes") as? List<String> ?: emptyList()
-
+                        val earlyReasons = snapshot.get("earlyReasons") as? List<String> ?: emptyList()
                         // Map it to ShelterSettings if it's not null
                         val shelterSettings = volunteerSettingsMap?.let {
                             ShelterSettings(
@@ -247,7 +247,8 @@ class FirestoreRepository(private val context: Context) {
                                 showNoteDates = it["showNoteDates"] as? Boolean ?: true,
                                 showSearchBar = it["showSearchBar"] as? Boolean ?: false,
                                 sortBy = it["sortBy"] as? String ?: "Last Let Out",
-                                letOutTypes = letOutTypes // Include letOutTypes here
+                                letOutTypes = letOutTypes,
+                                earlyReasons = earlyReasons
                             )
                         }
 

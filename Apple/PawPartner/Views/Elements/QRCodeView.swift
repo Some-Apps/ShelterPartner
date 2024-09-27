@@ -1,10 +1,3 @@
-//
-//  QRView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 12/3/23.
-//
-
 import SwiftUI
 import CoreImage.CIFilterBuiltins
 

@@ -70,6 +70,12 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     private val _showMinimumDurationDialog = MutableStateFlow(false)
     val showMinimumDurationDialog: StateFlow<Boolean> get() = _showMinimumDurationDialog
 
+    private val _showEarlyReasonDialog = MutableStateFlow(false)
+    val showEarlyReasonDialog: StateFlow<Boolean> get() = _showEarlyReasonDialog
+
+    private val _selectedEarlyReason = MutableStateFlow("")
+    val selectedEarlyReason: StateFlow<String> get() = _selectedEarlyReason
+
 
     init {
         fetchAnimals()
@@ -203,10 +209,8 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                     val durationMinutes = (currentTimeSeconds - startTime) / 60.0
                     val minimumDuration = shelterSettings.value?.minimumDuration?.toDouble() ?: 5.0
                     if (durationMinutes >= minimumDuration) {
-                        // Proceed with putting back the animal
                         proceedWithPutBack(animalId)
                     } else {
-                        // Show confirmation dialog
                         _showMinimumDurationDialog.value = true
                     }
                 }
@@ -214,25 +218,46 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+
     fun onMinimumDurationDialogConfirmed() {
+        _showMinimumDurationDialog.value = false
+        val requireReason = shelterSettings.value?.requireReason ?: false
+        if (requireReason) {
+            _showEarlyReasonDialog.value = true
+        } else {
+            proceedWithPutBackAfterMinimumDurationCheck()
+        }
+    }
+
+    fun onEarlyReasonSelected(reason: String) {
+        _selectedEarlyReason.value = reason
+        _showEarlyReasonDialog.value = false
+        proceedWithPutBackAfterMinimumDurationCheck(shortReason = reason)
+    }
+
+    fun onEarlyReasonDialogDismissed() {
+        _showEarlyReasonDialog.value = false
+    }
+
+    private fun proceedWithPutBackAfterMinimumDurationCheck(shortReason: String = "") {
         val createLogsAlways = shelterSettings.value?.createLogsAlways ?: true
         val animalId = _currentAnimalId.value
         if (animalId != null) {
             if (createLogsAlways) {
-                proceedWithPutBack(animalId, createLog = true)
+                proceedWithPutBack(animalId, createLog = true, shortReason = shortReason)
             } else {
                 proceedWithPutBack(animalId, createLog = false)
             }
         }
-        _showMinimumDurationDialog.value = false
     }
+
 
     fun onMinimumDurationDialogDismissed() {
         _showMinimumDurationDialog.value = false
     }
 
 
-    private fun proceedWithPutBack(animalId: String, createLog: Boolean = true) {
+    private fun proceedWithPutBack(animalId: String, createLog: Boolean = true, shortReason: String = "") {
         viewModelScope.launch {
             val shelterID = repository.getStoredShelterID()
             val animalType = _selectedAnimalType.value
@@ -245,7 +270,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                     true
                 )
                 if (createLog) {
-                    createLog(animalId)
+                    createLog(animalId, shortReason)
                 }
                 _showThankYouDialog.value = true
             }
@@ -253,17 +278,8 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
 
-    fun createLog(animalId: String) {
-        /*
-        - A log should be created for the animal and appended to logs in firestore
-        - Log.startTime is the startTime attribute in the animal's document
-        - Log.endTime is now
-        - Log.user is the lastVolunteer attribute in the animal's document
-        - Log.shortReason should just be an empty string for now
-        - Log.letOutType is the lastLetOutType attribute in the animal's document
-        - Firestore Path for logs: Societies/$shelterID/$animalType/$animalID/ (this is an array of Map)
-        - The lastVolunteer and lastLetOutType attributes in the animal's document should be reset to an empty string
-         */
+
+    fun createLog(animalId: String, shortReason: String = "") {
         viewModelScope.launch {
             val shelterID = repository.getStoredShelterID()
             val animalType = _selectedAnimalType.value
@@ -275,7 +291,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
                         startTime = animal.startTime,
                         endTime = System.currentTimeMillis().toDouble() / 1000.0,
                         user = animal.lastVolunteer,
-                        shortReason = "",  // Empty string for now
+                        shortReason = shortReason,
                         letOutType = animal.lastLetOutType
                     )
                     // Append the log to the logs collection in Firestore
@@ -304,6 +320,7 @@ class VolunteerViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
     }
+
 
     private fun fetchShelterSettings() {
         viewModelScope.launch {
