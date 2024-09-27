@@ -3,7 +3,7 @@
 * Contribute on GitHub: Most of our code is open source. This means that anybody can submit code to fix bugs, *add new features, create tutorials, etc.
 * Provide Feedback: If you have any feedback on ways ShelterPartner can be improved or work better with your shelter, please don’t hesitate to send me an email!
 # Costs
-* Labor: Subjective - I currently spend roughly 20 hours per week working on ShelterPartner. This involves, responding to emails, creating new features, and making general improvements.
+* Labor: Subjective
 * Website/Domain/Email: $35.50/month - This is the cost of this website and my email.
 * Zapier: $19.99/month - Zapier is used for automation including account creation.
 * Jotform: $39/month - Jotform allows users to add notes and photos from their personal devices as well as provide feedback and report problems.
