@@ -1,11 +1,5 @@
-//
-//  GeoRestrictionView.swift
-//  HumaneSociety
-//
-//  Created by Jared Jones on 7/4/24.
-//
-
 import SwiftUI
+import Firebase
 
 struct GeoRestrictionView: View {
     @Environment(\.openURL) var openURL
@@ -28,6 +22,9 @@ struct GeoRestrictionView: View {
                 Text("This account is geo-restricted. To use the app, you will need to be at the animal shelter.")
                     .multilineTextAlignment(.center)
                     .padding()
+                Button("Sign Out") {
+                    try? Auth.auth().signOut()
+                }
             }
         }
         .padding()
