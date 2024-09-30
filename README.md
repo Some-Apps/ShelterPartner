@@ -1,5 +1,7 @@
 # Welcome To [ShelterPartner](https://shelterpartner.org)!
 
+I'm hoping to switch everything to React Native by the end of the year and scrap the swift and kotlin versions as soon as that's done.
+
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues that I've labeled as "up next" are higher priority but you're welcome to work on anything even if it isn't marked as "up next".
 2. Comment on the issue that you would like to work on it
