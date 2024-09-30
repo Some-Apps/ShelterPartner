@@ -1,16 +1,58 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shelter_partner/components/my_button.dart';
 import 'package:shelter_partner/components/my_textfield.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   // text editing controllers
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
 
   // sign user in method
-  void signUserIn() {}
+  void signUserIn() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text, 
+        password: passwordController.text
+    );
+        Navigator.pop(context);
+
+    } on FirebaseAuthException catch (e) {
+              Navigator.pop(context);
+              loginErrorMessage();
+    }
+    
+
+  }
+
+  void loginErrorMessage() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AlertDialog(
+          title: Text('Please check your email or password'),
+        );
+      }
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +65,14 @@ class LoginPage extends StatelessWidget {
             children: [
               const SizedBox(height: 50),
 
-
-
               // logo
-              Image.asset(
-                "lib/images/logo.png",
-                height: 100
-                ),
-
+              Image.asset("lib/images/logo.png", height: 100),
 
               const SizedBox(height: 50),
 
-              // username textfield
+              // email textfield
               MyTextField(
-                controller: usernameController,
+                controller: emailController,
                 hintText: 'Email',
                 obscureText: false,
               ),
@@ -100,4 +136,3 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
-
