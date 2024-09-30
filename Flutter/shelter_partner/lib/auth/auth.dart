@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'login_page.dart';
-import 'home_page.dart';
+import 'package:shelter_partner/auth/login_or_signup.dart';
+import 'package:shelter_partner/pages/home_page.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -10,16 +9,15 @@ class AuthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
+      body: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(), 
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return HomePage();
           } else {
-            return LoginPage();
+            return const LoginOrSignup();
           }
-        },
-      )
+        })
     );
   }
 }

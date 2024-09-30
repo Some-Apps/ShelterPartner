@@ -4,33 +4,40 @@ import 'package:shelter_partner/components/my_button.dart';
 import 'package:shelter_partner/components/my_textfield.dart';
 import 'package:shelter_partner/helper/helper_function.dart';
 
-class LoginPage extends StatefulWidget {
+class SignupPage extends StatefulWidget {
   final void Function()? onTap;
 
-  const LoginPage({super.key, required this.onTap});
+  SignupPage({super.key, required this.onTap});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  // text editing controllers
+class _SignupPageState extends State<SignupPage> {
   final emailController = TextEditingController();
-
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  void login() async {
-    showDialog(context: context, builder: (context) => const Center(
-      child: CircularProgressIndicator()
-    ));
+  void signupUser() async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
 
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailController.text, password: passwordController.text);
-
-      if (context.mounted) Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
+    if (passwordController.text != confirmPasswordController.text) {
       Navigator.pop(context);
-      displayMessageToUser(e.code, context);
+      displayMessageToUser("Passwords don't match!", context);
+    } else {
+      try {
+        UserCredential? userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text);
+
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e) {
+        Navigator.pop(context);
+
+        displayMessageToUser(e.code, context);
+      }
     }
   }
 
@@ -68,26 +75,19 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 10),
 
-              // forgot password?
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Forgot Password?',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
+              // confirm password textfield
+              MyTextField(
+                controller: confirmPasswordController,
+                hintText: 'Confirm Password',
+                obscureText: true,
               ),
 
               const SizedBox(height: 25),
 
               // sign in button
               MyButton(
-                title: "Log In",
-                onTap: login,
+                title: "Create Shelter",
+                onTap: signupUser,
               ),
 
               const SizedBox(height: 50),
@@ -97,14 +97,14 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'New to ShelterPartner?',
+                    'Already have an account?',
                     style: TextStyle(color: Colors.grey[700]),
                   ),
                   const SizedBox(width: 4),
                   GestureDetector(
                     onTap: widget.onTap,
                     child: const Text(
-                      'Create Shelter',
+                      'Login Here',
                       style: TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.bold,
