@@ -5,9 +5,9 @@ import 'package:shelter_partner/components/my_textfield.dart';
 import 'package:shelter_partner/helper/helper_function.dart';
 
 class SignupPage extends StatefulWidget {
-  final void Function()? onTap;
+  final void Function()? onTapLogin;
 
-  SignupPage({super.key, required this.onTap});
+  SignupPage({super.key, required this.onTapLogin});
 
   @override
   State<SignupPage> createState() => _SignupPageState();
@@ -102,7 +102,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(width: 4),
                   GestureDetector(
-                    onTap: widget.onTap,
+                    onTap: widget.onTapLogin,
                     child: const Text(
                       'Login Here',
                       style: TextStyle(

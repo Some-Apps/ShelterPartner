@@ -5,9 +5,10 @@ import 'package:shelter_partner/components/my_textfield.dart';
 import 'package:shelter_partner/helper/helper_function.dart';
 
 class LoginPage extends StatefulWidget {
-  final void Function()? onTap;
+  final void Function()? onTapSignup;
+  final void Function()? onTapForgotPassword;
 
-  const LoginPage({super.key, required this.onTap});
+  const LoginPage({super.key, this.onTapSignup, this.onTapForgotPassword});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -16,7 +17,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   // text editing controllers
   final emailController = TextEditingController();
-
   final passwordController = TextEditingController();
 
   void login() async {
@@ -76,6 +76,25 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: login,
               ),
 
+              const SizedBox(height: 10),
+
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: widget.onTapForgotPassword,
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 50),
 
               // not a member? register now
@@ -88,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(width: 4),
                   GestureDetector(
-                    onTap: widget.onTap,
+                    onTap: widget.onTapSignup,
                     child: const Text(
                       'Create Shelter',
                       style: TextStyle(
