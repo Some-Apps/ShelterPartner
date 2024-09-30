@@ -1,0 +1,8 @@
+functions-framework
+google-cloud-firestore
+google-cloud-storage
+google-cloud-pubsub
+Pillow
+PyMuPDF
+pandas
+pytz
