@@ -12,7 +12,7 @@ I'm hoping to switch everything to Flutter by the end of the year and scrap the 
 
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
-Here are the login credentials for you local build.
+Here are the login credentials for you local build but if you're using Flutter, create your own shelter account as the data structure is slightly different.
 > Email: developer@shelterpartner.org\
 > Password: password
 
