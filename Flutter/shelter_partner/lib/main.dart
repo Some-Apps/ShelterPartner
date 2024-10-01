@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shelter_partner/auth/auth.dart';
+import 'package:shelter_partner/views/auth/auth.dart';
 import 'package:shelter_partner/firebase_options.dart';
 
 

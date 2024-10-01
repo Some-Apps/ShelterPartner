@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shelter_partner/components/my_button.dart';
-import 'package:shelter_partner/components/my_textfield.dart';
+import 'package:shelter_partner/views/auth/my_button.dart';
+import 'package:shelter_partner/views/auth/my_textfield.dart';
 import 'package:shelter_partner/helper/helper_function.dart';
 
 class LoginPage extends StatefulWidget {

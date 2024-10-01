@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:shelter_partner/pages/forgot_password_page.dart';
-import 'package:shelter_partner/pages/login_page.dart';
-import 'package:shelter_partner/pages/signup_page.dart';
+import 'package:shelter_partner/views/auth/forgot_password_page.dart';
+import 'package:shelter_partner/views/auth/login_page.dart';
+import 'package:shelter_partner/views/auth/signup_page.dart';
 
 enum AuthPage { login, signup, forgotPassword }
 
