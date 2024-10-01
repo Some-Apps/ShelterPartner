@@ -48,7 +48,9 @@ struct CardView: View {
         let timeSinceLastLetOut: String = {
             if let lastLog = animal.logs.last,
                Int(animal.logs.last!.startTime) - Int(animal.logs.last!.endTime) != 0 {
-                return Date().timeDifference(from: Date(timeIntervalSince1970: lastLog.endTime))
+                let timeDiff = Date().timeDifference(from: Date(timeIntervalSince1970: lastLog.endTime))
+                let letOutType = lastLog.letOutType ?? ""
+                return "\(timeDiff)\(letOutType.isEmpty ? "" : " (\(letOutType))")"
             }
             return "No Logs"
         }()
@@ -58,14 +60,18 @@ struct CardView: View {
             let minutes = Int(interval) / 60
             let hours = minutes / 60
             let days = hours / 24
+            var duration = ""
             
             if days > 0 {
-                return "\(days) \(days != 1 ? "days" : "day")"
+                duration = "\(days) \(days != 1 ? "days" : "day")"
             } else if hours > 0 {
-                return "\(hours) \(hours != 1 ? "hours" : "hour")"
+                duration = "\(hours) \(hours != 1 ? "hours" : "hour")"
             } else {
-                return "\(minutes) \(minutes != 1 ? "minutes" : "minute")"
+                duration = "\(minutes) \(minutes != 1 ? "minutes" : "minute")"
             }
+            
+            let lastLetOutType = animal.lastLetOutType ?? ""
+            return "\(duration)\(lastLetOutType.isEmpty ? "" : " (\(lastLetOutType))")"
         }()
 
         
