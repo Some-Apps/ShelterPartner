@@ -76,18 +76,20 @@ void signupUser() async {
   }
 
   try {
+    // Firebase Authentication for creating a user
     UserCredential userCredential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(
       email: emailController.text.trim(),
       password: passwordController.text,
     );
 
+    // Immediately sign in the user after creating the account
     await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: emailController.text.trim(),
       password: passwordController.text,
     );
 
-
+    // Get the ID token for authenticated requests
     String? idToken = await FirebaseAuth.instance.currentUser?.getIdToken();
 
     if (idToken == null) {
@@ -96,6 +98,7 @@ void signupUser() async {
       return;
     }
 
+    // Prepare data for cloud function
     Map<String, dynamic> data = {
       'first_name': firstNameController.text.trim(),
       'last_name': lastNameController.text.trim(),
@@ -105,6 +108,7 @@ void signupUser() async {
       'shelter_address': shelterAddressController.text.trim(),
     };
 
+    // Call the cloud function to create the shelter in Firestore
     final response = await http.post(
       Uri.parse('https://us-central1-pawpartnerdevelopment.cloudfunctions.net/CreateNewShelter'),
       headers: {
@@ -114,10 +118,12 @@ void signupUser() async {
       body: jsonEncode(data),
     );
 
-    Navigator.pop(context);
+    Navigator.pop(context); // Close the loading dialog
 
     if (response.statusCode == 200) {
       print('Cloud Function Response: ${response.body}');
+      // If everything is successful, navigate to AuthPage (which will redirect to MainPage)
+      Navigator.of(context).pop();  // Navigate back to AuthPage
     } else {
       print('Error: ${response.statusCode} - ${response.body}');
       displayMessageToUser('Error: ${response.statusCode} - ${response.body}', context);

@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shelter_partner/repositories/app_user_repository.dart';
+import 'package:shelter_partner/view_models/app_user_view_model.dart';
 import 'package:shelter_partner/views/auth/auth.dart';
 import 'package:shelter_partner/firebase_options.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -5,8 +5,8 @@ class Animal {
   final String name;
   final String location;
   final String alert;
-  final String canPlay;
-  final String inKennel;
+  final bool canPlay;
+  final bool inKennel;
   final Timestamp startTime;
   final String description;
 
@@ -21,7 +21,6 @@ class Animal {
     required this.description,
   });
 
-  // Factory method to create an Animal object from Firestore document
   factory Animal.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Animal(
@@ -36,7 +35,6 @@ class Animal {
     );
   }
 
-  // Method to convert Animal object to JSON for Firestore
   Map<String, dynamic> toJson() {
     return {
       'name': name,
