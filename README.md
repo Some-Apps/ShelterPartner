@@ -16,6 +16,74 @@ Here are the login credentials for you local build but if you're using Flutter, 
 > Email: developer@shelterpartner.org\
 > Password: password
 
+## Conventions
+
+### 1. **File Naming**
+- Use **snake_case** for all file names.
+  - **Example**: `animal_repository.dart`, `animal_card_view.dart`
+
+### 2. **Variable and Function Naming**
+- Use **camelCase** for variables, function names, and method names.
+  - **Example**:
+    ```dart
+    final int animalCount = 10;
+    void fetchAnimalData() { ... }
+    ```
+
+### 3. **Class Naming**
+- Use **PascalCase** (UpperCamelCase) for class names.
+  - **Example**: 
+    ```dart
+    class AnimalRepository { ... }
+    ```
+
+### 4. **Constants**
+- Use **SCREAMING_SNAKE_CASE** for global constants.
+  - **Example**:
+    ```dart
+    const double DEFAULT_PADDING = 16.0;
+    ```
+
+### 5. **Widget Naming**
+- Use **PascalCase** for widget class names.
+  - **Example**: `AnimalCardView`, `VolunteerPage`
+
+### 6. **File Organization**
+- Group related files into directories, following the MVVM repository architecture. For example:
+
+```plaintext
+lib/
+  models/
+    animal.dart
+  repositories/
+    animal_repository.dart
+  view_models/
+    volunteer_page_view_model.dart
+  views/
+    pages/
+      volunteer_page.dart
+    components/
+      animal_card_view.dart
+  images/
+    logo.png
+```
+
+
+
+### 7. **Test Files**
+- For test files, use **snake_case** and append `_test.dart` at the end.
+- **Example**: `animal_repository_test.dart`, `volunteer_page_test.dart`
+
+### 8. **Comments and Documentation**
+- Add documentation comments to all public classes and methods.
+- **Example**:
+  ```dart
+  /// Fetches the list of animals from Firestore.
+  Future<List<Animal>> fetchAnimals() { ... }
+  ```
+
+
+
 ## Contributor Incentives
 
 Contributors who make an average of 1 pull request or more per month will be given a desk in a [virtual office building](https://gather.town). This will allow you to interact with other contributors while you work or just talk and play online mini games. An invite will be sent after your first contribution. From there, if you don't make a contribution for at least 2 months in a row, the invite will be revoked. But if you make another contribution, the invite will be sent again.
