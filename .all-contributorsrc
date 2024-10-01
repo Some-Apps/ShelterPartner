@@ -33,6 +33,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "jacobthejones",
+      "name": "jacobthejones",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84295480?v=4",
+      "profile": "https://github.com/jacobthejones",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "commitType": "docs",
