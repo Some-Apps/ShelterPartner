@@ -49,39 +49,26 @@ Here are the login credentials for you local build but if you're using Flutter, 
   - **Example**: `AnimalCardView`, `VolunteerPage`
 
 ### 6. **File Organization**
-- Group related files into directories, following the MVVM repository architecture. For example:
+- Follow MVVM repository architecture. For example:
 
 ```plaintext
 lib/
   models/
     animal.dart
-  repositories/
-    animal_repository.dart
-  view_models/
-    volunteer_page_view_model.dart
   views/
     pages/
       volunteer_page.dart
     components/
       animal_card_view.dart
-  images/
-    logo.png
+  view_models/
+    volunteer_page_view_model.dart
+  repositories/
+    animal_repository.dart
 ```
-
-
 
 ### 7. **Test Files**
 - For test files, use **snake_case** and append `_test.dart` at the end.
 - **Example**: `animal_repository_test.dart`, `volunteer_page_test.dart`
-
-### 8. **Comments and Documentation**
-- Add documentation comments to all public classes and methods.
-- **Example**:
-  ```dart
-  /// Fetches the list of animals from Firestore.
-  Future<List<Animal>> fetchAnimals() { ... }
-  ```
-
 
 
 ## Contributor Incentives
