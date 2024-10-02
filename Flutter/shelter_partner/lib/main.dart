@@ -1,9 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shelter_partner/repositories/app_user_repository.dart';
-import 'package:shelter_partner/view_models/app_user_view_model.dart';
-import 'package:shelter_partner/views/auth/auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:shelter_partner/firebase_options.dart';
 
 void main() async {
@@ -11,7 +9,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   );
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

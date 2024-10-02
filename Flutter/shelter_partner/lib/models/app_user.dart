@@ -4,6 +4,7 @@ class AppUser {
   final String id;
   final String firstName;
   final String lastName;
+  final String email;
   final String type;
   final String shelterId;
 
@@ -11,6 +12,7 @@ class AppUser {
     required this.id,
     required this.firstName,
     required this.lastName,
+    required this.email,
     required this.type,
     required this.shelterId,
   });
@@ -21,6 +23,7 @@ class AppUser {
       id: doc.id,
       firstName: data['first_name'],
       lastName: data['last_name'],
+      email: data['email'],
       type: data['type'],
       shelterId: data['shelter_id'],
     );

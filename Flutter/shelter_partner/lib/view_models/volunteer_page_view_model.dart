@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/repositories/animal_repository.dart';
+
+// Use ChangeNotifierProvider since VolunteerPageViewModel extends ChangeNotifier
+final volunteerPageProvider = ChangeNotifierProvider((ref) {
+  final animalRepository = ref.watch(animalRepositoryProvider);
+  return VolunteerPageViewModel(animalRepository: animalRepository);
+});
+
 
 class VolunteerPageViewModel extends ChangeNotifier {
   final AnimalRepository _animalRepository;
@@ -12,20 +20,20 @@ class VolunteerPageViewModel extends ChangeNotifier {
       : _animalRepository = animalRepository;
 
   // Fetch both cats and dogs from Firestore and combine the lists
-  void fetchAllAnimals(String shelterId) {
+  Future<void> fetchAllAnimals(String shelterId) async {
     print('Fetching all animals (cats and dogs) for shelterId: $shelterId');
     
-    final catsStream = _animalRepository.getAnimalsStream(shelterId: shelterId, animalType: 'cats');
-    final dogsStream = _animalRepository.getAnimalsStream(shelterId: shelterId, animalType: 'dogs');
+    try {
+      final catsStream = _animalRepository.getAnimalsStream(shelterId: shelterId, animalType: 'cats');
+      final dogsStream = _animalRepository.getAnimalsStream(shelterId: shelterId, animalType: 'dogs');
 
-    catsStream.listen((catsList) {
-      _animals = catsList;  // Add cats first
-      notifyListeners();
-    });
+      final catsList = await catsStream.first;
+      final dogsList = await dogsStream.first;
 
-    dogsStream.listen((dogsList) {
-      _animals.addAll(dogsList);  // Add dogs to the existing list
-      notifyListeners();
-    });
+      _animals = [...catsList, ...dogsList];
+      notifyListeners();  // Notify listeners after updating the list
+    } catch (e) {
+      print('Error fetching animals: $e');
+    }
   }
 }

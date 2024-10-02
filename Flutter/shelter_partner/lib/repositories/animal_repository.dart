@@ -1,5 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/animal.dart';
+
+// Provider for AnimalRepository
+final animalRepositoryProvider = Provider<AnimalRepository>((ref) {
+  return AnimalRepository();
+});
+
 
 class AnimalRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

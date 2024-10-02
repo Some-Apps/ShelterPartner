@@ -1,47 +1,46 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shelter_partner/views/auth/my_button.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
-import 'package:shelter_partner/helper/helper_function.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
+class ForgotPasswordPage extends ConsumerStatefulWidget {
   final void Function()? onTapLogin;
 
   ForgotPasswordPage({super.key, required this.onTapLogin});
 
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final emailController = TextEditingController();
 
   // Method to send password reset email
   void resetPassword() async {
     String email = emailController.text.trim();
 
-    // Show a loading indicator (optional)
+    // Show a loading indicator
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    try {
-      // Send password reset email using Firebase
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    // Call the sendPasswordReset method in AuthViewModel
+    final errorMessage = await ref.read(authViewModelProvider.notifier).sendPasswordReset(email);
 
+    // Close the loading indicator
+    Navigator.of(context).pop();
+
+    if (errorMessage == null) {
       // Show success message
-      Navigator.of(context).pop(); // To remove the loading indicator
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text("Success"),
-          content: const Text(
-              "A password reset email has been sent. Please check your inbox."),
+          content: const Text("A password reset email has been sent. Please check your inbox."),
           actions: [
             TextButton(
               onPressed: () {
@@ -53,15 +52,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           ],
         ),
       );
-    } on FirebaseAuthException catch (e) {
-      Navigator.of(context).pop(); // To remove the loading indicator
-
+    } else {
       // Show error message if something goes wrong
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text("Error"),
-          content: Text(e.message ?? "An error occurred. Please try again."),
+          content: Text(errorMessage),
           actions: [
             TextButton(
               onPressed: () {
@@ -81,54 +78,46 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 50),
-
-              // logo
-              Image.asset("assets/images/logo.png", height: 100),
-
-              const SizedBox(height: 50),
-
-              // email textfield
-              MyTextField(
-                controller: emailController,
-                hintText: 'Email',
-                obscureText: false,
-              ),
-
-              const SizedBox(height: 10),
-
-              const SizedBox(height: 25),
-
-              // Reset password button
-              MyButton(
-                title: "Reset Password",
-                onTap: resetPassword,
-              ),
-
-              const SizedBox(height: 50),
-
-              // Go back to login
-              Row(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Remember your password?'),
-                  const SizedBox(width: 4),
-                  GestureDetector(
-                    onTap: widget.onTapLogin,
-                    child: const Text(
-                      'Go Back To Login',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
+                  const SizedBox(height: 50),
+                  Image.asset("assets/images/logo.png", height: 100),
+                  const SizedBox(height: 50),
+                  MyTextField(
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false,
+                  ),
+                  const SizedBox(height: 25),
+                  MyButton(
+                    title: "Reset Password",
+                    onTap: resetPassword,
+                  ),
+                  const SizedBox(height: 50),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Remember your password?'),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: widget.onTapLogin,
+                        child: const Text(
+                          'Go Back To Login',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
-              )
-            ],
+              ),
+            ),
           ),
         ),
       ),
