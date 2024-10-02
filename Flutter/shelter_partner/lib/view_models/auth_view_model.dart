@@ -37,9 +37,12 @@ class AuthViewModel extends StateNotifier<AuthState> {
     }
   }
 
+ void resetState() {
+    state = AuthState.unauthenticated();
+  }
   // Login method
   Future<void> login(String email, String password) async {
-    state = AuthState.loading();
+  state = AuthState.loading(message: "Logging in...");
     try {
       final userCredential = await _authRepository.signInWithEmailAndPassword(email, password);
       final appUser = await _authRepository.getUserById(userCredential.user!.uid);
@@ -72,7 +75,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
     required String shelterAddress,
     required String selectedManagementSoftware,
   }) async {
-    state = AuthState.loading();
+  state = AuthState.loading(message: "Creating Shelter...");
     try {
       final userCredential = await _authRepository.signUpWithEmailAndPassword(email, password);
       String uid = userCredential.user!.uid;
@@ -115,15 +118,17 @@ class AuthState {
   final AuthStatus status;
   final AppUser? user;
   final String? errorMessage;
+  final String? loadingMessage;
 
   AuthState({
     required this.status,
     this.user,
     this.errorMessage,
+    this.loadingMessage,
   });
 
   // Convenience constructors
-  factory AuthState.loading() => AuthState(status: AuthStatus.loading);
+  factory AuthState.loading({String? message}) => AuthState(status: AuthStatus.loading, loadingMessage: message);
   factory AuthState.authenticated(AppUser user) =>
       AuthState(status: AuthStatus.authenticated, user: user);
   factory AuthState.unauthenticated() =>

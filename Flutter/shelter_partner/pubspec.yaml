@@ -19,6 +19,7 @@ dependencies:
   uuid: ^3.0.7
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:

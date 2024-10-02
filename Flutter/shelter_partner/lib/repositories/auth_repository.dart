@@ -25,12 +25,15 @@ class AuthRepository {
   }
 
   // Sign in user with email and password
-  Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
-    return await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+  Future<UserCredential> signInWithEmailAndPassword(
+      String email, String password) async {
+    return await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
   }
 
   // Sign up a new user
-  Future<UserCredential> signUpWithEmailAndPassword(String email, String password) async {
+  Future<UserCredential> signUpWithEmailAndPassword(
+      String email, String password) async {
     return await _firebaseAuth.createUserWithEmailAndPassword(
         email: email.trim(), password: password);
   }
@@ -49,7 +52,7 @@ class AuthRepository {
     await _firebaseAuth.signOut();
   }
 
-   Future<void> createUserDocument({
+  Future<void> createUserDocument({
     required String uid,
     required String firstName,
     required String lastName,
@@ -85,87 +88,96 @@ class AuthRepository {
   }
 
   Future<void> addAnimalsFromCSV(String shelterId) async {
-  final animalTypes = ['cats', 'dogs'];
+    final animalTypes = ['cats', 'dogs'];
 
-  for (var animalType in animalTypes) {
-    print('Attempting to upload $animalType for shelter $shelterId...');
-    await uploadDataToFirestore(
-      filename: 'assets/$animalType.csv', // Corrected path
-      collectionName: animalType,
-      shelterId: shelterId,
-    );
+    for (var animalType in animalTypes) {
+      print('Attempting to upload $animalType for shelter $shelterId...');
+      await uploadDataToFirestore(
+        filename: 'assets/csv/$animalType.csv', // Corrected path
+        collectionName: animalType,
+        shelterId: shelterId,
+      );
+    }
   }
-}
-
 
   Future<void> uploadDataToFirestore({
-  required String filename,
-  required String collectionName,
-  required String shelterId,
-}) async {
-  try {
-    // Load CSV data using the loadCsvData function
-    print('Loading CSV file: $filename');
-    final csvData = await loadCsvData(filename); // Load CSV data from the file
+    required String filename,
+    required String collectionName,
+    required String shelterId,
+  }) async {
+    try {
+      // Load CSV data using the loadCsvData function
+      print('Loading CSV file: $filename');
+      final csvData =
+          await loadCsvData(filename); // Load CSV data from the file
 
-    if (csvData.isEmpty) {
-      print('No data found in CSV file: $filename');
-      return; // Exit if no data is found
-    } else {
-      print('Loaded ${csvData.length} rows from $filename');
-    }
-
-    // Iterate over the loaded CSV data and upload each row to Firestore
-    for (final row in csvData) {
-      final animalId = row['id']; // Assuming 'id' is a column in your CSV
-      if (animalId == null) {
-        print('Skipping row without an ID');
-        continue; // Skip rows that do not have an ID
+      if (csvData.isEmpty) {
+        print('No data found in CSV file: $filename');
+        return; // Exit if no data is found
+      } else {
+        print('Loaded ${csvData.length} rows from $filename');
       }
 
-      final data = {
-        'alert': row['alert'] ?? '',
-        'can_play': (row['canPlay'] ?? '').toLowerCase() == 'true', // Ensure boolean conversion
-        'symbol_color': getRandomColor(),
-        'symbol': 'pawprint.fill', // Example static value, adjust as needed
-        'color_group': getRandomColorGroup(),
-        'building_group': getRandomBuildingGroup(),
-        'behavior_group': getRandomBehaviorGroup(),
-        'color_sort': getRandomIndex(7),
-        'building_sort': getRandomIndex(3),
-        'behavior_sort': getRandomIndex(4),
-        'id': animalId,
-        'in_kennel': (row['inKennel'] ?? '').toLowerCase() == 'true', // Ensure boolean conversion
-        'location': row['location'] ?? '',
-        'name': row['name'] ?? 'Unknown', // Default to 'Unknown' if name is missing
-        'start_time': FieldValue.serverTimestamp(), // Add timestamps for Firestore
-        'created': FieldValue.serverTimestamp(),
-        'photos': [], // Example placeholder for photos
-        'sex': row['sex'] ?? 'Unknown',
-        'age': row['age'] ?? 'Unknown',
-        'breed': row['breed'] ?? 'Unknown',
-        'description': row['description'] ?? 'No description available.',
-      };
+      // Iterate over the loaded CSV data and upload each row to Firestore
+      for (final row in csvData) {
+        final animalId = row['id'].toString(); // Assuming 'id' is a column in your CSV
+        if (animalId == null) {
+          print('Skipping row without an ID');
+          continue; // Skip rows that do not have an ID
+        }
 
-      // Upload the document to Firestore
-      print('Uploading document for $collectionName: ${row['name']} (ID: $animalId)');
-      await _firestore.collection('shelters/$shelterId/$collectionName').doc(animalId).set(data);
-      print('Successfully uploaded $collectionName document for $animalId');
+        final data = {
+          'alert': row['alert'] ?? '',
+          'canPlay': (row['canPlay'] ?? '').toLowerCase() ==
+              'true', // Ensure boolean conversion
+          'symbolColor': getRandomColor(),
+          'symbol': 'pawprint.fill', // Example static value, adjust as needed
+          'colorGroup': getRandomColorGroup(),
+          'buildingGroup': getRandomBuildingGroup(),
+          'behaviorGroup': getRandomBehaviorGroup(),
+          'colorSort': getRandomIndex(7),
+          'buildingSort': getRandomIndex(3),
+          'behaviorSort': getRandomIndex(4),
+          'id': animalId,
+          'inKennel': (row['inKennel'] ?? '').toLowerCase() ==
+              'true', // Ensure boolean conversion
+          'location': row['location'] ?? '',
+          'name': row['name'] ??
+              'Unknown', // Default to 'Unknown' if name is missing
+          'startTime':
+              FieldValue.serverTimestamp(), // Add timestamps for Firestore
+          'created': FieldValue.serverTimestamp(),
+          'photos': [], // Example placeholder for photos
+          'sex': row['sex'] ?? 'Unknown',
+          'age': row['age'] ?? 'Unknown',
+          'breed': row['breed'] ?? 'Unknown',
+          'description': row['description'] ?? 'No description available.',
+        };
+
+        // Upload the document to Firestore
+        print(
+            'Uploading document for $collectionName: ${row['name']} (ID: $animalId)');
+        await _firestore
+            .collection('shelters/$shelterId/$collectionName')
+            .doc(animalId)
+            .set(data);
+        print('Successfully uploaded $collectionName document for $animalId');
+      }
+    } catch (e) {
+      print('Error uploading data from $filename: $e');
     }
-  } catch (e) {
-    print('Error uploading data from $filename: $e');
   }
-}
 
-
-Future<List<Map<String, dynamic>>> loadCsvData(String filename) async {
+  Future<List<Map<String, dynamic>>> loadCsvData(String filename) async {
   print('Attempting to load CSV data from $filename');
   try {
     // Load CSV file as a string
     final csvString = await rootBundle.loadString(filename);
+    print('Raw CSV string: $csvString'); // Debugging: print the entire raw string
 
     // Parse the CSV string
-    final List<List<dynamic>> csvRows = const CsvToListConverter().convert(csvString);
+    final List<List<dynamic>> csvRows = const CsvToListConverter(eol: '\n').convert(csvString);
+    print('Parsed CSV rows: $csvRows'); // Debugging: print parsed rows
 
     if (csvRows.isEmpty) {
       print('No data found in CSV file: $filename');
@@ -174,10 +186,11 @@ Future<List<Map<String, dynamic>>> loadCsvData(String filename) async {
 
     // Assuming the first row is the header (column names)
     final headers = csvRows.first.map((header) => header.toString()).toList();
+    print('CSV Headers: $headers');
 
-    // Convert CSV rows into a list of maps (each row is a map with column names as keys)
     final List<Map<String, dynamic>> csvData = [];
     for (int i = 1; i < csvRows.length; i++) {
+      print('Processing row $i: ${csvRows[i]}');
       final Map<String, dynamic> rowMap = {};
       for (int j = 0; j < headers.length; j++) {
         rowMap[headers[j]] = csvRows[i][j];
@@ -193,10 +206,17 @@ Future<List<Map<String, dynamic>>> loadCsvData(String filename) async {
   }
 }
 
-
   // Mock functions for random data generation (replace with your logic)
   String getRandomColor() {
-    const colors = ['Red', 'Blue', 'Green', 'Orange', 'Pink', 'Yellow', 'Brown'];
+    const colors = [
+      'Red',
+      'Blue',
+      'Green',
+      'Orange',
+      'Pink',
+      'Yellow',
+      'Brown'
+    ];
     return colors[Random().nextInt(colors.length)];
   }
 

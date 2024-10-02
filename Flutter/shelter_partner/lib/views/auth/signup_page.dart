@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shelter_partner/views/auth/my_button.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -45,9 +46,15 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   void signup() async {
     if (passwordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Passwords don't match!")));
-      return;
+      Fluttertoast.showToast(
+          msg: 'Passwords don\'t match',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        return;
     }
     await ref.read(authViewModelProvider.notifier).signup(
           email: emailController.text.trim(),

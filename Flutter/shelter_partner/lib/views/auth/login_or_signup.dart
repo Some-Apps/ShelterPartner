@@ -1,50 +1,40 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:shelter_partner/views/auth/forgot_password_page.dart';
 import 'package:shelter_partner/views/auth/login_page.dart';
 import 'package:shelter_partner/views/auth/signup_page.dart';
 
-enum AuthPage { login, signup, forgotPassword }
-
-class LoginOrSignup extends StatefulWidget {
+class LoginOrSignup extends ConsumerWidget {
   const LoginOrSignup({super.key});
 
   @override
-  State<LoginOrSignup> createState() => _LoginOrSignupState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Listen to the current page state
+    final currentPage = ref.watch(authPageProvider);
 
-class _LoginOrSignupState extends State<LoginOrSignup> {
-  // Use an enum to manage which page is active
-  AuthPage currentPage = AuthPage.login;
+    // Methods to navigate between pages
+    void navigateToLogin() {
+      ref.read(authPageProvider.notifier).setPage(AuthPageType.login);
+    }
 
-  void navigateToLogin() {
-    setState(() {
-      currentPage = AuthPage.login;
-    });
-  }
+    void navigateToSignup() {
+      ref.read(authPageProvider.notifier).setPage(AuthPageType.signup);
+    }
 
-  void navigateToSignup() {
-    setState(() {
-      currentPage = AuthPage.signup;
-    });
-  }
+    void navigateToForgotPassword() {
+      ref.read(authPageProvider.notifier).setPage(AuthPageType.forgotPassword);
+    }
 
-  void navigateToForgotPassword() {
-    setState(() {
-      currentPage = AuthPage.forgotPassword;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     switch (currentPage) {
-      case AuthPage.login:
+      case AuthPageType.login:
         return LoginPage(
           onTapSignup: navigateToSignup,
           onTapForgotPassword: navigateToForgotPassword,
         );
-      case AuthPage.signup:
+      case AuthPageType.signup:
         return SignupPage(onTapLogin: navigateToLogin);
-      case AuthPage.forgotPassword:
+      case AuthPageType.forgotPassword:
         return ForgotPasswordPage(onTapLogin: navigateToLogin);
       default:
         return LoginPage(

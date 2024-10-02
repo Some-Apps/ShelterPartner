@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shelter_partner/views/auth/my_button.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
 
@@ -53,22 +54,33 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         ),
       );
     } else {
+      Future.microtask(() {
+        Fluttertoast.showToast(
+          msg: errorMessage,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+      });
       // Show error message if something goes wrong
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Error"),
-          content: Text(errorMessage),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        ),
-      );
+      // showDialog(
+      //   context: context,
+      //   builder: (context) => AlertDialog(
+      //     title: const Text("Error"),
+      //     content: Text(errorMessage),
+      //     actions: [
+      //       TextButton(
+      //         onPressed: () {
+      //           Navigator.of(context).pop(); // Close the dialog
+      //         },
+      //         child: const Text("OK"),
+      //       ),
+      //     ],
+      //   ),
+      // );
     }
   }
 

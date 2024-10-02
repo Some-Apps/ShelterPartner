@@ -12,26 +12,6 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
-  String csvData = "Loading CSV...";
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCSV();
-  }
-
-  Future<void> _loadCSV() async {
-    try {
-      final csvString = await rootBundle.loadString('assets/cats.csv');
-      setState(() {
-        csvData = csvString;
-      });
-    } catch (e) {
-      setState(() {
-        csvData = "Failed to load CSV.";
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +35,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             Text("Logged in as: ${viewModel.user?.email ?? 'Unknown'}"),
             const Text("Settings Page"),
             const SizedBox(height: 20),
-            Text(csvData),
           ],
         ),
       ),

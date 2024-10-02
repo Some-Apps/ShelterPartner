@@ -1,45 +1,69 @@
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/auth/login_or_signup.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-// Assuming MainPage is where the authenticated user goes
 
 class AuthPage extends ConsumerWidget {
   const AuthPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the auth state from the authViewModelProvider
+    final authViewModel = ref.read(authViewModelProvider.notifier);
     final authState = ref.watch(authViewModelProvider);
 
-    // Dismiss the loading dialog when authState is no longer loading
-    if (authState.status != AuthStatus.loading) {
+    // Handle error state with toast and reset state
+    if (authState.status == AuthStatus.error) {
       Future.microtask(() {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context); // Dismiss the loading dialog
-        }
+        Fluttertoast.showToast(
+          msg: authState.errorMessage ?? 'An unknown error occurred',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+        authViewModel.resetState();
       });
+
+      return const LoginOrSignup(); // The page is already managed by Riverpod
     }
 
     return Scaffold(
       body: authState.status == AuthStatus.loading
-          ? const Center(child: CircularProgressIndicator()) // Show loading indicator
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(authState.loadingMessage ?? "Loading..."),
+                ],
+              ),
+            )
           : authState.status == AuthStatus.authenticated
-              ? MainPage(appUser: authState.user!) // Authenticated, show MainPage
-              : authState.status == AuthStatus.unauthenticated
-                  ? const LoginOrSignup() // Unauthenticated, show login/signup screen
-                  : authState.status == AuthStatus.error
-                      ? Center(
-                          child: Text(
-                            'Error: ${authState.errorMessage}',
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        )
-                      : const Center(
-                          child: CircularProgressIndicator()), // Fallback in case of unexpected state
+              ? MainPage(appUser: authState.user!)
+              : const LoginOrSignup(), // Persisting the page through Riverpod
     );
   }
 }
+
+
+enum AuthPageType { login, signup, forgotPassword }
+
+class AuthPageNotifier extends StateNotifier<AuthPageType> {
+  AuthPageNotifier() : super(AuthPageType.login);
+
+  // Update the current page
+  void setPage(AuthPageType pageType) {
+    state = pageType;
+  }
+}
+
+// Provide the AuthPageNotifier using Riverpod
+final authPageProvider = StateNotifierProvider<AuthPageNotifier, AuthPageType>(
+  (ref) => AuthPageNotifier(),
+);
