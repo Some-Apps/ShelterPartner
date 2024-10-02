@@ -60,69 +60,81 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  void signupUser() async {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+  @override
+void initState() {
+  super.initState();
+
+  // Listen to FirebaseAuth state changes
+  FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    if (user != null) {
+      // User is authenticated, dismiss the loading dialog if it's shown
+      Navigator.pop(context); // Dismiss the loading dialog
+    }
+  });
+}
+
+void signupUser() async {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Prevent dismissing the dialog manually
+    builder: (context) => const Center(child: CircularProgressIndicator()),
+  );
+
+  if (passwordController.text != confirmPasswordController.text) {
+    Navigator.pop(context); // Close the loading dialog
+    displayMessageToUser("Passwords don't match!", context);
+    return;
+  }
+
+  try {
+    // Firebase Authentication for creating a user
+    UserCredential userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text,
     );
 
-    if (passwordController.text != confirmPasswordController.text) {
-      Navigator.pop(context); // Close the loading dialog
-      displayMessageToUser("Passwords don't match!", context);
-      return;
-    }
+    // Get the UID of the newly created user
+    String uid = userCredential.user!.uid;
 
-    try {
-      // Firebase Authentication for creating a user
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text,
-      );
+    // Generate a shelter ID
+    String shelterId = Uuid().v4();
 
-      // Get the UID of the newly created user
-      String uid = userCredential.user!.uid;
+    // Create user document in Firestore
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'email': emailController.text.trim(),
+      'first_name': firstNameController.text.trim(),
+      'last_name': lastNameController.text.trim(),
+      'shelter_id': shelterId,
+      'type': 'admin',
+    });
 
-      // Generate a shelter ID
-      String shelterId = Uuid().v4();
+    // Setup shelter data
+    await FirebaseFirestore.instance.collection('shelters').doc(shelterId).set({
+      'shelter_name': shelterNameController.text.trim(),
+      'address': shelterAddressController.text.trim(),
+      'management_software': selectedManagementSoftware,
+      'createdAt': FieldValue.serverTimestamp(),
+      'reportsDay': 'Never',
+      'reportsEmail': '',
+      'groupOptions': ["Color", "Building", "Behavior"],
+      'secondarySortOptions': ["Color", "Building", "Behavior"],
+    });
 
-      // Create user document in Firestore
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'email': emailController.text.trim(),
-        'first_name': firstNameController.text.trim(),
-        'last_name': lastNameController.text.trim(),
-        'shelter_id': shelterId,
-        'type': 'admin',
-      });
+    // Add animals to Firestore
+    await addAnimals(shelterId);
 
-      // Setup shelter data
-      await FirebaseFirestore.instance.collection('shelters').doc(shelterId).set({
-        'shelter_name': shelterNameController.text.trim(),
-        'address': shelterAddressController.text.trim(),
-        'management_software': selectedManagementSoftware,
-        'createdAt': FieldValue.serverTimestamp(),
-        'reportsDay': 'Never',
-        'reportsEmail': '',
-        'groupOptions': ["Color", "Building", "Behavior"],
-        'secondarySortOptions': ["Color", "Building", "Behavior"],
-      });
-
-      // Add animals to Firestore
-      await addAnimals(shelterId);
-
-      Navigator.pop(context); // Close the loading dialog
-
-      // Navigate to the main page or show success message
-      // ...
-
-    } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
-      displayMessageToUser(e.message ?? e.code, context);
-    } catch (e) {
-      Navigator.pop(context);
-      displayMessageToUser("An error occurred. Please try again. $e", context);
-    }
+  } on FirebaseAuthException catch (e) {
+    Navigator.pop(context);
+    displayMessageToUser(e.message ?? e.code, context);
+  } catch (e) {
+    Navigator.pop(context);
+    displayMessageToUser("An error occurred. Please try again. $e", context);
   }
+}
+
+
+
 
   Future<void> addAnimals(String shelterId) async {
     List<String> animalTypes = ['cats', 'dogs'];
