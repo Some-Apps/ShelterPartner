@@ -1,16 +1,13 @@
 import 'dart:convert';
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shelter_partner/views/auth/my_button.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
-import 'package:http/http.dart' as http;
-import 'package:shelter_partner/helper/helper_function.dart';
-
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:csv/csv.dart';
+import 'package:uuid/uuid.dart';
 
 class SignupPage extends StatefulWidget {
   final void Function()? onTapLogin;
@@ -63,81 +60,141 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-void signupUser() async {
-  showDialog(
-    context: context,
-    builder: (context) => const Center(child: CircularProgressIndicator()),
-  );
-
-  if (passwordController.text != confirmPasswordController.text) {
-    Navigator.pop(context); // Close the loading dialog
-    displayMessageToUser("Passwords don't match!", context);
-    return;
-  }
-
-  try {
-    // Firebase Authentication for creating a user
-    UserCredential userCredential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: passwordController.text,
+  void signupUser() async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    // Immediately sign in the user after creating the account
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: passwordController.text,
-    );
-
-    // Get the ID token for authenticated requests
-    String? idToken = await FirebaseAuth.instance.currentUser?.getIdToken();
-
-    if (idToken == null) {
-      Navigator.pop(context);
-      displayMessageToUser("Unable to obtain ID token.", context);
+    if (passwordController.text != confirmPasswordController.text) {
+      Navigator.pop(context); // Close the loading dialog
+      displayMessageToUser("Passwords don't match!", context);
       return;
     }
 
-    // Prepare data for cloud function
-    Map<String, dynamic> data = {
-      'first_name': firstNameController.text.trim(),
-      'last_name': lastNameController.text.trim(),
-      'email': emailController.text.trim(),
-      'shelter_name': shelterNameController.text.trim(),
-      'management_software': selectedManagementSoftware,
-      'shelter_address': shelterAddressController.text.trim(),
-    };
+    try {
+      // Firebase Authentication for creating a user
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
 
-    // Call the cloud function to create the shelter in Firestore
-    final response = await http.post(
-      Uri.parse('https://us-central1-pawpartnerdevelopment.cloudfunctions.net/CreateNewShelter'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $idToken',
-      },
-      body: jsonEncode(data),
-    );
+      // Get the UID of the newly created user
+      String uid = userCredential.user!.uid;
 
-    Navigator.pop(context); // Close the loading dialog
+      // Generate a shelter ID
+      String shelterId = Uuid().v4();
 
-    if (response.statusCode == 200) {
-      print('Cloud Function Response: ${response.body}');
-      // If everything is successful, navigate to AuthPage (which will redirect to MainPage)
-      Navigator.of(context).pop();  // Navigate back to AuthPage
-    } else {
-      print('Error: ${response.statusCode} - ${response.body}');
-      displayMessageToUser('Error: ${response.statusCode} - ${response.body}', context);
+      // Create user document in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'email': emailController.text.trim(),
+        'first_name': firstNameController.text.trim(),
+        'last_name': lastNameController.text.trim(),
+        'shelter_id': shelterId,
+        'type': 'admin',
+      });
+
+      // Setup shelter data
+      await FirebaseFirestore.instance.collection('shelters').doc(shelterId).set({
+        'shelter_name': shelterNameController.text.trim(),
+        'address': shelterAddressController.text.trim(),
+        'management_software': selectedManagementSoftware,
+        'createdAt': FieldValue.serverTimestamp(),
+        'reportsDay': 'Never',
+        'reportsEmail': '',
+        'groupOptions': ["Color", "Building", "Behavior"],
+        'secondarySortOptions': ["Color", "Building", "Behavior"],
+      });
+
+      // Add animals to Firestore
+      await addAnimals(shelterId);
+
+      Navigator.pop(context); // Close the loading dialog
+
+      // Navigate to the main page or show success message
+      // ...
+
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      displayMessageToUser(e.message ?? e.code, context);
+    } catch (e) {
+      Navigator.pop(context);
+      displayMessageToUser("An error occurred. Please try again. $e", context);
     }
-  } on FirebaseAuthException catch (e) {
-    Navigator.pop(context); 
-    displayMessageToUser(e.message ?? e.code, context);
-  } catch (e) {
-    Navigator.pop(context); 
-    displayMessageToUser("An error occurred. Please try again. $e", context);
   }
-}
 
+  Future<void> addAnimals(String shelterId) async {
+    List<String> animalTypes = ['cats', 'dogs'];
+    for (String animalType in animalTypes) {
+      String filename = 'assets/${animalType.toLowerCase()}.csv';
+      await uploadDataToFirestore(filename, animalType, shelterId);
+    }
+  }
 
+  Future<void> uploadDataToFirestore(String filename, String collectionName, String shelterId) async {
+    try {
+      // Load CSV file from assets
+      String csvData = await rootBundle.loadString(filename);
+      List<List<dynamic>> rowsAsListOfValues = const CsvToListConverter().convert(csvData, eol: '\n');
+      
+      // Assuming the first row contains headers
+      List<dynamic> headers = rowsAsListOfValues[0];
+      for (int i = 1; i < rowsAsListOfValues.length; i++) {
+        List<dynamic> row = rowsAsListOfValues[i];
+        Map<String, dynamic> rowData = {};
+        for (int j = 0; j < headers.length; j++) {
+          rowData[headers[j]] = row[j];
+        }
+        
+        // Process rowData similar to the cloud function
+        String animalId = rowData['id'].toString();
+        List<String> colorGroups = ["Red", "Blue", "Green", "Orange", "Pink", "Yellow", "Brown"];
+        List<String> colors = colorGroups.map((color) => color.toLowerCase()).toList();
+        List<String> buildingGroups = ["Building 1", "Building 2", "Building 3"];
+        List<String> behaviorGroups = ["Example 1", "Example 2", "Example 3", "Example 4"];
+        int randomColorIndex = Random().nextInt(colors.length);
+        int randomBuildingIndex = Random().nextInt(buildingGroups.length);
+        int randomBehaviorIndex = Random().nextInt(behaviorGroups.length);
+        
+        Map<String, dynamic> data = {
+          'alert': rowData['alert'] ?? '',
+          'can_play': (rowData['canPlay'] ?? '').toString().toLowerCase() == 'true',
+          'symbol_color': colors[randomColorIndex],
+          'symbol': 'pawprint.fill',
+          'color_group': colorGroups[randomColorIndex],
+          'building_group': buildingGroups[randomBuildingIndex],
+          'behavior_group': behaviorGroups[randomBehaviorIndex],
+          'color_sort': randomColorIndex,
+          'building_sort': randomBuildingIndex,
+          'behavior_sort': randomBehaviorIndex,
+          'id': animalId,
+          'in_kennel': (rowData['inKennel'] ?? '').toString().toLowerCase() == 'true',
+          'location': rowData['location'] ?? '',
+          'name': rowData['name'] ?? '',
+          'start_time': FieldValue.serverTimestamp(),
+          'created': FieldValue.serverTimestamp(),
+          'photos': [],  // Empty since we're not dealing with photos
+          'sex': "Male",
+          'age': "3 years 4 months",
+          'breed': "Example Breed",
+          'description': "Hey there, I'm Example! I'm a handsome guy that came to the shelter as a stray. I can be a bit nervous when I meet new people and would do best in a home as the only pet and with no small kids. If you think a handsome cat like me could be the one for you come visit me soon!",
+        };
+        
+        // Add document to Firestore
+        await FirebaseFirestore.instance
+            .collection('shelters')
+            .doc(shelterId)
+            .collection(collectionName)
+            .doc(animalId)
+            .set(data);
+        
+        print("Added ${collectionName.substring(0, collectionName.length - 1)} '${data['name']}' with ID $animalId to shelter $shelterId");
+      }
+    } catch (e) {
+      print('Error uploading data from $filename: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +211,7 @@ void signupUser() async {
                 children: [
                   const SizedBox(height: 50),
                   // Logo
-                  Image.asset("lib/images/logo.png", height: 100),
+                  Image.asset("assets/images/logo.png", height: 100),
                   const SizedBox(height: 50),
                   // First Name TextField
                   MyTextField(

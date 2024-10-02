@@ -16,6 +16,9 @@ class _VolunteerPageState extends State<VolunteerPage> {
     // Access the user object from the provider
     final user = Provider.of<AppUser>(context);
     final shelterId = user.shelterId;  // Now you have access to shelterId globally
+    final userID = user.id;
+    final firstName = user.firstName;
+    final lastName = user.lastName;
     print('Rendering VolunteerPage with shelterId: $shelterId');
 
     // Provide AnimalRepository so it's accessible throughout the widget tree
@@ -31,6 +34,7 @@ class _VolunteerPageState extends State<VolunteerPage> {
         ),
       ],
       child: Scaffold(
+        
         body: Consumer<VolunteerPageViewModel>(
           builder: (context, viewModel, child) {
             if (viewModel.animals.isEmpty) {
