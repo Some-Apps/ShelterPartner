@@ -69,7 +69,6 @@ def update_readme(contributors):
     # Prepare the HTML table content for the README
     html_content = """
 ## Contributors
-Updated daily
 
 <table>
   <thead>
