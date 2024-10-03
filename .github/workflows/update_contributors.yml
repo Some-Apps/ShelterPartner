@@ -1,6 +1,9 @@
 name: Update Contributors
 
 on:
+  push:  # Triggers the workflow when there is a push to the repo
+    branches:
+      - main  # or any other branch you want to monitor
   schedule:
     - cron: '0 0 * * *'  # Runs daily at midnight
   workflow_dispatch:  # Allows manual trigger
@@ -11,10 +14,10 @@ jobs:
 
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3  # Upgrade to v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3  # Upgrade to v3
       with:
         python-version: '3.x'
 
