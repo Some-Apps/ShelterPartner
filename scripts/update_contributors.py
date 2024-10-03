@@ -80,8 +80,7 @@ Updated daily
       <th>Perks</th>
     </tr>
   </thead>
-  <tbody>
-"""
+  <tbody>"""
 
     for contributor in sorted_contributors:
         contributions = get_contributions(REPO_OWNER, REPO_NAME, contributor)
@@ -91,7 +90,7 @@ Updated daily
 
         # Add each contributor's info in a row
         html_content += f"""
-    <tr>
+        <tr>
       <td>
         <a href="{contributor['html_url']}">
           <img src="{contributor['avatar_url']}?s=100" width="100" height="100" alt="{contributor['login']}'s avatar"/>
@@ -100,13 +99,11 @@ Updated daily
       <td><a href="{contributor['html_url']}"><strong>{contributor['login']}</strong></a></td>
       <td><strong>{len(contributions)} contributions</strong></td>
       <td>{perks_list}</td>
-    </tr>
-"""
+    </tr>"""
 
     html_content += """
   </tbody>
-</table>
-"""
+</table>"""
 
     # Read the current README content
     with open("README.md", "r") as file:
