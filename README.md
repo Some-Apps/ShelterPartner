@@ -48,57 +48,65 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
 
 <!-- CONTRIBUTORS-START -->
 ## Contributors
+Updated daily
 
 <table>
-  <tr>
+  <thead>
+    <tr>
+      <th>Photo</th>
+      <th>User</th>
+      <th>Contributions</th>
+      <th>Perks</th>
+    </tr>
+  </thead>
+  <tbody>
 
-      <td style="padding: 10px; text-align: center; vertical-align: top;">
-        <div style="border: 1px solid #ddd; width: 200px; height: 200px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
-          <a href="https://github.com/JaredDanielJones">
-              <img src="https://avatars.githubusercontent.com/u/84288718?v=4?s=100" width="100" height="100" style="border-radius: 50%;" alt="JaredDanielJones's avatar"/><br>
-              <strong>JaredDanielJones</strong>
-          </a><br>
-          <div style="margin-top: 5px;">Perks: Gather Account, ChatGPT Subscription</div><br>
-          <span>Total Contributions: 61</span>
-        </div>
+    <tr>
+      <td>
+        <a href="https://github.com/JaredDanielJones">
+          <img src="https://avatars.githubusercontent.com/u/84288718?v=4?s=100" width="100" height="100" alt="JaredDanielJones's avatar"/>
+        </a>
       </td>
+      <td><a href="https://github.com/JaredDanielJones"><strong>JaredDanielJones</strong></a></td>
+      <td><strong>61 contributions</strong></td>
+      <td>NA</td>
+    </tr>
 
-      <td style="padding: 10px; text-align: center; vertical-align: top;">
-        <div style="border: 1px solid #ddd; width: 200px; height: 200px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
-          <a href="https://github.com/rhjones777">
-              <img src="https://avatars.githubusercontent.com/u/173035257?v=4?s=100" width="100" height="100" style="border-radius: 50%;" alt="rhjones777's avatar"/><br>
-              <strong>rhjones777</strong>
-          </a><br>
-          <div style="margin-top: 5px;">Perks: None</div><br>
-          <span>Total Contributions: 10</span>
-        </div>
+    <tr>
+      <td>
+        <a href="https://github.com/rhjones777">
+          <img src="https://avatars.githubusercontent.com/u/173035257?v=4?s=100" width="100" height="100" alt="rhjones777's avatar"/>
+        </a>
       </td>
+      <td><a href="https://github.com/rhjones777"><strong>rhjones777</strong></a></td>
+      <td><strong>10 contributions</strong></td>
+      <td>None</td>
+    </tr>
 
-      <td style="padding: 10px; text-align: center; vertical-align: top;">
-        <div style="border: 1px solid #ddd; width: 200px; height: 200px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
-          <a href="https://github.com/kateoconn1">
-              <img src="https://avatars.githubusercontent.com/u/112118523?v=4?s=100" width="100" height="100" style="border-radius: 50%;" alt="kateoconn1's avatar"/><br>
-              <strong>kateoconn1</strong>
-          </a><br>
-          <div style="margin-top: 5px;">Perks: Gather Account</div><br>
-          <span>Total Contributions: 2</span>
-        </div>
+    <tr>
+      <td>
+        <a href="https://github.com/kateoconn1">
+          <img src="https://avatars.githubusercontent.com/u/112118523?v=4?s=100" width="100" height="100" alt="kateoconn1's avatar"/>
+        </a>
       </td>
+      <td><a href="https://github.com/kateoconn1"><strong>kateoconn1</strong></a></td>
+      <td><strong>2 contributions</strong></td>
+      <td>Gather Account</td>
+    </tr>
 
-      <td style="padding: 10px; text-align: center; vertical-align: top;">
-        <div style="border: 1px solid #ddd; width: 200px; height: 200px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
-          <a href="https://github.com/jacobthejones">
-              <img src="https://avatars.githubusercontent.com/u/84295480?v=4?s=100" width="100" height="100" style="border-radius: 50%;" alt="jacobthejones's avatar"/><br>
-              <strong>jacobthejones</strong>
-          </a><br>
-          <div style="margin-top: 5px;">Perks: Gather Account</div><br>
-          <span>Total Contributions: 1</span>
-        </div>
+    <tr>
+      <td>
+        <a href="https://github.com/jacobthejones">
+          <img src="https://avatars.githubusercontent.com/u/84295480?v=4?s=100" width="100" height="100" alt="jacobthejones's avatar"/>
+        </a>
       </td>
+      <td><a href="https://github.com/jacobthejones"><strong>jacobthejones</strong></a></td>
+      <td><strong>1 contributions</strong></td>
+      <td>Gather Account</td>
+    </tr>
 
-  </tr>
+  </tbody>
 </table>
-
 <!-- CONTRIBUTORS-END -->
 <!-- CONTRIBUTORS-END -->
 
