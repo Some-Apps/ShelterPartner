@@ -17,7 +17,7 @@ Here are the login credentials for you local build but if you're using Flutter, 
 > Password: password
 
 ## File Organization
-- Follow MVVM repository architecture. For example:
+Follow MVVM repository architecture. For example:
 
 ```plaintext
 lib/
