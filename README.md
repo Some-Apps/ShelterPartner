@@ -46,35 +46,8 @@ Contributors who make 5 approved pull requests or more per month will be given a
 ### ChatGPT (50 issues per year)
 Contributors who make 50 approved pull requests in the past 12 months will be given an annual ChatGPT subscription. This will be reasssed the following year before it renews.
 
-## Contributor Tiers
+<!-- CONTRIBUTORS-START -->
 
-| Contributor       | Tier                |
-|-------------------|---------------------|
-JaredDanielJones - Gather Account Tier
-rhjones777 - Inactive Tier
-kateoconn1 - Gather Account Tier
-jacobthejones - Inactive Tier
-
-<!-- This table will be updated by the Python script automatically -->
-
-## Contributors
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-JaredDanielJones - Gather Account Tier
-rhjones777 - Inactive Tier
-kateoconn1 - Gather Account Tier
-jacobthejones - Inactive Tier
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
