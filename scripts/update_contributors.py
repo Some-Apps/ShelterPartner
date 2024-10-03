@@ -6,7 +6,7 @@ REPO_OWNER = "Some-Apps"
 REPO_NAME = "ShelterPartner"
 
 # Option to ignore certain contributors
-IGNORE_CONTRIBUTORS = ["dependabot[bot]","allcontributors[bot]","github-actions[bot]]  # Add any bots or contributors you want to ignore
+IGNORE_CONTRIBUTORS = ["dependabot[bot]", "allcontributors[bot]", "github-actions[bot]"]  # Add any bots or contributors you want to ignore
 
 # Fetch contributors from the GitHub API
 def fetch_contributors(repo_owner, repo_name):
@@ -35,18 +35,19 @@ def update_readme(contributors):
     # Sort by total contributions
     sorted_contributors = sorted(contributors, key=lambda c: c['contributions'], reverse=True)
 
-    # Prepare the grid content for the README
-    grid_content = """
+    # Prepare the HTML table content for the README
+    table_content = """
 ## Contributors Grid
 
-| Contributor       | Tier                | Total Contributions | Profile Photo |
-|-------------------|---------------------|----------------------|---------------|
+<table>
+  <tbody>
+    <tr>
 """
 
     for contributor in sorted_contributors:
         contributions = get_contributions(REPO_OWNER, REPO_NAME, contributor)
         total_contributions = len(contributions)
-        
+
         # Define tier based on contribution count
         if total_contributions >= 50:
             tier = "ChatGPT"
@@ -57,10 +58,23 @@ def update_readme(contributors):
         else:
             tier = "Inactive"
 
-        # Add contributor details to the grid
-        grid_content += f"| [{contributor['login']}]({contributor['html_url']}) | {tier} | {contributor['contributions']} | ![Avatar]({contributor['avatar_url']}) |\n"
+        # Add each contributor's info as a table cell
+        table_content += f"""
+      <td align="center" valign="top" width="14.28%">
+        <a href="{contributor['html_url']}">
+          <img src="{contributor['avatar_url']}?s=100" width="100px;" alt="{contributor['login']}'s avatar"/><br />
+          <sub><b>{contributor['login']}</b></sub>
+        </a><br />
+        <em>{tier}</em><br />
+        <span>Total Contributions: {total_contributions}</span>
+      </td>
+"""
 
-    grid_content += "\n"
+    table_content += """
+    </tr>
+  </tbody>
+</table>
+"""
 
     # Read the current README content
     with open("README.md", "r") as file:
@@ -80,7 +94,7 @@ def update_readme(contributors):
     # Replace the content between the markers
     updated_readme = (
         readme[:start_index + len(start_marker)] +
-        "\n" + grid_content + readme[end_index:]
+        "\n" + table_content + readme[end_index:]
     )
 
     # Write the updated content back to the README file
@@ -95,5 +109,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
