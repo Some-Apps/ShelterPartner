@@ -61,10 +61,11 @@ def update_readme(contributors):
     # Sort by total contributions (all-time contributions)
     sorted_contributors = sorted(contributors, key=lambda c: c['contributions'], reverse=True)
 
-    # Prepare the Markdown content for the README
-    markdown_content = """
-<!-- CONTRIBUTORS-START -->
+    # Prepare the HTML content for the README
+    html_content = """
+## Contributors
 
+<div style="display: flex; flex-wrap: wrap;">
 """
 
     for contributor in sorted_contributors:
@@ -74,13 +75,19 @@ def update_readme(contributors):
         perks = get_perks(contributions)
         perks_list = ", ".join(perks) if perks else "None"
 
-        # Add each contributor's info in a stacked format
-        markdown_content += f"""
-| ![Avatar]({contributor['avatar_url']}?s=100) | **[{contributor['login']}]({contributor['html_url']})**  \n**Perks**: {perks_list}  \n**Total Contributions**: {len(contributions)} |
-| --- |
-"""
+        # Add each contributor's info in a grid item
+        html_content += f"""
+        <div style="flex: 1 1 200px; text-align: center; margin: 10px;">
+            <a href="{contributor['html_url']}">
+                <img src="{contributor['avatar_url']}?s=100" width="100" height="100" style="border-radius: 50%;" alt="{contributor['login']}'s avatar"/><br>
+                <strong>{contributor['login']}</strong>
+            </a><br>
+            <em>Perks: {perks_list}</em><br>
+            <span>Total Contributions: {len(contributions)}</span>
+        </div>
+        """
 
-    markdown_content += "\n<!-- CONTRIBUTORS-END -->"
+    html_content += "</div>\n"
 
     # Read the current README content
     with open("README.md", "r") as file:
@@ -100,7 +107,7 @@ def update_readme(contributors):
     # Replace the content between the markers
     updated_readme = (
         readme[:start_index + len(start_marker)] +
-        "\n" + markdown_content + readme[end_index:]
+        "\n" + html_content + readme[end_index:]
     )
 
     # Write the updated content back to the README file
@@ -115,7 +122,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
 
