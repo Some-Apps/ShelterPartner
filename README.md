@@ -48,39 +48,30 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
 
 <!-- CONTRIBUTORS-START -->
 
-## Contributors Grid
+<!-- CONTRIBUTORS-START -->
 
-<div style="display: flex; flex-wrap: wrap;">
 
-        <div style="flex: 1 1 200px; text-align: center; margin: 10px;">
-            <img src="https://avatars.githubusercontent.com/u/84288718?v=4" alt="JaredDanielJones's avatar" width="100" height="100" style="border-radius: 50%;"><br>
-            <strong><a href="https://github.com/JaredDanielJones">JaredDanielJones</a></strong><br>
-            <em>ChatGPT</em><br>
-            <span>Total Contributions: 318</span>
-        </div>
-        
-        <div style="flex: 1 1 200px; text-align: center; margin: 10px;">
-            <img src="https://avatars.githubusercontent.com/u/173035257?v=4" alt="rhjones777's avatar" width="100" height="100" style="border-radius: 50%;"><br>
-            <strong><a href="https://github.com/rhjones777">rhjones777</a></strong><br>
-            <em>GitHub Copilot</em><br>
-            <span>Total Contributions: 10</span>
-        </div>
-        
-        <div style="flex: 1 1 200px; text-align: center; margin: 10px;">
-            <img src="https://avatars.githubusercontent.com/u/112118523?v=4" alt="kateoconn1's avatar" width="100" height="100" style="border-radius: 50%;"><br>
-            <strong><a href="https://github.com/kateoconn1">kateoconn1</a></strong><br>
-            <em>Gather Account</em><br>
-            <span>Total Contributions: 2</span>
-        </div>
-        
-        <div style="flex: 1 1 200px; text-align: center; margin: 10px;">
-            <img src="https://avatars.githubusercontent.com/u/84295480?v=4" alt="jacobthejones's avatar" width="100" height="100" style="border-radius: 50%;"><br>
-            <strong><a href="https://github.com/jacobthejones">jacobthejones</a></strong><br>
-            <em>Gather Account</em><br>
-            <span>Total Contributions: 1</span>
-        </div>
-        </div>
-<!-- CONTRIBUTORS-END -->
+| ![Avatar](https://avatars.githubusercontent.com/u/84288718?v=4?s=100) | **[JaredDanielJones](https://github.com/JaredDanielJones)**  
+**Perks**: Gather Account, ChatGPT Subscription  
+**Total Contributions**: 61 |
+| --- |
+
+| ![Avatar](https://avatars.githubusercontent.com/u/173035257?v=4?s=100) | **[rhjones777](https://github.com/rhjones777)**  
+**Perks**: None  
+**Total Contributions**: 10 |
+| --- |
+
+| ![Avatar](https://avatars.githubusercontent.com/u/112118523?v=4?s=100) | **[kateoconn1](https://github.com/kateoconn1)**  
+**Perks**: Gather Account  
+**Total Contributions**: 2 |
+| --- |
+
+| ![Avatar](https://avatars.githubusercontent.com/u/84295480?v=4?s=100) | **[jacobthejones](https://github.com/jacobthejones)**  
+**Perks**: Gather Account  
+**Total Contributions**: 1 |
+| --- |
+
+<!-- CONTRIBUTORS-END --><!-- CONTRIBUTORS-END -->
 
 
 
