@@ -16,7 +16,7 @@ Here are the login credentials for you local build but if you're using Flutter, 
 > Email: developer@shelterpartner.org\
 > Password: password
 
-### File Organization
+## File Organization
 - Follow MVVM repository architecture. For example:
 
 ```plaintext
@@ -29,7 +29,7 @@ lib/
     components/
       animal_card_view.dart
   view_models/
-    volunteer_page_view_model.dart
+    animals_view_model.dart
   repositories/
     animal_repository.dart
 ```
