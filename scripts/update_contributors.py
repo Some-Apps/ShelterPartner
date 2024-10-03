@@ -61,11 +61,12 @@ def update_readme(contributors):
     # Sort by total contributions (all-time contributions)
     sorted_contributors = sorted(contributors, key=lambda c: c['contributions'], reverse=True)
 
-    # Prepare the HTML content for the README
+    # Prepare the HTML table content for the README
     html_content = """
 ## Contributors
 
-<div style="display: flex; flex-wrap: wrap;">
+<table>
+  <tr>
 """
 
     for contributor in sorted_contributors:
@@ -73,21 +74,30 @@ def update_readme(contributors):
         
         # Get the list of perks for the contributor
         perks = get_perks(contributions)
+
+        # Format perks as a comma-separated list
         perks_list = ", ".join(perks) if perks else "None"
 
-        # Add each contributor's info in a grid item
+        # Add each contributor's info in a table cell with a fixed 200x200px box size using divs
         html_content += f"""
-        <div style="flex: 1 1 200px; text-align: center; margin: 10px;">
-            <a href="{contributor['html_url']}">
-                <img src="{contributor['avatar_url']}?s=100" width="100" height="100" style="border-radius: 50%;" alt="{contributor['login']}'s avatar"/><br>
-                <strong>{contributor['login']}</strong>
-            </a><br>
-            <em>Perks: {perks_list}</em><br>
-            <span>Total Contributions: {len(contributions)}</span>
+      <td style="padding: 10px; text-align: center; vertical-align: top;">
+        <div style="border: 1px solid #ddd; width: 200px; height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
+          <a href="{contributor['html_url']}">
+              <img src="{contributor['avatar_url']}?s=100" width="100" height="100" style="border-radius: 50%;" alt="{contributor['login']}'s avatar"/><br>
+              <strong>{contributor['login']}</strong>
+          </a><br>
+          <div style="margin-top: 5px;">Perks: {perks_list}</div><br>
+          <span>Total Contributions: {len(contributions)}</span>
         </div>
-        """
+      </td>
+"""
 
-    html_content += "</div>\n"
+    html_content += """
+  </tr>
+</table>
+
+<!-- CONTRIBUTORS-END -->
+"""
 
     # Read the current README content
     with open("README.md", "r") as file:
@@ -122,6 +132,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
