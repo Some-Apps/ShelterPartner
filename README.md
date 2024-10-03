@@ -40,8 +40,11 @@ lib/
 ### Gather Account (1 issue per month)
 Contributors who make an average of 1 approved pull request or more per month will be given a desk in a [virtual office building](https://gather.town). This will allow you to interact with other contributors while you work or just talk and play online mini games. An invite will be sent after your first contribution. From there, if you don't make a contribution for at least 2 months in a row, the invite will be revoked. But if you make another contribution, the invite will be sent again.
 
-### Github Copilot (3 issues per month)
-Contributors who make 3 approved pull requests or more per month will be given access to github copilot. An invite will be sent after your 3rd contribution in a month. From there, if you don't make 3 contributions per month for at least 2 months in a row, the invite will be revoked. The invite will be sent again after your 3rd contribution in a month.
+### Github Copilot (5 issues per month)
+Contributors who make 5 approved pull requests or more per month will be given access to github copilot. An invite will be sent after your 3rd contribution in a month. From there, if you don't make 5 contributions per month for at least 2 months in a row, the invite will be revoked. The invite will be sent again after your 5th contribution in a month.
+
+### ChatGPT (50 issues per year)
+Contributors who make 50 approved pull requests in the past 12 months will be given an annual ChatGPT subscription. This will be reasssed the following year before it renews.
 
 ## Contributors
 
