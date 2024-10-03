@@ -106,7 +106,6 @@ Updated daily
     html_content += """
   </tbody>
 </table>
-
 """
 
     # Read the current README content
@@ -133,6 +132,7 @@ Updated daily
     # Write the updated content back to the README file
     with open("README.md", "w") as file:
         file.write(updated_readme)
+
 
 def main():
     contributors = fetch_contributors(REPO_OWNER, REPO_NAME)
