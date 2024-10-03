@@ -14,10 +14,10 @@ jobs:
 
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v3  # Upgrade to v3
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v3  # Upgrade to v3
+      uses: actions/setup-python@v3
       with:
         python-version: '3.x'
 
@@ -27,7 +27,7 @@ jobs:
 
     - name: Run update script
       run: |
-        python scripts/update_contributors.py  # This runs your Python script
+        python scripts/update_contributors.py
 
     - name: Commit changes
       run: |
@@ -36,3 +36,6 @@ jobs:
         git add README.md
         git commit -m "Update contributor tiers"
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
+
