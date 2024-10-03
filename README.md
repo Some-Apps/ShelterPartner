@@ -47,7 +47,6 @@ Contributors who make 5 approved pull requests or more per month will be given a
 Contributors who make 50 approved pull requests in the past 12 months will be given an annual ChatGPT subscription. This will be reasssed the following year before it renews.
 
 <!-- CONTRIBUTORS-START -->
-
 ## Contributors
 
 <table>
@@ -65,7 +64,7 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
       </td>
 
       <td style="padding: 10px; text-align: center; vertical-align: top;">
-        <div style="border: 1px solid #ddd; width: 200px; height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
+        <div style="border: 1px solid #ddd; width: 200px; height: 200px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
           <a href="https://github.com/rhjones777">
               <img src="https://avatars.githubusercontent.com/u/173035257?v=4?s=100" width="100" height="100" style="border-radius: 50%;" alt="rhjones777's avatar"/><br>
               <strong>rhjones777</strong>
@@ -87,7 +86,7 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
       </td>
 
       <td style="padding: 10px; text-align: center; vertical-align: top;">
-        <div style="border: 1px solid #ddd; width: 200px; height: 200px; overflow: hidden display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
+        <div style="border: 1px solid #ddd; width: 200px; height: 200px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
           <a href="https://github.com/jacobthejones">
               <img src="https://avatars.githubusercontent.com/u/84295480?v=4?s=100" width="100" height="100" style="border-radius: 50%;" alt="jacobthejones's avatar"/><br>
               <strong>jacobthejones</strong>
@@ -100,6 +99,7 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
   </tr>
 </table>
 
+<!-- CONTRIBUTORS-END -->
 <!-- CONTRIBUTORS-END -->
 
 
