@@ -30,18 +30,16 @@ def get_contributions(repo_owner, repo_name, contributor):
     
     return contributions
 
-# Update README with contributor data
+# Update README with contributor data in a grid layout
 def update_readme(contributors):
     # Sort by total contributions
     sorted_contributors = sorted(contributors, key=lambda c: c['contributions'], reverse=True)
 
-    # Prepare the table content for the README
-    table_content = """
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
+    # Prepare the HTML grid content for the README
+    grid_content = """
+## Contributors Grid
+
+<div style="display: flex; flex-wrap: wrap;">
 """
 
     for contributor in sorted_contributors:
@@ -58,27 +56,17 @@ def update_readme(contributors):
         else:
             tier = "Inactive"
 
-        # Add each contributor's info as a table cell
-        table_content += f"""
-      <td align="center" valign="top" width="14.28%">
-        <a href="{contributor['html_url']}">
-          <img src="{contributor['avatar_url']}?s=100" width="100px;" alt="{contributor['login']}'s avatar"/><br />
-          <sub><b>{contributor['login']}</b></sub>
-        </a><br />
-        <em>{tier}</em><br />
-        <span>Total Contributions: {total_contributions}</span>
-      </td>
-"""
+        # Add each contributor's info as a grid item
+        grid_content += f"""
+        <div style="flex: 1 1 200px; text-align: center; margin: 10px;">
+            <img src="{contributor['avatar_url']}" alt="{contributor['login']}'s avatar" width="100" height="100" style="border-radius: 50%;"><br>
+            <strong><a href="{contributor['html_url']}">{contributor['login']}</a></strong><br>
+            <em>{tier}</em><br>
+            <span>Total Contributions: {contributor['contributions']}</span>
+        </div>
+        """
 
-    # Close the table row and body
-    table_content += """
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-"""
+    grid_content += "</div>\n"
 
     # Read the current README content
     with open("README.md", "r") as file:
@@ -98,7 +86,7 @@ def update_readme(contributors):
     # Replace the content between the markers
     updated_readme = (
         readme[:start_index + len(start_marker)] +
-        "\n" + table_content + readme[end_index:]
+        "\n" + grid_content + readme[end_index:]
     )
 
     # Write the updated content back to the README file
@@ -113,6 +101,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
