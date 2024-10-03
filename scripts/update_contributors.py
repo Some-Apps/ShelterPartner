@@ -81,7 +81,7 @@ def update_readme(contributors):
         # Add each contributor's info in a table cell with a fixed 200x200px box size using divs
         html_content += f"""
       <td style="padding: 10px; text-align: center; vertical-align: top;">
-        <div style="border: 1px solid #ddd; width: 200px; height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
+        <div style="border: 1px solid #ddd; width: 200px; height: 200px; overflow: hidden display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
           <a href="{contributor['html_url']}">
               <img src="{contributor['avatar_url']}?s=100" width="100" height="100" style="border-radius: 50%;" alt="{contributor['login']}'s avatar"/><br>
               <strong>{contributor['login']}</strong>
