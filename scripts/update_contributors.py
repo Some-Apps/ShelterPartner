@@ -1,5 +1,5 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Replace with your repository owner and name
 REPO_OWNER = "Some-Apps"
@@ -30,43 +30,57 @@ def get_contributions(repo_owner, repo_name, contributor):
     
     return contributions
 
-# Update README with contributor data in a grid layout
+# Calculate contributions within specific time periods
+def count_contributions_in_timeframe(contributions, days):
+    now = datetime.utcnow()
+    timeframe_start = now - timedelta(days=days)
+    
+    return sum(1 for contribution in contributions 
+               if datetime.strptime(contribution['merged_at'], '%Y-%m-%dT%H:%M:%SZ') > timeframe_start)
+
+# Get the list of perks based on contributions in time periods
+def get_perks(contributions):
+    perks = []
+    
+    # Contributions in the last 30 days
+    contributions_last_30_days = count_contributions_in_timeframe(contributions, 30)
+    if contributions_last_30_days >= 1:
+        perks.append("Gather Account")
+    if contributions_last_30_days >= 5:
+        perks.append("GitHub Copilot")
+
+    # Contributions in the last 365 days (1 year)
+    contributions_last_year = count_contributions_in_timeframe(contributions, 365)
+    if contributions_last_year >= 50:
+        perks.append("ChatGPT Subscription")
+
+    return perks
+
+# Update README with contributor data
 def update_readme(contributors):
-    # Sort by total contributions
+    # Sort by total contributions (all-time contributions)
     sorted_contributors = sorted(contributors, key=lambda c: c['contributions'], reverse=True)
 
-    # Prepare the HTML grid content for the README
-    grid_content = """
-## Contributors Grid
+    # Prepare the Markdown content for the README
+    markdown_content = """
+<!-- CONTRIBUTORS-START -->
 
-<div style="display: flex; flex-wrap: wrap;">
 """
 
     for contributor in sorted_contributors:
         contributions = get_contributions(REPO_OWNER, REPO_NAME, contributor)
-        total_contributions = len(contributions)
+        
+        # Get the list of perks for the contributor
+        perks = get_perks(contributions)
+        perks_list = ", ".join(perks) if perks else "None"
 
-        # Define tier based on contribution count
-        if total_contributions >= 50:
-            tier = "ChatGPT"
-        elif total_contributions >= 5:
-            tier = "GitHub Copilot"
-        elif total_contributions >= 1:
-            tier = "Gather Account"
-        else:
-            tier = "Inactive"
+        # Add each contributor's info in a stacked format
+        markdown_content += f"""
+| ![Avatar]({contributor['avatar_url']}?s=100) | **[{contributor['login']}]({contributor['html_url']})**  \n**Perks**: {perks_list}  \n**Total Contributions**: {len(contributions)} |
+| --- |
+"""
 
-        # Add each contributor's info as a grid item
-        grid_content += f"""
-        <div style="flex: 1 1 200px; text-align: center; margin: 10px;">
-            <img src="{contributor['avatar_url']}" alt="{contributor['login']}'s avatar" width="100" height="100" style="border-radius: 50%;"><br>
-            <strong><a href="{contributor['html_url']}">{contributor['login']}</a></strong><br>
-            <em>{tier}</em><br>
-            <span>Total Contributions: {contributor['contributions']}</span>
-        </div>
-        """
-
-    grid_content += "</div>\n"
+    markdown_content += "\n<!-- CONTRIBUTORS-END -->"
 
     # Read the current README content
     with open("README.md", "r") as file:
@@ -86,7 +100,7 @@ def update_readme(contributors):
     # Replace the content between the markers
     updated_readme = (
         readme[:start_index + len(start_marker)] +
-        "\n" + grid_content + readme[end_index:]
+        "\n" + markdown_content + readme[end_index:]
     )
 
     # Write the updated content back to the README file
