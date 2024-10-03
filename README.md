@@ -48,7 +48,7 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
 
 <!-- CONTRIBUTORS-START -->
 
-## Contributors Grid
+## Contributors
 
 <table>
   <tbody>
