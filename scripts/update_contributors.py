@@ -35,10 +35,10 @@ def update_readme(contributors):
     # Sort by total contributions
     sorted_contributors = sorted(contributors, key=lambda c: c['contributions'], reverse=True)
 
-    # Prepare the HTML table content for the README
+    # Prepare the table content for the README
     table_content = """
-## Contributors Grid
-
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
 <table>
   <tbody>
     <tr>
@@ -70,10 +70,14 @@ def update_readme(contributors):
       </td>
 """
 
+    # Close the table row and body
     table_content += """
     </tr>
   </tbody>
 </table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
 """
 
     # Read the current README content
