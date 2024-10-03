@@ -6,7 +6,7 @@ REPO_OWNER = "Some-Apps"
 REPO_NAME = "ShelterPartner"
 
 # Option to ignore certain contributors
-IGNORE_CONTRIBUTORS = ["dependabot[bot]"]  # Add any bots or contributors you want to ignore
+IGNORE_CONTRIBUTORS = ["dependabot[bot]","allcontributors[bot]","github-actions[bot]]  # Add any bots or contributors you want to ignore
 
 # Fetch contributors from the GitHub API
 def fetch_contributors(repo_owner, repo_name):
