@@ -1,9 +1,6 @@
 name: Update Contributors
 
 on:
-  push:  # Triggers the workflow when there is a push to the repo
-    branches:
-      - main  # or any other branch you want to monitor
   schedule:
     - cron: '0 0 * * *'  # Runs daily at midnight
   workflow_dispatch:  # Allows manual trigger
@@ -29,13 +26,14 @@ jobs:
       run: |
         python scripts/update_contributors.py
 
-    - name: Commit changes
-      run: |
-        git config --global user.name "GitHub Action"
-        git config --global user.email "action@github.com"
-        git add README.md
-        git commit -m "Update contributor tiers"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
+    # Create a new branch and open a pull request
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4  # Action to create a pull request
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: update-contributors  # Name of the new branch
+        commit-message: "Auto-update contributor tiers"
+        title: "Auto-update contributor tiers"
+        body: "This PR updates the contributor tiers based on their latest contributions."
+        labels: "automation"
 
