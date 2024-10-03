@@ -1,5 +1,5 @@
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # Replace with your repository owner and name
 REPO_OWNER = "Some-Apps"
@@ -33,11 +33,11 @@ def get_contributions(repo_owner, repo_name, contributor):
 
 # Calculate contributions within specific time periods
 def count_contributions_in_timeframe(contributions, days):
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)  # Updated to use timezone-aware UTC datetime
     timeframe_start = now - timedelta(days=days)
     
     return sum(1 for contribution in contributions 
-               if datetime.strptime(contribution['merged_at'], '%Y-%m-%dT%H:%M:%SZ') > timeframe_start)
+               if datetime.strptime(contribution['merged_at'], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc) > timeframe_start)
 
 # Get the list of perks based on contributions in time periods
 def get_perks(contributor_login, contributions):
