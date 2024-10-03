@@ -44,7 +44,7 @@ Contributors who make 1 approved pull request or more per month will be given a 
 Contributors who make 5 approved pull requests or more per month will be given access to Github Copilot.
 
 ### ChatGPT (60 contributions per year)
-Contributors who make 60 approved pull requests or more in the past 12 months will be given an annual ChatGPT subscription.
+Contributors who make 60 approved pull requests or more per year will be given an annual ChatGPT subscription.
 
 <!-- CONTRIBUTORS-START -->
 ## Contributors
