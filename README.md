@@ -48,8 +48,8 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
 
 <!-- CONTRIBUTORS-START -->
 
-## Contributors
-
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
 <table>
   <tbody>
     <tr>
@@ -93,6 +93,9 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
     </tr>
   </tbody>
 </table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
 <!-- CONTRIBUTORS-END -->
 
 
