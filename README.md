@@ -50,15 +50,49 @@ Contributors who make 50 approved pull requests in the past 12 months will be gi
 
 ## Contributors Grid
 
-| Contributor       | Tier                | Total Contributions | Profile Photo |
-|-------------------|---------------------|----------------------|---------------|
-| [JaredDanielJones](https://github.com/JaredDanielJones) | ChatGPT | 315 | ![Avatar](https://avatars.githubusercontent.com/u/84288718?v=4) |
-| [rhjones777](https://github.com/rhjones777) | GitHub Copilot | 10 | ![Avatar](https://avatars.githubusercontent.com/u/173035257?v=4) |
-| [allcontributors[bot]](https://github.com/apps/allcontributors) | GitHub Copilot | 8 | ![Avatar](https://avatars.githubusercontent.com/in/23186?v=4) |
-| [kateoconn1](https://github.com/kateoconn1) | Gather Account | 2 | ![Avatar](https://avatars.githubusercontent.com/u/112118523?v=4) |
-| [github-actions[bot]](https://github.com/apps/github-actions) | Gather Account | 1 | ![Avatar](https://avatars.githubusercontent.com/in/15368?v=4) |
-| [jacobthejones](https://github.com/jacobthejones) | Gather Account | 1 | ![Avatar](https://avatars.githubusercontent.com/u/84295480?v=4) |
+<table>
+  <tbody>
+    <tr>
 
+      <td align="center" valign="top" width="14.28%">
+        <a href="https://github.com/JaredDanielJones">
+          <img src="https://avatars.githubusercontent.com/u/84288718?v=4?s=100" width="100px;" alt="JaredDanielJones's avatar"/><br />
+          <sub><b>JaredDanielJones</b></sub>
+        </a><br />
+        <em>ChatGPT</em><br />
+        <span>Total Contributions: 61</span>
+      </td>
+
+      <td align="center" valign="top" width="14.28%">
+        <a href="https://github.com/rhjones777">
+          <img src="https://avatars.githubusercontent.com/u/173035257?v=4?s=100" width="100px;" alt="rhjones777's avatar"/><br />
+          <sub><b>rhjones777</b></sub>
+        </a><br />
+        <em>GitHub Copilot</em><br />
+        <span>Total Contributions: 10</span>
+      </td>
+
+      <td align="center" valign="top" width="14.28%">
+        <a href="https://github.com/kateoconn1">
+          <img src="https://avatars.githubusercontent.com/u/112118523?v=4?s=100" width="100px;" alt="kateoconn1's avatar"/><br />
+          <sub><b>kateoconn1</b></sub>
+        </a><br />
+        <em>Gather Account</em><br />
+        <span>Total Contributions: 2</span>
+      </td>
+
+      <td align="center" valign="top" width="14.28%">
+        <a href="https://github.com/jacobthejones">
+          <img src="https://avatars.githubusercontent.com/u/84295480?v=4?s=100" width="100px;" alt="jacobthejones's avatar"/><br />
+          <sub><b>jacobthejones</b></sub>
+        </a><br />
+        <em>Gather Account</em><br />
+        <span>Total Contributions: 1</span>
+      </td>
+
+    </tr>
+  </tbody>
+</table>
 <!-- CONTRIBUTORS-END -->
 
 
