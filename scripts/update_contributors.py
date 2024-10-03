@@ -30,21 +30,13 @@ def get_contributions(repo_owner, repo_name, contributor):
     
     return contributions
 
-# Count contributions for the current month or last month
-def count_contributions_last_month(contributions):
-    now = datetime.now()
-    last_month = now.month - 1 if now.month > 1 else 12
-
-    return sum(1 for contribution in contributions 
-               if datetime.strptime(contribution['merged_at'], '%Y-%m-%dT%H:%M:%SZ').month == last_month)
-
 # Update README with contributor data
 def update_readme(contributors):
     # Sort by total contributions
     sorted_contributors = sorted(contributors, key=lambda c: c['contributions'], reverse=True)
 
-    # Prepare the grid for the README
-    readme_content = """
+    # Prepare the grid content for the README
+    grid_content = """
 ## Contributors Grid
 
 | Contributor       | Tier                | Total Contributions | Profile Photo |
@@ -55,7 +47,7 @@ def update_readme(contributors):
         contributions = get_contributions(REPO_OWNER, REPO_NAME, contributor)
         total_contributions = len(contributions)
         
-        # Define tier based on contribution count (can adjust these rules)
+        # Define tier based on contribution count
         if total_contributions >= 50:
             tier = "ChatGPT"
         elif total_contributions >= 5:
@@ -66,11 +58,34 @@ def update_readme(contributors):
             tier = "Inactive"
 
         # Add contributor details to the grid
-        readme_content += f"| [{contributor['login']}]({contributor['html_url']}) | {tier} | {contributor['contributions']} | ![Avatar]({contributor['avatar_url']}) |\n"
+        grid_content += f"| [{contributor['login']}]({contributor['html_url']}) | {tier} | {contributor['contributions']} | ![Avatar]({contributor['avatar_url']}) |\n"
+
+    grid_content += "\n"
+
+    # Read the current README content
+    with open("README.md", "r") as file:
+        readme = file.read()
+
+    # Identify the start and end of the "Contributors Grid" section
+    start_marker = "<!-- CONTRIBUTORS-START -->"
+    end_marker = "<!-- CONTRIBUTORS-END -->"
+
+    start_index = readme.find(start_marker)
+    end_index = readme.find(end_marker)
+
+    if start_index == -1 or end_index == -1:
+        print("Contributors section not found in README.md")
+        return
+
+    # Replace the content between the markers
+    updated_readme = (
+        readme[:start_index + len(start_marker)] +
+        "\n" + grid_content + readme[end_index:]
+    )
 
     # Write the updated content back to the README file
     with open("README.md", "w") as file:
-        file.write(readme_content)
+        file.write(updated_readme)
 
 def main():
     contributors = fetch_contributors(REPO_OWNER, REPO_NAME)
@@ -80,4 +95,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
