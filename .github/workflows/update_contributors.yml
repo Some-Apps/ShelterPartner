@@ -31,7 +31,7 @@ jobs:
       uses: peter-evans/create-pull-request@v4  # Action to create a pull request
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        branch: update-contributors  # Name of the new branch
+        branch: update-contributor  # Name of the new branch
         commit-message: "Auto-update contributor tiers"
         title: "Auto-update contributor tiers"
         body: "This PR updates the contributor tiers based on their latest contributions."
