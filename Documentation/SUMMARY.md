@@ -11,6 +11,3 @@
 * [Visitor](ShelterPartner%20App/Visitor%20Tab)
 * [Settings](ShelterPartner%20App/Settings%20Tab)
 
-## Developers
-
-* [Developers](Developers.md)
