@@ -2,27 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/view_models/animals_view_model.dart';
 
-class VolunteerPage extends ConsumerStatefulWidget {
-  const VolunteerPage({super.key});
+class AnimalsPage extends ConsumerStatefulWidget {
+  const AnimalsPage({super.key});
 
   @override
-  ConsumerState<VolunteerPage> createState() => _VolunteerPageState();
+  ConsumerState<AnimalsPage> createState() => _AnimalsPageState();
 }
 
-class _VolunteerPageState extends ConsumerState<VolunteerPage> {
+class _AnimalsPageState extends ConsumerState<AnimalsPage> {
   @override
   Widget build(BuildContext context) {
     final animals = ref.watch(animalsViewModelProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Animals"),
+      ),
       body: Center(
         child: ListView.builder(
           itemCount: animals.length,
           itemBuilder: (context, index) {
             final animal = animals[index];
             return ListTile(
-              title: Text(animal['name']),
-              subtitle: Text("In Kennel: " + animal['inKennel'].toString()),        
+              title: Text(animal.name),
+              subtitle: Text(animal.toString()),
                 );
           },
         ),

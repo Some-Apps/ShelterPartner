@@ -15,14 +15,18 @@ class _VisitorPageState extends ConsumerState<VisitorPage> {
     final animals = ref.watch(animalsViewModelProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Visitor (only admin accounts)"),
+      ),
       body: Center(
         child: ListView.builder(
           itemCount: animals.length,
           itemBuilder: (context, index) {
             final animal = animals[index];
             return ListTile(
-              title: Text(animal['name']),
-              subtitle: Text("In Kennel: " + animal['inKennel'].toString()),        
+              title: Text(animal.name),
+              subtitle: Text(animal.toString()),
+
                 );
           },
         ),

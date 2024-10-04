@@ -1,23 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shelter_partner/models/animal.dart';
 
 class AnimalsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<List<DocumentSnapshot>> fetchAnimals(String shelterID) {
+  Stream<List<Animal>> fetchAnimals(String shelterID) {
     final catsStream = _firestore.collection('shelters/$shelterID/cats').snapshots();
     final dogsStream = _firestore.collection('shelters/$shelterID/dogs').snapshots();
 
     return CombineLatestStream.list([catsStream, dogsStream]).map((snapshots) {
-      final allDocuments = <DocumentSnapshot>[];
+      final allAnimals = <Animal>[];
       for (var snapshot in snapshots) {
-        allDocuments.addAll(snapshot.docs);
+        allAnimals.addAll(snapshot.docs.map((doc) => Animal.fromFirestore(doc.data(), doc.id)));
       }
-      return allDocuments;
+      return allAnimals;
     });
   }
 }
+
 
 final animalsRepositoryProvider = Provider<AnimalsRepository>((ref) {
   return AnimalsRepository();
