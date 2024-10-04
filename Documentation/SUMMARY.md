@@ -20,10 +20,10 @@
 
 
 ## Settings Tab
-* [Shelter Settings](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings)
-   * [Account Setup](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Shelter%20Settings.md)
-   * [Shelter Settings](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Account%20Setup.md)
-* [Device Settings](ShelterPartner%20App/Settings%20Tab/Device%20Settings)
+* [Shelter Settings](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings.md)
+   * [Shelter Settings](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Shelter%20Settings.md)
+   * [Account Setup](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Account%20Setup.md)
+* [Device Settings](ShelterPartner%20App/Settings%20Tab/Device%20Settings.md)
    * [Admin Mode](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Admin%20Mode.md)
 
 
