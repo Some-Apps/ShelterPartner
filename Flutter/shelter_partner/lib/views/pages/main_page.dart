@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:shelter_partner/views/pages/visitor_page.dart';
-import 'package:shelter_partner/views/pages/volunteer_page.dart';
+import 'package:shelter_partner/views/pages/animals_page.dart';
+import 'package:shelter_partner/views/pages/volunteers_page.dart';
 
 
 class MainPage extends StatefulWidget {
@@ -20,8 +21,9 @@ class _MainPageState extends State<MainPage> {
 
   // List of pages
   final List<Widget> _pages = [
-    const VolunteerPage(),  // Add logic to pass appUser if needed
-    const VisitorPage(),    // Add logic to pass appUser if needed
+    const AnimalsPage(),  // Add logic to pass appUser if needed
+    const VisitorPage(), 
+    const VolunteersPage(),   // Add logic to pass appUser if needed
     const SettingsPage(),   // Add logic to pass appUser if needed
   ];
 
@@ -30,6 +32,9 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: _pages[_currentIndex],  // Show the selected page
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.blueGrey,  // Set background color for visibility
+        selectedItemColor: Colors.black,   // Set color for selected item
+        unselectedItemColor: Colors.grey,  // Set color for unselected items
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -37,8 +42,9 @@ class _MainPageState extends State<MainPage> {
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Volunteer'),
+          BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitor'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Volunteers'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),

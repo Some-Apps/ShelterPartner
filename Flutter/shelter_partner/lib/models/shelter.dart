@@ -17,7 +17,6 @@ class Shelter {
     required this.address,
     required this.createdAt,
     required this.managementSoftware,
-
     required this.shelterSettings,
     required this.deviceSettings,
     required this.volunteerSettings,
@@ -26,20 +25,22 @@ class Shelter {
   // Factory constructor to parse the document from Firestore
   factory Shelter.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    
+    // Safely handle the `createdAt` field to ensure it's a valid `Timestamp`.
     return Shelter(
       id: doc.id,
-      name: data['name'],
-      address: data['address'],
-      createdAt: data['createdAt'],
-      managementSoftware: data['management_software'],
-      
+      name: data['name'] ?? 'Unknown Shelter', // Default value for name
+      address: data['address'] ?? 'Unknown Address', // Default value for address
+      createdAt: data['createdAt'] != null
+          ? data['createdAt'] as Timestamp
+          : Timestamp.now(), // Default value if createdAt is null
+      managementSoftware: data['management_software'] ?? 'Unknown Software', // Default value for management software
       shelterSettings: ShelterSettings.fromMap(data['shelterSettings'] ?? {}),
       deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
       volunteerSettings: VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
     );
   }
 }
-
 
 
 class ShelterSettings {
@@ -49,7 +50,6 @@ class ShelterSettings {
   final List<String> letOutTypes;
   final List<APIKey> apiKeys;
 
-
   ShelterSettings({
     required this.catTags,
     required this.dogTags,
@@ -58,24 +58,42 @@ class ShelterSettings {
     required this.apiKeys,
   });
 
-  factory ShelterSettings.fromMap(Map<String, dynamic> data) {
-    return ShelterSettings(
-      catTags: data['catTags'] ?? "Unknown",
-      dogTags: data['dogTags'] ?? "Unknown",
-      earlyPutBackReasons: data['earlyPutBackReasons'] ?? "Unknown",
-      letOutTypes: data['letOutTypes'] ?? "Unknown",
-      apiKeys: data['apiKeys'] ?? [], 
-    );
-  }
-
+  // Convert ShelterSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
     return {
       'catTags': catTags,
       'dogTags': dogTags,
       'earlyPutBackReasons': earlyPutBackReasons,
       'letOutTypes': letOutTypes,
-      'apiKeys': apiKeys,
+      'apiKeys': apiKeys
+          .map((apiKey) => apiKey.toMap())
+          .toList(), // Convert each APIKey to a Map
     };
+  }
+
+  // Factory constructor to create ShelterSettings from Firestore Map
+  factory ShelterSettings.fromMap(Map<String, dynamic> data) {
+    return ShelterSettings(
+      catTags: (data['catTags'] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList() ??
+          [],
+      dogTags: (data['dogTags'] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList() ??
+          [],
+      earlyPutBackReasons: (data['earlyPutBackReasons'] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList() ??
+          [],
+      letOutTypes: (data['letOutTypes'] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList() ??
+          [],
+      apiKeys: (data['apiKeys'] as List<dynamic>)
+          .map((apiKeyMap) => APIKey.fromMap(apiKeyMap as Map<String, dynamic>))
+          .toList(),
+    );
   }
 }
 
@@ -88,27 +106,22 @@ class DeviceSettings {
   final String groupBy;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
-
   final bool automaticallyPutBackAnimals;
   final bool ignoreVisitWhenAutomaticallyPutBack;
   final int automaticPutBackHours;
-
   final bool requireLetOutType;
   final bool requireEarlyPutBackReason;
   final bool requireName;
-
   final bool createLogsWhenUnderMinimumDuration;
   final bool showNoteDates;
   final bool showLogs;
   final bool showAllAnimals;
   final bool showSearchBar;
   final bool showFilter;
-
   final bool showCustomForm;
   final Uri customFormURL;
   final String buttonType;
   final bool appendAnimalDataToURL;
-
 
   DeviceSettings({
     required this.scheduledReports,
@@ -119,32 +132,60 @@ class DeviceSettings {
     required this.groupBy,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
-
     required this.automaticallyPutBackAnimals,
     required this.ignoreVisitWhenAutomaticallyPutBack,
-
     required this.automaticPutBackHours,
-
     required this.requireLetOutType,
     required this.requireEarlyPutBackReason,
     required this.requireName,
-
     required this.createLogsWhenUnderMinimumDuration,
     required this.showNoteDates,
     required this.showLogs,
     required this.showAllAnimals,
     required this.showSearchBar,
     required this.showFilter,
-
     required this.showCustomForm,
     required this.customFormURL,
     required this.buttonType,
     required this.appendAnimalDataToURL,
   });
 
+  // Convert DeviceSettings to Map<String, dynamic> for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'scheduledReports': scheduledReports.map((report) => report.toMap()).toList(),
+      'adminMode': adminMode,
+      'photoUploadsAllowed': photoUploadsAllowed,
+      'mainSort': mainSort,
+      'secondarySort': secondarySort,
+      'groupBy': groupBy,
+      'allowBulkTakeOut': allowBulkTakeOut,
+      'minimumLogMinutes': minimumLogMinutes,
+      'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
+      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
+      'automaticPutBackHours': automaticPutBackHours,
+      'requireLetOutType': requireLetOutType,
+      'requireEarlyPutBackReason': requireEarlyPutBackReason,
+      'requireName': requireName,
+      'createLogsWhenUnderMinimumDuration': createLogsWhenUnderMinimumDuration,
+      'showNoteDates': showNoteDates,
+      'showLogs': showLogs,
+      'showAllAnimals': showAllAnimals,
+      'showSearchBar': showSearchBar,
+      'showFilter': showFilter,
+      'showCustomForm': showCustomForm,
+      'customFormURL': customFormURL.toString(), // Convert Uri to String here
+      'buttonType': buttonType,
+      'appendAnimalDataToURL': appendAnimalDataToURL,
+    };
+  }
+
+  // Factory constructor to create DeviceSettings from Firestore Map
   factory DeviceSettings.fromMap(Map<String, dynamic> data) {
     return DeviceSettings(
-      scheduledReports: data['scheduledReports'] ?? [],
+      scheduledReports: (data['scheduledReports'] as List<dynamic>)
+          .map((reportMap) => ScheduledReport.fromMap(reportMap as Map<String, dynamic>))
+          .toList(),
       adminMode: data['adminMode'] ?? false,
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "Unknown",
@@ -152,64 +193,25 @@ class DeviceSettings {
       groupBy: data['groupBy'] ?? "Unknown",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
-
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
       ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
       automaticPutBackHours: data['automaticPutBackHours'] ?? 0,
-
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,
-
       createLogsWhenUnderMinimumDuration: data['createLogsWhenUnderMinimumDuration'] ?? false,
       showNoteDates: data['showNoteDates'] ?? false,
       showLogs: data['showLogs'] ?? false,
       showAllAnimals: data['showAllAnimals'] ?? false,
       showSearchBar: data['showSearchBar'] ?? false,
       showFilter: data['showFilter'] ?? false,
-
       showCustomForm: data['showCustomForm'] ?? false,
-      customFormURL: data['customFormURL'] ?? Uri.parse(""),
+      customFormURL: Uri.parse(data['customFormURL'] ?? ""), // Convert String back to Uri
       buttonType: data['buttonType'] ?? "Unknown",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
     );
   }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'scheduledReports': scheduledReports,
-      'adminMode': adminMode,
-      'photoUploadsAllowed': photoUploadsAllowed,
-
-      'mainSort': mainSort,
-      'secondarySort': secondarySort,
-      'groupBy': groupBy,
-      'allowBulkTakeOut': allowBulkTakeOut,
-      'minimumLogMinutes': minimumLogMinutes,
-
-      'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
-      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
-      'automaticPutBackHours': automaticPutBackHours,
-
-      'requireLetOutType': requireLetOutType,
-      'requireEarlyPutBackReason': requireEarlyPutBackReason,
-      'requireName': requireName,
-
-      'createLogsWhenUnderMinimumDuration': createLogsWhenUnderMinimumDuration,
-      'showNoteDates': showNoteDates,
-      'showLogs': showLogs,
-      'showAllAnimals': showAllAnimals,
-      'showSearchBar': showSearchBar,
-      'showFilter': showFilter,
-
-      'showCustomForm': showCustomForm,
-      'customFormURL': customFormURL,
-      'buttonType': buttonType,
-      'appendAnimalDataToURL': appendAnimalDataToURL,
-    };
-  }
 }
-
 
 class VolunteerSettings {
   final bool photoUploadsAllowed;
@@ -218,27 +220,22 @@ class VolunteerSettings {
   final String groupBy;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
-
   final bool automaticallyPutBackAnimals;
   final bool ignoreVisitWhenAutomaticallyPutBack;
   final int automaticPutBackHours;
-
   final bool requireLetOutType;
   final bool requireEarlyPutBackReason;
   final bool requireName;
-
   final bool createLogsWhenUnderMinimumDuration;
   final bool showNoteDates;
   final bool showLogs;
   final bool showAllAnimals;
   final bool showSearchBar;
   final bool showFilter;
-
   final bool showCustomForm;
   final Uri customFormURL;
   final String buttonType;
   final bool appendAnimalDataToURL;
-
 
   VolunteerSettings({
     required this.photoUploadsAllowed,
@@ -247,28 +244,50 @@ class VolunteerSettings {
     required this.groupBy,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
-
     required this.automaticallyPutBackAnimals,
     required this.ignoreVisitWhenAutomaticallyPutBack,
-
     required this.automaticPutBackHours,
-
     required this.requireLetOutType,
     required this.requireEarlyPutBackReason,
     required this.requireName,
-
     required this.createLogsWhenUnderMinimumDuration,
     required this.showNoteDates,
     required this.showLogs,
     required this.showAllAnimals,
     required this.showSearchBar,
     required this.showFilter,
-
     required this.showCustomForm,
     required this.customFormURL,
     required this.buttonType,
     required this.appendAnimalDataToURL,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'photoUploadsAllowed': photoUploadsAllowed,
+      'mainSort': mainSort,
+      'secondarySort': secondarySort,
+      'groupBy': groupBy,
+      'allowBulkTakeOut': allowBulkTakeOut,
+      'minimumLogMinutes': minimumLogMinutes,
+      'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
+      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
+      'automaticPutBackHours': automaticPutBackHours,
+      'requireLetOutType': requireLetOutType,
+      'requireEarlyPutBackReason': requireEarlyPutBackReason,
+      'requireName': requireName,
+      'createLogsWhenUnderMinimumDuration': createLogsWhenUnderMinimumDuration,
+      'showNoteDates': showNoteDates,
+      'showLogs': showLogs,
+      'showAllAnimals': showAllAnimals,
+      'showSearchBar': showSearchBar,
+      'showFilter': showFilter,
+      'showCustomForm': showCustomForm,
+      'customFormURL': customFormURL.toString(), // Convert Uri to String here
+      'buttonType': buttonType,
+      'appendAnimalDataToURL': appendAnimalDataToURL,
+    };
+  }
 
   factory VolunteerSettings.fromMap(Map<String, dynamic> data) {
     return VolunteerSettings(
@@ -278,81 +297,37 @@ class VolunteerSettings {
       groupBy: data['groupBy'] ?? "Unknown",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
-
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
       ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
       automaticPutBackHours: data['automaticPutBackHours'] ?? 0,
-
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,
-
       createLogsWhenUnderMinimumDuration: data['createLogsWhenUnderMinimumDuration'] ?? false,
       showNoteDates: data['showNoteDates'] ?? false,
       showLogs: data['showLogs'] ?? false,
       showAllAnimals: data['showAllAnimals'] ?? false,
       showSearchBar: data['showSearchBar'] ?? false,
       showFilter: data['showFilter'] ?? false,
-
       showCustomForm: data['showCustomForm'] ?? false,
-      customFormURL: data['customFormURL'] ?? Uri.parse(""),
+      customFormURL: Uri.parse(data['customFormURL'] ?? ""), // Convert String back to Uri
       buttonType: data['buttonType'] ?? "Unknown",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
     );
   }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'photoUploadsAllowed': photoUploadsAllowed,
-
-      'mainSort': mainSort,
-      'secondarySort': secondarySort,
-      'groupBy': groupBy,
-      'allowBulkTakeOut': allowBulkTakeOut,
-      'minimumLogMinutes': minimumLogMinutes,
-
-      'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
-      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
-      'automaticPutBackHours': automaticPutBackHours,
-
-      'requireLetOutType': requireLetOutType,
-      'requireEarlyPutBackReason': requireEarlyPutBackReason,
-      'requireName': requireName,
-
-      'createLogsWhenUnderMinimumDuration': createLogsWhenUnderMinimumDuration,
-      'showNoteDates': showNoteDates,
-      'showLogs': showLogs,
-      'showAllAnimals': showAllAnimals,
-      'showSearchBar': showSearchBar,
-      'showFilter': showFilter,
-
-      'showCustomForm': showCustomForm,
-      'customFormURL': customFormURL,
-      'buttonType': buttonType,
-      'appendAnimalDataToURL': appendAnimalDataToURL,
-    };
-  }
 }
+
 
 class ScheduledReport {
   final String email;
   final List<String> days;
   final String type;
 
-
   ScheduledReport({
     required this.email,
     required this.days,
     required this.type,
   });
-
-  factory ScheduledReport.fromMap(Map<String, dynamic> data) {
-    return ScheduledReport(
-      email: data['email'] ?? "Unknown",
-      days: data['days'] ?? [],
-      type: data['type'] ?? "Unknown",
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -361,7 +336,16 @@ class ScheduledReport {
       'type': type,
     };
   }
+
+  factory ScheduledReport.fromMap(Map<String, dynamic> data) {
+    return ScheduledReport(
+      email: data['email'] ?? "Unknown",
+      days: List<String>.from(data['days'] ?? []),
+      type: data['type'] ?? "Unknown",
+    );
+  }
 }
+
 
 class APIKey {
   final String name;

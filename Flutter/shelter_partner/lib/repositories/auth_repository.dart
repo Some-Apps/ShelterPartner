@@ -5,6 +5,7 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/shelter.dart';
 import '../models/app_user.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -52,6 +53,99 @@ class AuthRepository {
     await _firebaseAuth.signOut();
   }
 
+  Future<void> createShelterWithPlaceholder({
+    required String shelterId,
+    required String shelterName,
+    required String shelterAddress,
+    required String selectedManagementSoftware,
+  }) async {
+    final shelterData = Shelter(
+      id: shelterId,
+      name: shelterName,
+      address: shelterAddress,
+      createdAt: Timestamp.now(),
+      managementSoftware: selectedManagementSoftware,
+      shelterSettings: ShelterSettings(
+        catTags: ['Calm', 'Playful', 'Independent'], // Example placeholder tags
+        dogTags: ['Friendly', 'Energetic', 'Loyal'],
+        earlyPutBackReasons: ['Sick', 'Behavioral'],
+        letOutTypes: ['Playtime', 'Exercise'],
+        apiKeys: [APIKey(name: 'TestKey', key: '123456')],
+      ),
+      deviceSettings: DeviceSettings(
+        scheduledReports: [
+          ScheduledReport(
+              email: 'report@shelter.com',
+              days: ['Monday', 'Friday'],
+              type: 'Weekly')
+        ],
+        adminMode: true,
+        photoUploadsAllowed: true,
+        mainSort: 'Name',
+        secondarySort: 'Age',
+        groupBy: 'Behavior',
+        allowBulkTakeOut: true,
+        minimumLogMinutes: 10,
+        automaticallyPutBackAnimals: true,
+        ignoreVisitWhenAutomaticallyPutBack: false,
+        automaticPutBackHours: 12,
+        requireLetOutType: true,
+        requireEarlyPutBackReason: true,
+        requireName: true,
+        createLogsWhenUnderMinimumDuration: false,
+        showNoteDates: true,
+        showLogs: true,
+        showAllAnimals: true,
+        showSearchBar: true,
+        showFilter: true,
+        showCustomForm: false,
+        customFormURL: Uri.parse("https://example.com"),
+        buttonType: 'Text',
+        appendAnimalDataToURL: false,
+      ),
+      volunteerSettings: VolunteerSettings(
+        photoUploadsAllowed: true,
+        mainSort: 'Name',
+        secondarySort: 'Breed',
+        groupBy: 'Location',
+        allowBulkTakeOut: false,
+        minimumLogMinutes: 5,
+        automaticallyPutBackAnimals: true,
+        ignoreVisitWhenAutomaticallyPutBack: true,
+        automaticPutBackHours: 24,
+        requireLetOutType: true,
+        requireEarlyPutBackReason: false,
+        requireName: true,
+        createLogsWhenUnderMinimumDuration: false,
+        showNoteDates: false,
+        showLogs: true,
+        showAllAnimals: true,
+        showSearchBar: true,
+        showFilter: true,
+        showCustomForm: false,
+        customFormURL: Uri.parse(""),
+        buttonType: 'Icon',
+        appendAnimalDataToURL: true,
+      ),
+    );
+
+    // Upload the shelter data to Firestore
+    await _firestore.collection('shelters').doc(shelterId).set({
+      'name': shelterData.name,
+      'address': shelterData.address,
+      'createdAt': shelterData.createdAt,
+      'managementSoftware': shelterData.managementSoftware,
+      'shelterSettings': shelterData.shelterSettings.toMap(),
+      'deviceSettings': shelterData.deviceSettings.toMap(),
+      'volunteerSettings': shelterData.volunteerSettings.toMap(),
+    });
+
+    print('Shelter data uploaded for: $shelterName');
+
+    // After creating shelter, upload cats and dogs from CSV or placeholders
+    await addAnimalsFromCSV(shelterId);
+  }
+
   Future<void> createUserDocument({
     required String uid,
     required String firstName,
@@ -71,16 +165,14 @@ class AuthRepository {
       'type': 'admin',
     });
 
-    // Create shelter document
-    await _firestore.collection('shelters').doc(shelterId).set({
-      'shelter_name': shelterName.trim(),
-      'address': shelterAddress.trim(),
-      'management_software': selectedManagementSoftware,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+  
 
+    createShelterWithPlaceholder(
+        shelterId: shelterId,
+        shelterName: shelterName.trim(),
+        shelterAddress: shelterAddress.trim(),
+        selectedManagementSoftware: selectedManagementSoftware.trim());
     // Add cats and dogs from CSV files
-    await addAnimalsFromCSV(shelterId);
   }
 
   Future<void> addAnimalsFromCSV(String shelterId) async {
@@ -160,42 +252,44 @@ class AuthRepository {
   }
 
   Future<List<Map<String, dynamic>>> loadCsvData(String filename) async {
-  print('Attempting to load CSV data from $filename');
-  try {
-    // Load CSV file as a string
-    final csvString = await rootBundle.loadString(filename);
-    print('Raw CSV string: $csvString'); // Debugging: print the entire raw string
+    print('Attempting to load CSV data from $filename');
+    try {
+      // Load CSV file as a string
+      final csvString = await rootBundle.loadString(filename);
+      print(
+          'Raw CSV string: $csvString'); // Debugging: print the entire raw string
 
-    // Parse the CSV string
-    final List<List<dynamic>> csvRows = const CsvToListConverter(eol: '\n').convert(csvString);
-    print('Parsed CSV rows: $csvRows'); // Debugging: print parsed rows
+      // Parse the CSV string
+      final List<List<dynamic>> csvRows =
+          const CsvToListConverter(eol: '\n').convert(csvString);
+      print('Parsed CSV rows: $csvRows'); // Debugging: print parsed rows
 
-    if (csvRows.isEmpty) {
-      print('No data found in CSV file: $filename');
+      if (csvRows.isEmpty) {
+        print('No data found in CSV file: $filename');
+        return [];
+      }
+
+      // Assuming the first row is the header (column names)
+      final headers = csvRows.first.map((header) => header.toString()).toList();
+      print('CSV Headers: $headers');
+
+      final List<Map<String, dynamic>> csvData = [];
+      for (int i = 1; i < csvRows.length; i++) {
+        print('Processing row $i: ${csvRows[i]}');
+        final Map<String, dynamic> rowMap = {};
+        for (int j = 0; j < headers.length; j++) {
+          rowMap[headers[j]] = csvRows[i][j];
+        }
+        csvData.add(rowMap);
+      }
+
+      print('Successfully loaded ${csvData.length} rows from $filename');
+      return csvData;
+    } catch (e) {
+      print('Error loading CSV data from $filename: $e');
       return [];
     }
-
-    // Assuming the first row is the header (column names)
-    final headers = csvRows.first.map((header) => header.toString()).toList();
-    print('CSV Headers: $headers');
-
-    final List<Map<String, dynamic>> csvData = [];
-    for (int i = 1; i < csvRows.length; i++) {
-      print('Processing row $i: ${csvRows[i]}');
-      final Map<String, dynamic> rowMap = {};
-      for (int j = 0; j < headers.length; j++) {
-        rowMap[headers[j]] = csvRows[i][j];
-      }
-      csvData.add(rowMap);
-    }
-
-    print('Successfully loaded ${csvData.length} rows from $filename');
-    return csvData;
-  } catch (e) {
-    print('Error loading CSV data from $filename: $e');
-    return [];
   }
-}
 
   // Mock functions for random data generation (replace with your logic)
   String getRandomColor() {

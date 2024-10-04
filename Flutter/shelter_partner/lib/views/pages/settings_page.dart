@@ -15,60 +15,73 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final shelter = ref.watch(shelterDetailsViewModelProvider);
+    final shelterAsyncValue = ref.watch(shelterDetailsViewModelProvider);
 
-    // Check if shelter is null, and display a loading or empty state if needed
-    if (shelter == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("Settings")),
+    return shelterAsyncValue.when(
+      loading: () => Scaffold(
+        appBar: AppBar(
+          title: const Text("Settings (only admin accounts)"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                ref.read(authViewModelProvider.notifier).logout();
+              },
+            ),
+          ],
+        ),
         body: const Center(
           child: CircularProgressIndicator(), // Display loading indicator while fetching data
         ),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(title: const Text("Settings")),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Text("Log out"),
-                    IconButton(
-                      onPressed: () {
-                        ref.read(authViewModelProvider.notifier).logout();
-                      },
-                      icon: const Icon(Icons.logout),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                _buildSectionTitle("Account Details"),
-                _buildInsetForm([
-                  Text("Shelter ID: ${shelter.id}"),
-                  Text("Shelter Address: ${shelter.address}"),
-                  Text("Shelter Creation: ${shelter.createdAt.toString()}"),
-                  Text("Management Software: ${shelter.managementSoftware}"),
-                ]),
-                const SizedBox(height: 20),
-                _buildSectionTitle("Shelter Settings"),
-                _buildInsetForm([
-                  Text("Example: ${shelter.shelterSettings.apiKeys}"),
-
-                ]),
-                const SizedBox(height: 20),
-                _buildSectionTitle("Volunteer Settings"),
-                _buildInsetForm([
-                  Text("Example: ${shelter.volunteerSettings.allowBulkTakeOut}")
-                ]),
-                const SizedBox(height: 20),
-              ],
+      ),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(
+          title: const Text("Settings (only admin accounts)"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                ref.read(authViewModelProvider.notifier).logout();
+              },
+            ),
+          ],
+        ),
+        body: Center(
+          child: Text('Error: $error'),
+        ),
+      ),
+      data: (shelter) => Scaffold(
+        appBar: AppBar(
+          title: const Text("Settings (only admin accounts)"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                ref.read(authViewModelProvider.notifier).logout();
+              },
+            ),
+          ],
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  _buildSectionTitle("Account Details"),
+                  Text("Name: ${shelter}"),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle("Shelter Settings"),
+                  Text("Name: ${shelter!.shelterSettings}"),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle("Device Settings"),
+                  Text("Name: ${shelter!.deviceSettings}"),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
@@ -80,21 +93,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return Text(
       title,
       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    );
-  }
-
-  Widget _buildInsetForm(List<Widget> children) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      ),
     );
   }
 }

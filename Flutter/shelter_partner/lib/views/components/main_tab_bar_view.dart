@@ -17,11 +17,15 @@ class MainTabBarView extends StatelessWidget {
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.pets),
-          label: 'Volunteer',
+          label: 'Animals',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
           label: 'Visitor',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Volunteers',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
