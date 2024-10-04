@@ -1,13 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class StatsPages extends StatelessWidget {
-  StatsPages({super.key});
+  const StatsPages({super.key});
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(child: Text("Stats Page"))
     );
   }

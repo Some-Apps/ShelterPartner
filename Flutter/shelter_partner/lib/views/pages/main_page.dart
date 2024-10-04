@@ -1,23 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_page.dart';
-import '../components/main_tab_bar_view.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/models/app_user.dart'; // Assuming AppUser is the model you're working with
-import 'package:shelter_partner/views/pages/volunteer_page.dart';
-import 'package:shelter_partner/views/pages/visitor_page.dart';
-import 'package:shelter_partner/views/pages/settings_page.dart';
-import 'package:shelter_partner/views/components/main_tab_bar_view.dart';
 
 class MainPage extends StatefulWidget {
   final AppUser appUser;
 
-  MainPage({required this.appUser});
+  const MainPage({super.key, required this.appUser});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -29,9 +20,9 @@ class _MainPageState extends State<MainPage> {
 
   // List of pages
   final List<Widget> _pages = [
-    VolunteerPage(),  // Add logic to pass appUser if needed
-    VisitorPage(),    // Add logic to pass appUser if needed
-    SettingsPage(),   // Add logic to pass appUser if needed
+    const VolunteerPage(),  // Add logic to pass appUser if needed
+    const VisitorPage(),    // Add logic to pass appUser if needed
+    const SettingsPage(),   // Add logic to pass appUser if needed
   ];
 
   @override
@@ -46,7 +37,7 @@ class _MainPageState extends State<MainPage> {
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.volunteer_activism), label: 'Volunteer'),
+          BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Volunteer'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitor'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],

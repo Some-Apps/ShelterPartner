@@ -1,24 +1,15 @@
-import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shelter_partner/views/auth/my_button.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:csv/csv.dart';
-import 'package:uuid/uuid.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   final void Function()? onTapLogin;
 
-  SignupPage({super.key, required this.onTapLogin});
+  const SignupPage({super.key, required this.onTapLogin});
 
   @override
   _SignupPageState createState() => _SignupPageState();

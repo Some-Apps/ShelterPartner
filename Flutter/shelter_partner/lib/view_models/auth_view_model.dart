@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/repositories/auth_repository.dart';
@@ -79,7 +76,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
     try {
       final userCredential = await _authRepository.signUpWithEmailAndPassword(email, password);
       String uid = userCredential.user!.uid;
-      String shelterId = Uuid().v4();
+      String shelterId = const Uuid().v4();
 
       // Create user and shelter documents in Firestore
       await _authRepository.createUserDocument(

@@ -9,7 +9,7 @@ import 'package:shelter_partner/view_models/auth_view_model.dart';
 class ForgotPasswordPage extends ConsumerStatefulWidget {
   final void Function()? onTapLogin;
 
-  ForgotPasswordPage({super.key, required this.onTapLogin});
+  const ForgotPasswordPage({super.key, required this.onTapLogin});
 
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();

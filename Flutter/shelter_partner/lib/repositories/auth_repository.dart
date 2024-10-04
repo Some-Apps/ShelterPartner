@@ -77,10 +77,6 @@ class AuthRepository {
       'address': shelterAddress.trim(),
       'management_software': selectedManagementSoftware,
       'createdAt': FieldValue.serverTimestamp(),
-      'reportsDay': 'Never',
-      'reportsEmail': '',
-      'groupOptions': ["Color", "Building", "Behavior"],
-      'secondarySortOptions': ["Color", "Building", "Behavior"],
     });
 
     // Add cats and dogs from CSV files
@@ -120,11 +116,7 @@ class AuthRepository {
 
       // Iterate over the loaded CSV data and upload each row to Firestore
       for (final row in csvData) {
-        final animalId = row['id'].toString(); // Assuming 'id' is a column in your CSV
-        if (animalId == null) {
-          print('Skipping row without an ID');
-          continue; // Skip rows that do not have an ID
-        }
+        final animalId = row['id'].toString();
 
         final data = {
           'alert': row['alert'] ?? '',
@@ -139,8 +131,7 @@ class AuthRepository {
           'buildingSort': getRandomIndex(3),
           'behaviorSort': getRandomIndex(4),
           'id': animalId,
-          'inKennel': (row['inKennel'] ?? '').toLowerCase() ==
-              'true', // Ensure boolean conversion
+          'inKennel': true,
           'location': row['location'] ?? '',
           'name': row['name'] ??
               'Unknown', // Default to 'Unknown' if name is missing
