@@ -15,16 +15,10 @@
 * [Report Problem Button](ShelterPartner%20App/Volunteer%20Tab/Report%20Problem%20Button.md)
 
 
-## Visitor Tab
+## Visitor Tab (admin accounts)
 * [Visitor Tab](ShelterPartner%20App/Visitor%20Tab/Visitor%20Tab.md)
 
-<!---
-## Stats Tab (volunteer accounts)
--->
-
-<!---
-## Volunteer Tab (admin accounts)
--->
+## Manage Volunteers Tab (admin accounts)
 
 ## Shelter Settings
 * [Shelter Settings](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Shelter%20Settings.md)
@@ -33,9 +27,8 @@
 ## Device Settings
 * [Admin Mode](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Admin%20Mode.md)
 
-<!---
 ## Volunteer Settings
--->
+
 
 
 
