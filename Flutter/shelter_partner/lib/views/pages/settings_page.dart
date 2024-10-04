@@ -14,13 +14,22 @@ class SettingsPage extends ConsumerStatefulWidget {
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
 
-
   @override
   Widget build(BuildContext context) {
     final shelter = ref.watch(shelterDetailsViewModelProvider);
 
+    // Check if shelter is null, and display a loading or empty state if needed
+    if (shelter == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Settings")),
+        body: const Center(
+          child: CircularProgressIndicator(), // Display loading indicator while fetching data
+        ),
+      );
+    }
 
     return Scaffold(
+      appBar: AppBar(title: const Text("Settings")),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -30,20 +39,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                    children: [
-                      const Text("Log out"),
-                      IconButton(
-                        onPressed: () {
-                          ref.read(authViewModelProvider.notifier).logout();
-                        },
-                        icon: const Icon(Icons.logout),
-                      ),
-                    ],
-                  ),
+                  children: [
+                    const Text("Log out"),
+                    IconButton(
+                      onPressed: () {
+                        ref.read(authViewModelProvider.notifier).logout();
+                      },
+                      icon: const Icon(Icons.logout),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 20),
                 _buildSectionTitle("Account Details"),
                 _buildInsetForm([
-                  Text("Shelter ID: ${shelter!.id}"),
+                  Text("Shelter ID: ${shelter.id}"),
                   Text("Shelter Address: ${shelter.address}"),
                   Text("Shelter Creation: ${shelter.createdAt.toString()}"),
                   Text("Management Software: ${shelter.managementSoftware}"),
@@ -51,13 +60,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 const SizedBox(height: 20),
                 _buildSectionTitle("Shelter Settings"),
                 _buildInsetForm([
-                  Text(shelter.shelterSettings.setting1),
+                  Text("Example: ${shelter.shelterSettings.setting1}"),
+
                 ]),
                 const SizedBox(height: 20),
-                _buildSectionTitle("Device Settings"),
+                _buildSectionTitle("Volunteer Settings"),
                 _buildInsetForm([
-                  Text(shelter.volunteerSettings.setting1),
-                  
+                  Text("Example: ${shelter.volunteerSettings.setting1}")
                 ]),
                 const SizedBox(height: 20),
               ],
@@ -90,8 +99,3 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 }
-
-extension on DocumentSnapshot<Object?> {
-  get shelterSettings => null;
-}
-
