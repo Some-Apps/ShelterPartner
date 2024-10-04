@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
@@ -60,13 +59,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 const SizedBox(height: 20),
                 _buildSectionTitle("Shelter Settings"),
                 _buildInsetForm([
-                  Text("Example: ${shelter.shelterSettings.setting1}"),
+                  Text("Example: ${shelter.shelterSettings.apiKeys}"),
 
                 ]),
                 const SizedBox(height: 20),
                 _buildSectionTitle("Volunteer Settings"),
                 _buildInsetForm([
-                  Text("Example: ${shelter.volunteerSettings.setting1}")
+                  Text("Example: ${shelter.volunteerSettings.allowBulkTakeOut}")
                 ]),
                 const SizedBox(height: 20),
               ],

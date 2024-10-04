@@ -22,7 +22,7 @@ class _VolunteerPageState extends ConsumerState<VolunteerPage> {
             final animal = animals[index];
             return ListTile(
               title: Text(animal['name']),
-              subtitle: Text("In Kennel: " + animal['inKennel'].toString()),        
+              subtitle: Text("In Kennel: ${animal['inKennel']}"),        
                 );
           },
         ),
