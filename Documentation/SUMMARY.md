@@ -7,12 +7,11 @@
 
 ## App
 
-* [Volunteer](ShelterPartner%App.md)
+### Volunteer Tab
   * [Volunteer](ShelterPartner%20App/Volunteer%20Tab/Add%20Note%20View.md)
 
-* [Visitor](ShelterPartner%App.md)
-  * [Volunteer](ShelterPartner%20App/Volunteer%20Tab/Add%20Note%20View.md)
- 
-* [Settings](ShelterPartner%App.md)
+### Visitor Tab
   * [Volunteer](ShelterPartner%20App/Volunteer%20Tab/Add%20Note%20View.md)
 
+### Settings Tab
+  * [Volunteer](ShelterPartner%20App/Volunteer%20Tab/Add%20Note%20View.md)
