@@ -5,15 +5,19 @@ class Shelter {
   final String address;
   final Timestamp createdAt;
   final String managementSoftware;
-  final ShelterSettings shelterSettings; // Use ShelterSettings class
-  final VolunteerSettings volunteerSettings; // Use VolunteerSettings class
+
+  final ShelterSettings shelterSettings;
+  final DeviceSettings deviceSettings;
+  final VolunteerSettings volunteerSettings;
 
   Shelter({
     required this.id,
     required this.address,
     required this.createdAt,
     required this.managementSoftware,
+
     required this.shelterSettings,
+    required this.deviceSettings,
     required this.volunteerSettings,
   });
 
@@ -25,7 +29,9 @@ class Shelter {
       address: data['address'],
       createdAt: data['createdAt'],
       managementSoftware: data['management_software'],
+      
       shelterSettings: ShelterSettings.fromMap(data['shelterSettings'] ?? {}),
+      deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
       volunteerSettings: VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
     );
   }
@@ -39,20 +45,40 @@ class ShelterSettings {
     required this.setting1,
   });
 
-  // Factory constructor to parse the shelter settings map from Firestore
   factory ShelterSettings.fromMap(Map<String, dynamic> data) {
     return ShelterSettings(
       setting1: data['setting1'] ?? "Unknown",
     );
   }
 
-  // To map this object back to Firestore format if needed
   Map<String, dynamic> toMap() {
     return {
       'isOpen': setting1,
     };
   }
 }
+
+class DeviceSettings {
+  final String setting1;
+
+
+  DeviceSettings({
+    required this.setting1,
+  });
+
+  factory DeviceSettings.fromMap(Map<String, dynamic> data) {
+    return DeviceSettings(
+      setting1: data['setting1'] ?? "Unknown",
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'setting1': setting1,
+    };
+  }
+}
+
 
 class VolunteerSettings {
   final String setting1;
@@ -62,17 +88,15 @@ class VolunteerSettings {
     required this.setting1,
   });
 
-  // Factory constructor to parse the shelter settings map from Firestore
   factory VolunteerSettings.fromMap(Map<String, dynamic> data) {
     return VolunteerSettings(
       setting1: data['setting1'] ?? "Unknown",
     );
   }
 
-  // To map this object back to Firestore format if needed
   Map<String, dynamic> toMap() {
     return {
-      'isOpen': setting1,
+      'setting1': setting1,
     };
   }
 }
