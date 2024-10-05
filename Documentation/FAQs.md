@@ -5,7 +5,7 @@ ShelterPartner is 100% free. There are no paid subscriptions. There are no in-ap
 
 ## How can I start using ShelterPartner?
 
-  1. Fill out this form: [Get Started](https://shelterpartner.app/new-shelter)
+  1. Fill out this form: [Get Started](https://shelterpartner.org/new-shelter)
   2. We’ll load your account with dummy data and email your login credentials so that you can test out the app without having to connect your management software.
   3. If you would like to use ShelterPartner in your shelter, simply shoot us an email, and we’ll send you more information on how to connect your management software.
 

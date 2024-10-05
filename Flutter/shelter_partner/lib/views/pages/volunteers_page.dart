@@ -5,6 +5,7 @@ import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
 
+
 class VolunteersPage extends ConsumerStatefulWidget {
   const VolunteersPage({super.key});
 
@@ -26,11 +27,13 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
         ),
         body: const Center(
           child: CircularProgressIndicator(),
+
         ),
       ),
       error: (error, stack) => Scaffold(
         appBar: AppBar(
           title: const Text("Volunteers (only admin accounts)"),
+
         ),
         body: Center(
           child: Text('Error: $error'),
@@ -152,4 +155,5 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
       ),
     );
   }
+
 }

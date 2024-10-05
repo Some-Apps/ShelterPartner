@@ -344,7 +344,7 @@ struct AnimalView: View {
                                 .fontWeight(.black)
                             }
                         } else {
-                            Link(destination: URL(string: "https://shelterpartner.org/tutorials")!) {
+                            Link(destination: URL(string: "https://shelterpartner.org/wiki")!) {
                                 Label("Tutorials", systemImage: "globe")
                             }
 
@@ -450,7 +450,7 @@ struct AnimalView: View {
             QRCodeView(animal: viewModel.animal)
         }
         .sheet(isPresented: $showTutorialQRCode) {
-            Image(uiImage: generateQRCode(from: "https://shelterpartner.org/tutorials"))
+            Image(uiImage: generateQRCode(from: "https://shelterpartner.org/wiki"))
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()
