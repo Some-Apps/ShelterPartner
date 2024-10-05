@@ -20,6 +20,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
   fluttertoast: ^8.2.8
+  json_theme_plus: ^6.6.3
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +37,5 @@ flutter:
   assets:
     - assets/images/
     - assets/csv/
+    - assets/appainter_theme.json
+    - assets/appainter_theme_dark.json

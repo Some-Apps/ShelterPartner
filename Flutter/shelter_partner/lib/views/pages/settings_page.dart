@@ -72,13 +72,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 children: [
                   const SizedBox(height: 20),
                   _buildSectionTitle("Account Details"),
-                  Text("Name: ${shelter}"),
+                  Text("Name: $shelter"),
+
                   const SizedBox(height: 20),
                   _buildSectionTitle("Shelter Settings"),
                   Text("Name: ${shelter!.shelterSettings}"),
                   const SizedBox(height: 20),
                   _buildSectionTitle("Device Settings"),
-                  Text("Name: ${shelter!.deviceSettings}"),
+                  Text("Name: ${shelter.deviceSettings}"),
+
                   const SizedBox(height: 20),
                 ],
               ),
