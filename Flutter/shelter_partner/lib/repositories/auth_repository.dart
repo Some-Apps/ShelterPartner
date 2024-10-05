@@ -99,7 +99,7 @@ class AuthRepository {
         showSearchBar: true,
         showFilter: true,
         showCustomForm: false,
-        customFormURL: Uri.parse("https://example.com"),
+        customFormURL: "https://example.com",
         buttonType: 'Text',
         appendAnimalDataToURL: false,
       ),
@@ -123,8 +123,7 @@ class AuthRepository {
         showSearchBar: true,
         showFilter: true,
         showCustomForm: false,
-        customFormURL: Uri.parse(""),
-        buttonType: 'Icon',
+        customFormURL: "",
         appendAnimalDataToURL: true,
       ),
     );

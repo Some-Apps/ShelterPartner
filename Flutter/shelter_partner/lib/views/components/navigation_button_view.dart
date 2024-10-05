@@ -5,10 +5,10 @@ class NavigationButton extends StatelessWidget {
   final Widget route;
 
   const NavigationButton({
-    Key? key,
+    super.key,
     required this.title,
     required this.route,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ class VolunteerDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Volunteer Details"),
+        title: const Text("Volunteer Details"),
       ),
       body: const Center(
         child: Text("Volunteer Details"),

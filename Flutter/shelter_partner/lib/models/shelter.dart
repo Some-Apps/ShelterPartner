@@ -119,7 +119,7 @@ class DeviceSettings {
   final bool showSearchBar;
   final bool showFilter;
   final bool showCustomForm;
-  final Uri customFormURL;
+  final String customFormURL;
   final String buttonType;
   final bool appendAnimalDataToURL;
 
@@ -174,7 +174,7 @@ class DeviceSettings {
       'showSearchBar': showSearchBar,
       'showFilter': showFilter,
       'showCustomForm': showCustomForm,
-      'customFormURL': customFormURL.toString(), // Convert Uri to String here
+      'customFormURL': customFormURL,
       'buttonType': buttonType,
       'appendAnimalDataToURL': appendAnimalDataToURL,
     };
@@ -206,7 +206,7 @@ class DeviceSettings {
       showSearchBar: data['showSearchBar'] ?? false,
       showFilter: data['showFilter'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
-      customFormURL: Uri.parse(data['customFormURL'] ?? ""), // Convert String back to Uri
+      customFormURL: data['customFormURL'] ?? "",
       buttonType: data['buttonType'] ?? "Unknown",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
     );
@@ -233,8 +233,7 @@ class VolunteerSettings {
   final bool showSearchBar;
   final bool showFilter;
   final bool showCustomForm;
-  final Uri customFormURL;
-  final String buttonType;
+  final String customFormURL;
   final bool appendAnimalDataToURL;
 
   VolunteerSettings({
@@ -258,7 +257,6 @@ class VolunteerSettings {
     required this.showFilter,
     required this.showCustomForm,
     required this.customFormURL,
-    required this.buttonType,
     required this.appendAnimalDataToURL,
   });
 
@@ -283,8 +281,7 @@ class VolunteerSettings {
       'showSearchBar': showSearchBar,
       'showFilter': showFilter,
       'showCustomForm': showCustomForm,
-      'customFormURL': customFormURL.toString(), // Convert Uri to String here
-      'buttonType': buttonType,
+      'customFormURL': customFormURL,
       'appendAnimalDataToURL': appendAnimalDataToURL,
     };
   }
@@ -310,8 +307,7 @@ class VolunteerSettings {
       showSearchBar: data['showSearchBar'] ?? false,
       showFilter: data['showFilter'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
-      customFormURL: Uri.parse(data['customFormURL'] ?? ""), // Convert String back to Uri
-      buttonType: data['buttonType'] ?? "Unknown",
+      customFormURL: data['customFormURL'] ?? "",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
     );
   }
