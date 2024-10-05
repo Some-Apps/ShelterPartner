@@ -66,7 +66,7 @@ Contributors who make 60 approved pull requests or more per year will be given a
         </a>
       </td>
       <td><a href="https://github.com/JaredDanielJones"><strong>JaredDanielJones</strong></a></td>
-      <td><strong>61 contributions</strong></td>
+      <td><strong>62 contributions</strong></td>
       <td>NA</td>
     </tr>
         <tr>
