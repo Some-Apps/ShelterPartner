@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
-import 'package:shelter_partner/views/components/navigation_button_view.dart';
+import 'package:shelter_partner/views/components/georestriction_map_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
-import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
-import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
 
 class VolunteerSettingsPage extends ConsumerStatefulWidget {
   const VolunteerSettingsPage({super.key});
@@ -91,8 +90,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                         PickerView(
                           title: "Group By",
                           options: const ["None"],
-                          value: shelter?.volunteerSettings.groupBy ??
-                              "None",
+                          value: shelter?.volunteerSettings.groupBy ?? "None",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
@@ -102,11 +100,6 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             }
                           },
                         ),
-
-
-
-
-
                       ]),
                     ),
                   ),
@@ -338,6 +331,19 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 .toggleAttribute(
                                     shelter!.id, "appendAnimalDataToURL");
                           },
+                        ),
+                      ]),
+                    ),
+                  ),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(children: [
+                        GeorestrictionMapView(
+                          initialLocation: LatLng(
+                              37.7749, -122.4194), // San Francisco, for example
+                          initialRadius: 1000, // Initial radius in meters
+                          initialZoomLevel: 14.0, // Initial zoom level
                         ),
                       ]),
                     ),

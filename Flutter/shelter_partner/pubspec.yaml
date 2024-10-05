@@ -21,6 +21,9 @@ dependencies:
   riverpod_annotation: ^2.3.5
   fluttertoast: ^8.2.8
   json_theme_plus: ^6.6.3
+  geolocator: ^10.1.0
+  google_maps_flutter: ^2.1.1
+
 
 dev_dependencies:
   flutter_test:

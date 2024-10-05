@@ -7,12 +7,12 @@ class TextFieldView extends StatefulWidget {
   final ValueChanged<String> onSaved;  // Callback for handling save
 
   const TextFieldView({
-    Key? key,
+    super.key,
     required this.title,
     required this.hint,
     required this.value,
     required this.onSaved,
-  }) : super(key: key);
+  });
 
   @override
   _TextFieldViewState createState() => _TextFieldViewState();
@@ -40,9 +40,9 @@ class _TextFieldViewState extends State<TextFieldView> {
       children: [
         Text(
           widget.title,  // Display the title
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
@@ -50,17 +50,17 @@ class _TextFieldViewState extends State<TextFieldView> {
                 controller: _controller,
                 decoration: InputDecoration(
                   hintText: widget.hint,  // Placeholder hint
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () {
                 widget.onSaved(_controller.text);  // Call the callback with the current value
                 FocusScope.of(context).unfocus();  // Unfocus the text field
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         ),

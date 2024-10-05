@@ -7,12 +7,12 @@ class PickerView extends StatelessWidget {
   final ValueChanged<String?> onChanged;  // Callback for handling value change
 
   const PickerView({
-    Key? key,
+    super.key,
     required this.title,
     required this.options,
     required this.value,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +21,10 @@ class PickerView extends StatelessWidget {
         Text(
           title,  // Display the title
         ),
-        Spacer(),
+        const Spacer(),
         DropdownButton<String>(
           value: value,  // The currently selected value
-          hint: Text("Select an option"),  // Placeholder text when no value is selected
+          hint: const Text("Select an option"),  // Placeholder text when no value is selected
           onChanged: onChanged,  // Handle value change
           items: options.map<DropdownMenuItem<String>>((String option) {
             return DropdownMenuItem<String>(
