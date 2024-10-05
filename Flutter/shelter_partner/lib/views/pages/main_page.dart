@@ -32,9 +32,10 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: _pages[_currentIndex],  // Show the selected page
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.blueGrey,  // Set background color for visibility
-        selectedItemColor: Colors.black,   // Set color for selected item
-        unselectedItemColor: Colors.grey,  // Set color for unselected items
+ backgroundColor: Theme.of(context).colorScheme.background, // Use system background color
+selectedItemColor: Theme.of(context).colorScheme.primary,   // Use primary color for selected item
+unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), // Use onSurface with lower opacity for unselected items
+
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/view_models/animals_view_model.dart';
-import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
+import 'package:shelter_partner/views/components/navigation_button_view.dart';
+import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
+import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
 
 class VolunteersPage extends ConsumerStatefulWidget {
   const VolunteersPage({super.key});
@@ -22,16 +23,14 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
       loading: () => Scaffold(
         appBar: AppBar(
           title: const Text("Volunteers (only admin accounts)"),
-        
         ),
         body: const Center(
-          child: CircularProgressIndicator(), // Display loading indicator while fetching data
+          child: CircularProgressIndicator(),
         ),
       ),
       error: (error, stack) => Scaffold(
         appBar: AppBar(
           title: const Text("Volunteers (only admin accounts)"),
-          
         ),
         body: Center(
           child: Text('Error: $error'),
@@ -40,32 +39,117 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
       data: (shelter) => Scaffold(
         appBar: AppBar(
           title: const Text("Volunteers (only admin accounts)"),
-          
         ),
-        body: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Volunteer Settings Section
+                  Card(
+                    child: ListTile(
+                      title: const Text("Volunteer Settings"),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const VolunteerSettingsPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 20),
-                  _buildSectionTitle("Volunteer Settings"),
-                  Text("${shelter?.volunteerSettings}"),
+
+                  // Invite a Volunteer Section
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Invite a Volunteer",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              labelText: 'Volunteer name',
+                              contentPadding: EdgeInsets.all(16),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              labelText: 'Volunteer email',
+                              contentPadding: EdgeInsets.all(16),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Handle send invite action
+                            },
+                            child: const Text('Send Invite'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Volunteers List Section
+                  const Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Volunteers",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          // Reuse NavigationButton widget
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
+                          // Add more NavigationButton widgets as needed
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     );
   }
 }
