@@ -1,3 +1,6 @@
+ext {
+    ndkVersion = flutter.ndkVersion
+}
 allprojects {
     repositories {
         google()

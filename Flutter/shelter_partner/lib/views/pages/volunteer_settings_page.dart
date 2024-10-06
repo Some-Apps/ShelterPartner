@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/components/georestriction_map_view.dart';
+import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
+import 'package:shelter_partner/views/pages/georestriction_settings_page.dart';
 
 class VolunteerSettingsPage extends ConsumerStatefulWidget {
   const VolunteerSettingsPage({super.key});
@@ -334,20 +336,21 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                       ]),
                     ),
                   ),
-                  const Card(
-                    child: 
-                      // padding: EdgeInsets.all(8.0),
-                      Column(children: [
-                        GeorestrictionMapView(
-                          initialLocation: LatLng(
-                              37.7749, -122.4194), // San Francisco, for example
-                          initialRadius: 1000, // Initial radius in meters
-                          initialZoomLevel: 14.0, // Initial zoom level
-                        ),
-                      ]),
-                    
+                  Card(
+                    child: ListTile(
+                      title: const Text("Georestriction Settings"),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GeorestrictionSettingsPage(),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.0),
                 ],
               ),
             ),

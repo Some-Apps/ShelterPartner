@@ -1,18 +1,20 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 class GeorestrictionMapView extends StatefulWidget {
-  final LatLng initialLocation;  // Initial map center location
-  final double initialRadius;    // Initial radius of the circle overlay
-  final double initialZoomLevel; // Initial zoom level of the map
+  final LatLng initialLocation;
+  final double initialRadius;
+  final double initialZoomLevel;
 
   const GeorestrictionMapView({
-    super.key,
+    Key? key,
     required this.initialLocation,
     required this.initialRadius,
     required this.initialZoomLevel,
-  });
+  }) : super(key: key);
 
   @override
   _GeorestrictionMapViewState createState() => _GeorestrictionMapViewState();
@@ -24,6 +26,13 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
   late double _radius;
   late double _zoomLevel;
   Circle? _circle;
+  String _locationOption = 'Neither';
+  String _address = '';
+  String? _selectedAddress;
+  List<AddressSuggestion> _addressSuggestions = [];
+  String googleApiKey = 'AIzaSyBGsaMT4Fo-4_d-z4NoTmPEPVUm9pjuWQE'; // Replace with your Google API key
+
+  final TextEditingController _addressController = TextEditingController();
 
   @override
   void initState() {
@@ -32,10 +41,6 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
     _radius = widget.initialRadius;
     _zoomLevel = widget.initialZoomLevel;
 
-    // Debug print to check zoom level
-    print("Initial Zoom Level: $_zoomLevel");
-
-    // Initialize the circle overlay
     _circle = Circle(
       circleId: const CircleId("geo_restriction_circle"),
       center: _center,
@@ -46,19 +51,80 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
     );
   }
 
-  // Center the map on the user's current location using Geolocator
+  @override
+  void dispose() {
+    _addressController.dispose();
+    super.dispose();
+  }
+
+  // Fetch address suggestions using Google Places API
+  Future<void> _fetchAddressSuggestions(String input) async {
+    if (input.isEmpty) {
+      setState(() {
+        _addressSuggestions = [];
+      });
+      return;
+    }
+
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$googleApiKey&components=country:us',
+    );
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final suggestions = data['predictions'] as List;
+
+      setState(() {
+        _addressSuggestions = suggestions.map((suggestion) {
+          return AddressSuggestion(
+            description: suggestion['description'] as String,
+            placeId: suggestion['place_id'] as String,
+          );
+        }).toList();
+      });
+    } else {
+      print('Error fetching address suggestions: ${response.body}');
+    }
+  }
+
+  Future<void> _getPlaceDetails(String placeId) async {
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$googleApiKey',
+    );
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['status'] == 'OK') {
+        final location = data['result']['geometry']['location'];
+        final LatLng placeLocation = LatLng(location['lat'], location['lng']);
+        setState(() {
+          _center = placeLocation;
+          _mapController?.animateCamera(
+            CameraUpdate.newLatLngZoom(_center, _zoomLevel),
+          );
+          _updateCircle();
+        });
+      } else {
+        _showErrorMessage('Unable to get location details.');
+      }
+    } else {
+      _showErrorMessage('Unable to get location details.');
+    }
+  }
+
+  // Center the map on the user's current location
   Future<void> _centerOnUserLocation() async {
     try {
-      // Check permissions first
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          return; // If permission is denied, return early.
+          return;
         }
       }
 
-      // Fetch the user's current location
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -74,7 +140,6 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
     }
   }
 
-  // Update the circular overlay when the center or radius changes
   void _updateCircle() {
     setState(() {
       _circle = Circle(
@@ -88,96 +153,150 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
     });
   }
 
+  // Show error message when location cannot be found
+  void _showErrorMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Address Error"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
       children: [
-
-        
-
+        // Map Section
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.7,  // Set the map height to 70% of screen height
-          width: double.infinity,  // Set the map width to match parent width
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _center,
-              zoom: _zoomLevel,
-            ),
-            mapType: MapType.satellite, // Map type set to normal
-            myLocationEnabled: true,
-            onMapCreated: (GoogleMapController controller) {
-  _mapController = controller;
-  print("Map Created - controller assigned");
-  
-  _mapController?.animateCamera(CameraUpdate.newCameraPosition(
-    CameraPosition(target: _center, zoom: _zoomLevel),
-  ));
-},
-
-            circles: _circle != null ? {_circle!} : {},  // Ensure the circle isn't null
-            onCameraMove: (CameraPosition position) {
-              setState(() {
-                _center = position.target;  // Update center when map is moved
-                _zoomLevel = position.zoom; // Update zoom level when map is zoomed
-                _updateCircle();            // Update the circular overlay
-              });
-            },
-            indoorViewEnabled: false,  // Enable indoor view for testing
-            trafficEnabled: false,     // Enable traffic layer for testing
-          ),
-        ),
-        Positioned(
-          top: 20,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: _centerOnUserLocation,
-            child: const Icon(Icons.my_location),
-          ),
-        ),
-        Positioned(
-          bottom: 20,
-          left: 20,
-          child: Row(
-            children: [
-              Text("Radius: ${_radius.toStringAsFixed(0)}m"),
-              const SizedBox(width: 10),
-              Slider(
-                min: 100.0,
-                max: 5000.0,
-                divisions: 50,
-                value: _radius,
-                onChanged: (value) {
+          height: MediaQuery.of(context).size.height * 0.6,
+          width: double.infinity,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16.0),
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: _zoomLevel,
+              ),
+              mapType: MapType.satellite,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              onMapCreated: (GoogleMapController controller) {
+                _mapController = controller;
+                _mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                  CameraPosition(target: _center, zoom: _zoomLevel),
+                ));
+              },
+              circles: _circle != null ? {_circle!} : {},
+              onCameraMove: (CameraPosition position) {
+                if (_locationOption == 'Neither') {
                   setState(() {
-                    _radius = value;  // Update the radius
+                    _center = position.target;
+                    _zoomLevel = position.zoom;
                     _updateCircle();
                   });
-                },
-              ),
-            ],
+                }
+              },
+            ),
           ),
         ),
-        // Zoom slider
-        Positioned(
-          bottom: 50,
-          left: 20,
-          child: Row(
+        const SizedBox(height: 10),
+        // Options Section without Expanded
+        SingleChildScrollView(
+          child: Column(
             children: [
-              Text("Zoom: ${_zoomLevel.toStringAsFixed(1)}"),
-              Slider(
-                min: 1.0,
-                max: 20.0,
-                value: _zoomLevel,
-                onChanged: (value) {
-                  setState(() {
-                    _zoomLevel = value;
-                    _mapController?.moveCamera(CameraUpdate.zoomTo(_zoomLevel));
-                  });
-                },
+              // Dropdown Menu
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: DropdownButtonFormField<String>(
+                  value: _locationOption,
+                  decoration: const InputDecoration(labelText: "Map Centering Option"),
+                  items: ['Neither', 'Center on Current Location', 'Center on Address']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) async {
+                    if (newValue != null) {
+                      setState(() {
+                        _locationOption = newValue;
+                        _selectedAddress = null; // Reset selected address
+                        _addressController.clear(); // Clear the text field
+                        _addressSuggestions = []; // Clear suggestions
+                      });
+
+                      if (newValue == 'Center on Current Location') {
+                        await _centerOnUserLocation();
+                      }
+                    }
+                  },
+                ),
               ),
+              // Address Input and Suggestions
+              if (_locationOption == 'Center on Address') ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  child: TextField(
+                    controller: _addressController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Address',
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _address = value;
+                      });
+                      _fetchAddressSuggestions(value);
+                    },
+                  ),
+                ),
+                
+                if (_addressSuggestions.isNotEmpty)
+                  SizedBox(
+                    height: 150,
+                    child: ListView.builder(
+                      itemCount: _addressSuggestions.length,
+                      itemBuilder: (context, index) {
+                        final suggestion = _addressSuggestions[index];
+                        return ListTile(
+                          title: Text(suggestion.description),
+                          onTap: () async {
+                            setState(() {
+                              _selectedAddress = suggestion.description;
+                              _addressController.clear();
+                              _addressSuggestions = [];
+                            });
+                            await _getPlaceDetails(suggestion.placeId);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+              ],
             ],
           ),
         ),
       ],
     );
   }
+}
+
+// Define a model for address suggestions
+class AddressSuggestion {
+  final String description;
+  final String placeId;
+
+  AddressSuggestion({required this.description, required this.placeId});
 }
