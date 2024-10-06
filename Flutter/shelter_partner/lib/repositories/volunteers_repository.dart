@@ -33,6 +33,19 @@ class VolunteersRepository {
   }
 
   // Method to increment a specific field within volunteerSettings attribute
+  Future<void> changeGeofence(String shelterID, GeoPoint locaiton, double radius, double zoom) async {
+    final docRef = _firestore.collection('shelters').doc(shelterID);
+    return docRef.update({
+      'volunteerSettings.geofence.location': locaiton,
+      'volunteerSettings.geofence.radius': radius,
+      'volunteerSettings.geofence.zoom': zoom,
+    }).catchError((error) {
+      throw Exception("Failed to increment: $error");
+    });
+  }
+
+
+  // Method to increment a specific field within volunteerSettings attribute
   Future<void> incrementVolunteerSetting(String shelterID, String field) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
     return docRef.update({

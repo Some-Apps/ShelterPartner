@@ -21,10 +21,10 @@ class _MainPageState extends State<MainPage> {
 
   // List of pages
   final List<Widget> _pages = [
-    const AnimalsPage(),  // Add logic to pass appUser if needed
+    const AnimalsPage(),
     const VisitorPage(), 
-    const VolunteersPage(),   // Add logic to pass appUser if needed
-    const SettingsPage(),   // Add logic to pass appUser if needed
+    const VolunteersPage(), 
+    const SettingsPage(),
   ];
 
   @override

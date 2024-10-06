@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/repositories/volunteers_repository.dart';
 import '../models/shelter.dart';
@@ -25,6 +26,16 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
       }
     } else {
       state = AsyncValue.error('User not authenticated', StackTrace.current);
+    }
+  }
+
+  // Method to change geofence settings in Firestore document within volunteerSettings
+  Future<void> changeGeofence(String shelterID, GeoPoint location, double radius, double zoom) async {
+    try {
+      await _repository.changeGeofence(shelterID, location, radius, zoom);
+    } catch (error) {
+      print("Error changing geofence: $error");
+      state = AsyncValue.error("Error changing geofence: $error", StackTrace.current);
     }
   }
 

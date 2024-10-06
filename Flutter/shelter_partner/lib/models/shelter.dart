@@ -235,6 +235,7 @@ class VolunteerSettings {
   final bool showCustomForm;
   final String customFormURL;
   final bool appendAnimalDataToURL;
+  final Geofence? geofence; // Optional geofence field
 
   VolunteerSettings({
     required this.photoUploadsAllowed,
@@ -258,8 +259,10 @@ class VolunteerSettings {
     required this.showCustomForm,
     required this.customFormURL,
     required this.appendAnimalDataToURL,
+    this.geofence, // Can be null
   });
 
+  // Convert VolunteerSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
     return {
       'photoUploadsAllowed': photoUploadsAllowed,
@@ -283,9 +286,11 @@ class VolunteerSettings {
       'showCustomForm': showCustomForm,
       'customFormURL': customFormURL,
       'appendAnimalDataToURL': appendAnimalDataToURL,
+      'geofence': geofence?.toMap(), // Only include if not null
     };
   }
 
+  // Factory constructor to create VolunteerSettings from Firestore Map
   factory VolunteerSettings.fromMap(Map<String, dynamic> data) {
     return VolunteerSettings(
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
@@ -309,9 +314,13 @@ class VolunteerSettings {
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
+      geofence: data['geofence'] != null
+          ? Geofence.fromMap(data['geofence'] as Map<String, dynamic>)
+          : null, // Handle null geofence safely
     );
   }
 }
+
 
 
 class ScheduledReport {
@@ -364,5 +373,35 @@ class APIKey {
       'name': name,
       'key': key,
     };
+  }
+}
+
+class Geofence {
+  final GeoPoint location; // Firestore's GeoPoint to represent lat/lng
+  final double radius;     // Radius in meters
+  final double zoom;       // Zoom level for the map
+
+  Geofence({
+    required this.location,
+    required this.radius,
+    required this.zoom,
+  });
+
+  // Convert Geofence to Map<String, dynamic> for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'location': location,
+      'radius': radius,
+      'zoom': zoom,
+    };
+  }
+
+  // Factory constructor to create Geofence from Firestore Map
+  factory Geofence.fromMap(Map<String, dynamic> data) {
+    return Geofence(
+      location: data['location'] as GeoPoint,
+      radius: (data['radius'] != null ? (data['radius'] as num).toDouble() : 1000.0), // Default to 1000.0 if null
+      zoom: (data['zoom'] != null ? (data['zoom'] as num).toDouble() : 14.0),         // Default to zoom level 14.0 if null
+    );
   }
 }
