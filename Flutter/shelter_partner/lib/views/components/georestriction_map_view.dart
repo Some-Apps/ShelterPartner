@@ -8,11 +8,11 @@ class GeorestrictionMapView extends StatefulWidget {
   final double initialZoomLevel; // Initial zoom level of the map
 
   const GeorestrictionMapView({
-    Key? key,
+    super.key,
     required this.initialLocation,
     required this.initialRadius,
     required this.initialZoomLevel,
-  }) : super(key: key);
+  });
 
   @override
   _GeorestrictionMapViewState createState() => _GeorestrictionMapViewState();
@@ -32,9 +32,12 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
     _radius = widget.initialRadius;
     _zoomLevel = widget.initialZoomLevel;
 
+    // Debug print to check zoom level
+    print("Initial Zoom Level: $_zoomLevel");
+
     // Initialize the circle overlay
     _circle = Circle(
-      circleId: CircleId("geo_restriction_circle"),
+      circleId: const CircleId("geo_restriction_circle"),
       center: _center,
       radius: _radius,
       strokeColor: Colors.blue,
@@ -75,7 +78,7 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
   void _updateCircle() {
     setState(() {
       _circle = Circle(
-        circleId: CircleId("geo_restriction_circle"),
+        circleId: const CircleId("geo_restriction_circle"),
         center: _center,
         radius: _radius,
         strokeColor: Colors.blue,
@@ -89,7 +92,10 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
+
+        
+
+        SizedBox(
           height: MediaQuery.of(context).size.height * 0.7,  // Set the map height to 70% of screen height
           width: double.infinity,  // Set the map width to match parent width
           child: GoogleMap(
@@ -97,11 +103,18 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
               target: _center,
               zoom: _zoomLevel,
             ),
+            mapType: MapType.satellite, // Map type set to normal
             myLocationEnabled: true,
             onMapCreated: (GoogleMapController controller) {
-              _mapController = controller;
-            },
-            circles: {_circle!},
+  _mapController = controller;
+  print("Map Created - controller assigned");
+  
+  _mapController?.animateCamera(CameraUpdate.newCameraPosition(
+    CameraPosition(target: _center, zoom: _zoomLevel),
+  ));
+},
+
+            circles: _circle != null ? {_circle!} : {},  // Ensure the circle isn't null
             onCameraMove: (CameraPosition position) {
               setState(() {
                 _center = position.target;  // Update center when map is moved
@@ -109,6 +122,8 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
                 _updateCircle();            // Update the circular overlay
               });
             },
+            indoorViewEnabled: false,  // Enable indoor view for testing
+            trafficEnabled: false,     // Enable traffic layer for testing
           ),
         ),
         Positioned(
@@ -116,7 +131,7 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
           right: 20,
           child: FloatingActionButton(
             onPressed: _centerOnUserLocation,
-            child: Icon(Icons.my_location),
+            child: const Icon(Icons.my_location),
           ),
         ),
         Positioned(
@@ -125,7 +140,7 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
           child: Row(
             children: [
               Text("Radius: ${_radius.toStringAsFixed(0)}m"),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Slider(
                 min: 100.0,
                 max: 5000.0,
@@ -135,6 +150,27 @@ class _GeorestrictionMapViewState extends State<GeorestrictionMapView> {
                   setState(() {
                     _radius = value;  // Update the radius
                     _updateCircle();
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+        // Zoom slider
+        Positioned(
+          bottom: 50,
+          left: 20,
+          child: Row(
+            children: [
+              Text("Zoom: ${_zoomLevel.toStringAsFixed(1)}"),
+              Slider(
+                min: 1.0,
+                max: 20.0,
+                value: _zoomLevel,
+                onChanged: (value) {
+                  setState(() {
+                    _zoomLevel = value;
+                    _mapController?.moveCamera(CameraUpdate.zoomTo(_zoomLevel));
                   });
                 },
               ),

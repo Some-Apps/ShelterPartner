@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/components/georestriction_map_view.dart';
@@ -335,10 +334,10 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                       ]),
                     ),
                   ),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(children: [
+                  const Card(
+                    child: 
+                      // padding: EdgeInsets.all(8.0),
+                      Column(children: [
                         GeorestrictionMapView(
                           initialLocation: LatLng(
                               37.7749, -122.4194), // San Francisco, for example
@@ -346,7 +345,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                           initialZoomLevel: 14.0, // Initial zoom level
                         ),
                       ]),
-                    ),
+                    
                   ),
                   const SizedBox(height: 20),
                 ],

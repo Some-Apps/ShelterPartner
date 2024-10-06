@@ -23,6 +23,7 @@ dependencies:
   json_theme_plus: ^6.6.3
   geolocator: ^10.1.0
   google_maps_flutter: ^2.1.1
+  google_maps_flutter_web: ^0.4.0
 
 
 dev_dependencies:
