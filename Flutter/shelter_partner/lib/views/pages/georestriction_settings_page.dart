@@ -9,7 +9,7 @@ import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 
 class GeorestrictionSettingsPage extends ConsumerStatefulWidget {
-  const GeorestrictionSettingsPage({Key? key}) : super(key: key);
+  const GeorestrictionSettingsPage({super.key});
 
   @override
   _GeorestrictionSettingsPageState createState() =>
