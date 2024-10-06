@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
-import 'package:shelter_partner/views/components/georestriction_map_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
@@ -350,7 +349,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                       },
                     ),
                   ),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                 ],
               ),
             ),
