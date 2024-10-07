@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
-import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
@@ -56,8 +54,6 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [
-                        // required this.groupBy,
-                        // required this.buttonType,
 
                         PickerView(
                           title: "Main Sort",
@@ -335,20 +331,36 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                       ]),
                     ),
                   ),
-                  Card(
-                    child: ListTile(
-                      title: const Text("Georestriction Settings"),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.push(
+                    Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                      children: [
+                        SwitchToggleView(
+                        title: "Georestrict",
+                        value: shelter?.volunteerSettings.geofence?.isEnabled ?? false,
+                        onChanged: (bool newValue) {
+                          ref
+                            .read(volunteersViewModelProvider.notifier)
+                            .toggleAttribute(shelter!.id, "geofence.isEnabled");
+                        },
+                        ),
+                        ListTile(
+                        title: const Text("Georestriction Settings"),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const GeorestrictionSettingsPage(),
                           ),
-                        );
-                      },
+                          );
+                        },
+                        ),
+                      ],
+                      ),
                     ),
-                  ),
+                    ),
                   const SizedBox(height: 20.0),
                 ],
               ),

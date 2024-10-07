@@ -5,7 +5,12 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/api_key.dart';
+import 'package:shelter_partner/models/device_settings.dart';
+import 'package:shelter_partner/models/scheduled_report.dart';
 import 'package:shelter_partner/models/shelter.dart';
+import 'package:shelter_partner/models/shelter_settings.dart';
+import 'package:shelter_partner/models/volunteer_settings.dart';
 import '../models/app_user.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
