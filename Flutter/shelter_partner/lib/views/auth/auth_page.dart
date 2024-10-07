@@ -1,10 +1,10 @@
+// auth_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/auth/login_or_signup.dart';
-import 'package:shelter_partner/views/pages/main_page.dart';
-
 
 class AuthPage extends ConsumerWidget {
   const AuthPage({super.key});
@@ -29,27 +29,56 @@ class AuthPage extends ConsumerWidget {
         authViewModel.resetState();
       });
 
-      return const LoginOrSignup(); // The page is already managed by Riverpod
+      return const LoginOrSignup();
     }
 
-    return Scaffold(
-      body: authState.status == AuthStatus.loading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(authState.loadingMessage ?? "Loading..."),
-                ],
-              ),
-            )
-          : authState.status == AuthStatus.authenticated
-              ? MainPage(appUser: authState.user!)
-              : const LoginOrSignup(), // Persisting the page through Riverpod
-    );
+    // Show loading indicator when logging in or logging out
+    if (authState.status == AuthStatus.loading) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(authState.loadingMessage ?? "Loading..."),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Redirect to home page after authentication
+    if (authState.status == AuthStatus.authenticated) {
+      final appUser = ref.read(authViewModelProvider).user;
+
+      if (appUser != null) {
+        Future.microtask(() {
+          ref.read(appUserProvider.notifier).state = appUser;  // Store appUser globally
+          context.go('/animals');  // No need to pass appUser here
+        });
+      } else {
+        Future.microtask(() {
+          Fluttertoast.showToast(
+            msg: "Failed to fetch user information.",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        });
+      }
+
+      // Return SizedBox.shrink() while processing the navigation
+      return const SizedBox.shrink();
+    }
+
+    // Default to Login or Signup page
+    return const LoginOrSignup();
   }
-}
+}/*  */
+
 
 
 enum AuthPageType { login, signup, forgotPassword }

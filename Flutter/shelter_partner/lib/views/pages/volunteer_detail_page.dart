@@ -1,18 +1,18 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class VolunteerDetailPage extends StatelessWidget {
-  const VolunteerDetailPage({super.key});
+  final String id;
+  const VolunteerDetailPage({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Volunteer Details"),
+        title: const Text("Volunteer Details"),
       ),
-      body: const Center(
-        child: Text("Volunteer Details"),
+      body: Center(
+        child: Text("Volunteer Details $id"),
       ),
     );
   }

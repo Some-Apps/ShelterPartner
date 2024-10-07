@@ -45,5 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationAlwaysAndWhenInUsageDescription</key>
+	<string>App app want&apos;s to access your location to get address</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>App app want&apos;s to access your location to get address.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>App app want&apos;s to access your location to get address.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App want&apos;s to access your location to get address.</string>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
+	<key>GMSApiKey</key>
+	<string>AIzaSyAPbeXiLtnjhlP6fLcl3kZNBBZrcRSY_Ck</string>
 </dict>
 </plist>

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
-
 
 class VolunteersPage extends ConsumerStatefulWidget {
   const VolunteersPage({super.key});
@@ -27,13 +27,11 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
         ),
         body: const Center(
           child: CircularProgressIndicator(),
-
         ),
       ),
       error: (error, stack) => Scaffold(
         appBar: AppBar(
           title: const Text("Volunteers (only admin accounts)"),
-
         ),
         body: Center(
           child: Text('Error: $error'),
@@ -57,12 +55,9 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                       title: const Text("Volunteer Settings"),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const VolunteerSettingsPage(),
-                          ),
-                        );
+                        // Use GoRouter to navigate to VolunteerSettingsPage
+                        context.push(
+                            '/volunteers/volunteer-settings'); // Ensure you have this route defined in GoRouter
                       },
                     ),
                   ),
@@ -127,22 +122,15 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                           ),
                           SizedBox(height: 10),
                           // Reuse NavigationButton widget
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          NavigationButton(title: "Example Volunteer", route: VolunteerDetailPage()),
-                          // Add more NavigationButton widgets as needed
+                          NavigationButton(
+                              title: "Example Volunteer",
+                              route: '/volunteers/details/1'),
+                          NavigationButton(
+                              title: "Example Volunteer",
+                              route: '/volunteers/detail/2'),
+                          NavigationButton(
+                              title: "Example Volunteer",
+                              route: '/volunteers/details/3'),
                         ],
                       ),
                     ),
@@ -155,5 +143,5 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
       ),
     );
   }
-
 }
+
