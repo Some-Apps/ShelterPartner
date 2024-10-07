@@ -1,7 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/repositories/auth_repository.dart';
 import 'package:uuid/uuid.dart';
+
+final appUserProvider = StateProvider<AppUser?>((ref) => null);
+
 
 final authViewModelProvider = StateNotifierProvider<AuthViewModel, AuthState>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
@@ -102,10 +107,25 @@ class AuthViewModel extends StateNotifier<AuthState> {
   }
 
   // Logout method
-  Future<void> logout() async {
+Future<void> logout(BuildContext context, WidgetRef ref) async {
+  try {
+    // Sign out from authentication provider (e.g., Firebase)
     await _authRepository.signOut();
+
+    // Clear the appUserProvider (set to null)
+    ref.read(appUserProvider.notifier).state = null;
+
+    // Reset the authentication state
     state = AuthState.unauthenticated();
+
+    // Navigate back to the login/auth page
+    context.go('/');
+  } catch (e) {
+    // Handle any errors that occur during logout
+    state = AuthState.error("Failed to log out: ${e.toString()}");
   }
+}
+
 }
 
 

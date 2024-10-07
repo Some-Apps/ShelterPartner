@@ -25,7 +25,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                ref.read(authViewModelProvider.notifier).logout();
+                ref.read(authViewModelProvider.notifier).logout(context, ref);
               },
             ),
           ],
@@ -41,7 +41,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                ref.read(authViewModelProvider.notifier).logout();
+                ref.read(authViewModelProvider.notifier).logout(context, ref);
               },
             ),
           ],
@@ -57,7 +57,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                ref.read(authViewModelProvider.notifier).logout();
+                ref.read(authViewModelProvider.notifier).logout(context, ref);
               },
             ),
           ],
