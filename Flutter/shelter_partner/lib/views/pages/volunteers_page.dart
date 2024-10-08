@@ -19,7 +19,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  
+
   bool _hasSentInvite = false; // Track if invite has been sent by the user
 
   @override
@@ -30,13 +30,46 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void _unfocusTextFields(BuildContext context) {
     FocusScope.of(context).unfocus();
+  }
+
+  void _confirmDeleteVolunteer(BuildContext context, String volunteerId, String shelterId, String volunteerName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete $volunteerName?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () async {
+                try {
+                  await ref
+                      .read(volunteersViewModelProvider.notifier)
+                      .deleteVolunteer(volunteerId, shelterId);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$volunteerName deleted')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to delete volunteer: $e')),
+                  );
+                }
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -174,10 +207,16 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                 ElevatedButton(
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
-                                      final firstName = _firstNameController.text.trim();
-                                      final lastName = _lastNameController.text.trim();
-                                      final email = _emailController.text.trim();
-                                      ref.read(volunteersViewModelProvider.notifier).sendVolunteerInvite(firstName, lastName, email, shelter!.id);
+                                      final firstName =
+                                          _firstNameController.text.trim();
+                                      final lastName =
+                                          _lastNameController.text.trim();
+                                      final email =
+                                          _emailController.text.trim();
+                                      ref
+                                          .read(volunteersViewModelProvider
+                                              .notifier)
+                                          .sendVolunteerInvite(firstName, lastName, email, shelter!.id);
                                       _hasSentInvite = true; // Set the flag when invite is sent
                                     }
                                   },
@@ -204,12 +243,30 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                 ),
                                 const SizedBox(height: 10),
                                 if (shelter!.volunteers.isNotEmpty)
-                                  ...shelter.volunteers
-                                      .map((volunteer) => NavigationButton(
+                                  ...shelter.volunteers.map(
+                                    (volunteer) => Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: NavigationButton(
                                             title: volunteer.firstName,
                                             route: '/volunteers/details/${volunteer.firstName}',
-                                          ))
-                                      
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete, color: Colors.red),
+                                          onPressed: () {
+                                            _confirmDeleteVolunteer(
+                                              context,
+                                              volunteer.id,
+                                              shelter.id,
+                                              volunteer.firstName,
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ).toList()
                                 else
                                   const Text('No volunteers available at the moment'),
                               ],

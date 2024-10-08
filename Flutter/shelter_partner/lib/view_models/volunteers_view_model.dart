@@ -94,6 +94,17 @@ Future<void> sendVolunteerInvite(String firstName, String lastName, String email
     }
   }
 
+Future<void> deleteVolunteer(String id, String shelterId) async {
+    state = const AsyncLoading();
+
+    try {
+      await ref.read(volunteersRepositoryProvider).deleteVolunteer(id, shelterId);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
+  }
+
 
 // Decrement attribute in Firestore document within volunteerSettings
 Future<void> decrementAttribute(String shelterID, String field) async {

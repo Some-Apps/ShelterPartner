@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -122,6 +121,46 @@ Future<String?> getIdToken() async {
     return await user.getIdToken();
   } else {
     throw Exception("User is not authenticated");
+  }
+}
+
+
+
+Future<void> deleteVolunteer(String id, String shelterId) async {
+  try {
+    // Get Firebase ID token for authentication
+    final user = FirebaseAuth.instance.currentUser;
+    String? idToken = await user?.getIdToken();
+
+    if (idToken == null) {
+      throw Exception('User is not authenticated');
+    }
+
+    // Create the URL with query parameters for the DELETE request
+    final url = Uri.parse(
+      'https://delete-volunteer-222422545919.us-central1.run.app'
+      '?id=$id&shelterID=$shelterId',
+    );
+
+    // Make the DELETE request with the token in the headers
+    final response = await http.delete(
+      url,
+      headers: {
+        'Authorization': 'Bearer $idToken',  // Send the Firebase ID token for authentication
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete volunteer: ${response.body}');
+    }
+
+    final result = jsonDecode(response.body);
+    if (result['success'] == false) {
+      throw Exception(result['message']);
+    }
+  } catch (e) {
+    throw Exception('Failed to delete volunteer: $e');
   }
 }
 
