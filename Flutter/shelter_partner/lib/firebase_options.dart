@@ -31,47 +31,48 @@ class DefaultFirebaseOptions {
     }
   }
 
+
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDlISw9Omgjk3rsfw0ad-EqrBhLaCJiaME',
-    appId: '1:888225267212:web:f2f4ea1e1479b9ee2af829',
-    messagingSenderId: '888225267212',
-    projectId: 'pawpartnerdevelopment',
-    authDomain: 'pawpartnerdevelopment.firebaseapp.com',
-    storageBucket: 'pawpartnerdevelopment.appspot.com',
+    apiKey: 'AIzaSyBQZs0WVeZt91hc4fQtfuTg4kY4-bFq9qw',
+    appId: '1:222422545919:web:6c595ab40b37a49e41e3ca',
+    messagingSenderId: '222422545919',
+    projectId: 'development-e5282',
+    authDomain: 'development-e5282.firebaseapp.com',
+    storageBucket: 'development-e5282.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBMi4wzOgZ2Lno1K93n0Fs4IKofs1h0jo0',
-    appId: '1:888225267212:android:55f65299950a38122af829',
-    messagingSenderId: '888225267212',
-    projectId: 'pawpartnerdevelopment',
-    storageBucket: 'pawpartnerdevelopment.appspot.com',
+    apiKey: 'AIzaSyDazdc6VhXTuYP23LivAzjLiJBU9ap8jUg',
+    appId: '1:222422545919:android:15dbcb59093cb5fd41e3ca',
+    messagingSenderId: '222422545919',
+    projectId: 'development-e5282',
+    storageBucket: 'development-e5282.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBPY-O2MZPBoXwQPcA4VIih0nrpmYyLEUc',
-    appId: '1:888225267212:ios:ccf85fc768ff0bd62af829',
-    messagingSenderId: '888225267212',
-    projectId: 'pawpartnerdevelopment',
-    storageBucket: 'pawpartnerdevelopment.appspot.com',
-    iosBundleId: 'com.example.shelterPartner',
+    apiKey: 'AIzaSyD3P2kuByZkIO2G_mG9zj_t0UKJfzcsdUU',
+    appId: '1:222422545919:ios:8c610d5291fe735641e3ca',
+    messagingSenderId: '222422545919',
+    projectId: 'development-e5282',
+    storageBucket: 'development-e5282.appspot.com',
+    iosBundleId: 'org.shelterpartner.dev',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBPY-O2MZPBoXwQPcA4VIih0nrpmYyLEUc',
-    appId: '1:888225267212:ios:ccf85fc768ff0bd62af829',
-    messagingSenderId: '888225267212',
-    projectId: 'pawpartnerdevelopment',
-    storageBucket: 'pawpartnerdevelopment.appspot.com',
-    iosBundleId: 'com.example.shelterPartner',
+    appId: '1:222422545919:ios:8c610d5291fe735641e3ca',
+    messagingSenderId: '222422545919',
+    projectId: 'development-e5282',
+    storageBucket: 'development-e5282.appspot.com',
+    iosBundleId: 'org.shelterpartner.dev',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyDlISw9Omgjk3rsfw0ad-EqrBhLaCJiaME',
-    appId: '1:888225267212:web:69f45053224282872af829',
-    messagingSenderId: '888225267212',
-    projectId: 'pawpartnerdevelopment',
-    authDomain: 'pawpartnerdevelopment.firebaseapp.com',
-    storageBucket: 'pawpartnerdevelopment.appspot.com',
+    appId: '1:222422545919:ios:8c610d5291fe735641e3ca',
+    messagingSenderId: '222422545919',
+    projectId: 'development-e5282',
+    authDomain: 'development-e5282.firebaseapp.com',
+    storageBucket: 'development-e5282.appspot.com',
   );
 }

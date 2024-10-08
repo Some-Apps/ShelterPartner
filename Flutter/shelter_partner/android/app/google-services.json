@@ -1,51 +1,13 @@
 {
   "project_info": {
-    "project_number": "888225267212",
-    "project_id": "pawpartnerdevelopment",
-    "storage_bucket": "pawpartnerdevelopment.appspot.com"
+    "project_number": "222422545919",
+    "project_id": "development-e5282",
+    "storage_bucket": "development-e5282.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:888225267212:android:4dde52d484e8dd742af829",
-        "android_client_info": {
-          "package_name": "developer.pawparnter"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBMi4wzOgZ2Lno1K93n0Fs4IKofs1h0jo0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:888225267212:android:861af3c69730c54e2af829",
-        "android_client_info": {
-          "package_name": "org.shelterpartner"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBMi4wzOgZ2Lno1K93n0Fs4IKofs1h0jo0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:888225267212:android:55f65299950a38122af829",
+        "mobilesdk_app_id": "1:222422545919:android:15dbcb59093cb5fd41e3ca",
         "android_client_info": {
           "package_name": "org.shelterpartner.dev"
         }
@@ -53,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBMi4wzOgZ2Lno1K93n0Fs4IKofs1h0jo0"
+          "current_key": "AIzaSyDazdc6VhXTuYP23LivAzjLiJBU9ap8jUg"
         }
       ],
       "services": {

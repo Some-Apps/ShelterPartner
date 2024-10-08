@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 
 class VolunteersRepository {
@@ -71,30 +75,56 @@ Future<void> toggleVolunteerSetting(String shelterID, String field) async {
   }
 
 
-Future<void> sendVolunteerInvite(String name, String email, String shelterID) async {
-    // Generate a random password
-    String password = _generateRandomPassword();
+Future<void> sendVolunteerInvite(String firstName, String lastName, String email, String shelterID) async {
+  // Generate a random password
+  String password = _generateRandomPassword();
 
-    // Prepare data to send to the Cloud Function
-    final data = {
-      'name': name,
-      'email': email,
-      'password': password,
-      'shelterID': shelterID,
-    };
+  // Prepare data to send to the Cloud Run Function
+  final data = {
+    'firstName': firstName,
+    'lastName': lastName,
+    'email': email,
+    'password': password,
+    'shelterID': shelterID,
+  };
 
-    try {
-      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('VolunteerInvite');
-      final result = await callable.call(data);
+  try {
+    // Get the Firebase ID token for authentication
+    String? idToken = await getIdToken();
 
-      if (result.data['status'] != 'success') {
+    // Send the authenticated request to Cloud Run
+    final response = await http.post(
+      Uri.parse('https://invite-volunteer-222422545919.us-central1.run.app'),
+      headers: {
+        'Authorization': 'Bearer $idToken',  // Pass the Firebase Auth ID token
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
 
-        throw Exception(result.data['message']);
+    if (response.statusCode == 200) {
+      final result = jsonDecode(response.body);
+      if (result['status'] != 'success') {
+        throw Exception(result['message']);
       }
-    } catch (e) {
-      throw Exception('Failed to send invite: $e');
+    } else {
+      throw Exception('Failed to send invite: ${response.body}');
     }
+  } catch (e) {
+    throw Exception('Failed to send invite: $e');
   }
+}
+
+Future<String?> getIdToken() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    // Get the ID token from the current authenticated user
+    return await user.getIdToken();
+  } else {
+    throw Exception("User is not authenticated");
+  }
+}
+
 
   String _generateRandomPassword() {
     // Simple random password generator

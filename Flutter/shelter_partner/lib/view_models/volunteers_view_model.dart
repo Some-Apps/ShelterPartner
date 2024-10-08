@@ -83,11 +83,11 @@ Future<void> toggleAttribute(String shelterID, String field) async {
   }
 }
 
-Future<void> sendVolunteerInvite(String name, String email, String shelterID) async {
+Future<void> sendVolunteerInvite(String firstName, String lastName, String email, String shelterID) async {
     state = const AsyncLoading();
 
     try {
-      await ref.read(volunteersRepositoryProvider).sendVolunteerInvite(name, email, shelterID);
+      await ref.read(volunteersRepositoryProvider).sendVolunteerInvite(firstName, lastName, email, shelterID);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
