@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shelter_partner/models/device_settings.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
+import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/models/volunteer_settings.dart';
 
 class Shelter {
@@ -13,6 +14,7 @@ class Shelter {
   final ShelterSettings shelterSettings;
   final DeviceSettings deviceSettings;
   final VolunteerSettings volunteerSettings;
+  final List<Volunteer> volunteers;
 
   Shelter({
     required this.id,
@@ -23,6 +25,7 @@ class Shelter {
     required this.shelterSettings,
     required this.deviceSettings,
     required this.volunteerSettings,
+    required this.volunteers
   });
 
   // Factory constructor to parse the document from Firestore
@@ -41,6 +44,9 @@ class Shelter {
       shelterSettings: ShelterSettings.fromMap(data['shelterSettings'] ?? {}),
       deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
       volunteerSettings: VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
+      volunteers: (data['volunteers'] as List<dynamic>? ?? [])
+          .map((volunteer) => Volunteer.fromMap(volunteer as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

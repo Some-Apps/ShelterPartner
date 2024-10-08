@@ -61,7 +61,7 @@ class MainPage extends ConsumerWidget {
     items: const [
       BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
       BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-      BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Volunteers'),
+      BottomNavigationBarItem(icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
       BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
     ],
   ),

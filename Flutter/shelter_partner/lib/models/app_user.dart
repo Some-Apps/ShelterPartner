@@ -21,11 +21,11 @@ class AppUser {
     final data = doc.data() as Map<String, dynamic>;
     return AppUser(
       id: doc.id,
-      firstName: data['first_name'],
-      lastName: data['last_name'],
+      firstName: data['firstName'],
+      lastName: data['lastName'],
       email: data['email'],
       type: data['type'],
-      shelterId: data['shelter_id'],
+      shelterId: data['shelterID'],
     );
   }
 }

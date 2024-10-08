@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:shelter_partner/firebase_options.dart';
 import 'package:json_theme_plus/json_theme_plus.dart';
@@ -64,7 +63,7 @@ class MyApp extends StatelessWidget {
   routes: [
     GoRoute(
       path: '/',
-      pageBuilder: (context, state) => MaterialPage(child: const AuthPage()),
+      pageBuilder: (context, state) => const MaterialPage(child: AuthPage()),
     ),
     ShellRoute(
       builder: (context, state, child) {
