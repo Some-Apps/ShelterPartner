@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
@@ -69,6 +70,38 @@ Future<void> toggleVolunteerSetting(String shelterID, String field) async {
     });
   }
 
+
+Future<void> sendVolunteerInvite(String name, String email, String shelterID) async {
+    // Generate a random password
+    String password = _generateRandomPassword();
+
+    // Prepare data to send to the Cloud Function
+    final data = {
+      'name': name,
+      'email': email,
+      'password': password,
+      'shelterID': shelterID,
+    };
+
+    try {
+      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('VolunteerInvite');
+      final result = await callable.call(data);
+
+      if (result.data['status'] != 'success') {
+
+        throw Exception(result.data['message']);
+      }
+    } catch (e) {
+      throw Exception('Failed to send invite: $e');
+    }
+  }
+
+  String _generateRandomPassword() {
+    // Simple random password generator
+    const length = 6;
+    const chars = 'abcdefghijklmnopqrstuvwxyz';
+    return List.generate(length, (index) => chars[(DateTime.now().millisecondsSinceEpoch + index) % chars.length]).join();
+  }
 
   // Method to increment a specific field within volunteerSettings attribute
   Future<void> incrementVolunteerSetting(String shelterID, String field) async {

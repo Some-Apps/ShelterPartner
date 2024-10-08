@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
   routes: [
     GoRoute(
       path: '/',
-      pageBuilder: (context, state) => MaterialPage(child: const AuthPage()),
+      pageBuilder: (context, state) => const MaterialPage(child: AuthPage()),
     ),
     ShellRoute(
       builder: (context, state, child) {

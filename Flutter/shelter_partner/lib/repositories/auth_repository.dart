@@ -11,6 +11,7 @@ import 'package:shelter_partner/models/geofence.dart';
 import 'package:shelter_partner/models/scheduled_report.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
+import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/models/volunteer_settings.dart';
 import '../models/app_user.dart';
 
@@ -139,6 +140,7 @@ class AuthRepository {
         isEnabled: false,
       ),
     ),
+    volunteers: List<Volunteer>.empty(),
   );
 
   // Upload the shelter data to Firestore
@@ -171,9 +173,9 @@ class AuthRepository {
     // Create user document
     await _firestore.collection('users').doc(uid).set({
       'email': email.trim(),
-      'first_name': firstName.trim(),
-      'last_name': lastName.trim(),
-      'shelter_id': shelterId,
+      'firstName': firstName.trim(),
+      'lastName': lastName.trim(),
+      'shelterID': shelterId,
       'type': 'admin',
     });
 
