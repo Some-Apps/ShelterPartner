@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/views/pages/shelter_settings_page.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -31,7 +33,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ],
         ),
         body: const Center(
-          child: CircularProgressIndicator(), // Display loading indicator while fetching data
+          child:
+              CircularProgressIndicator(), // Display loading indicator while fetching data
         ),
       ),
       error: (error, stack) => Scaffold(
@@ -62,28 +65,55 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ],
         ),
-        body: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  _buildSectionTitle("Account Details"),
-                  Text("Name: $shelter"),
-
-                  const SizedBox(height: 20),
-                  _buildSectionTitle("Shelter Settings"),
-                  Text("Name: ${shelter!.shelterSettings}"),
-                  const SizedBox(height: 20),
-                  _buildSectionTitle("Device Settings"),
-                  Text("Name: ${shelter.deviceSettings}"),
-
-                  const SizedBox(height: 20),
-                ],
-              ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                _buildSectionTitle("Account Details"),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Shelter: ${shelter?.name}"),
+                        Text("ID: ${shelter?.id}"),
+                        Text("Address: ${shelter?.address}"),
+                        Text("Software: ${shelter?.managementSoftware}"),
+                        Text(
+                            "Created: ${shelter?.createdAt.toDate().day}/${shelter?.createdAt.toDate().month}/${shelter?.createdAt.toDate().year}"),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildSectionTitle("Shelter Settings"),
+                Card(
+                  child: ListTile(
+                    title: const Text("Shelter Settings"),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      context.push('/settings/shelter-settings');
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildSectionTitle("Device Settings"),
+                Card(
+                  child: ListTile(
+                    title: const Text("Device Settings"),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      context.push('/settings/device-settings');
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
         ),

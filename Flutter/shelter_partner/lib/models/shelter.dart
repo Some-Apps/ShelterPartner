@@ -40,7 +40,7 @@ class Shelter {
       createdAt: data['createdAt'] != null
           ? data['createdAt'] as Timestamp
           : Timestamp.now(), // Default value if createdAt is null
-      managementSoftware: data['management_software'] ?? 'Unknown Software', // Default value for management software
+      managementSoftware: data['managementSoftware'] ?? 'Unknown Software', // Default value for management software
       shelterSettings: ShelterSettings.fromMap(data['shelterSettings'] ?? {}),
       deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
       volunteerSettings: VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
