@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/repositories/shelter_settings_repository.dart';
 import 'package:shelter_partner/repositories/volunteers_repository.dart';

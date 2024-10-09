@@ -2,12 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
-import 'package:shelter_partner/views/components/number_stepper_view.dart';
-import 'package:shelter_partner/views/components/picker_view.dart';
-import 'package:shelter_partner/views/components/switch_toggle_view.dart';
-import 'package:shelter_partner/views/components/text_field_view.dart';
-import 'package:shelter_partner/views/pages/georestriction_settings_page.dart';
-import 'package:shelter_partner/views/pages/stats_page.dart';
 
 class ShelterSettingsPage extends ConsumerStatefulWidget {
   const ShelterSettingsPage({super.key});
@@ -59,8 +53,8 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                           NavigationButton(title: "Cat Tags", route: '/settings/shelter-settings/cat-tags'),
                           NavigationButton(title: "Dog Tags", route: '/settings/shelter-settings/dog-tags'),
                           NavigationButton(title: "Early Put Back Reasons", route: '/settings/shelter-settings/early-put-back-reasons'),
-                          NavigationButton(title: "Let Out Types", route: '/settings/shelter-settings/cat-tags/let-out-types'),
-                          NavigationButton(title: "API Keys", route: '/settings/shelter-settings/cat-tags/api-keys'),
+                          NavigationButton(title: "Let Out Types", route: '/settings/shelter-settings/let-out-types'),
+                          NavigationButton(title: "API Keys", route: '/settings/shelter-settings/api-keys'),
                       ]),
                     ),
                   ),

@@ -54,7 +54,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    Text("Shelter Details:"),
+                    const Text("Shelter Details:"),
                     Text("Shelter: ${shelter?.name}"),
                     Text("ID: ${shelter?.id}"),
                     Text("Address: ${shelter?.address}"),
