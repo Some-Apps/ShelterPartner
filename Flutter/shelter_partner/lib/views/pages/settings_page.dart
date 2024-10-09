@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/views/pages/shelter_settings_page.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -23,14 +22,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       loading: () => Scaffold(
         appBar: AppBar(
           title: const Text("Settings (only admin accounts)"),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                ref.read(authViewModelProvider.notifier).logout(context, ref);
-              },
-            ),
-          ],
         ),
         body: const Center(
           child:
@@ -40,14 +31,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       error: (error, stack) => Scaffold(
         appBar: AppBar(
           title: const Text("Settings (only admin accounts)"),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                ref.read(authViewModelProvider.notifier).logout(context, ref);
-              },
-            ),
-          ],
         ),
         body: Center(
           child: Text('Error: $error'),
@@ -56,14 +39,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       data: (shelter) => Scaffold(
         appBar: AppBar(
           title: const Text("Settings (only admin accounts)"),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                ref.read(authViewModelProvider.notifier).logout(context, ref);
-              },
-            ),
-          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -71,48 +46,55 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+                children: [
                 const SizedBox(height: 20),
-                _buildSectionTitle("Account Details"),
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Shelter: ${shelter?.name}"),
-                        Text("ID: ${shelter?.id}"),
-                        Text("Address: ${shelter?.address}"),
-                        Text("Software: ${shelter?.managementSoftware}"),
-                        Text(
-                            "Created: ${shelter?.createdAt.toDate().day}/${shelter?.createdAt.toDate().month}/${shelter?.createdAt.toDate().year}"),
-                      ],
-                    ),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                    Text("Shelter Details:"),
+                    Text("Shelter: ${shelter?.name}"),
+                    Text("ID: ${shelter?.id}"),
+                    Text("Address: ${shelter?.address}"),
+                    Text("Software: ${shelter?.managementSoftware}"),
+                    Text(
+                      "Created: ${shelter?.createdAt.toDate().day}/${shelter?.createdAt.toDate().month}/${shelter?.createdAt.toDate().year}"),
+                    ],
+                  ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildSectionTitle("Shelter Settings"),
                 Card(
                   child: ListTile(
-                    title: const Text("Shelter Settings"),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      context.push('/settings/shelter-settings');
-                    },
+                  title: const Text("Shelter Settings"),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.push('/settings/shelter-settings');
+                  },
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildSectionTitle("Device Settings"),
                 Card(
                   child: ListTile(
-                    title: const Text("Device Settings"),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      context.push('/settings/device-settings');
-                    },
+                  title: const Text("Device Settings"),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.push('/settings/device-settings');
+                  },
                   ),
                 ),
                 const SizedBox(height: 20),
+                Card(
+                  child: ListTile(
+                  title: const Text("Logout"),
+                  trailing: const Icon(Icons.logout),
+                  onTap: () {
+                    ref.read(authViewModelProvider.notifier).logout(context, ref);
+                  },
+                  ),
+                ),
               ],
             ),
           ),
@@ -121,10 +103,5 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    );
-  }
+
 }

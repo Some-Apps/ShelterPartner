@@ -266,7 +266,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                         ),
                                       ],
                                     ),
-                                  ).toList()
+                                  )
                                 else
                                   const Text('No volunteers available at the moment'),
                               ],

@@ -15,6 +15,22 @@ class ShelterSettings {
     required this.apiKeys,
   });
 
+    // Method to dynamically return a list based on the key
+  List<String> getArray(String key) {
+    switch (key) {
+      case 'catTags':
+        return catTags;
+      case 'dogTags':
+        return dogTags;
+      case 'earlyPutBackReasons':
+        return earlyPutBackReasons;
+      case 'letOutTypes':
+        return letOutTypes;
+      default:
+        throw Exception('Invalid array key');
+    }
+  }
+
   // Convert ShelterSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
     return {
