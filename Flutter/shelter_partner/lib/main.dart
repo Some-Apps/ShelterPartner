@@ -9,6 +9,7 @@ import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:shelter_partner/firebase_options.dart';
 import 'package:json_theme_plus/json_theme_plus.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
+import 'package:shelter_partner/views/pages/api_keys_page.dart';
 import 'package:shelter_partner/views/pages/array_modifier_page.dart';
 import 'package:shelter_partner/views/pages/device_settings_page.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
@@ -164,7 +165,7 @@ class MyApp extends StatelessWidget {
                       GoRoute(
                         path: 'api-keys', // This is relative to '/volunteers'
                         pageBuilder: (context, state) =>
-                            const MaterialPage(child: VolunteerSettingsPage()),
+                            MaterialPage(child: ApiKeysPage()),
                       ),
                     ]),
                 GoRoute(
