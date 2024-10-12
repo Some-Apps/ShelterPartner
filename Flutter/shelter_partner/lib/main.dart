@@ -165,7 +165,10 @@ class MyApp extends StatelessWidget {
                       GoRoute(
                         path: 'api-keys', // This is relative to '/volunteers'
                         pageBuilder: (context, state) =>
-                            MaterialPage(child: ApiKeysPage()),
+                            const MaterialPage(child: ApiKeysPage(
+                              title: 'API Keys',
+                              arrayKey: 'apiKeys'
+                            )),
                       ),
                     ]),
                 GoRoute(

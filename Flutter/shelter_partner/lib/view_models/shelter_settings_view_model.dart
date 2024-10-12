@@ -95,6 +95,16 @@ Future<void> addStringToShelterSettingsArray(String shelterID, String field, Str
   }
 }
 
+// Add map to array within shelterSettings attribute
+Future<void> addMapToShelterSettingsArray(String shelterID, String field, Map<String, dynamic> value) async {
+  try {
+    await _repository.addMapToShelterSettingsArray(shelterID, field, value);
+  } catch (error) {
+    print("Error adding map to array: $error");
+    state = AsyncValue.error("Error adding map to array: $error", StackTrace.current);
+  }
+}
+
 // Remove string from array within shelterSettings attribute
 Future<void> removeStringFromShelterSettingsArray(String shelterID, String field, String value) async {
   try {
@@ -102,6 +112,16 @@ Future<void> removeStringFromShelterSettingsArray(String shelterID, String field
   } catch (error) {
     print("Error removing string from array: $error");
     state = AsyncValue.error("Error removing string from array: $error", StackTrace.current);
+  }
+}
+
+// Reorder items in array of maps within shelterSettings attribute
+Future<void> reorderMapArrayInShelterSettings(String shelterID, String field, List<Map<String, dynamic>> newOrder) async {
+  try {
+    await _repository.reorderMapArrayInShelterSettings(shelterID, field, newOrder);
+  } catch (error) {
+    print("Error reordering map array: $error");
+    state = AsyncValue.error("Error reordering map array: $error", StackTrace.current);
   }
 }
 

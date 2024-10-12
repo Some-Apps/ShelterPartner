@@ -21,6 +21,18 @@ class ShelterSettingsRepository {
     });
   }
 
+  // Method to add a map to an array within shelterSettings attribute
+  Future<void> addMapToShelterSettingsArray(
+      String shelterID, String field, Map<String, dynamic> value) async {
+    final docRef = _firestore.collection('shelters').doc(shelterID);
+    return docRef.update({
+      'shelterSettings.$field':
+          FieldValue.arrayUnion([value]), // Add the map to the array
+    }).catchError((error) {
+      throw Exception("Failed to add map to array: $error");
+    });
+  }
+
   // Method to remove a string from an array within shelterSettings attribute
   Future<void> removeStringFromShelterSettingsArray(
       String shelterID, String field, String value) async {
@@ -30,6 +42,17 @@ class ShelterSettingsRepository {
           FieldValue.arrayRemove([value]), // Remove the string from the array
     }).catchError((error) {
       throw Exception("Failed to remove string from array: $error");
+    });
+  }
+
+  // Method to reorder items in an array of maps within shelterSettings attribute
+  Future<void> reorderMapArrayInShelterSettings(
+    String shelterID, String field, List<Map<String, dynamic>> newOrder) async {
+    final docRef = _firestore.collection('shelters').doc(shelterID);
+    return docRef.update({
+    'shelterSettings.$field': newOrder, // Update the array of maps with the new order
+    }).catchError((error) {
+    throw Exception("Failed to reorder map array: $error");
     });
   }
 

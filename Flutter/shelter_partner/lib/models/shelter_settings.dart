@@ -15,7 +15,7 @@ class ShelterSettings {
     required this.apiKeys,
   });
 
-    // Method to dynamically return a list based on the key
+  // Method to dynamically return a list based on the key
   List<String> getArray(String key) {
     switch (key) {
       case 'catTags':
@@ -26,6 +26,8 @@ class ShelterSettings {
         return earlyPutBackReasons;
       case 'letOutTypes':
         return letOutTypes;
+      case 'apiKeys':
+        return apiKeys.map((apiKey) => apiKey.name).toList();
       default:
         throw Exception('Invalid array key');
     }
@@ -47,25 +49,26 @@ class ShelterSettings {
   // Factory constructor to create ShelterSettings from Firestore Map
   factory ShelterSettings.fromMap(Map<String, dynamic> data) {
     return ShelterSettings(
-      catTags: (data['catTags'] as List<dynamic>)
-              .map((e) => e.toString())
+      catTags: (data['catTags'] as List<dynamic>?)
+              ?.map((e) => e.toString())
               .toList() ??
           [],
-      dogTags: (data['dogTags'] as List<dynamic>)
-              .map((e) => e.toString())
+      dogTags: (data['dogTags'] as List<dynamic>?)
+              ?.map((e) => e.toString())
               .toList() ??
           [],
-      earlyPutBackReasons: (data['earlyPutBackReasons'] as List<dynamic>)
-              .map((e) => e.toString())
+      earlyPutBackReasons: (data['earlyPutBackReasons'] as List<dynamic>?)
+              ?.map((e) => e.toString())
               .toList() ??
           [],
-      letOutTypes: (data['letOutTypes'] as List<dynamic>)
-              .map((e) => e.toString())
+      letOutTypes: (data['letOutTypes'] as List<dynamic>?)
+              ?.map((e) => e.toString())
               .toList() ??
           [],
-      apiKeys: (data['apiKeys'] as List<dynamic>)
-          .map((apiKeyMap) => APIKey.fromMap(apiKeyMap as Map<String, dynamic>))
-          .toList(),
+      apiKeys: (data['apiKeys'] as List<dynamic>?)
+              ?.map((apiKeyMap) => 
+                  apiKeyMap is Map<String, dynamic> ? APIKey.fromMap(apiKeyMap) : throw Exception("Invalid APIKey data"))
+              .toList() ?? [],
     );
   }
 }
