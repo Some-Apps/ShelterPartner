@@ -6,6 +6,8 @@ class ShelterSettings {
   final List<String> earlyPutBackReasons;
   final List<String> letOutTypes;
   final List<APIKey> apiKeys;
+  final int requestCount;
+  final int requestLimit;
 
   ShelterSettings({
     required this.catTags,
@@ -13,6 +15,8 @@ class ShelterSettings {
     required this.earlyPutBackReasons,
     required this.letOutTypes,
     required this.apiKeys,
+    required this.requestCount,
+    required this.requestLimit,
   });
 
   // Method to dynamically return a list based on the key
@@ -43,6 +47,8 @@ class ShelterSettings {
       'apiKeys': apiKeys
           .map((apiKey) => apiKey.toMap())
           .toList(), // Convert each APIKey to a Map
+      'requestCount': requestCount,
+      'requestLimit': requestLimit,
     };
   }
 
@@ -69,6 +75,8 @@ class ShelterSettings {
               ?.map((apiKeyMap) => 
                   apiKeyMap is Map<String, dynamic> ? APIKey.fromMap(apiKeyMap) : throw Exception("Invalid APIKey data"))
               .toList() ?? [],
+      requestCount: data['requestCount'] ?? 0,
+      requestLimit: data['requestLimit'] ?? 0,
     );
   }
 }

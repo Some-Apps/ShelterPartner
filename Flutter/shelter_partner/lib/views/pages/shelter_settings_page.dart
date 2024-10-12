@@ -50,11 +50,25 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                     child: Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Column(children: [
-                          NavigationButton(title: "Cat Tags", route: '/settings/shelter-settings/cat-tags'),
-                          NavigationButton(title: "Dog Tags", route: '/settings/shelter-settings/dog-tags'),
-                          NavigationButton(title: "Early Put Back Reasons", route: '/settings/shelter-settings/early-put-back-reasons'),
-                          NavigationButton(title: "Let Out Types", route: '/settings/shelter-settings/let-out-types'),
-                          NavigationButton(title: "API Keys", route: '/settings/shelter-settings/api-keys'),
+                        NavigationButton(
+                            title: "Scheduled Reports",
+                            route: '/settings/shelter-settings/scheduled-reports'),
+                        NavigationButton(
+                            title: "Cat Tags",
+                            route: '/settings/shelter-settings/cat-tags'),
+                        NavigationButton(
+                            title: "Dog Tags",
+                            route: '/settings/shelter-settings/dog-tags'),
+                        NavigationButton(
+                            title: "Early Put Back Reasons",
+                            route:
+                                '/settings/shelter-settings/early-put-back-reasons'),
+                        NavigationButton(
+                            title: "Let Out Types",
+                            route: '/settings/shelter-settings/let-out-types'),
+                        NavigationButton(
+                            title: "API Keys",
+                            route: '/settings/shelter-settings/api-keys'),
                       ]),
                     ),
                   ),

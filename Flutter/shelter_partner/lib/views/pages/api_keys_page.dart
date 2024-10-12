@@ -92,10 +92,9 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
                                 .addMapToShelterSettingsArray(
-                                    shelter!.id, "apiKeys", {
-                              "name": itemName,
-                              "key": newKey
-                            });
+                                    shelter!.id,
+                                    "apiKeys",
+                                    {"name": itemName, "key": newKey});
                             setState(() {
                               _arrayItems.add(itemName);
                             });
@@ -103,28 +102,33 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                              title: const Text('API Key Created'),
-                              content: Text(
-                                'Your new API key is $newKey. Please copy and store it safely. You won\'t be able to access it after dismissing this alert.'),
-                              actions: [
-                                TextButton(
-                                onPressed: () {
-                                  Clipboard.setData(ClipboardData(text: newKey));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('API key copied to clipboard')),
-                                  );
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Copy'),
-                                ),
-                              ],
+                                title: const Text('API Key Created'),
+                                content: Text(
+                                    'Your new API key is $newKey. Please copy and store it safely. You won\'t be able to access it after dismissing this alert.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Clipboard.setData(
+                                          ClipboardData(text: newKey));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'API key copied to clipboard')),
+                                      );
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Copy'),
+                                  ),
+                                ],
                               ),
                             );
                           }
                         },
                         child: const Text('Add Key'),
                       ),
+                      const SizedBox(height: 20.0),
+                      Text("${shelter?.shelterSettings.requestCount}/${shelter?.shelterSettings.requestLimit} requests made in the last 30 days"),
                       const SizedBox(height: 20.0),
                       GestureDetector(
                         onTap: () {
@@ -178,9 +182,13 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                             final item = _arrayItems.removeAt(oldIndex);
                             _arrayItems.insert(newIndex, item);
                           });
-                          final List<Map<String, dynamic>> arrayItemsMap = _arrayItems
-                              .map((item) => {"name": item, "key": UniqueKey().toString()})
-                              .toList();
+                          final List<Map<String, dynamic>> arrayItemsMap =
+                              _arrayItems
+                                  .map((item) => {
+                                        "name": item,
+                                        "key": UniqueKey().toString()
+                                      })
+                                  .toList();
                           ref
                               .read(shelterSettingsViewModelProvider.notifier)
                               .reorderMapArrayInShelterSettings(

@@ -77,7 +77,9 @@ class AuthRepository {
       dogTags: ['Friendly', 'Energetic', 'Loyal'],
       earlyPutBackReasons: ['Sick', 'Behavioral'],
       letOutTypes: ['Playtime', 'Exercise'],
-      apiKeys: [APIKey(name: 'TestKey', key: '123456')],
+      apiKeys: [],
+      requestCount: 0,
+      requestLimit: 1000,
     ),
     deviceSettings: DeviceSettings(
       scheduledReports: [
@@ -107,7 +109,7 @@ class AuthRepository {
       showFilter: true,
       showCustomForm: false,
       customFormURL: "https://example.com",
-      buttonType: 'Text',
+      buttonType: 'In App',
       appendAnimalDataToURL: false,
     ),
     volunteerSettings: VolunteerSettings(

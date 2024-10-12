@@ -43,25 +43,6 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     });
   }
 
-  // Increment attribute in Firestore document within volunteerSettings
-Future<void> incrementAttribute(String shelterID, String field) async {
-  try {
-    await _repository.incrementShelterSetting(shelterID, field);
-  } catch (error) {
-    print("Error incrementing: $error");
-    state = AsyncValue.error("Error incrementing: $error", StackTrace.current);
-  }
-}
-
-// Modify attribute in Firestore document within volunteerSettings
-Future<void> modifyVolunteerSettingString(String shelterID, String field, String newValue) async {
-  try {
-    await _repository.modifyShelterSettingString(shelterID, field, newValue);
-  } catch (error) {
-    print("Error modifying: $error");
-    state = AsyncValue.error("Error modifying: $error", StackTrace.current);
-  }
-}
 
 
 // Toggle attribute in Firestore document within volunteerSettings
@@ -136,15 +117,38 @@ Future<void> reorderShelterSettingsArray(String shelterID, String field, List<St
 }
 
 
-// Decrement attribute in Firestore document within volunteerSettings
-Future<void> decrementAttribute(String shelterID, String field) async {
+
+// Modify attribute in Firestore document within volunteerSettings
+Future<void> modifyDeviceSettingString(String shelterID, String field, String newValue) async {
   try {
-    await _repository.decrementShelterSetting(shelterID, field);
+    await _repository.modifyDeviceSettingString(shelterID, field, newValue);
+  } catch (error) {
+    print("Error modifying: $error");
+    state = AsyncValue.error("Error modifying: $error", StackTrace.current);
+  }
+}
+
+
+// Decrement attribute in Firestore document within volunteerSettings
+Future<void> decrementDeviceSetting(String shelterID, String field) async {
+  try {
+    await _repository.decrementDeviceSetting(shelterID, field);
   } catch (error) {
     print("Error decrementing: $error");
     state = AsyncValue.error("Error decrementing: $error", StackTrace.current);
   }
 }
+
+  // Increment attribute in Firestore document within volunteerSettings
+Future<void> incrementDeviceSetting(String shelterID, String field) async {
+  try {
+    await _repository.incrementDeviceSetting(shelterID, field);
+  } catch (error) {
+    print("Error incrementing: $error");
+    state = AsyncValue.error("Error incrementing: $error", StackTrace.current);
+  }
+}
+
 
 }
 
