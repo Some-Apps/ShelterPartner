@@ -10,8 +10,13 @@ import 'package:shelter_partner/firebase_service.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:json_theme_plus/json_theme_plus.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
+import 'package:shelter_partner/views/pages/api_keys_page.dart';
+import 'package:shelter_partner/views/pages/array_modifier_page.dart';
+import 'package:shelter_partner/views/pages/device_settings_page.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
+import 'package:shelter_partner/views/pages/scheduled_reports_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
+import 'package:shelter_partner/views/pages/shelter_settings_page.dart';
 import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
@@ -118,10 +123,85 @@ class MyApp extends StatelessWidget {
             ],
           ),
           GoRoute(
-            path: '/settings',
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: SettingsPage()),
-          ),
+
+              path: '/settings',
+              pageBuilder: (context, state) =>
+                  const MaterialPage(child: SettingsPage()),
+              routes: [
+                GoRoute(
+                    path:
+                        'shelter-settings', // This is relative to '/volunteers'
+                    pageBuilder: (context, state) =>
+                        const MaterialPage(child: ShelterSettingsPage()),
+                    routes: [
+                      GoRoute(
+                        path: 'scheduled-reports', // This is relative to '/volunteers'
+                        pageBuilder: (context, state) =>
+                            const MaterialPage(child: ScheduledReportsPage(
+                              title: 'Scheduled Reports',
+                              arrayKey: 'scheduledReports'
+                            )),
+                      ),
+                      GoRoute(
+                        path: 'cat-tags', // This is relative to '/volunteers'
+                        pageBuilder: (context, state) {
+                          return const MaterialPage(
+                            child: ArrayModifierPage(
+                              title: 'Cat Tags',
+                              arrayKey: 'catTags'
+                            ),
+                          );
+                        },
+                      ),
+                       GoRoute(
+                        path: 'dog-tags', // This is relative to '/volunteers'
+                        pageBuilder: (context, state) {
+                          return const MaterialPage(
+                            child: ArrayModifierPage(
+                              title: 'Dog Tags',
+                              arrayKey: 'dogTags'
+                            ),
+                          );
+                        },
+                      ),
+                       GoRoute(
+                        path: 'early-put-back-reasons', // This is relative to '/volunteers'
+                        pageBuilder: (context, state) {
+                          return const MaterialPage(
+                            child: ArrayModifierPage(
+                              title: 'Early Put Back Reasons',
+                              arrayKey: 'earlyPutBackReasons'
+                            ),
+                          );
+                        },
+                      ),
+                     GoRoute(
+                        path: 'let-out-types', // This is relative to '/volunteers'
+                        pageBuilder: (context, state) {
+                          return const MaterialPage(
+                            child: ArrayModifierPage(
+                              title: 'Let Out Types',
+                              arrayKey: 'letOutTypes'
+                            ),
+                          );
+                        },
+                      ),
+                      
+                      GoRoute(
+                        path: 'api-keys', // This is relative to '/volunteers'
+                        pageBuilder: (context, state) =>
+                            const MaterialPage(child: ApiKeysPage(
+                              title: 'API Keys',
+                              arrayKey: 'apiKeys'
+                            )),
+                      ),
+                    ]),
+                GoRoute(
+                  path: 'device-settings', // This is relative to '/volunteers'
+                  pageBuilder: (context, state) =>
+                      const MaterialPage(child: DeviceSettingsPage()),
+                ),
+              ]),
         ],
       ),
     ],

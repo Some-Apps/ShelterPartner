@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class StatsPages extends StatelessWidget {
-  const StatsPages({super.key});
+class StatesPage extends StatelessWidget {
+  const StatesPage({super.key});
 
 
   @override

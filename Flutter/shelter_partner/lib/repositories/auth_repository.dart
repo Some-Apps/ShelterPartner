@@ -5,10 +5,8 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/models/api_key.dart';
 import 'package:shelter_partner/models/device_settings.dart';
 import 'package:shelter_partner/models/geofence.dart';
-import 'package:shelter_partner/models/scheduled_report.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
 import 'package:shelter_partner/models/volunteer.dart';
@@ -66,6 +64,61 @@ class AuthRepository {
     await _firebaseAuth.signOut();
   }
 
+
+  Future<void> createUserDocument({
+    required String uid,
+    required String firstName,
+    required String lastName,
+    required String shelterId,
+    required String email,
+    required String selectedManagementSoftware,
+    required String shelterName,
+    required String shelterAddress,
+  }) async {
+    // Create default device settings for the user
+    final defaultDeviceSettings = DeviceSettings(
+      adminMode: true,
+      photoUploadsAllowed: true,
+      mainSort: 'Last Let Out',
+      allowBulkTakeOut: true,
+      minimumLogMinutes: 10,
+      automaticallyPutBackAnimals: true,
+      ignoreVisitWhenAutomaticallyPutBack: false,
+      automaticPutBackHours: 12,
+      requireLetOutType: true,
+      requireEarlyPutBackReason: true,
+      requireName: true,
+      createLogsWhenUnderMinimumDuration: false,
+      showNoteDates: true,
+      showLogs: true,
+      showAllAnimals: true,
+      showCustomForm: false,
+      customFormURL: "https://example.com",
+      buttonType: 'In App',
+      appendAnimalDataToURL: false,
+    );
+
+    // Create user document with device settings
+    await _firestore.collection('users').doc(uid).set({
+      'email': email.trim(),
+      'firstName': firstName.trim(),
+      'lastName': lastName.trim(),
+      'shelterID': shelterId,
+      'type': 'admin',
+      'deviceSettings': defaultDeviceSettings.toMap(),
+    });
+
+
+    // Create the shelter without deviceSettings
+    await createShelterWithPlaceholder(
+      shelterId: shelterId,
+      shelterName: shelterName.trim(),
+      shelterAddress: shelterAddress.trim(),
+      selectedManagementSoftware: selectedManagementSoftware.trim(),
+      // Add cats and dogs from CSV files
+    );
+  }
+
   Future<void> createShelterWithPlaceholder({
     required String shelterId,
     required String shelterName,
@@ -79,48 +132,18 @@ class AuthRepository {
       createdAt: Timestamp.now(),
       managementSoftware: selectedManagementSoftware,
       shelterSettings: ShelterSettings(
+        scheduledReports: [],
         catTags: ['Calm', 'Playful', 'Independent'], // Example placeholder tags
         dogTags: ['Friendly', 'Energetic', 'Loyal'],
         earlyPutBackReasons: ['Sick', 'Behavioral'],
         letOutTypes: ['Playtime', 'Exercise'],
-        apiKeys: [APIKey(name: 'TestKey', key: '123456')],
-      ),
-      deviceSettings: DeviceSettings(
-        scheduledReports: [
-          ScheduledReport(
-              email: 'report@shelter.com',
-              days: ['Monday', 'Friday'],
-              type: 'Weekly')
-        ],
-        adminMode: true,
-        photoUploadsAllowed: true,
-        mainSort: 'Last Let Out',
-        secondarySort: 'None',
-        groupBy: 'None',
-        allowBulkTakeOut: true,
-        minimumLogMinutes: 10,
-        automaticallyPutBackAnimals: true,
-        ignoreVisitWhenAutomaticallyPutBack: false,
-        automaticPutBackHours: 12,
-        requireLetOutType: true,
-        requireEarlyPutBackReason: true,
-        requireName: true,
-        createLogsWhenUnderMinimumDuration: false,
-        showNoteDates: true,
-        showLogs: true,
-        showAllAnimals: true,
-        showSearchBar: true,
-        showFilter: true,
-        showCustomForm: false,
-        customFormURL: "https://example.com",
-        buttonType: 'Text',
-        appendAnimalDataToURL: false,
+        apiKeys: [],
+        requestCount: 0,
+        requestLimit: 1000,
       ),
       volunteerSettings: VolunteerSettings(
         photoUploadsAllowed: true,
         mainSort: 'Last Let Out',
-        secondarySort: 'None',
-        groupBy: 'None',
         allowBulkTakeOut: false,
         minimumLogMinutes: 5,
         automaticallyPutBackAnimals: true,
@@ -133,8 +156,6 @@ class AuthRepository {
         showNoteDates: false,
         showLogs: true,
         showAllAnimals: true,
-        showSearchBar: true,
-        showFilter: true,
         showCustomForm: false,
         customFormURL: "",
         appendAnimalDataToURL: true,
@@ -149,14 +170,13 @@ class AuthRepository {
       volunteers: List<Volunteer>.empty(),
     );
 
-    // Upload the shelter data to Firestore
+    // Upload the shelter data to Firestore without deviceSettings
     await _firestore.collection('shelters').doc(shelterId).set({
       'name': shelterData.name,
       'address': shelterData.address,
       'createdAt': shelterData.createdAt,
       'managementSoftware': shelterData.managementSoftware,
       'shelterSettings': shelterData.shelterSettings.toMap(),
-      'deviceSettings': shelterData.deviceSettings.toMap(),
       'volunteerSettings': shelterData.volunteerSettings.toMap(),
     });
 
@@ -164,33 +184,6 @@ class AuthRepository {
 
     // After creating shelter, upload cats and dogs from CSV or placeholders
     await addAnimalsFromCSV(shelterId);
-  }
-
-  Future<void> createUserDocument({
-    required String uid,
-    required String firstName,
-    required String lastName,
-    required String shelterId,
-    required String email,
-    required String selectedManagementSoftware,
-    required String shelterName,
-    required String shelterAddress,
-  }) async {
-    // Create user document
-    await _firestore.collection('users').doc(uid).set({
-      'email': email.trim(),
-      'firstName': firstName.trim(),
-      'lastName': lastName.trim(),
-      'shelterID': shelterId,
-      'type': 'admin',
-    });
-
-    createShelterWithPlaceholder(
-        shelterId: shelterId,
-        shelterName: shelterName.trim(),
-        shelterAddress: shelterAddress.trim(),
-        selectedManagementSoftware: selectedManagementSoftware.trim());
-    // Add cats and dogs from CSV files
   }
 
   Future<void> addAnimalsFromCSV(String shelterId) async {

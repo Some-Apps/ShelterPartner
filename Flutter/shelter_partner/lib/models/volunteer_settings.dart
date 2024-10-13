@@ -3,8 +3,6 @@ import 'package:shelter_partner/models/geofence.dart';
 class VolunteerSettings {
   final bool photoUploadsAllowed;
   final String mainSort;
-  final String secondarySort;
-  final String groupBy;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
   final bool automaticallyPutBackAnimals;
@@ -17,8 +15,6 @@ class VolunteerSettings {
   final bool showNoteDates;
   final bool showLogs;
   final bool showAllAnimals;
-  final bool showSearchBar;
-  final bool showFilter;
   final bool showCustomForm;
   final String customFormURL;
   final bool appendAnimalDataToURL;
@@ -27,8 +23,6 @@ class VolunteerSettings {
   VolunteerSettings({
     required this.photoUploadsAllowed,
     required this.mainSort,
-    required this.secondarySort,
-    required this.groupBy,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
     required this.automaticallyPutBackAnimals,
@@ -41,8 +35,6 @@ class VolunteerSettings {
     required this.showNoteDates,
     required this.showLogs,
     required this.showAllAnimals,
-    required this.showSearchBar,
-    required this.showFilter,
     required this.showCustomForm,
     required this.customFormURL,
     required this.appendAnimalDataToURL,
@@ -54,8 +46,6 @@ class VolunteerSettings {
     return {
       'photoUploadsAllowed': photoUploadsAllowed,
       'mainSort': mainSort,
-      'secondarySort': secondarySort,
-      'groupBy': groupBy,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
@@ -68,8 +58,6 @@ class VolunteerSettings {
       'showNoteDates': showNoteDates,
       'showLogs': showLogs,
       'showAllAnimals': showAllAnimals,
-      'showSearchBar': showSearchBar,
-      'showFilter': showFilter,
       'showCustomForm': showCustomForm,
       'customFormURL': customFormURL,
       'appendAnimalDataToURL': appendAnimalDataToURL,
@@ -82,8 +70,6 @@ class VolunteerSettings {
     return VolunteerSettings(
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "None",
-      secondarySort: data['secondarySort'] ?? "None",
-      groupBy: data['groupBy'] ?? "None",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
@@ -96,8 +82,6 @@ class VolunteerSettings {
       showNoteDates: data['showNoteDates'] ?? false,
       showLogs: data['showLogs'] ?? false,
       showAllAnimals: data['showAllAnimals'] ?? false,
-      showSearchBar: data['showSearchBar'] ?? false,
-      showFilter: data['showFilter'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
