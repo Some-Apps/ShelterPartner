@@ -18,8 +18,14 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 class AuthRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _firebaseAuth;
+
+  AuthRepository({
+    FirebaseFirestore? firestore,
+    FirebaseAuth? firebaseAuth,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   // Fetch user by ID
   Future<AppUser?> getUserById(String userId) async {
@@ -57,6 +63,7 @@ class AuthRepository {
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
+
 
   Future<void> createUserDocument({
     required String uid,
@@ -101,12 +108,14 @@ class AuthRepository {
       'deviceSettings': defaultDeviceSettings.toMap(),
     });
 
+
     // Create the shelter without deviceSettings
     await createShelterWithPlaceholder(
       shelterId: shelterId,
       shelterName: shelterName.trim(),
       shelterAddress: shelterAddress.trim(),
       selectedManagementSoftware: selectedManagementSoftware.trim(),
+      // Add cats and dogs from CSV files
     );
   }
 

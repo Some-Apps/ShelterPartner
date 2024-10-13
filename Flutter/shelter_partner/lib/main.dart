@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shelter_partner/firebase_service.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
-import 'package:shelter_partner/firebase_options.dart';
 import 'package:json_theme_plus/json_theme_plus.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
 import 'package:shelter_partner/views/pages/api_keys_page.dart';
@@ -34,7 +35,9 @@ void main() async {
   final darktheme =
       ThemeDecoder.decodeThemeData(darkThemeJson) ?? ThemeData.dark();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final FirebaseService firebaseService = FirebaseService();
+  await firebaseService.initialize();
+
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
   };
@@ -48,8 +51,20 @@ void main() async {
 class MyApp extends StatelessWidget {
   final ThemeData theme;
   final ThemeData darktheme;
+  final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
+  final FirebaseService firebaseService;
 
-  MyApp({super.key, required this.theme, required this.darktheme});
+  MyApp({
+    super.key,
+    required this.theme,
+    required this.darktheme,
+    FirebaseAuth? firebaseAuth,
+    FirebaseFirestore? firestore,
+    FirebaseService? firebaseService,
+  })  : firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        firestore = firestore ?? FirebaseFirestore.instance,
+        firebaseService = firebaseService ?? FirebaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +123,7 @@ class MyApp extends StatelessWidget {
             ],
           ),
           GoRoute(
+
               path: '/settings',
               pageBuilder: (context, state) =>
                   const MaterialPage(child: SettingsPage()),
