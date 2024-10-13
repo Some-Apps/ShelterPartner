@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/models/api_key.dart';
 import 'package:shelter_partner/repositories/shelter_settings_repository.dart';
 import 'package:shelter_partner/repositories/volunteers_repository.dart';
 import '../models/shelter.dart';
