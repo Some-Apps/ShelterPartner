@@ -50,6 +50,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -165,6 +166,18 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [
+                        SwitchToggleView(
+                          title: "Admin Mode",
+                          value:
+                              user?.deviceSettings.adminMode ??
+                                  false,
+                          onChanged: (bool newValue) {
+                            ref
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(
+                                    user!.id, "adminMode");
+                          },
+                        ),
                         SwitchToggleView(
                           title: "Photo Uploads Allowed",
                           value:

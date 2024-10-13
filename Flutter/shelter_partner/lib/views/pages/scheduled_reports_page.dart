@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/scheduled_report.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:uuid/uuid.dart';
 
 class ScheduledReportsPage extends ConsumerStatefulWidget {
+  final String title;
+  final String arrayKey;
 
   const ScheduledReportsPage({
+    required this.title,
+    required this.arrayKey,
     super.key,
   });
 
@@ -17,11 +22,14 @@ class ScheduledReportsPage extends ConsumerStatefulWidget {
 class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _itemController = TextEditingController();
-  List<String> _arrayItems = [];
+  final TextEditingController _emailController = TextEditingController();
+  String _selectedType = 'Type 1';
+  List<ScheduledReport> _arrayItems = [];
 
   @override
   void dispose() {
     _itemController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -32,7 +40,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
     return shelterAsyncValue.when(
       loading: () => Scaffold(
         appBar: AppBar(
-          title: Text("Scheduled Reports"),
+          title: Text(widget.title),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -40,17 +48,20 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
       ),
       error: (error, stack) => Scaffold(
         appBar: AppBar(
-          title: Text("Scheduled Reports"),
+          title: Text(widget.title),
         ),
         body: Center(
           child: Text('Error: $error'),
         ),
       ),
       data: (shelter) {
+        if (_arrayItems.isEmpty) {
+          _arrayItems = shelter!.shelterSettings.scheduledReports;
+        }
 
         return Scaffold(
           appBar: AppBar(
-            title: Text("Scheduled Reports"),
+            title: Text(widget.title),
           ),
           body: GestureDetector(
             onTap: () {
@@ -67,7 +78,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                       TextFormField(
                         controller: _itemController,
                         decoration: const InputDecoration(
-                          labelText: 'Report Title',
+                          labelText: 'Report Name',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -77,27 +88,63 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                         },
                       ),
                       const SizedBox(height: 10.0),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an email';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10.0),
+                      DropdownButtonFormField<String>(
+                        value: _selectedType,
+                        decoration: const InputDecoration(
+                          labelText: 'Type',
+                        ),
+                        items: <String>['Type 1', 'Type 2', 'Type 3']
+                            .map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            _selectedType = newValue!;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 10.0),
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
                             final itemName = _itemController.text;
-                            final id = const Uuid().v4();
+                            final email = _emailController.text;
+                            final newID = const Uuid().v4();
+                            final newReport = ScheduledReport(
+                              title: itemName,
+                              id: newID,
+                              email: email,
+                              type: _selectedType,
+                            );
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
                                 .addMapToShelterSettingsArray(
-                                    shelter!.id,
-                                    "scheduledReports",
-                                    {"title": itemName, "id": id});
+                                    shelter!.id, "scheduledReports", newReport.toMap());
                             setState(() {
-                              _arrayItems.add(itemName);
+                              _arrayItems.add(newReport);
                             });
                             _itemController.clear();
-                            
+                            _emailController.clear();
                           }
                         },
                         child: const Text('Add Report'),
                       ),
-                     
                       const SizedBox(height: 20.0),
                       Text(
                         'Existing Reports:',
@@ -116,54 +163,48 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                           });
                           final List<Map<String, dynamic>> arrayItemsMap =
                               _arrayItems
-                                  .map((item) => {
-                                        "title": item,
-                                        "id": UniqueKey().toString()
-                                      })
+                                  .map((scheduledReport) => scheduledReport.toMap())
                                   .toList();
                           ref
                               .read(shelterSettingsViewModelProvider.notifier)
                               .reorderMapArrayInShelterSettings(
-                                  shelter!.id, "scheduledReports", arrayItemsMap);
+                                  shelter!.id, widget.arrayKey, arrayItemsMap);
                         },
                         children: [
-                          // for (int index = 0;
-                          //     index < _arrayItems.length;
-                          //     index++)
-                          //   Dismissible(
-                          //     key: ValueKey(_arrayItems[index]),
-                          //     direction: DismissDirection.endToStart,
-                          //     onDismissed: (direction) {
-                          //       final removedItemTitle = _arrayItems[index];
-                          //       setState(() {
-                          //         _arrayItems.removeAt(index);
-                          //       });
-                          //       final removedItem = {
-                          //         "title": removedItemTitle,
-                          //         "id": UniqueKey().toString()
-                          //       };
-                          //       ref
-                          //           .read(shelterSettingsViewModelProvider
-                          //               .notifier)
-                          //           .removeMapFromShelterSettingsArrayById(
-                          //               shelter!.id,
-                          //               "scheduledReports",
-                          //               removedItem['id']!);
-                          //     },
-                          //     background: Container(
-                          //       color: Colors.red,
-                          //       alignment: Alignment.centerRight,
-                          //       padding: const EdgeInsets.symmetric(
-                          //           horizontal: 20.0),
-                          //       child: const Icon(
-                          //         Icons.delete,
-                          //         color: Colors.white,
-                          //       ),
-                          //     ),
-                          //     child: ListTile(
-                          //       title: Text(_arrayItems[index]),
-                          //     ),
-                          //   ),
+                          for (int index = 0;
+                              index < _arrayItems.length;
+                              index++)
+                            Dismissible(
+                              key: ValueKey(_arrayItems[index]),
+                              direction: DismissDirection.endToStart,
+                              onDismissed: (direction) {
+                                final removedItem = _arrayItems[index];
+                                setState(() {
+                                  _arrayItems.removeAt(index);
+                                });
+                                ref
+                                    .read(shelterSettingsViewModelProvider
+                                        .notifier)
+                                    .removeMapFromShelterSettingsArray(
+                                      shelter!.id,
+                                      widget.arrayKey,
+                                      removedItem.toMap(),
+                                    );
+                              },
+                              background: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              child: ListTile(
+                                title: Text(_arrayItems[index].title),
+                              ),
+                            ),
                         ],
                       ),
                       const SizedBox(height: 20.0),
