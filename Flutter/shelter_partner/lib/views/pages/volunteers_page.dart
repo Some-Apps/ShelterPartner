@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
-import 'package:shelter_partner/views/components/navigation_button_view.dart';
-import 'package:email_validator/email_validator.dart'; // Add this package to pubspec.yaml
+import 'package:email_validator/email_validator.dart';
+import 'package:shelter_partner/views/components/navigation_button_view.dart'; // Add this package to pubspec.yaml
 
 class VolunteersPage extends ConsumerStatefulWidget {
   const VolunteersPage({super.key});
@@ -266,7 +266,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                         ),
                                       ],
                                     ),
-                                  ).toList()
+                                  )
                                 else
                                   const Text('No volunteers available at the moment'),
                               ],
