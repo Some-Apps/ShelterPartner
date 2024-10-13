@@ -121,10 +121,7 @@ class MyApp extends StatelessWidget {
                       GoRoute(
                         path: 'scheduled-reports', // This is relative to '/volunteers'
                         pageBuilder: (context, state) =>
-                            const MaterialPage(child: ScheduledReportsPage(
-                              title: 'Scheduled Reports',
-                              arrayKey: 'scheduledReports'
-                            )),
+                            const MaterialPage(child: ScheduledReportsPage()),
                       ),
                       GoRoute(
                         path: 'cat-tags', // This is relative to '/volunteers'

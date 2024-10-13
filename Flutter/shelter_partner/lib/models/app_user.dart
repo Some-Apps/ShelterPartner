@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shelter_partner/models/device_settings.dart';
 
 class AppUser {
   final String id;
@@ -7,6 +8,7 @@ class AppUser {
   final String email;
   final String type;
   final String shelterId;
+  final DeviceSettings deviceSettings;
 
   AppUser({
     required this.id,
@@ -15,6 +17,7 @@ class AppUser {
     required this.email,
     required this.type,
     required this.shelterId,
+    required this.deviceSettings,
   });
 
   factory AppUser.fromDocument(DocumentSnapshot doc) {
@@ -26,6 +29,8 @@ class AppUser {
       email: data['email'],
       type: data['type'],
       shelterId: data['shelterID'],
+      deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
     );
   }
 }
+

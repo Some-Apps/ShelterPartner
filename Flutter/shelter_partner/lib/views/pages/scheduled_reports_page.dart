@@ -5,12 +5,8 @@ import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:uuid/uuid.dart';
 
 class ScheduledReportsPage extends ConsumerStatefulWidget {
-  final String title;
-  final String arrayKey;
 
   const ScheduledReportsPage({
-    required this.title,
-    required this.arrayKey,
     super.key,
   });
 
@@ -36,7 +32,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
     return shelterAsyncValue.when(
       loading: () => Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text("Scheduled Reports"),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -44,20 +40,17 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
       ),
       error: (error, stack) => Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text("Scheduled Reports"),
         ),
         body: Center(
           child: Text('Error: $error'),
         ),
       ),
       data: (shelter) {
-        if (_arrayItems.isEmpty) {
-          _arrayItems = shelter!.shelterSettings.getArray(widget.arrayKey);
-        }
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(widget.title),
+            title: Text("Scheduled Reports"),
           ),
           body: GestureDetector(
             onTap: () {
@@ -88,7 +81,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
                             final itemName = _itemController.text;
-                            final id = Uuid().v4();
+                            final id = const Uuid().v4();
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
                                 .addMapToShelterSettingsArray(
@@ -131,46 +124,46 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                           ref
                               .read(shelterSettingsViewModelProvider.notifier)
                               .reorderMapArrayInShelterSettings(
-                                  shelter!.id, widget.arrayKey, arrayItemsMap);
+                                  shelter!.id, "scheduledReports", arrayItemsMap);
                         },
                         children: [
-                          for (int index = 0;
-                              index < _arrayItems.length;
-                              index++)
-                            Dismissible(
-                              key: ValueKey(_arrayItems[index]),
-                              direction: DismissDirection.endToStart,
-                              onDismissed: (direction) {
-                                final removedItemTitle = _arrayItems[index];
-                                setState(() {
-                                  _arrayItems.removeAt(index);
-                                });
-                                final removedItem = {
-                                  "title": removedItemTitle,
-                                  "id": UniqueKey().toString()
-                                };
-                                ref
-                                    .read(shelterSettingsViewModelProvider
-                                        .notifier)
-                                    .removeMapFromShelterSettingsArrayById(
-                                        shelter!.id,
-                                        widget.arrayKey,
-                                        removedItem['id']!);
-                              },
-                              background: Container(
-                                color: Colors.red,
-                                alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0),
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              child: ListTile(
-                                title: Text(_arrayItems[index]),
-                              ),
-                            ),
+                          // for (int index = 0;
+                          //     index < _arrayItems.length;
+                          //     index++)
+                          //   Dismissible(
+                          //     key: ValueKey(_arrayItems[index]),
+                          //     direction: DismissDirection.endToStart,
+                          //     onDismissed: (direction) {
+                          //       final removedItemTitle = _arrayItems[index];
+                          //       setState(() {
+                          //         _arrayItems.removeAt(index);
+                          //       });
+                          //       final removedItem = {
+                          //         "title": removedItemTitle,
+                          //         "id": UniqueKey().toString()
+                          //       };
+                          //       ref
+                          //           .read(shelterSettingsViewModelProvider
+                          //               .notifier)
+                          //           .removeMapFromShelterSettingsArrayById(
+                          //               shelter!.id,
+                          //               "scheduledReports",
+                          //               removedItem['id']!);
+                          //     },
+                          //     background: Container(
+                          //       color: Colors.red,
+                          //       alignment: Alignment.centerRight,
+                          //       padding: const EdgeInsets.symmetric(
+                          //           horizontal: 20.0),
+                          //       child: const Icon(
+                          //         Icons.delete,
+                          //         color: Colors.white,
+                          //       ),
+                          //     ),
+                          //     child: ListTile(
+                          //       title: Text(_arrayItems[index]),
+                          //     ),
+                          //   ),
                         ],
                       ),
                       const SizedBox(height: 20.0),

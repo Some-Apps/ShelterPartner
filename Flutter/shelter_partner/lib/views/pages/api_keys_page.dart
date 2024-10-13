@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/api_key.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -21,7 +22,7 @@ class ApiKeysPage extends ConsumerStatefulWidget {
 class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _itemController = TextEditingController();
-  List<String> _arrayItems = [];
+List<APIKey> _arrayItems = [];
 
   @override
   void dispose() {
@@ -52,8 +53,9 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
       ),
       data: (shelter) {
         if (_arrayItems.isEmpty) {
-          _arrayItems = shelter!.shelterSettings.getArray(widget.arrayKey);
-        }
+  _arrayItems = shelter!.shelterSettings.apiKeys;
+}
+
 
         return Scaffold(
           appBar: AppBar(
@@ -87,18 +89,19 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
-                            final itemName = _itemController.text;
-                            final newKey = Uuid().v4();
-                            ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .addMapToShelterSettingsArray(
-                                    shelter!.id,
-                                    "apiKeys",
-                                    {"name": itemName, "key": newKey});
-                            setState(() {
-                              _arrayItems.add(itemName);
-                            });
-                            _itemController.clear();
+  final itemName = _itemController.text;
+  final newKey = const Uuid().v4();
+  final newApiKey = APIKey(name: itemName, key: newKey);
+  ref
+    .read(shelterSettingsViewModelProvider.notifier)
+    .addMapToShelterSettingsArray(
+        shelter!.id,
+        "apiKeys",
+        newApiKey.toMap());
+  setState(() {
+    _arrayItems.add(newApiKey);
+  });
+  _itemController.clear();
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
@@ -175,25 +178,21 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                       ReorderableListView(
                         shrinkWrap: true,
                         onReorder: (oldIndex, newIndex) {
-                          setState(() {
-                            if (newIndex > oldIndex) {
-                              newIndex -= 1;
-                            }
-                            final item = _arrayItems.removeAt(oldIndex);
-                            _arrayItems.insert(newIndex, item);
-                          });
-                          final List<Map<String, dynamic>> arrayItemsMap =
-                              _arrayItems
-                                  .map((item) => {
-                                        "name": item,
-                                        "key": UniqueKey().toString()
-                                      })
-                                  .toList();
-                          ref
-                              .read(shelterSettingsViewModelProvider.notifier)
-                              .reorderMapArrayInShelterSettings(
-                                  shelter!.id, widget.arrayKey, arrayItemsMap);
-                        },
+  setState(() {
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    final item = _arrayItems.removeAt(oldIndex);
+    _arrayItems.insert(newIndex, item);
+  });
+  final List<Map<String, dynamic>> arrayItemsMap =
+      _arrayItems.map((apiKey) => apiKey.toMap()).toList();
+  ref
+    .read(shelterSettingsViewModelProvider.notifier)
+    .reorderMapArrayInShelterSettings(
+        shelter!.id, widget.arrayKey, arrayItemsMap);
+},
+
                         children: [
                           for (int index = 0;
                               index < _arrayItems.length;
@@ -202,18 +201,19 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                               key: ValueKey(_arrayItems[index]),
                               direction: DismissDirection.endToStart,
                               onDismissed: (direction) {
-                                final removedItem = _arrayItems[index];
-                                setState(() {
-                                  _arrayItems.removeAt(index);
-                                });
-                                ref
-                                    .read(shelterSettingsViewModelProvider
-                                        .notifier)
-                                    .removeStringFromShelterSettingsArray(
-                                        shelter!.id,
-                                        widget.arrayKey,
-                                        removedItem);
-                              },
+  final removedItem = _arrayItems[index];
+  setState(() {
+    _arrayItems.removeAt(index);
+  });
+  ref
+    .read(shelterSettingsViewModelProvider.notifier)
+    .removeMapFromShelterSettingsArray(
+      shelter!.id,
+      widget.arrayKey,
+      removedItem.toMap(),
+    );
+},
+
                               background: Container(
                                 color: Colors.red,
                                 alignment: Alignment.centerRight,
@@ -225,8 +225,9 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                                 ),
                               ),
                               child: ListTile(
-                                title: Text(_arrayItems[index]),
-                              ),
+  title: Text(_arrayItems[index].name),
+),
+
                             ),
                         ],
                       ),

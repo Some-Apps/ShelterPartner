@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/api_key.dart';
 import 'package:shelter_partner/repositories/shelter_settings_repository.dart';
 import 'package:shelter_partner/repositories/volunteers_repository.dart';
 import '../models/shelter.dart';
@@ -128,15 +129,17 @@ Future<void> modifyDeviceSettingString(String shelterID, String field, String ne
   }
 }
 
-// Remove map from array within shelterSettings attribute using the id attribute
-Future<void> removeMapFromShelterSettingsArrayById(String shelterID, String field, String id) async {
+// Remove map from array within shelterSettings attribute
+Future<void> removeMapFromShelterSettingsArray(
+    String shelterID, String field, Map<String, dynamic> value) async {
   try {
-    await _repository.removeMapFromShelterSettingsArray(shelterID, field, id);
+    await _repository.removeMapFromShelterSettingsArray(shelterID, field, value);
   } catch (error) {
-    print("Error removing map from array by id: $error");
-    state = AsyncValue.error("Error removing map from array by id: $error", StackTrace.current);
+    print("Error removing map from array: $error");
+    state = AsyncValue.error("Error removing map from array: $error", StackTrace.current);
   }
 }
+
 
 
 // Decrement attribute in Firestore document within volunteerSettings

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
+import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
+
 
 class DeviceSettingsPage extends ConsumerStatefulWidget {
   const DeviceSettingsPage({super.key});
@@ -18,7 +19,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final shelterAsyncValue = ref.watch(shelterSettingsViewModelProvider);
+    final shelterAsyncValue = ref.watch(deviceSettingsViewModelProvider);
 
     return shelterAsyncValue.when(
       loading: () => Scaffold(
@@ -37,7 +38,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
           child: Text('Error: $error'),
         ),
       ),
-      data: (shelter) => Scaffold(
+      data: (user) => Scaffold(
         appBar: AppBar(
           title: const Text("Device Settings"),
         ),
@@ -53,61 +54,45 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [
+
                         PickerView(
                           title: "Main Sort",
                           options: const ["Last Let Out", "Alphabetical"],
-                          value: shelter?.deviceSettings.mainSort ??
+                          value: user?.deviceSettings.mainSort ??
                               "Last Let Out",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
-                                  .read(
-                                      shelterSettingsViewModelProvider.notifier)
+                                  .read(deviceSettingsViewModelProvider.notifier)
                                   .modifyDeviceSettingString(
-                                      shelter!.id, "mainSort", newValue);
+                                      user!.id, "mainSort", newValue);
                             }
                           },
                         ),
                         PickerView(
                           title: "Secondary Sort",
                           options: const ["None", "Color", "Location"],
-                          value:
-                              shelter?.deviceSettings.secondarySort ?? "None",
+                          value: user?.deviceSettings.secondarySort ??
+                              "None",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
-                                  .read(
-                                      shelterSettingsViewModelProvider.notifier)
+                                  .read(deviceSettingsViewModelProvider.notifier)
                                   .modifyDeviceSettingString(
-                                      shelter!.id, "secondarySort", newValue);
+                                      user!.id, "secondarySort", newValue);
                             }
                           },
                         ),
                         PickerView(
                           title: "Group By",
                           options: const ["None"],
-                          value: shelter?.deviceSettings.groupBy ?? "None",
+                          value: user?.deviceSettings.groupBy ?? "None",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
-                                  .read(
-                                      shelterSettingsViewModelProvider.notifier)
+                                  .read(deviceSettingsViewModelProvider.notifier)
                                   .modifyDeviceSettingString(
-                                      shelter!.id, "groupBy", newValue);
-                            }
-                          },
-                        ),
-                        PickerView(
-                          title: "Button Type",
-                          options: const ["In App", "QR Code"],
-                          value: shelter?.deviceSettings.buttonType ?? "In App",
-                          onChanged: (String? newValue) {
-                            if (newValue != null && newValue.isNotEmpty) {
-                              ref
-                                  .read(
-                                      shelterSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
-                                      shelter!.id, "buttonType", newValue);
+                                      user!.id, "groupBy", newValue);
                             }
                           },
                         ),
@@ -121,14 +106,14 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         TextFieldView(
                             title: "Custom Form URL",
                             hint: "Custom Form URL",
-                            value:
-                                shelter?.deviceSettings.customFormURL as String,
+                            value: user?.deviceSettings.customFormURL
+                                    as String ??
+                                "",
                             onSaved: (String value) {
                               ref
-                                  .read(
-                                      shelterSettingsViewModelProvider.notifier)
+                                  .read(deviceSettingsViewModelProvider.notifier)
                                   .modifyDeviceSettingString(
-                                      shelter!.id, "customFormURL", value);
+                                      user!.id, "customFormURL", value);
                             }),
                       ]),
                     ),
@@ -140,217 +125,211 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         NumberStepperView(
                           title: "Minimum Duration",
                           label: "minutes",
-                          value: shelter?.deviceSettings.minimumLogMinutes ?? 0,
+                          value:
+                              user?.deviceSettings.minimumLogMinutes ?? 0,
                           increment: () {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .incrementDeviceSetting(
-                                    shelter!.id, "minimumLogMinutes");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .incrementAttribute(
+                                    user!.id, "minimumLogMinutes");
                           },
                           decrement: () {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .decrementDeviceSetting(
-                                    shelter!.id, "minimumLogMinutes");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .decrementAttribute(
+                                    user!.id, "minimumLogMinutes");
                           },
                         ),
                         NumberStepperView(
                           title: "Automatic Put Back",
                           label: "hours",
-                          value:
-                              shelter?.deviceSettings.automaticPutBackHours ??
-                                  0,
+                          value: user?.deviceSettings.automaticPutBackHours ??
+                              0,
                           increment: () {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .incrementDeviceSetting(
-                                    shelter!.id, "automaticPutBackHours");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .incrementAttribute(
+                                    user!.id, "automaticPutBackHours");
                           },
                           decrement: () {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .decrementDeviceSetting(
-                                    shelter!.id, "automaticPutBackHours");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .decrementAttribute(
+                                    user!.id, "automaticPutBackHours");
                           },
                         ),
                       ]),
                     ),
                   ),
-
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [
                         SwitchToggleView(
-                          title: "Admin Mode",
-                          value: shelter?.deviceSettings.adminMode ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "adminMode");
-                          },
-                        ),
-                        SwitchToggleView(
                           title: "Photo Uploads Allowed",
-                          value: shelter?.deviceSettings.photoUploadsAllowed ??
-                              false,
+                          value:
+                              user?.deviceSettings.photoUploadsAllowed ??
+                                  false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
+                                .read(deviceSettingsViewModelProvider.notifier)
                                 .toggleAttribute(
-                                    shelter!.id, "photoUploadsAllowed");
+                                    user!.id, "photoUploadsAllowed");
                           },
                         ),
                         SwitchToggleView(
                           title: "Allow Bulk Take Out",
-                          value:
-                              shelter?.deviceSettings.allowBulkTakeOut ?? false,
+                          value: user?.deviceSettings.allowBulkTakeOut ??
+                              false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
+                                .read(deviceSettingsViewModelProvider.notifier)
                                 .toggleAttribute(
-                                    shelter!.id, "allowBulkTakeOut");
+                                    user!.id, "allowBulkTakeOut");
                           },
                         ),
                         SwitchToggleView(
                           title: "Automatically Put Back Animals",
-                          value: shelter?.deviceSettings
+                          value: user?.deviceSettings
                                   .automaticallyPutBackAnimals ??
                               false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
+                                .read(deviceSettingsViewModelProvider.notifier)
                                 .toggleAttribute(
-                                    shelter!.id, "automaticallyPutBackAnimals");
+                                    user!.id, "automaticallyPutBackAnimals");
                           },
                         ),
                         SwitchToggleView(
                           title: "Ignore Visit When Automatically Put Back",
-                          value: shelter?.deviceSettings
+                          value: user?.deviceSettings
                                   .ignoreVisitWhenAutomaticallyPutBack ??
                               false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id,
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id,
                                     "ignoreVisitWhenAutomaticallyPutBack");
                           },
                         ),
                         SwitchToggleView(
                           title: "Require Let Out Type",
-                          value: shelter?.deviceSettings.requireLetOutType ??
+                          value: user?.deviceSettings.requireLetOutType ??
                               false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
+                                .read(deviceSettingsViewModelProvider.notifier)
                                 .toggleAttribute(
-                                    shelter!.id, "requireLetOutType");
+                                    user!.id, "requireLetOutType");
                           },
                         ),
                         SwitchToggleView(
                           title: "Require Early Put Back Reason",
-                          value: shelter
-                                  ?.deviceSettings.requireEarlyPutBackReason ??
+                          value: user?.deviceSettings
+                                  .requireEarlyPutBackReason ??
                               false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
+                                .read(deviceSettingsViewModelProvider.notifier)
                                 .toggleAttribute(
-                                    shelter!.id, "requireEarlyPutBackReason");
+                                    user!.id, "requireEarlyPutBackReason");
                           },
                         ),
                         SwitchToggleView(
                           title: "Require Name",
-                          value: shelter?.deviceSettings.requireName ?? false,
+                          value:
+                              user?.deviceSettings.requireName ?? false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "requireName");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id, "requireName");
                           },
                         ),
                         SwitchToggleView(
                           title: "Create Logs When Under Minimum Duration",
-                          value: shelter?.deviceSettings
+                          value: user?.deviceSettings
                                   .createLogsWhenUnderMinimumDuration ??
                               false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id,
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id,
                                     "createLogsWhenUnderMinimumDuration");
                           },
                         ),
                         SwitchToggleView(
                           title: "Show Note Dates",
-                          value: shelter?.deviceSettings.showNoteDates ?? false,
+                          value:
+                              user?.deviceSettings.showNoteDates ?? false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showNoteDates");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id, "showNoteDates");
                           },
                         ),
                         SwitchToggleView(
                           title: "Show Logs",
-                          value: shelter?.deviceSettings.showLogs ?? false,
+                          value: user?.deviceSettings.showLogs ?? false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showLogs");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id, "showLogs");
                           },
                         ),
                         SwitchToggleView(
                           title: "Show All Animals",
-                          value:
-                              shelter?.deviceSettings.showAllAnimals ?? false,
+                          value: user?.deviceSettings.showAllAnimals ??
+                              false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showAllAnimals");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id, "showAllAnimals");
                           },
                         ),
                         SwitchToggleView(
                           title: "Show Search Bar",
-                          value: shelter?.deviceSettings.showSearchBar ?? false,
+                          value:
+                              user?.deviceSettings.showSearchBar ?? false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showSearchBar");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id, "showSearchBar");
                           },
                         ),
                         SwitchToggleView(
                           title: "Show Filter",
-                          value: shelter?.deviceSettings.showFilter ?? false,
+                          value: user?.deviceSettings.showFilter ?? false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showFilter");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id, "showFilter");
                           },
                         ),
                         SwitchToggleView(
                           title: "Show Custom Form",
-                          value:
-                              shelter?.deviceSettings.showCustomForm ?? false,
+                          value: user?.deviceSettings.showCustomForm ??
+                              false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showCustomForm");
+                                .read(deviceSettingsViewModelProvider.notifier)
+                                .toggleAttribute(user!.id, "showCustomForm");
                           },
                         ),
                         SwitchToggleView(
                           title: "Append Animal Data To URL",
-                          value:
-                              shelter?.deviceSettings.appendAnimalDataToURL ??
-                                  false,
+                          value: user?.deviceSettings.appendAnimalDataToURL ??
+                              false,
                           onChanged: (bool newValue) {
                             ref
-                                .read(shelterSettingsViewModelProvider.notifier)
+                                .read(deviceSettingsViewModelProvider.notifier)
                                 .toggleAttribute(
-                                    shelter!.id, "appendAnimalDataToURL");
+                                    user!.id, "appendAnimalDataToURL");
                           },
                         ),
                       ]),
                     ),
                   ),
+                    
                   const SizedBox(height: 20.0),
                 ],
               ),

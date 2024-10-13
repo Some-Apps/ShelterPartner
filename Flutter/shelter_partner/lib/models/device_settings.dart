@@ -1,4 +1,3 @@
-import 'package:shelter_partner/models/scheduled_report.dart';
 
 class DeviceSettings {
   final bool adminMode;
@@ -50,6 +49,34 @@ class DeviceSettings {
     required this.buttonType,
     required this.appendAnimalDataToURL,
   });
+
+    DeviceSettings copyWith(Map<String, dynamic> changes) {
+    return DeviceSettings(
+      adminMode: changes.containsKey('adminMode') ? changes['adminMode'] : this.adminMode,
+      photoUploadsAllowed: changes.containsKey('photoUploadsAllowed') ? changes['photoUploadsAllowed'] : this.photoUploadsAllowed,
+      mainSort: changes.containsKey('mainSort') ? changes['mainSort'] : this.mainSort,
+      secondarySort: changes.containsKey('secondarySort') ? changes['secondarySort'] : this.secondarySort,
+      groupBy: changes.containsKey('groupBy') ? changes['groupBy'] : this.groupBy,
+      allowBulkTakeOut: changes.containsKey('allowBulkTakeOut') ? changes['allowBulkTakeOut'] : this.allowBulkTakeOut,
+      minimumLogMinutes: changes.containsKey('minimumLogMinutes') ? changes['minimumLogMinutes'] : this.minimumLogMinutes,
+      automaticallyPutBackAnimals: changes.containsKey('automaticallyPutBackAnimals') ? changes['automaticallyPutBackAnimals'] : this.automaticallyPutBackAnimals,
+      ignoreVisitWhenAutomaticallyPutBack: changes.containsKey('ignoreVisitWhenAutomaticallyPutBack') ? changes['ignoreVisitWhenAutomaticallyPutBack'] : this.ignoreVisitWhenAutomaticallyPutBack,
+      automaticPutBackHours: changes.containsKey('automaticPutBackHours') ? changes['automaticPutBackHours'] : this.automaticPutBackHours,
+      requireLetOutType: changes.containsKey('requireLetOutType') ? changes['requireLetOutType'] : this.requireLetOutType,
+      requireEarlyPutBackReason: changes.containsKey('requireEarlyPutBackReason') ? changes['requireEarlyPutBackReason'] : this.requireEarlyPutBackReason,
+      requireName: changes.containsKey('requireName') ? changes['requireName'] : this.requireName,
+      createLogsWhenUnderMinimumDuration: changes.containsKey('createLogsWhenUnderMinimumDuration') ? changes['createLogsWhenUnderMinimumDuration'] : this.createLogsWhenUnderMinimumDuration,
+      showNoteDates: changes.containsKey('showNoteDates') ? changes['showNoteDates'] : this.showNoteDates,
+      showLogs: changes.containsKey('showLogs') ? changes['showLogs'] : this.showLogs,
+      showAllAnimals: changes.containsKey('showAllAnimals') ? changes['showAllAnimals'] : this.showAllAnimals,
+      showSearchBar: changes.containsKey('showSearchBar') ? changes['showSearchBar'] : this.showSearchBar,
+      showFilter: changes.containsKey('showFilter') ? changes['showFilter'] : this.showFilter,
+      showCustomForm: changes.containsKey('showCustomForm') ? changes['showCustomForm'] : this.showCustomForm,
+      customFormURL: changes.containsKey('customFormURL') ? changes['customFormURL'] : this.customFormURL,
+      buttonType: changes.containsKey('buttonType') ? changes['buttonType'] : this.buttonType,
+      appendAnimalDataToURL: changes.containsKey('appendAnimalDataToURL') ? changes['appendAnimalDataToURL'] : this.appendAnimalDataToURL,
+    );
+    }
 
   // Convert DeviceSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
