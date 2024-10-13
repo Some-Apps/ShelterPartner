@@ -25,7 +25,7 @@ lib/
     animal.dart
   views/
     pages/
-      volunteer_page.dart
+      animals_page.dart
     components/
       animal_card_view.dart
   view_models/
