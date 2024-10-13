@@ -20,8 +20,14 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 class AuthRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _firebaseAuth;
+
+  AuthRepository({
+    FirebaseFirestore? firestore,
+    FirebaseAuth? firebaseAuth,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   // Fetch user by ID
   Future<AppUser?> getUserById(String userId) async {
@@ -61,104 +67,104 @@ class AuthRepository {
   }
 
   Future<void> createShelterWithPlaceholder({
-  required String shelterId,
-  required String shelterName,
-  required String shelterAddress,
-  required String selectedManagementSoftware,
-}) async {
-  final shelterData = Shelter(
-    id: shelterId,
-    name: shelterName,
-    address: shelterAddress,
-    createdAt: Timestamp.now(),
-    managementSoftware: selectedManagementSoftware,
-    shelterSettings: ShelterSettings(
-      catTags: ['Calm', 'Playful', 'Independent'], // Example placeholder tags
-      dogTags: ['Friendly', 'Energetic', 'Loyal'],
-      earlyPutBackReasons: ['Sick', 'Behavioral'],
-      letOutTypes: ['Playtime', 'Exercise'],
-      apiKeys: [APIKey(name: 'TestKey', key: '123456')],
-    ),
-    deviceSettings: DeviceSettings(
-      scheduledReports: [
-        ScheduledReport(
-            email: 'report@shelter.com',
-            days: ['Monday', 'Friday'],
-            type: 'Weekly')
-      ],
-      adminMode: true,
-      photoUploadsAllowed: true,
-      mainSort: 'Last Let Out',
-      secondarySort: 'None',
-      groupBy: 'None',
-      allowBulkTakeOut: true,
-      minimumLogMinutes: 10,
-      automaticallyPutBackAnimals: true,
-      ignoreVisitWhenAutomaticallyPutBack: false,
-      automaticPutBackHours: 12,
-      requireLetOutType: true,
-      requireEarlyPutBackReason: true,
-      requireName: true,
-      createLogsWhenUnderMinimumDuration: false,
-      showNoteDates: true,
-      showLogs: true,
-      showAllAnimals: true,
-      showSearchBar: true,
-      showFilter: true,
-      showCustomForm: false,
-      customFormURL: "https://example.com",
-      buttonType: 'Text',
-      appendAnimalDataToURL: false,
-    ),
-    volunteerSettings: VolunteerSettings(
-      photoUploadsAllowed: true,
-      mainSort: 'Last Let Out',
-      secondarySort: 'None',
-      groupBy: 'None',
-      allowBulkTakeOut: false,
-      minimumLogMinutes: 5,
-      automaticallyPutBackAnimals: true,
-      ignoreVisitWhenAutomaticallyPutBack: true,
-      automaticPutBackHours: 24,
-      requireLetOutType: true,
-      requireEarlyPutBackReason: false,
-      requireName: true,
-      createLogsWhenUnderMinimumDuration: false,
-      showNoteDates: false,
-      showLogs: true,
-      showAllAnimals: true,
-      showSearchBar: true,
-      showFilter: true,
-      showCustomForm: false,
-      customFormURL: "",
-      appendAnimalDataToURL: true,
-      // Create default geofence
-      geofence: Geofence(
-        location: const GeoPoint(43.0722, -89.4008),
-        radius: 500,
-        zoom: 15,
-        isEnabled: false,
+    required String shelterId,
+    required String shelterName,
+    required String shelterAddress,
+    required String selectedManagementSoftware,
+  }) async {
+    final shelterData = Shelter(
+      id: shelterId,
+      name: shelterName,
+      address: shelterAddress,
+      createdAt: Timestamp.now(),
+      managementSoftware: selectedManagementSoftware,
+      shelterSettings: ShelterSettings(
+        catTags: ['Calm', 'Playful', 'Independent'], // Example placeholder tags
+        dogTags: ['Friendly', 'Energetic', 'Loyal'],
+        earlyPutBackReasons: ['Sick', 'Behavioral'],
+        letOutTypes: ['Playtime', 'Exercise'],
+        apiKeys: [APIKey(name: 'TestKey', key: '123456')],
       ),
-    ),
-    volunteers: List<Volunteer>.empty(),
-  );
+      deviceSettings: DeviceSettings(
+        scheduledReports: [
+          ScheduledReport(
+              email: 'report@shelter.com',
+              days: ['Monday', 'Friday'],
+              type: 'Weekly')
+        ],
+        adminMode: true,
+        photoUploadsAllowed: true,
+        mainSort: 'Last Let Out',
+        secondarySort: 'None',
+        groupBy: 'None',
+        allowBulkTakeOut: true,
+        minimumLogMinutes: 10,
+        automaticallyPutBackAnimals: true,
+        ignoreVisitWhenAutomaticallyPutBack: false,
+        automaticPutBackHours: 12,
+        requireLetOutType: true,
+        requireEarlyPutBackReason: true,
+        requireName: true,
+        createLogsWhenUnderMinimumDuration: false,
+        showNoteDates: true,
+        showLogs: true,
+        showAllAnimals: true,
+        showSearchBar: true,
+        showFilter: true,
+        showCustomForm: false,
+        customFormURL: "https://example.com",
+        buttonType: 'Text',
+        appendAnimalDataToURL: false,
+      ),
+      volunteerSettings: VolunteerSettings(
+        photoUploadsAllowed: true,
+        mainSort: 'Last Let Out',
+        secondarySort: 'None',
+        groupBy: 'None',
+        allowBulkTakeOut: false,
+        minimumLogMinutes: 5,
+        automaticallyPutBackAnimals: true,
+        ignoreVisitWhenAutomaticallyPutBack: true,
+        automaticPutBackHours: 24,
+        requireLetOutType: true,
+        requireEarlyPutBackReason: false,
+        requireName: true,
+        createLogsWhenUnderMinimumDuration: false,
+        showNoteDates: false,
+        showLogs: true,
+        showAllAnimals: true,
+        showSearchBar: true,
+        showFilter: true,
+        showCustomForm: false,
+        customFormURL: "",
+        appendAnimalDataToURL: true,
+        // Create default geofence
+        geofence: Geofence(
+          location: const GeoPoint(43.0722, -89.4008),
+          radius: 500,
+          zoom: 15,
+          isEnabled: false,
+        ),
+      ),
+      volunteers: List<Volunteer>.empty(),
+    );
 
-  // Upload the shelter data to Firestore
-  await _firestore.collection('shelters').doc(shelterId).set({
-    'name': shelterData.name,
-    'address': shelterData.address,
-    'createdAt': shelterData.createdAt,
-    'managementSoftware': shelterData.managementSoftware,
-    'shelterSettings': shelterData.shelterSettings.toMap(),
-    'deviceSettings': shelterData.deviceSettings.toMap(),
-    'volunteerSettings': shelterData.volunteerSettings.toMap(),
-  });
+    // Upload the shelter data to Firestore
+    await _firestore.collection('shelters').doc(shelterId).set({
+      'name': shelterData.name,
+      'address': shelterData.address,
+      'createdAt': shelterData.createdAt,
+      'managementSoftware': shelterData.managementSoftware,
+      'shelterSettings': shelterData.shelterSettings.toMap(),
+      'deviceSettings': shelterData.deviceSettings.toMap(),
+      'volunteerSettings': shelterData.volunteerSettings.toMap(),
+    });
 
-  print('Shelter data uploaded for: $shelterName');
+    print('Shelter data uploaded for: $shelterName');
 
-  // After creating shelter, upload cats and dogs from CSV or placeholders
-  await addAnimalsFromCSV(shelterId);
-}
+    // After creating shelter, upload cats and dogs from CSV or placeholders
+    await addAnimalsFromCSV(shelterId);
+  }
 
   Future<void> createUserDocument({
     required String uid,
@@ -178,8 +184,6 @@ class AuthRepository {
       'shelterID': shelterId,
       'type': 'admin',
     });
-
-  
 
     createShelterWithPlaceholder(
         shelterId: shelterId,
