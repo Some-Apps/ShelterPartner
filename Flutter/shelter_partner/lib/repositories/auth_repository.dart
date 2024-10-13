@@ -5,7 +5,6 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/models/api_key.dart';
 import 'package:shelter_partner/models/device_settings.dart';
 import 'package:shelter_partner/models/geofence.dart';
 import 'package:shelter_partner/models/scheduled_report.dart';
@@ -73,6 +72,7 @@ class AuthRepository {
     createdAt: Timestamp.now(),
     managementSoftware: selectedManagementSoftware,
     shelterSettings: ShelterSettings(
+      scheduledReports: [],
       catTags: ['Calm', 'Playful', 'Independent'], // Example placeholder tags
       dogTags: ['Friendly', 'Energetic', 'Loyal'],
       earlyPutBackReasons: ['Sick', 'Behavioral'],
@@ -82,12 +82,6 @@ class AuthRepository {
       requestLimit: 1000,
     ),
     deviceSettings: DeviceSettings(
-      scheduledReports: [
-        ScheduledReport(
-            email: 'report@shelter.com',
-            days: ['Monday', 'Friday'],
-            type: 'Weekly')
-      ],
       adminMode: true,
       photoUploadsAllowed: true,
       mainSort: 'Last Let Out',

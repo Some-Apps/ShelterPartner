@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
+import 'package:uuid/uuid.dart';
 
-class ArrayModifierPage extends ConsumerStatefulWidget {
+class ScheduledReportsPage extends ConsumerStatefulWidget {
   final String title;
   final String arrayKey;
 
-  const ArrayModifierPage({
+  const ScheduledReportsPage({
     required this.title,
     required this.arrayKey,
     super.key,
   });
 
   @override
-  _ArrayModifierPageState createState() => _ArrayModifierPageState();
+  _ScheduledReportsPageState createState() => _ScheduledReportsPageState();
 }
 
-class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
+class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _itemController = TextEditingController();
+  List<String> _arrayItems = [];
 
   @override
   void dispose() {
@@ -48,7 +51,9 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
         ),
       ),
       data: (shelter) {
-        final List arrayItems = shelter!.shelterSettings.getArray(widget.arrayKey);
+        if (_arrayItems.isEmpty) {
+          _arrayItems = shelter!.shelterSettings.getArray(widget.arrayKey);
+        }
 
         return Scaffold(
           appBar: AppBar(
@@ -69,11 +74,11 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                       TextFormField(
                         controller: _itemController,
                         decoration: const InputDecoration(
-                          labelText: 'Item Name',
+                          labelText: 'Report Title',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a name';
+                            return 'Please enter a report title';
                           }
                           return null;
                         },
@@ -83,18 +88,26 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
                             final itemName = _itemController.text;
+                            final id = Uuid().v4();
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
-                                .addStringToShelterSettingsArray(
-                                    shelter.id, widget.arrayKey, itemName);
+                                .addMapToShelterSettingsArray(
+                                    shelter!.id,
+                                    "scheduledReports",
+                                    {"title": itemName, "id": id});
+                            setState(() {
+                              _arrayItems.add(itemName);
+                            });
                             _itemController.clear();
+                            
                           }
                         },
-                        child: const Text('Add Item'),
+                        child: const Text('Add Report'),
                       ),
+                     
                       const SizedBox(height: 20.0),
                       Text(
-                        'Existing Items:',
+                        'Existing Reports:',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 10.0),
@@ -105,31 +118,44 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                             if (newIndex > oldIndex) {
                               newIndex -= 1;
                             }
-                            final item = arrayItems.removeAt(oldIndex);
-                            arrayItems.insert(newIndex, item);
+                            final item = _arrayItems.removeAt(oldIndex);
+                            _arrayItems.insert(newIndex, item);
                           });
+                          final List<Map<String, dynamic>> arrayItemsMap =
+                              _arrayItems
+                                  .map((item) => {
+                                        "title": item,
+                                        "id": UniqueKey().toString()
+                                      })
+                                  .toList();
                           ref
                               .read(shelterSettingsViewModelProvider.notifier)
-                              .reorderShelterSettingsArray(
-                                  shelter.id, widget.arrayKey, arrayItems.cast<String>());
+                              .reorderMapArrayInShelterSettings(
+                                  shelter!.id, widget.arrayKey, arrayItemsMap);
                         },
                         children: [
-                          for (int index = 0; index < arrayItems.length; index++)
+                          for (int index = 0;
+                              index < _arrayItems.length;
+                              index++)
                             Dismissible(
-                              key: ValueKey(arrayItems[index]),
+                              key: ValueKey(_arrayItems[index]),
                               direction: DismissDirection.endToStart,
                               onDismissed: (direction) {
-                                final removedItem = arrayItems[index];
+                                final removedItemTitle = _arrayItems[index];
                                 setState(() {
-                                  arrayItems.removeAt(index);
+                                  _arrayItems.removeAt(index);
                                 });
+                                final removedItem = {
+                                  "title": removedItemTitle,
+                                  "id": UniqueKey().toString()
+                                };
                                 ref
-                                    .read(
-                                        shelterSettingsViewModelProvider.notifier)
-                                    .removeStringFromShelterSettingsArray(
-                                        shelter.id,
+                                    .read(shelterSettingsViewModelProvider
+                                        .notifier)
+                                    .removeMapFromShelterSettingsArrayById(
+                                        shelter!.id,
                                         widget.arrayKey,
-                                        removedItem);
+                                        removedItem['id']!);
                               },
                               background: Container(
                                 color: Colors.red,
@@ -142,7 +168,7 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                                 ),
                               ),
                               child: ListTile(
-                                title: Text(arrayItems[index]),
+                                title: Text(_arrayItems[index]),
                               ),
                             ),
                         ],

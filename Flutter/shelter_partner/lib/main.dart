@@ -13,6 +13,7 @@ import 'package:shelter_partner/views/pages/api_keys_page.dart';
 import 'package:shelter_partner/views/pages/array_modifier_page.dart';
 import 'package:shelter_partner/views/pages/device_settings_page.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
+import 'package:shelter_partner/views/pages/scheduled_reports_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:shelter_partner/views/pages/shelter_settings_page.dart';
 import 'package:shelter_partner/views/pages/visitor_page.dart';
@@ -120,7 +121,7 @@ class MyApp extends StatelessWidget {
                       GoRoute(
                         path: 'scheduled-reports', // This is relative to '/volunteers'
                         pageBuilder: (context, state) =>
-                            const MaterialPage(child: ApiKeysPage(
+                            const MaterialPage(child: ScheduledReportsPage(
                               title: 'Scheduled Reports',
                               arrayKey: 'scheduledReports'
                             )),

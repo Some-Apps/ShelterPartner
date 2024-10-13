@@ -1,6 +1,8 @@
 import 'package:shelter_partner/models/api_key.dart';
+import 'package:shelter_partner/models/scheduled_report.dart';
 
 class ShelterSettings {
+  final List<ScheduledReport> scheduledReports;
   final List<String> catTags;
   final List<String> dogTags;
   final List<String> earlyPutBackReasons;
@@ -10,6 +12,7 @@ class ShelterSettings {
   final int requestLimit;
 
   ShelterSettings({
+    required this.scheduledReports,
     required this.catTags,
     required this.dogTags,
     required this.earlyPutBackReasons,
@@ -22,6 +25,8 @@ class ShelterSettings {
   // Method to dynamically return a list based on the key
   List<String> getArray(String key) {
     switch (key) {
+      case 'scheduledReports':
+        return scheduledReports.map((report) => report.title).toList();
       case 'catTags':
         return catTags;
       case 'dogTags':
@@ -40,6 +45,9 @@ class ShelterSettings {
   // Convert ShelterSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
     return {
+      'scheduledReports': scheduledReports
+          .map((report) => report.toMap())
+          .toList(), // Convert each ScheduledReport to a Map
       'catTags': catTags,
       'dogTags': dogTags,
       'earlyPutBackReasons': earlyPutBackReasons,
@@ -55,6 +63,12 @@ class ShelterSettings {
   // Factory constructor to create ShelterSettings from Firestore Map
   factory ShelterSettings.fromMap(Map<String, dynamic> data) {
     return ShelterSettings(
+      scheduledReports: (data['scheduledReports'] as List<dynamic>?)
+              ?.map((reportMap) => reportMap is Map<String, dynamic>
+                  ? ScheduledReport.fromMap(reportMap)
+                  : throw Exception("Invalid ScheduledReport data"))
+              .toList() ??
+          [],
       catTags: (data['catTags'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
@@ -72,9 +86,11 @@ class ShelterSettings {
               .toList() ??
           [],
       apiKeys: (data['apiKeys'] as List<dynamic>?)
-              ?.map((apiKeyMap) => 
-                  apiKeyMap is Map<String, dynamic> ? APIKey.fromMap(apiKeyMap) : throw Exception("Invalid APIKey data"))
-              .toList() ?? [],
+              ?.map((apiKeyMap) => apiKeyMap is Map<String, dynamic>
+                  ? APIKey.fromMap(apiKeyMap)
+                  : throw Exception("Invalid APIKey data"))
+              .toList() ??
+          [],
       requestCount: data['requestCount'] ?? 0,
       requestLimit: data['requestLimit'] ?? 0,
     );

@@ -128,6 +128,16 @@ Future<void> modifyDeviceSettingString(String shelterID, String field, String ne
   }
 }
 
+// Remove map from array within shelterSettings attribute using the id attribute
+Future<void> removeMapFromShelterSettingsArrayById(String shelterID, String field, String id) async {
+  try {
+    await _repository.removeMapFromShelterSettingsArray(shelterID, field, id);
+  } catch (error) {
+    print("Error removing map from array by id: $error");
+    state = AsyncValue.error("Error removing map from array by id: $error", StackTrace.current);
+  }
+}
+
 
 // Decrement attribute in Firestore document within volunteerSettings
 Future<void> decrementDeviceSetting(String shelterID, String field) async {

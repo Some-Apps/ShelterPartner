@@ -1,7 +1,6 @@
 import 'package:shelter_partner/models/scheduled_report.dart';
 
 class DeviceSettings {
-  final List<ScheduledReport> scheduledReports;
   final bool adminMode;
   final bool photoUploadsAllowed;
   final String mainSort;
@@ -27,7 +26,6 @@ class DeviceSettings {
   final bool appendAnimalDataToURL;
 
   DeviceSettings({
-    required this.scheduledReports,
     required this.adminMode,
     required this.photoUploadsAllowed,
     required this.mainSort,
@@ -56,7 +54,6 @@ class DeviceSettings {
   // Convert DeviceSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
     return {
-      'scheduledReports': scheduledReports.map((report) => report.toMap()).toList(),
       'adminMode': adminMode,
       'photoUploadsAllowed': photoUploadsAllowed,
       'mainSort': mainSort,
@@ -86,9 +83,6 @@ class DeviceSettings {
   // Factory constructor to create DeviceSettings from Firestore Map
   factory DeviceSettings.fromMap(Map<String, dynamic> data) {
     return DeviceSettings(
-      scheduledReports: (data['scheduledReports'] as List<dynamic>)
-          .map((reportMap) => ScheduledReport.fromMap(reportMap as Map<String, dynamic>))
-          .toList(),
       adminMode: data['adminMode'] ?? false,
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "Unknown",

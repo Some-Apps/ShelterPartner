@@ -43,6 +43,39 @@ class ShelterSettingsRepository {
     });
   }
 
+  // Method to remove a map from an array within shelterSettings attribute based on its id attribute
+  Future<void> removeMapFromShelterSettingsArray(
+    String shelterID, String field, String id) async {
+    final docRef = _firestore.collection('shelters').doc(shelterID);
+    final snapshot = await docRef.get();
+
+    // Check if document exists
+    if (!snapshot.exists) {
+      throw Exception("Document does not exist");
+    }
+
+    List<dynamic> currentArray = snapshot.data()?['shelterSettings'][field] ?? [];
+
+    // Find the map with the matching id
+    Map<String, dynamic>? mapToRemove;
+    for (var map in currentArray) {
+      if (map is Map<String, dynamic> && map['id'] == id) {
+        mapToRemove = map;
+        break;
+      }
+    }
+
+    if (mapToRemove != null) {
+      return docRef.update({
+        'shelterSettings.$field': FieldValue.arrayRemove([mapToRemove]),
+      }).catchError((error) {
+        throw Exception("Failed to remove map from array: $error");
+      });
+    } else {
+      throw Exception("Map with the specified id not found");
+    }
+  }
+
   // Method to remove a string from an array within shelterSettings attribute
   Future<void> removeStringFromShelterSettingsArray(
       String shelterID, String field, String value) async {
