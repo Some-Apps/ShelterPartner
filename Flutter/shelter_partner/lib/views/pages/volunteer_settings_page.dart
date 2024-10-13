@@ -69,33 +69,6 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             }
                           },
                         ),
-                        PickerView(
-                          title: "Secondary Sort",
-                          options: const ["None", "Color", "Location"],
-                          value: shelter?.volunteerSettings.secondarySort ??
-                              "None",
-                          onChanged: (String? newValue) {
-                            if (newValue != null && newValue.isNotEmpty) {
-                              ref
-                                  .read(volunteersViewModelProvider.notifier)
-                                  .modifyVolunteerSettingString(
-                                      shelter!.id, "secondarySort", newValue);
-                            }
-                          },
-                        ),
-                        PickerView(
-                          title: "Group By",
-                          options: const ["None"],
-                          value: shelter?.volunteerSettings.groupBy ?? "None",
-                          onChanged: (String? newValue) {
-                            if (newValue != null && newValue.isNotEmpty) {
-                              ref
-                                  .read(volunteersViewModelProvider.notifier)
-                                  .modifyVolunteerSettingString(
-                                      shelter!.id, "groupBy", newValue);
-                            }
-                          },
-                        ),
                       ]),
                     ),
                   ),
@@ -287,25 +260,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 .toggleAttribute(shelter!.id, "showAllAnimals");
                           },
                         ),
-                        SwitchToggleView(
-                          title: "Show Search Bar",
-                          value:
-                              shelter?.volunteerSettings.showSearchBar ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showSearchBar");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Show Filter",
-                          value: shelter?.volunteerSettings.showFilter ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showFilter");
-                          },
-                        ),
+                    
                         SwitchToggleView(
                           title: "Show Custom Form",
                           value: shelter?.volunteerSettings.showCustomForm ??

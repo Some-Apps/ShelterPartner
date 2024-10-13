@@ -70,33 +70,6 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                             }
                           },
                         ),
-                        PickerView(
-                          title: "Secondary Sort",
-                          options: const ["None", "Color", "Location"],
-                          value: user?.deviceSettings.secondarySort ??
-                              "None",
-                          onChanged: (String? newValue) {
-                            if (newValue != null && newValue.isNotEmpty) {
-                              ref
-                                  .read(deviceSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
-                                      user!.id, "secondarySort", newValue);
-                            }
-                          },
-                        ),
-                        PickerView(
-                          title: "Group By",
-                          options: const ["None"],
-                          value: user?.deviceSettings.groupBy ?? "None",
-                          onChanged: (String? newValue) {
-                            if (newValue != null && newValue.isNotEmpty) {
-                              ref
-                                  .read(deviceSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
-                                      user!.id, "groupBy", newValue);
-                            }
-                          },
-                        ),
                       ]),
                     ),
                   ),
@@ -299,25 +272,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                 .toggleAttribute(user!.id, "showAllAnimals");
                           },
                         ),
-                        SwitchToggleView(
-                          title: "Show Search Bar",
-                          value:
-                              user?.deviceSettings.showSearchBar ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(user!.id, "showSearchBar");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Show Filter",
-                          value: user?.deviceSettings.showFilter ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(user!.id, "showFilter");
-                          },
-                        ),
+ 
                         SwitchToggleView(
                           title: "Show Custom Form",
                           value: user?.deviceSettings.showCustomForm ??

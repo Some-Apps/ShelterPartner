@@ -3,8 +3,6 @@ class DeviceSettings {
   final bool adminMode;
   final bool photoUploadsAllowed;
   final String mainSort;
-  final String secondarySort;
-  final String groupBy;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
   final bool automaticallyPutBackAnimals;
@@ -17,8 +15,6 @@ class DeviceSettings {
   final bool showNoteDates;
   final bool showLogs;
   final bool showAllAnimals;
-  final bool showSearchBar;
-  final bool showFilter;
   final bool showCustomForm;
   final String customFormURL;
   final String buttonType;
@@ -28,8 +24,6 @@ class DeviceSettings {
     required this.adminMode,
     required this.photoUploadsAllowed,
     required this.mainSort,
-    required this.secondarySort,
-    required this.groupBy,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
     required this.automaticallyPutBackAnimals,
@@ -42,8 +36,6 @@ class DeviceSettings {
     required this.showNoteDates,
     required this.showLogs,
     required this.showAllAnimals,
-    required this.showSearchBar,
-    required this.showFilter,
     required this.showCustomForm,
     required this.customFormURL,
     required this.buttonType,
@@ -55,8 +47,6 @@ class DeviceSettings {
       adminMode: changes.containsKey('adminMode') ? changes['adminMode'] : this.adminMode,
       photoUploadsAllowed: changes.containsKey('photoUploadsAllowed') ? changes['photoUploadsAllowed'] : this.photoUploadsAllowed,
       mainSort: changes.containsKey('mainSort') ? changes['mainSort'] : this.mainSort,
-      secondarySort: changes.containsKey('secondarySort') ? changes['secondarySort'] : this.secondarySort,
-      groupBy: changes.containsKey('groupBy') ? changes['groupBy'] : this.groupBy,
       allowBulkTakeOut: changes.containsKey('allowBulkTakeOut') ? changes['allowBulkTakeOut'] : this.allowBulkTakeOut,
       minimumLogMinutes: changes.containsKey('minimumLogMinutes') ? changes['minimumLogMinutes'] : this.minimumLogMinutes,
       automaticallyPutBackAnimals: changes.containsKey('automaticallyPutBackAnimals') ? changes['automaticallyPutBackAnimals'] : this.automaticallyPutBackAnimals,
@@ -69,8 +59,6 @@ class DeviceSettings {
       showNoteDates: changes.containsKey('showNoteDates') ? changes['showNoteDates'] : this.showNoteDates,
       showLogs: changes.containsKey('showLogs') ? changes['showLogs'] : this.showLogs,
       showAllAnimals: changes.containsKey('showAllAnimals') ? changes['showAllAnimals'] : this.showAllAnimals,
-      showSearchBar: changes.containsKey('showSearchBar') ? changes['showSearchBar'] : this.showSearchBar,
-      showFilter: changes.containsKey('showFilter') ? changes['showFilter'] : this.showFilter,
       showCustomForm: changes.containsKey('showCustomForm') ? changes['showCustomForm'] : this.showCustomForm,
       customFormURL: changes.containsKey('customFormURL') ? changes['customFormURL'] : this.customFormURL,
       buttonType: changes.containsKey('buttonType') ? changes['buttonType'] : this.buttonType,
@@ -84,8 +72,6 @@ class DeviceSettings {
       'adminMode': adminMode,
       'photoUploadsAllowed': photoUploadsAllowed,
       'mainSort': mainSort,
-      'secondarySort': secondarySort,
-      'groupBy': groupBy,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
@@ -98,8 +84,6 @@ class DeviceSettings {
       'showNoteDates': showNoteDates,
       'showLogs': showLogs,
       'showAllAnimals': showAllAnimals,
-      'showSearchBar': showSearchBar,
-      'showFilter': showFilter,
       'showCustomForm': showCustomForm,
       'customFormURL': customFormURL,
       'buttonType': buttonType,
@@ -113,8 +97,6 @@ class DeviceSettings {
       adminMode: data['adminMode'] ?? false,
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "Unknown",
-      secondarySort: data['secondarySort'] ?? "Unknown",
-      groupBy: data['groupBy'] ?? "Unknown",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
@@ -127,8 +109,6 @@ class DeviceSettings {
       showNoteDates: data['showNoteDates'] ?? false,
       showLogs: data['showLogs'] ?? false,
       showAllAnimals: data['showAllAnimals'] ?? false,
-      showSearchBar: data['showSearchBar'] ?? false,
-      showFilter: data['showFilter'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       buttonType: data['buttonType'] ?? "Unknown",
