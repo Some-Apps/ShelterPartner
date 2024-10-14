@@ -80,6 +80,7 @@ class AuthRepository {
       adminMode: true,
       photoUploadsAllowed: true,
       mainSort: 'Last Let Out',
+      visitorSort: 'At Shelter Longest',
       allowBulkTakeOut: true,
       minimumLogMinutes: 10,
       automaticallyPutBackAnimals: true,

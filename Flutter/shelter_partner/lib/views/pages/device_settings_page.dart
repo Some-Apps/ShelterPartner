@@ -70,6 +70,20 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                             }
                           },
                         ),
+                        PickerView(
+                          title: "Visitor Sort",
+                          options: const ["At Shelter Longest", "Alphabetical"],
+                          value: user?.deviceSettings.visitorSort ??
+                              "At Shelter Longest",
+                          onChanged: (String? newValue) {
+                            if (newValue != null && newValue.isNotEmpty) {
+                              ref
+                                  .read(deviceSettingsViewModelProvider.notifier)
+                                  .modifyDeviceSettingString(
+                                      user!.id, "visitorSort", newValue);
+                            }
+                          },
+                        ),
                       ]),
                     ),
                   ),

@@ -3,6 +3,7 @@ class DeviceSettings {
   final bool adminMode;
   final bool photoUploadsAllowed;
   final String mainSort;
+  final String visitorSort;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
   final bool automaticallyPutBackAnimals;
@@ -24,6 +25,7 @@ class DeviceSettings {
     required this.adminMode,
     required this.photoUploadsAllowed,
     required this.mainSort,
+    required this.visitorSort,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
     required this.automaticallyPutBackAnimals,
@@ -47,6 +49,7 @@ class DeviceSettings {
       adminMode: changes.containsKey('adminMode') ? changes['adminMode'] : adminMode,
       photoUploadsAllowed: changes.containsKey('photoUploadsAllowed') ? changes['photoUploadsAllowed'] : photoUploadsAllowed,
       mainSort: changes.containsKey('mainSort') ? changes['mainSort'] : mainSort,
+      visitorSort: changes.containsKey('visitorSort') ? changes['visitorSort'] : visitorSort,
       allowBulkTakeOut: changes.containsKey('allowBulkTakeOut') ? changes['allowBulkTakeOut'] : allowBulkTakeOut,
       minimumLogMinutes: changes.containsKey('minimumLogMinutes') ? changes['minimumLogMinutes'] : minimumLogMinutes,
       automaticallyPutBackAnimals: changes.containsKey('automaticallyPutBackAnimals') ? changes['automaticallyPutBackAnimals'] : automaticallyPutBackAnimals,
@@ -72,6 +75,7 @@ class DeviceSettings {
       'adminMode': adminMode,
       'photoUploadsAllowed': photoUploadsAllowed,
       'mainSort': mainSort,
+      'visitorSort': visitorSort,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
@@ -97,6 +101,7 @@ class DeviceSettings {
       adminMode: data['adminMode'] ?? false,
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "Unknown",
+      visitorSort: data['visitorSort'] ?? "Unknown",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
