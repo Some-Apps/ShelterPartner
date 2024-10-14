@@ -66,7 +66,7 @@ Contributors who make 60 approved pull requests or more per year will be given a
         </a>
       </td>
       <td><a href="https://github.com/JaredDanielJones"><strong>JaredDanielJones</strong></a></td>
-      <td><strong>62 contributions</strong></td>
+      <td><strong>61 contributions</strong></td>
       <td>NA</td>
     </tr>
         <tr>
@@ -81,22 +81,22 @@ Contributors who make 60 approved pull requests or more per year will be given a
     </tr>
         <tr>
       <td>
+        <a href="https://github.com/jacobthejones">
+          <img src="https://avatars.githubusercontent.com/u/84295480?v=4?s=100" width="100" height="100" alt="jacobthejones's avatar"/>
+        </a>
+      </td>
+      <td><a href="https://github.com/jacobthejones"><strong>jacobthejones</strong></a></td>
+      <td><strong>2 contributions</strong></td>
+      <td>Gather Account</td>
+    </tr>
+        <tr>
+      <td>
         <a href="https://github.com/kateoconn1">
           <img src="https://avatars.githubusercontent.com/u/112118523?v=4?s=100" width="100" height="100" alt="kateoconn1's avatar"/>
         </a>
       </td>
       <td><a href="https://github.com/kateoconn1"><strong>kateoconn1</strong></a></td>
       <td><strong>2 contributions</strong></td>
-      <td>Gather Account</td>
-    </tr>
-        <tr>
-      <td>
-        <a href="https://github.com/jacobthejones">
-          <img src="https://avatars.githubusercontent.com/u/84295480?v=4?s=100" width="100" height="100" alt="jacobthejones's avatar"/>
-        </a>
-      </td>
-      <td><a href="https://github.com/jacobthejones"><strong>jacobthejones</strong></a></td>
-      <td><strong>1 contributions</strong></td>
       <td>Gather Account</td>
     </tr>
   </tbody>
