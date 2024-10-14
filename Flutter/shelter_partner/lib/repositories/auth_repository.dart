@@ -7,10 +7,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/device_settings.dart';
 import 'package:shelter_partner/models/geofence.dart';
+import 'package:shelter_partner/models/photo.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/models/volunteer_settings.dart';
+import 'package:uuid/uuid.dart';
 import '../models/app_user.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -242,7 +244,7 @@ class AuthRepository {
           'startTime':
               FieldValue.serverTimestamp(), // Add timestamps for Firestore
           'created': FieldValue.serverTimestamp(),
-          'photos': [], // Example placeholder for photos
+          'photos': [Photo(id: Uuid().v4(), url: "https://storage.googleapis.com/development-e5282.appspot.com/Dogs/$animalId.jpeg", timestamp: Timestamp.now())], // Example placeholder for photos
           'sex': row['sex'] ?? 'Unknown',
           'age': row['age'] ?? 'Unknown',
           'breed': row['breed'] ?? 'Unknown',
