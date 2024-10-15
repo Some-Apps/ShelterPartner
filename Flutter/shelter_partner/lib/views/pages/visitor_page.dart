@@ -31,6 +31,8 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   // Selected animal type ('cats' or 'dogs')
   String selectedAnimalType = 'cats';
 
+  bool _hasPreloadedImages = false; // Flag to control preloading
+
   @override
   void initState() {
     super.initState();
@@ -43,21 +45,15 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_onTabChanged);
-
-    // Remove this line
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _preloadImages();
-    // });
   }
 
   void _onTabChanged() {
     if (_tabController.indexIsChanging) {
       setState(() {
         selectedAnimalType = _tabController.index == 0 ? 'cats' : 'dogs';
+        _hasPreloadedImages = false; // Reset the flag for the new selection
         // Reset scroll position
         _scrollController.jumpTo(0);
-        // Preload images for the new selection
-        _preloadImages();
       });
     }
   }
@@ -72,12 +68,16 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   void _preloadImages() {
     if (!mounted) return;
 
-    final animalsMap = ref.watch(visitorsViewModelProvider);
+    final animalsMap = ref.read(visitorsViewModelProvider);
     final animals = animalsMap[selectedAnimalType] ?? [];
 
     if (animals.isEmpty) return;
 
+    // Add this check
+    if (!_scrollController.hasClients) return;
+
     double scrollOffset = _scrollController.position.pixels;
+
     double screenWidth = MediaQuery.of(context).size.width;
     int crossAxisCount = (screenWidth / maxItemExtent).ceil();
 
@@ -93,6 +93,8 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
     startIndex = startIndex.clamp(0, animals.length - 1);
     endIndex = endIndex.clamp(0, animals.length - 1);
+
+    if (startIndex > endIndex) return;
 
     for (int i = startIndex; i <= endIndex; i++) {
       final animal = animals[i];
@@ -145,13 +147,10 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
     final animalsMap = ref.watch(visitorsViewModelProvider);
     final animals = animalsMap[selectedAnimalType] ?? [];
 
-    // Listen for changes in the animals data
-    ref.listen<Map<String, List<Animal>>>(visitorsViewModelProvider,
-        (prev, next) {
-      if (prev != next) {
-        _preloadImages();
-      }
-    });
+    if (!_hasPreloadedImages && animals.isNotEmpty) {
+      _hasPreloadedImages = true;
+      _preloadImages();
+    }
 
     double screenWidth = MediaQuery.of(context).size.width;
     int crossAxisCount = (screenWidth / maxItemExtent).ceil();
@@ -167,62 +166,197 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
           ],
         ),
       ),
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverGrid(
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: maxItemExtent,
-              childAspectRatio: 1.0,
-            ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final animal = animals[index];
-                final imageUrl =
-                    getResizedImageUrl(animal, maxItemExtent.toInt());
+      body: animals.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverGrid(
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: maxItemExtent,
+                    childAspectRatio: 1.0,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final animal = animals[index];
+                      final imageUrl =
+                          getResizedImageUrl(animal, maxItemExtent.toInt());
 
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: InkWell(
-                    onTap: () {},
-                    child: AspectRatio(
-                      aspectRatio: 1.0,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16.0),
-                        child: Container(
-                          color: Colors.grey[300],
-                          child: CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) => const Center(
-                              child: Icon(Icons.error, color: Colors.red),
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onTap: () {},
+                          child: AspectRatio(
+                            aspectRatio: 1.0,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16.0),
+                              child: Container(
+                                color: Colors.grey[300],
+                                child: CachedNetworkImage(
+                                  imageUrl: imageUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Center(
+                                    child: Icon(Icons.error, color: Colors.red),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
+                      );
+                    },
+                    childCount: animals.length,
+                  ),
+                ),
+                // "Start Slideshow" button at the end of the scroll view
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Center(
+                      child: ElevatedButton(
+                        onPressed: animals.isNotEmpty
+                            ? () {
+                                Navigator.of(context, rootNavigator: true).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        SlideshowScreen(animals: animals),
+                                  ),
+                                );
+                              }
+                            : null,
+                        child: const Text('Start Slideshow'),
                       ),
                     ),
                   ),
-                );
-              },
-              childCount: animals.length,
-            ),
-          ),
-          // "Start Slideshow" button at the end of the scroll view
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: () {}, // Does nothing for now
-                  child: const Text('Start Slideshow'),
                 ),
-              ),
+              ],
+            ),
+    );
+  }
+}
+
+// SlideshowScreen widget (as above)
+
+class SlideshowScreen extends StatefulWidget {
+  final List<Animal> animals;
+
+  const SlideshowScreen({Key? key, required this.animals}) : super(key: key);
+
+  @override
+  _SlideshowScreenState createState() => _SlideshowScreenState();
+}
+
+class _SlideshowScreenState extends State<SlideshowScreen> {
+  int _currentIndex = 0;
+  late Timer _timer;
+  late List<Animal> _shuffledAnimals;
+  String _currentImageUrl = '';
+  Animal? _currentAnimal;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Shuffle the list of animals
+    _shuffledAnimals = List.from(widget.animals)..shuffle();
+
+    // Set the initial image URL and animal
+    _setCurrentImage();
+
+    // Start the slideshow
+    _startSlideshow();
+  }
+
+  void _setCurrentImage() {
+    final animal = _shuffledAnimals[_currentIndex];
+    _currentAnimal = animal; // Set the current animal
+    if (animal.photos.isNotEmpty) {
+      _currentImageUrl = animal.photos.first.url; // Use full-res image
+    } else {
+      _currentImageUrl = '';
+    }
+  }
+
+  void _startSlideshow() {
+    // Start the timer to change images every 10 seconds
+    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+      setState(() {
+        _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
+        _setCurrentImage();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Handle the case where there is no image
+    Widget imageWidget;
+    if (_currentImageUrl.isNotEmpty) {
+      imageWidget = CachedNetworkImage(
+        key: ValueKey<String>(_currentImageUrl),
+        imageUrl: _currentImageUrl,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    } else {
+      imageWidget = Center(
+        child: Text(
+          'No Image Available',
+          style: TextStyle(color: Colors.white, fontSize: 24),
+        ),
+      );
+    }
+
+    // Wrap imageWidget in a Stack to overlay the name
+    Widget content = Stack(
+      key: ValueKey<String>(_currentImageUrl),
+      children: [
+        imageWidget,
+        Positioned(
+          top: 50.0,
+          right: 50.0,
+          child: Text(
+            _currentAnimal?.name ?? '',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              shadows: [
+                Shadow(
+                  offset: Offset(1.0, 1.0),
+                  blurRadius: 3.0,
+                  color: Colors.black,
+                ),
+              ],
             ),
           ),
-        ],
+        ),
+      ],
+    );
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context); // Dismiss the slideshow
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: AnimatedSwitcher(
+          duration: Duration(seconds: 2), // Duration of the fade transition
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: content,
+        ),
       ),
     );
   }

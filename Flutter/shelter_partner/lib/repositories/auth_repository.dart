@@ -80,7 +80,7 @@ class AuthRepository {
       adminMode: true,
       photoUploadsAllowed: true,
       mainSort: 'Last Let Out',
-      visitorSort: 'At Shelter Longest',
+      visitorSort: 'Alphabetical',
       allowBulkTakeOut: true,
       minimumLogMinutes: 10,
       automaticallyPutBackAnimals: true,
@@ -246,6 +246,7 @@ class AuthRepository {
           'startTime':
               FieldValue.serverTimestamp(), // Add timestamps for Firestore
           'created': FieldValue.serverTimestamp(),
+          'intakeDate': FieldValue.serverTimestamp(),
           'photos': [
             {
               'id': const Uuid().v4(),

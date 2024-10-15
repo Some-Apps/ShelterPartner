@@ -54,6 +54,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [
+
                         PickerView(
                           title: "Main Sort",
                           options: const ["Last Let Out", "Alphabetical"],
@@ -259,6 +260,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 .toggleAttribute(shelter!.id, "showAllAnimals");
                           },
                         ),
+                    
                         SwitchToggleView(
                           title: "Show Custom Form",
                           value: shelter?.volunteerSettings.showCustomForm ??
@@ -284,40 +286,36 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                       ]),
                     ),
                   ),
-                  Card(
+                    Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
-                        children: [
-                          SwitchToggleView(
-                            title: "Georestrict",
-                            value: shelter
-                                    ?.volunteerSettings.geofence?.isEnabled ??
-                                false,
-                            onChanged: (bool newValue) {
-                              ref
-                                  .read(volunteersViewModelProvider.notifier)
-                                  .toggleAttribute(
-                                      shelter!.id, "geofence.isEnabled");
-                            },
+                      children: [
+                        SwitchToggleView(
+                        title: "Georestrict",
+                        value: shelter?.volunteerSettings.geofence?.isEnabled ?? false,
+                        onChanged: (bool newValue) {
+                          ref
+                            .read(volunteersViewModelProvider.notifier)
+                            .toggleAttribute(shelter!.id, "geofence.isEnabled");
+                        },
+                        ),
+                        ListTile(
+                        title: const Text("Georestriction Settings"),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GeorestrictionSettingsPage(),
                           ),
-                          ListTile(
-                            title: const Text("Georestriction Settings"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const GeorestrictionSettingsPage(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                          );
+                        },
+                        ),
+                      ],
                       ),
                     ),
-                  ),
+                    ),
                   const SizedBox(height: 20.0),
                 ],
               ),
