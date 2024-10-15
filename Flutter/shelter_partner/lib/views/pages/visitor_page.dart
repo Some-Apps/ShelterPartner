@@ -32,24 +32,23 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   String selectedAnimalType = 'cats';
 
   @override
-void initState() {
-  super.initState();
-  PaintingBinding.instance.imageCache.maximumSize = 100;
-  PaintingBinding.instance.imageCache.maximumSizeBytes =
-      500 * 1024 * 1024; // 500 MB
+  void initState() {
+    super.initState();
+    PaintingBinding.instance.imageCache.maximumSize = 100;
+    PaintingBinding.instance.imageCache.maximumSizeBytes =
+        500 * 1024 * 1024; // 500 MB
 
-  _scrollController = ScrollController();
-  _scrollController.addListener(_onScroll);
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
 
-  _tabController = TabController(length: 2, vsync: this);
-  _tabController.addListener(_onTabChanged);
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
 
-  // Remove this line
-  // WidgetsBinding.instance.addPostFrameCallback((_) {
-  //   _preloadImages();
-  // });
-}
-
+    // Remove this line
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _preloadImages();
+    // });
+  }
 
   void _onTabChanged() {
     if (_tabController.indexIsChanging) {
@@ -73,10 +72,10 @@ void initState() {
   void _preloadImages() {
     if (!mounted) return;
 
-  final animalsMap = ref.watch(visitorsViewModelProvider);
-  final animals = animalsMap[selectedAnimalType] ?? [];
+    final animalsMap = ref.watch(visitorsViewModelProvider);
+    final animals = animalsMap[selectedAnimalType] ?? [];
 
-  if (animals.isEmpty) return;
+    if (animals.isEmpty) return;
 
     double scrollOffset = _scrollController.position.pixels;
     double screenWidth = MediaQuery.of(context).size.width;
@@ -113,8 +112,8 @@ void initState() {
     String fileName = uri.pathSegments.last;
 
     // Determine the closest available size
-    int closestSize = availableSizes.reduce((a, b) =>
-        (a - targetWidth).abs() < (b - targetWidth).abs() ? a : b);
+    int closestSize = availableSizes.reduce(
+        (a, b) => (a - targetWidth).abs() < (b - targetWidth).abs() ? a : b);
 
     // Modify the filename to include the size suffix
     String resizedFileName = fileName.replaceFirstMapped(
@@ -144,14 +143,15 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     final animalsMap = ref.watch(visitorsViewModelProvider);
-  final animals = animalsMap[selectedAnimalType] ?? [];
+    final animals = animalsMap[selectedAnimalType] ?? [];
 
-  // Listen for changes in the animals data
-  ref.listen<Map<String, List<Animal>>>(visitorsViewModelProvider, (prev, next) {
-    if (prev != next) {
-      _preloadImages();
-    }
-  });
+    // Listen for changes in the animals data
+    ref.listen<Map<String, List<Animal>>>(visitorsViewModelProvider,
+        (prev, next) {
+      if (prev != next) {
+        _preloadImages();
+      }
+    });
 
     double screenWidth = MediaQuery.of(context).size.width;
     int crossAxisCount = (screenWidth / maxItemExtent).ceil();

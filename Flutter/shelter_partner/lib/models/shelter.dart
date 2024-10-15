@@ -33,15 +33,18 @@ class Shelter {
     return Shelter(
       id: doc.id,
       name: data['name'] ?? 'Unknown Shelter', // Default value for name
-      address: data['address'] ?? 'Unknown Address', // Default value for address
+      address:
+          data['address'] ?? 'Unknown Address', // Default value for address
       createdAt: data['createdAt'] != null
           ? data['createdAt'] as Timestamp
           : Timestamp.now(), // Default value if createdAt is null
       managementSoftware: data['managementSoftware'] ?? 'Unknown Software',
       shelterSettings: ShelterSettings.fromMap(data['shelterSettings'] ?? {}),
-      volunteerSettings: VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
+      volunteerSettings:
+          VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
       volunteers: (data['volunteers'] as List<dynamic>? ?? [])
-          .map((volunteer) => Volunteer.fromMap(volunteer as Map<String, dynamic>))
+          .map((volunteer) =>
+              Volunteer.fromMap(volunteer as Map<String, dynamic>))
           .toList(),
     );
   }

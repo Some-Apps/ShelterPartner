@@ -31,7 +31,9 @@ class AnimalsViewModel extends StateNotifier<List<Animal>> {
 }
 
 // Create a provider for the AnimalsViewModel
-final animalsViewModelProvider = StateNotifierProvider<AnimalsViewModel, List<Animal>>((ref) {
-  final repository = ref.watch(animalsRepositoryProvider); // Access the repository
+final animalsViewModelProvider =
+    StateNotifierProvider<AnimalsViewModel, List<Animal>>((ref) {
+  final repository =
+      ref.watch(animalsRepositoryProvider); // Access the repository
   return AnimalsViewModel(repository, ref); // Pass the repository and ref
 });

@@ -7,8 +7,8 @@ import 'package:uuid/uuid.dart';
 
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
 
-
-final authViewModelProvider = StateNotifierProvider<AuthViewModel, AuthState>((ref) {
+final authViewModelProvider =
+    StateNotifierProvider<AuthViewModel, AuthState>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return AuthViewModel(authRepository);
 });
@@ -39,15 +39,18 @@ class AuthViewModel extends StateNotifier<AuthState> {
     }
   }
 
- void resetState() {
+  void resetState() {
     state = AuthState.unauthenticated();
   }
+
   // Login method
   Future<void> login(String email, String password) async {
-  state = AuthState.loading(message: "Logging in...");
+    state = AuthState.loading(message: "Logging in...");
     try {
-      final userCredential = await _authRepository.signInWithEmailAndPassword(email, password);
-      final appUser = await _authRepository.getUserById(userCredential.user!.uid);
+      final userCredential =
+          await _authRepository.signInWithEmailAndPassword(email, password);
+      final appUser =
+          await _authRepository.getUserById(userCredential.user!.uid);
       if (appUser != null) {
         state = AuthState.authenticated(appUser);
       } else {
@@ -58,7 +61,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
     }
   }
 
-    Future<String?> sendPasswordReset(String email) async {
+  Future<String?> sendPasswordReset(String email) async {
     try {
       await _authRepository.sendPasswordResetEmail(email);
       return null; // Success, no error message
@@ -77,9 +80,10 @@ class AuthViewModel extends StateNotifier<AuthState> {
     required String shelterAddress,
     required String selectedManagementSoftware,
   }) async {
-  state = AuthState.loading(message: "Creating Shelter...");
+    state = AuthState.loading(message: "Creating Shelter...");
     try {
-      final userCredential = await _authRepository.signUpWithEmailAndPassword(email, password);
+      final userCredential =
+          await _authRepository.signUpWithEmailAndPassword(email, password);
       String uid = userCredential.user!.uid;
       String shelterId = const Uuid().v4();
 
@@ -107,27 +111,25 @@ class AuthViewModel extends StateNotifier<AuthState> {
   }
 
   // Logout method
-Future<void> logout(BuildContext context, WidgetRef ref) async {
-  try {
-    // Sign out from authentication provider (e.g., Firebase)
-    await _authRepository.signOut();
+  Future<void> logout(BuildContext context, WidgetRef ref) async {
+    try {
+      // Sign out from authentication provider (e.g., Firebase)
+      await _authRepository.signOut();
 
-    // Clear the appUserProvider (set to null)
-    ref.read(appUserProvider.notifier).state = null;
+      // Clear the appUserProvider (set to null)
+      ref.read(appUserProvider.notifier).state = null;
 
-    // Reset the authentication state
-    state = AuthState.unauthenticated();
+      // Reset the authentication state
+      state = AuthState.unauthenticated();
 
-    // Navigate back to the login/auth page
-    context.go('/');
-  } catch (e) {
-    // Handle any errors that occur during logout
-    state = AuthState.error("Failed to log out: ${e.toString()}");
+      // Navigate back to the login/auth page
+      context.go('/');
+    } catch (e) {
+      // Handle any errors that occur during logout
+      state = AuthState.error("Failed to log out: ${e.toString()}");
+    }
   }
 }
-
-}
-
 
 enum AuthStatus { loading, authenticated, unauthenticated, error }
 
@@ -145,7 +147,8 @@ class AuthState {
   });
 
   // Convenience constructors
-  factory AuthState.loading({String? message}) => AuthState(status: AuthStatus.loading, loadingMessage: message);
+  factory AuthState.loading({String? message}) =>
+      AuthState(status: AuthStatus.loading, loadingMessage: message);
   factory AuthState.authenticated(AppUser user) =>
       AuthState(status: AuthStatus.authenticated, user: user);
   factory AuthState.unauthenticated() =>

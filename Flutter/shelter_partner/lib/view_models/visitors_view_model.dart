@@ -11,7 +11,8 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
   StreamSubscription<List<Animal>>? _animalsSubscription;
 
-  VisitorsViewModel(this._repository, this.ref) : super({'cats': [], 'dogs': []}) {
+  VisitorsViewModel(this._repository, this.ref)
+      : super({'cats': [], 'dogs': []}) {
     // Listen to authentication state changes
     ref.listen<AuthState>(
       authViewModelProvider,
@@ -40,7 +41,8 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
   void fetchAnimals({required String shelterID}) {
     _animalsSubscription?.cancel(); // Cancel any existing subscription
-    _animalsSubscription = _repository.fetchAnimals(shelterID).listen((animals) {
+    _animalsSubscription =
+        _repository.fetchAnimals(shelterID).listen((animals) {
       final cats = animals.where((animal) => animal.species == 'cat').toList();
       final dogs = animals.where((animal) => animal.species == 'dog').toList();
       state = {'cats': cats, 'dogs': dogs};
@@ -54,10 +56,10 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   }
 }
 
-
 // Create a provider for the VisitorsViewModel
 final visitorsViewModelProvider =
     StateNotifierProvider<VisitorsViewModel, Map<String, List<Animal>>>((ref) {
-  final repository = ref.watch(visitorsRepositoryProvider); // Access the repository
+  final repository =
+      ref.watch(visitorsRepositoryProvider); // Access the repository
   return VisitorsViewModel(repository, ref); // Pass the repository and ref
 });

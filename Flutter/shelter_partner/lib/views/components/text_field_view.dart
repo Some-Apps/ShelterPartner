@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TextFieldView extends StatefulWidget {
-  final String title;  // Title for the text field
-  final String hint;   // Placeholder hint for the text field
-  final String value;  // Initial value of the text field
-  final ValueChanged<String> onSaved;  // Callback for handling save
+  final String title; // Title for the text field
+  final String hint; // Placeholder hint for the text field
+  final String value; // Initial value of the text field
+  final ValueChanged<String> onSaved; // Callback for handling save
 
   const TextFieldView({
     super.key,
@@ -24,7 +24,8 @@ class _TextFieldViewState extends State<TextFieldView> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.value);  // Initialize the controller with the initial value
+    _controller = TextEditingController(
+        text: widget.value); // Initialize the controller with the initial value
   }
 
   @override
@@ -39,7 +40,7 @@ class _TextFieldViewState extends State<TextFieldView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.title,  // Display the title
+          widget.title, // Display the title
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
@@ -49,7 +50,7 @@ class _TextFieldViewState extends State<TextFieldView> {
               child: TextField(
                 controller: _controller,
                 decoration: InputDecoration(
-                  hintText: widget.hint,  // Placeholder hint
+                  hintText: widget.hint, // Placeholder hint
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -57,8 +58,9 @@ class _TextFieldViewState extends State<TextFieldView> {
             const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () {
-                widget.onSaved(_controller.text);  // Call the callback with the current value
-                FocusScope.of(context).unfocus();  // Unfocus the text field
+                widget.onSaved(_controller
+                    .text); // Call the callback with the current value
+                FocusScope.of(context).unfocus(); // Unfocus the text field
               },
               child: const Text('Save'),
             ),

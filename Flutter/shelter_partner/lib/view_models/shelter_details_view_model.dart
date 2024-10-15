@@ -7,7 +7,8 @@ class ShelterDetailsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   final ShelterDetailsRepository _repository;
   final Ref ref;
 
-  ShelterDetailsViewModel(this._repository, this.ref) : super(const AsyncValue.loading()) {
+  ShelterDetailsViewModel(this._repository, this.ref)
+      : super(const AsyncValue.loading()) {
     _initialize(); // Start the initialization process to fetch account details
   }
 
@@ -32,9 +33,11 @@ class ShelterDetailsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   void fetchShelterDetails({required String shelterID}) {
     _repository.fetchShelterDetails(shelterID).listen((accountDetails) {
       if (accountDetails.exists) {
-        state = AsyncValue.data(Shelter.fromDocument(accountDetails)); // Update state with Shelter object
+        state = AsyncValue.data(Shelter.fromDocument(
+            accountDetails)); // Update state with Shelter object
       } else {
-        state = AsyncValue.error('No shelter found', StackTrace.current); // Handle case where no shelter is found
+        state = AsyncValue.error('No shelter found',
+            StackTrace.current); // Handle case where no shelter is found
       }
     }, onError: (error) {
       state = AsyncValue.error(error, StackTrace.current); // Handle any errors
@@ -43,7 +46,10 @@ class ShelterDetailsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 }
 
 // Provider for ShelterDetailsViewModel
-final shelterDetailsViewModelProvider = StateNotifierProvider<ShelterDetailsViewModel, AsyncValue<Shelter?>>((ref) {
-  final repository = ref.watch(shelterDetailsRepositoryProvider); // Access the repository
-  return ShelterDetailsViewModel(repository, ref); // Pass the repository and ref
+final shelterDetailsViewModelProvider =
+    StateNotifierProvider<ShelterDetailsViewModel, AsyncValue<Shelter?>>((ref) {
+  final repository =
+      ref.watch(shelterDetailsRepositoryProvider); // Access the repository
+  return ShelterDetailsViewModel(
+      repository, ref); // Pass the repository and ref
 });

@@ -223,7 +223,11 @@ class AuthRepository {
 
         final data = {
           'alert': row['alert'] ?? '',
-          'species': collectionName == 'dogs' ? 'dog' : collectionName == 'cats' ? 'cat' : 'Unknown',
+          'species': collectionName == 'dogs'
+              ? 'dog'
+              : collectionName == 'cats'
+                  ? 'cat'
+                  : 'Unknown',
           'canPlay': (row['canPlay'] ?? '').toLowerCase() ==
               'true', // Ensure boolean conversion
           'symbolColor': getRandomColor(),
@@ -245,7 +249,8 @@ class AuthRepository {
           'photos': [
             {
               'id': const Uuid().v4(),
-                'url': "https://storage.googleapis.com/development-e5282.appspot.com/${collectionName == 'dogs' ? 'Dogs' : 'Cats'}/$animalId.jpeg",
+              'url':
+                  "https://storage.googleapis.com/development-e5282.appspot.com/${collectionName == 'dogs' ? 'Dogs' : 'Cats'}/$animalId.jpeg",
               'timestamp': Timestamp.now(),
             }
           ], // Example placeholder for photos

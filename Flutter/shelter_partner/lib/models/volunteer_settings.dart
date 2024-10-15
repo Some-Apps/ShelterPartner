@@ -49,7 +49,8 @@ class VolunteerSettings {
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
-      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
+      'ignoreVisitWhenAutomaticallyPutBack':
+          ignoreVisitWhenAutomaticallyPutBack,
       'automaticPutBackHours': automaticPutBackHours,
       'requireLetOutType': requireLetOutType,
       'requireEarlyPutBackReason': requireEarlyPutBackReason,
@@ -73,12 +74,14 @@ class VolunteerSettings {
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
-      ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
+      ignoreVisitWhenAutomaticallyPutBack:
+          data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
       automaticPutBackHours: data['automaticPutBackHours'] ?? 0,
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,
-      createLogsWhenUnderMinimumDuration: data['createLogsWhenUnderMinimumDuration'] ?? false,
+      createLogsWhenUnderMinimumDuration:
+          data['createLogsWhenUnderMinimumDuration'] ?? false,
       showNoteDates: data['showNoteDates'] ?? false,
       showLogs: data['showLogs'] ?? false,
       showAllAnimals: data['showAllAnimals'] ?? false,

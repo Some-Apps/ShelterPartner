@@ -6,7 +6,6 @@ import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
 
-
 class DeviceSettingsPage extends ConsumerStatefulWidget {
   const DeviceSettingsPage({super.key});
 
@@ -50,21 +49,20 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [
-
                         PickerView(
                           title: "Main Sort",
                           options: const ["Last Let Out", "Alphabetical"],
-                          value: user?.deviceSettings.mainSort ??
-                              "Last Let Out",
+                          value:
+                              user?.deviceSettings.mainSort ?? "Last Let Out",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
-                                  .read(deviceSettingsViewModelProvider.notifier)
+                                  .read(
+                                      deviceSettingsViewModelProvider.notifier)
                                   .modifyDeviceSettingString(
                                       user!.id, "mainSort", newValue);
                             }
@@ -78,7 +76,8 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
-                                  .read(deviceSettingsViewModelProvider.notifier)
+                                  .read(
+                                      deviceSettingsViewModelProvider.notifier)
                                   .modifyDeviceSettingString(
                                       user!.id, "visitorSort", newValue);
                             }
@@ -94,12 +93,13 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         TextFieldView(
                             title: "Custom Form URL",
                             hint: "Custom Form URL",
-                            value: user?.deviceSettings.customFormURL
-                                    as String ??
-                                "",
+                            value:
+                                user?.deviceSettings.customFormURL as String ??
+                                    "",
                             onSaved: (String value) {
                               ref
-                                  .read(deviceSettingsViewModelProvider.notifier)
+                                  .read(
+                                      deviceSettingsViewModelProvider.notifier)
                                   .modifyDeviceSettingString(
                                       user!.id, "customFormURL", value);
                             }),
@@ -113,8 +113,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         NumberStepperView(
                           title: "Minimum Duration",
                           label: "minutes",
-                          value:
-                              user?.deviceSettings.minimumLogMinutes ?? 0,
+                          value: user?.deviceSettings.minimumLogMinutes ?? 0,
                           increment: () {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -131,8 +130,8 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         NumberStepperView(
                           title: "Automatic Put Back",
                           label: "hours",
-                          value: user?.deviceSettings.automaticPutBackHours ??
-                              0,
+                          value:
+                              user?.deviceSettings.automaticPutBackHours ?? 0,
                           increment: () {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -155,21 +154,17 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                       child: Column(children: [
                         SwitchToggleView(
                           title: "Admin Mode",
-                          value:
-                              user?.deviceSettings.adminMode ??
-                                  false,
+                          value: user?.deviceSettings.adminMode ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    user!.id, "adminMode");
+                                .toggleAttribute(user!.id, "adminMode");
                           },
                         ),
                         SwitchToggleView(
                           title: "Photo Uploads Allowed",
                           value:
-                              user?.deviceSettings.photoUploadsAllowed ??
-                                  false,
+                              user?.deviceSettings.photoUploadsAllowed ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -179,13 +174,11 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                         SwitchToggleView(
                           title: "Allow Bulk Take Out",
-                          value: user?.deviceSettings.allowBulkTakeOut ??
-                              false,
+                          value: user?.deviceSettings.allowBulkTakeOut ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    user!.id, "allowBulkTakeOut");
+                                .toggleAttribute(user!.id, "allowBulkTakeOut");
                           },
                         ),
                         SwitchToggleView(
@@ -214,20 +207,19 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                         SwitchToggleView(
                           title: "Require Let Out Type",
-                          value: user?.deviceSettings.requireLetOutType ??
-                              false,
+                          value:
+                              user?.deviceSettings.requireLetOutType ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    user!.id, "requireLetOutType");
+                                .toggleAttribute(user!.id, "requireLetOutType");
                           },
                         ),
                         SwitchToggleView(
                           title: "Require Early Put Back Reason",
-                          value: user?.deviceSettings
-                                  .requireEarlyPutBackReason ??
-                              false,
+                          value:
+                              user?.deviceSettings.requireEarlyPutBackReason ??
+                                  false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -237,8 +229,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                         SwitchToggleView(
                           title: "Require Name",
-                          value:
-                              user?.deviceSettings.requireName ?? false,
+                          value: user?.deviceSettings.requireName ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -259,8 +250,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                         SwitchToggleView(
                           title: "Show Note Dates",
-                          value:
-                              user?.deviceSettings.showNoteDates ?? false,
+                          value: user?.deviceSettings.showNoteDates ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -278,19 +268,16 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                         SwitchToggleView(
                           title: "Show All Animals",
-                          value: user?.deviceSettings.showAllAnimals ??
-                              false,
+                          value: user?.deviceSettings.showAllAnimals ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
                                 .toggleAttribute(user!.id, "showAllAnimals");
                           },
                         ),
- 
                         SwitchToggleView(
                           title: "Show Custom Form",
-                          value: user?.deviceSettings.showCustomForm ??
-                              false,
+                          value: user?.deviceSettings.showCustomForm ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -311,7 +298,6 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                       ]),
                     ),
                   ),
-                    
                   const SizedBox(height: 20.0),
                 ],
               ),

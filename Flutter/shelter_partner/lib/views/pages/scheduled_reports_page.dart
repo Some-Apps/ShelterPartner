@@ -133,8 +133,8 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                             );
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
-                                .addMapToShelterSettingsArray(
-                                    shelter!.id, "scheduledReports", newReport.toMap());
+                                .addMapToShelterSettingsArray(shelter!.id,
+                                    "scheduledReports", newReport.toMap());
                             setState(() {
                               _arrayItems.add(newReport);
                             });
@@ -162,7 +162,8 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                           });
                           final List<Map<String, dynamic>> arrayItemsMap =
                               _arrayItems
-                                  .map((scheduledReport) => scheduledReport.toMap())
+                                  .map((scheduledReport) =>
+                                      scheduledReport.toMap())
                                   .toList();
                           ref
                               .read(shelterSettingsViewModelProvider.notifier)

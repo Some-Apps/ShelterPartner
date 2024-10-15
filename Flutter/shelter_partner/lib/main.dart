@@ -123,7 +123,6 @@ class MyApp extends StatelessWidget {
             ],
           ),
           GoRoute(
-
               path: '/settings',
               pageBuilder: (context, state) =>
                   const MaterialPage(child: SettingsPage()),
@@ -135,65 +134,58 @@ class MyApp extends StatelessWidget {
                         const MaterialPage(child: ShelterSettingsPage()),
                     routes: [
                       GoRoute(
-                        path: 'scheduled-reports', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) =>
-                            const MaterialPage(child: ScheduledReportsPage(
-                              title: 'Scheduled Reports',
-                              arrayKey: 'scheduledReports'
-                            )),
+                        path:
+                            'scheduled-reports', // This is relative to '/volunteers'
+                        pageBuilder: (context, state) => const MaterialPage(
+                            child: ScheduledReportsPage(
+                                title: 'Scheduled Reports',
+                                arrayKey: 'scheduledReports')),
                       ),
                       GoRoute(
                         path: 'cat-tags', // This is relative to '/volunteers'
                         pageBuilder: (context, state) {
                           return const MaterialPage(
                             child: ArrayModifierPage(
-                              title: 'Cat Tags',
-                              arrayKey: 'catTags'
-                            ),
+                                title: 'Cat Tags', arrayKey: 'catTags'),
                           );
                         },
                       ),
-                       GoRoute(
+                      GoRoute(
                         path: 'dog-tags', // This is relative to '/volunteers'
                         pageBuilder: (context, state) {
                           return const MaterialPage(
                             child: ArrayModifierPage(
-                              title: 'Dog Tags',
-                              arrayKey: 'dogTags'
-                            ),
+                                title: 'Dog Tags', arrayKey: 'dogTags'),
                           );
                         },
                       ),
-                       GoRoute(
-                        path: 'early-put-back-reasons', // This is relative to '/volunteers'
+                      GoRoute(
+                        path:
+                            'early-put-back-reasons', // This is relative to '/volunteers'
                         pageBuilder: (context, state) {
                           return const MaterialPage(
                             child: ArrayModifierPage(
-                              title: 'Early Put Back Reasons',
-                              arrayKey: 'earlyPutBackReasons'
-                            ),
+                                title: 'Early Put Back Reasons',
+                                arrayKey: 'earlyPutBackReasons'),
                           );
                         },
                       ),
-                     GoRoute(
-                        path: 'let-out-types', // This is relative to '/volunteers'
+                      GoRoute(
+                        path:
+                            'let-out-types', // This is relative to '/volunteers'
                         pageBuilder: (context, state) {
                           return const MaterialPage(
                             child: ArrayModifierPage(
-                              title: 'Let Out Types',
-                              arrayKey: 'letOutTypes'
-                            ),
+                                title: 'Let Out Types',
+                                arrayKey: 'letOutTypes'),
                           );
                         },
                       ),
-                      
                       GoRoute(
                         path: 'api-keys', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) =>
-                            const MaterialPage(child: ApiKeysPage(
-                              title: 'API Keys',
-                              arrayKey: 'apiKeys'
-                            )),
+                        pageBuilder: (context, state) => const MaterialPage(
+                            child: ApiKeysPage(
+                                title: 'API Keys', arrayKey: 'apiKeys')),
                       ),
                     ]),
                 GoRoute(

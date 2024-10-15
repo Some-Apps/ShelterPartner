@@ -22,7 +22,7 @@ class ApiKeysPage extends ConsumerStatefulWidget {
 class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _itemController = TextEditingController();
-List<APIKey> _arrayItems = [];
+  List<APIKey> _arrayItems = [];
 
   @override
   void dispose() {
@@ -53,9 +53,8 @@ List<APIKey> _arrayItems = [];
       ),
       data: (shelter) {
         if (_arrayItems.isEmpty) {
-  _arrayItems = shelter!.shelterSettings.apiKeys;
-}
-
+          _arrayItems = shelter!.shelterSettings.apiKeys;
+        }
 
         return Scaffold(
           appBar: AppBar(
@@ -89,19 +88,18 @@ List<APIKey> _arrayItems = [];
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
-  final itemName = _itemController.text;
-  final newKey = const Uuid().v4();
-  final newApiKey = APIKey(name: itemName, key: newKey);
-  ref
-    .read(shelterSettingsViewModelProvider.notifier)
-    .addMapToShelterSettingsArray(
-        shelter!.id,
-        "apiKeys",
-        newApiKey.toMap());
-  setState(() {
-    _arrayItems.add(newApiKey);
-  });
-  _itemController.clear();
+                            final itemName = _itemController.text;
+                            final newKey = const Uuid().v4();
+                            final newApiKey =
+                                APIKey(name: itemName, key: newKey);
+                            ref
+                                .read(shelterSettingsViewModelProvider.notifier)
+                                .addMapToShelterSettingsArray(
+                                    shelter!.id, "apiKeys", newApiKey.toMap());
+                            setState(() {
+                              _arrayItems.add(newApiKey);
+                            });
+                            _itemController.clear();
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
@@ -131,7 +129,8 @@ List<APIKey> _arrayItems = [];
                         child: const Text('Add Key'),
                       ),
                       const SizedBox(height: 20.0),
-                      Text("${shelter?.shelterSettings.requestCount}/${shelter?.shelterSettings.requestLimit} requests made in the last 30 days"),
+                      Text(
+                          "${shelter?.shelterSettings.requestCount}/${shelter?.shelterSettings.requestLimit} requests made in the last 30 days"),
                       const SizedBox(height: 20.0),
                       GestureDetector(
                         onTap: () {
@@ -178,21 +177,22 @@ List<APIKey> _arrayItems = [];
                       ReorderableListView(
                         shrinkWrap: true,
                         onReorder: (oldIndex, newIndex) {
-  setState(() {
-    if (newIndex > oldIndex) {
-      newIndex -= 1;
-    }
-    final item = _arrayItems.removeAt(oldIndex);
-    _arrayItems.insert(newIndex, item);
-  });
-  final List<Map<String, dynamic>> arrayItemsMap =
-      _arrayItems.map((apiKey) => apiKey.toMap()).toList();
-  ref
-    .read(shelterSettingsViewModelProvider.notifier)
-    .reorderMapArrayInShelterSettings(
-        shelter!.id, widget.arrayKey, arrayItemsMap);
-},
-
+                          setState(() {
+                            if (newIndex > oldIndex) {
+                              newIndex -= 1;
+                            }
+                            final item = _arrayItems.removeAt(oldIndex);
+                            _arrayItems.insert(newIndex, item);
+                          });
+                          final List<Map<String, dynamic>> arrayItemsMap =
+                              _arrayItems
+                                  .map((apiKey) => apiKey.toMap())
+                                  .toList();
+                          ref
+                              .read(shelterSettingsViewModelProvider.notifier)
+                              .reorderMapArrayInShelterSettings(
+                                  shelter!.id, widget.arrayKey, arrayItemsMap);
+                        },
                         children: [
                           for (int index = 0;
                               index < _arrayItems.length;
@@ -201,19 +201,19 @@ List<APIKey> _arrayItems = [];
                               key: ValueKey(_arrayItems[index]),
                               direction: DismissDirection.endToStart,
                               onDismissed: (direction) {
-  final removedItem = _arrayItems[index];
-  setState(() {
-    _arrayItems.removeAt(index);
-  });
-  ref
-    .read(shelterSettingsViewModelProvider.notifier)
-    .removeMapFromShelterSettingsArray(
-      shelter!.id,
-      widget.arrayKey,
-      removedItem.toMap(),
-    );
-},
-
+                                final removedItem = _arrayItems[index];
+                                setState(() {
+                                  _arrayItems.removeAt(index);
+                                });
+                                ref
+                                    .read(shelterSettingsViewModelProvider
+                                        .notifier)
+                                    .removeMapFromShelterSettingsArray(
+                                      shelter!.id,
+                                      widget.arrayKey,
+                                      removedItem.toMap(),
+                                    );
+                              },
                               background: Container(
                                 color: Colors.red,
                                 alignment: Alignment.centerRight,
@@ -225,9 +225,8 @@ List<APIKey> _arrayItems = [];
                                 ),
                               ),
                               child: ListTile(
-  title: Text(_arrayItems[index].name),
-),
-
+                                title: Text(_arrayItems[index].name),
+                              ),
                             ),
                         ],
                       ),

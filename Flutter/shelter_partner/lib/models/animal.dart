@@ -11,14 +11,14 @@ class Animal {
   final List<Photo> photos;
 
   // todo: add rest of fields
-  
+
   Animal({
-    required this.id, 
-    required this.name, 
+    required this.id,
+    required this.name,
     required this.species,
     required this.location,
     required this.photos,
-    });
+  });
 
   factory Animal.fromFirestore(Map<String, dynamic> data, String documentId) {
     return Animal(
@@ -26,7 +26,9 @@ class Animal {
       name: data['name'] ?? 'Unknown',
       species: data['species'] ?? 'Unknown',
       location: data['location'] ?? 'Unknown',
-      photos: (data['photos'] as List).map((photo) => Photo.fromMap(photo)).toList(),
+      photos: (data['photos'] as List)
+          .map((photo) => Photo.fromMap(photo))
+          .toList(),
     );
   }
 

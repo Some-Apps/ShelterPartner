@@ -1,5 +1,3 @@
-
-
 class ScheduledReport {
   final String id;
   final String title;
@@ -31,6 +29,3 @@ class ScheduledReport {
     );
   }
 }
-
-
-

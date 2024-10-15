@@ -46,53 +46,55 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              children: [
                 const SizedBox(height: 20),
                 Card(
                   child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                    const Text("Shelter Details:"),
-                    Text("Shelter: ${shelter?.name}"),
-                    Text("ID: ${shelter?.id}"),
-                    Text("Address: ${shelter?.address}"),
-                    Text("Software: ${shelter?.managementSoftware}"),
-                    Text(
-                      "Created: ${shelter?.createdAt.toDate().day}/${shelter?.createdAt.toDate().month}/${shelter?.createdAt.toDate().year}"),
-                    ],
-                  ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Card(
-                  child: ListTile(
-                  title: const Text("Shelter Settings"),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    context.push('/settings/shelter-settings');
-                  },
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Shelter Details:"),
+                        Text("Shelter: ${shelter?.name}"),
+                        Text("ID: ${shelter?.id}"),
+                        Text("Address: ${shelter?.address}"),
+                        Text("Software: ${shelter?.managementSoftware}"),
+                        Text(
+                            "Created: ${shelter?.createdAt.toDate().day}/${shelter?.createdAt.toDate().month}/${shelter?.createdAt.toDate().year}"),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Card(
                   child: ListTile(
-                  title: const Text("Device Settings"),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    context.push('/settings/device-settings');
-                  },
+                    title: const Text("Shelter Settings"),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      context.push('/settings/shelter-settings');
+                    },
                   ),
                 ),
                 const SizedBox(height: 20),
                 Card(
                   child: ListTile(
-                  title: const Text("Logout"),
-                  trailing: const Icon(Icons.logout),
-                  onTap: () {
-                    ref.read(authViewModelProvider.notifier).logout(context, ref);
-                  },
+                    title: const Text("Device Settings"),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      context.push('/settings/device-settings');
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Card(
+                  child: ListTile(
+                    title: const Text("Logout"),
+                    trailing: const Icon(Icons.logout),
+                    onTap: () {
+                      ref
+                          .read(authViewModelProvider.notifier)
+                          .logout(context, ref);
+                    },
                   ),
                 ),
               ],
@@ -102,6 +104,4 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       ),
     );
   }
-
-
 }

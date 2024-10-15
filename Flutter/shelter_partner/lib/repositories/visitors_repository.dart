@@ -7,19 +7,21 @@ class VisitorsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Stream<List<Animal>> fetchAnimals(String shelterID) {
-    final catsStream = _firestore.collection('shelters/$shelterID/cats').snapshots();
-    final dogsStream = _firestore.collection('shelters/$shelterID/dogs').snapshots();
+    final catsStream =
+        _firestore.collection('shelters/$shelterID/cats').snapshots();
+    final dogsStream =
+        _firestore.collection('shelters/$shelterID/dogs').snapshots();
 
     return CombineLatestStream.list([catsStream, dogsStream]).map((snapshots) {
       final allAnimals = <Animal>[];
       for (var snapshot in snapshots) {
-        allAnimals.addAll(snapshot.docs.map((doc) => Animal.fromFirestore(doc.data(), doc.id)));
+        allAnimals.addAll(snapshot.docs
+            .map((doc) => Animal.fromFirestore(doc.data(), doc.id)));
       }
       return allAnimals;
     });
   }
 }
-
 
 final visitorsRepositoryProvider = Provider<VisitorsRepository>((ref) {
   return VisitorsRepository();
