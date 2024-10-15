@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/device_settings.dart';
 import 'package:shelter_partner/models/geofence.dart';
-import 'package:shelter_partner/models/photo.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
 import 'package:shelter_partner/models/volunteer.dart';
@@ -66,7 +65,6 @@ class AuthRepository {
     await _firebaseAuth.signOut();
   }
 
-
   Future<void> createUserDocument({
     required String uid,
     required String firstName,
@@ -110,7 +108,6 @@ class AuthRepository {
       'type': 'admin',
       'deviceSettings': defaultDeviceSettings.toMap(),
     });
-
 
     // Create the shelter without deviceSettings
     await createShelterWithPlaceholder(
@@ -226,6 +223,7 @@ class AuthRepository {
 
         final data = {
           'alert': row['alert'] ?? '',
+          'species': collectionName == 'dogs' ? 'dog' : collectionName == 'cats' ? 'cat' : 'Unknown',
           'canPlay': (row['canPlay'] ?? '').toLowerCase() ==
               'true', // Ensure boolean conversion
           'symbolColor': getRandomColor(),
@@ -244,7 +242,13 @@ class AuthRepository {
           'startTime':
               FieldValue.serverTimestamp(), // Add timestamps for Firestore
           'created': FieldValue.serverTimestamp(),
-          'photos': [Photo(id: Uuid().v4(), url: "https://storage.googleapis.com/development-e5282.appspot.com/Dogs/$animalId.jpeg", timestamp: Timestamp.now())], // Example placeholder for photos
+          'photos': [
+            {
+              'id': const Uuid().v4(),
+                'url': "https://storage.googleapis.com/development-e5282.appspot.com/${collectionName == 'dogs' ? 'Dogs' : 'Cats'}/$animalId.jpeg",
+              'timestamp': Timestamp.now(),
+            }
+          ], // Example placeholder for photos
           'sex': row['sex'] ?? 'Unknown',
           'age': row['age'] ?? 'Unknown',
           'breed': row['breed'] ?? 'Unknown',

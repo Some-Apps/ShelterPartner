@@ -26,6 +26,7 @@ dependencies:
   geocoding: ^2.0.1
   go_router: ^14.3.0
   email_validator: ^2.0.1
+  cached_network_image: ^3.4.1
 
 
 dev_dependencies:

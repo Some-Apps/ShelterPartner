@@ -14,7 +14,7 @@ class Photo {
 
   factory Photo.fromMap(Map<String, dynamic> data) {
     return Photo(
-      id: data['id'] ?? Uuid().v4(),
+      id: data['id'] ?? const Uuid().v4(),
       url: data['url'] ?? "Unknown",
       timestamp: data['timestamp'] ?? Timestamp.now(),
     );
