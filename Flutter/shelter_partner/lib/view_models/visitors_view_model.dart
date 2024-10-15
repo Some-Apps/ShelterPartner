@@ -7,6 +7,7 @@ import 'package:shelter_partner/repositories/visitors_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 
+
 class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   final VisitorsRepository _repository;
   final Ref ref;
