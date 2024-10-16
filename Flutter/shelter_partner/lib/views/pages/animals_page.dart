@@ -53,15 +53,27 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
       body: animals.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-                itemCount: animals.length,
-                itemBuilder: (context, index) {
-                  final animal = animals[index];
-                  return AnimalCardView(animal: animal);
+              padding: const EdgeInsets.all(8.0),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Calculate the number of columns based on the screen width
+                  final int columns = (constraints.maxWidth / 325).floor();
+                  return GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: columns,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                      childAspectRatio: 5 / 2, // Adjust the aspect ratio as needed
+                    ),
+                    itemCount: animals.length,
+                    itemBuilder: (context, index) {
+                      final animal = animals[index];
+                      return AnimalCardView(animal: animal);
+                    },
+                  );
                 },
               ),
-          ),
+            ),
     );
   }
 }
