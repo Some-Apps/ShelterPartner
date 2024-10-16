@@ -34,7 +34,8 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
     FocusScope.of(context).unfocus();
   }
 
-  void _confirmDeleteVolunteer(BuildContext context, String volunteerId, String shelterId, String volunteerName) {
+  void _confirmDeleteVolunteer(BuildContext context, String volunteerId,
+      String shelterId, String volunteerName) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -197,7 +198,8 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter the volunteer email';
-                                    } else if (!EmailValidator.validate(value)) {
+                                    } else if (!EmailValidator.validate(
+                                        value)) {
                                       return 'Please enter a valid email address';
                                     }
                                     return null;
@@ -216,8 +218,10 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                       ref
                                           .read(volunteersViewModelProvider
                                               .notifier)
-                                          .sendVolunteerInvite(firstName, lastName, email, shelter!.id);
-                                      _hasSentInvite = true; // Set the flag when invite is sent
+                                          .sendVolunteerInvite(firstName,
+                                              lastName, email, shelter!.id);
+                                      _hasSentInvite =
+                                          true; // Set the flag when invite is sent
                                     }
                                   },
                                   child: const Text('Send Invite'),
@@ -245,16 +249,19 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                 if (shelter!.volunteers.isNotEmpty)
                                   ...shelter.volunteers.map(
                                     (volunteer) => Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Expanded(
                                           child: NavigationButton(
                                             title: volunteer.firstName,
-                                            route: '/volunteers/details/${volunteer.firstName}',
+                                            route:
+                                                '/volunteers/details', extra: volunteer,
                                           ),
                                         ),
                                         IconButton(
-                                          icon: const Icon(Icons.delete, color: Colors.red),
+                                          icon: const Icon(Icons.delete,
+                                              color: Colors.red),
                                           onPressed: () {
                                             _confirmDeleteVolunteer(
                                               context,
@@ -268,7 +275,8 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                     ),
                                   )
                                 else
-                                  const Text('No volunteers available at the moment'),
+                                  const Text(
+                                      'No volunteers available at the moment'),
                               ],
                             ),
                           ),

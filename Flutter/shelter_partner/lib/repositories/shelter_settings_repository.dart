@@ -22,10 +22,11 @@ class ShelterSettingsRepository {
   }
 
   // Method to modify a specific string attribute within volunteerSettings
-  Future<void> modifyDeviceSettingString(String shelterID, String field, String newValue) async {
+  Future<void> modifyDeviceSettingString(
+      String shelterID, String field, String newValue) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
     return docRef.update({
-      'deviceSettings.$field': newValue,  // Update the string value
+      'deviceSettings.$field': newValue, // Update the string value
     }).catchError((error) {
       throw Exception("Failed to modify: $error");
     });
@@ -43,17 +44,15 @@ class ShelterSettingsRepository {
     });
   }
 
-  
-Future<void> removeMapFromShelterSettingsArray(
-    String shelterID, String field, Map<String, dynamic> value) async {
-  final docRef = _firestore.collection('shelters').doc(shelterID);
-  return docRef.update({
-    'shelterSettings.$field': FieldValue.arrayRemove([value]),
-  }).catchError((error) {
-    throw Exception("Failed to remove map from array: $error");
-  });
-}
-
+  Future<void> removeMapFromShelterSettingsArray(
+      String shelterID, String field, Map<String, dynamic> value) async {
+    final docRef = _firestore.collection('shelters').doc(shelterID);
+    return docRef.update({
+      'shelterSettings.$field': FieldValue.arrayRemove([value]),
+    }).catchError((error) {
+      throw Exception("Failed to remove map from array: $error");
+    });
+  }
 
   // Method to remove a string from an array within shelterSettings attribute
   Future<void> removeStringFromShelterSettingsArray(
@@ -68,13 +67,14 @@ Future<void> removeMapFromShelterSettingsArray(
   }
 
   // Method to reorder items in an array of maps within shelterSettings attribute
-  Future<void> reorderMapArrayInShelterSettings(
-    String shelterID, String field, List<Map<String, dynamic>> newOrder) async {
+  Future<void> reorderMapArrayInShelterSettings(String shelterID, String field,
+      List<Map<String, dynamic>> newOrder) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
     return docRef.update({
-    'shelterSettings.$field': newOrder, // Update the array of maps with the new order
+      'shelterSettings.$field':
+          newOrder, // Update the array of maps with the new order
     }).catchError((error) {
-    throw Exception("Failed to reorder map array: $error");
+      throw Exception("Failed to reorder map array: $error");
     });
   }
 
@@ -157,7 +157,8 @@ Future<void> removeMapFromShelterSettingsArray(
   Future<void> incrementDeviceSetting(String shelterID, String field) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
     return docRef.update({
-      'deviceSettings.$field': FieldValue.increment(1),  // Access nested volunteerSettings field
+      'deviceSettings.$field':
+          FieldValue.increment(1), // Access nested volunteerSettings field
     }).catchError((error) {
       throw Exception("Failed to increment: $error");
     });
@@ -167,14 +168,12 @@ Future<void> removeMapFromShelterSettingsArray(
   Future<void> decrementDeviceSetting(String shelterID, String field) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
     return docRef.update({
-      'deviceSettings.$field': FieldValue.increment(-1),  // Access nested volunteerSettings field
+      'deviceSettings.$field':
+          FieldValue.increment(-1), // Access nested volunteerSettings field
     }).catchError((error) {
       throw Exception("Failed to decrement: $error");
     });
   }
-
-
-
 }
 
 // Provider to access the ShelterSettingsRepository

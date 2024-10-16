@@ -19,7 +19,7 @@ class MyButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            title,  // Use the title property here
+            title, // Use the title property here
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,

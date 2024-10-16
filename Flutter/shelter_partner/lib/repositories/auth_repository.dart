@@ -11,6 +11,7 @@ import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/models/volunteer_settings.dart';
+import 'package:uuid/uuid.dart';
 import '../models/app_user.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -64,6 +65,48 @@ class AuthRepository {
     await _firebaseAuth.signOut();
   }
 
+ Future<void> deleteAccount(String email, String password) async {
+  final user = _firebaseAuth.currentUser;
+  if (user != null) {
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: password, 
+    );
+
+    try {
+      await user.reauthenticateWithCredential(credential);
+
+      // Fetch the shelter ID linked to the user
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      final shelterId = userDoc.data()?['shelterID'];
+
+      if (shelterId != null) {
+        // Manually delete documents from known subcollections
+        final subcollections = ['cats', 'dogs']; // replace with actual subcollection names
+
+        for (var subcollectionName in subcollections) {
+          final snapshots = await _firestore.collection('shelters').doc(shelterId).collection(subcollectionName).get();
+          for (var doc in snapshots.docs) {
+            await doc.reference.delete();
+          }
+        }
+
+        // Delete the shelter document from Firestore
+        await _firestore.collection('shelters').doc(shelterId).delete();
+      }
+
+      // Delete user document from Firestore
+      await _firestore.collection('users').doc(user.uid).delete();
+
+      // Delete user from Firebase Auth
+      await user.delete();
+
+    } catch (e) {
+      print('Error reauthenticating user: $e');
+    }
+  }
+}
+
 
   Future<void> createUserDocument({
     required String uid,
@@ -80,7 +123,7 @@ class AuthRepository {
       adminMode: true,
       photoUploadsAllowed: true,
       mainSort: 'Last Let Out',
-      visitorSort: 'At Shelter Longest',
+      visitorSort: 'Alphabetical',
       allowBulkTakeOut: true,
       minimumLogMinutes: 10,
       automaticallyPutBackAnimals: true,
@@ -108,7 +151,6 @@ class AuthRepository {
       'type': 'admin',
       'deviceSettings': defaultDeviceSettings.toMap(),
     });
-
 
     // Create the shelter without deviceSettings
     await createShelterWithPlaceholder(
@@ -224,6 +266,11 @@ class AuthRepository {
 
         final data = {
           'alert': row['alert'] ?? '',
+          'species': collectionName == 'dogs'
+              ? 'dog'
+              : collectionName == 'cats'
+                  ? 'cat'
+                  : 'Unknown',
           'canPlay': (row['canPlay'] ?? '').toLowerCase() ==
               'true', // Ensure boolean conversion
           'symbolColor': getRandomColor(),
@@ -242,7 +289,32 @@ class AuthRepository {
           'startTime':
               FieldValue.serverTimestamp(), // Add timestamps for Firestore
           'created': FieldValue.serverTimestamp(),
-          'photos': [], // Example placeholder for photos
+          'intakeDate': FieldValue.serverTimestamp(),
+          'photos': [
+            {
+              'id': const Uuid().v4(),
+              'url':
+                  "https://storage.googleapis.com/development-e5282.appspot.com/${collectionName == 'dogs' ? 'Dogs' : 'Cats'}/$animalId.jpeg",
+              'timestamp': Timestamp.now(),
+            }
+          ], // Example placeholder for photos
+          'notes': [
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note',
+              'author': 'Admin',
+              'timestamp': Timestamp.now(),
+            }
+          ], // Example placeholder for notes
+          'logs': [
+            {
+              'id': const Uuid().v4(),
+              'type': 'Let Out',
+              'author': 'Admin',
+              'startTime': Timestamp.now(),
+              'endTime': Timestamp.now(),
+            }
+          ], // Example placeholder for logs
           'sex': row['sex'] ?? 'Unknown',
           'age': row['age'] ?? 'Unknown',
           'breed': row['breed'] ?? 'Unknown',

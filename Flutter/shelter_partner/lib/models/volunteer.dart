@@ -2,8 +2,7 @@ class Volunteer {
   final String id;
   final String firstName;
   final String lastName;
-  final String email;   
-
+  final String email;
 
   Volunteer({
     required this.id,

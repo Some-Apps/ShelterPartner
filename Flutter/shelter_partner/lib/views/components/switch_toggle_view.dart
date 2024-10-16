@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class SwitchToggleView extends StatelessWidget {
-  final String title;  // Title for the switch
-  final bool value;    // Current value of the switch
-  final ValueChanged<bool> onChanged;  // Callback to handle value change
+  final String title; // Title for the switch
+  final bool value; // Current value of the switch
+  final ValueChanged<bool> onChanged; // Callback to handle value change
 
   const SwitchToggleView({
     super.key,
@@ -20,7 +20,7 @@ class SwitchToggleView extends StatelessWidget {
         Text(title),
         Switch(
           value: value,
-          onChanged: onChanged,  // Handle switch toggle
+          onChanged: onChanged, // Handle switch toggle
         ),
       ],
     );

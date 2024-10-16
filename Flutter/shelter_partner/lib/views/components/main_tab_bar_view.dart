@@ -4,7 +4,8 @@ class MainTabBarView extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTabSelected;
 
-  const MainTabBarView({super.key, 
+  const MainTabBarView({
+    super.key,
     required this.currentIndex,
     required this.onTabSelected,
   });

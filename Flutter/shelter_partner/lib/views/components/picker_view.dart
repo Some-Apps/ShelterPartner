@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class PickerView extends StatelessWidget {
-  final String title;  // Title for the picker
-  final List<String> options;  // List of options for the picker
-  final String? value;  // Currently selected value (nullable in case it's not in the list)
-  final ValueChanged<String?> onChanged;  // Callback for handling value change
+  final String title; // Title for the picker
+  final List<String> options; // List of options for the picker
+  final String?
+      value; // Currently selected value (nullable in case it's not in the list)
+  final ValueChanged<String?> onChanged; // Callback for handling value change
 
   const PickerView({
     super.key,
@@ -19,13 +20,14 @@ class PickerView extends StatelessWidget {
     return Row(
       children: [
         Text(
-          title,  // Display the title
+          title, // Display the title
         ),
         const Spacer(),
         DropdownButton<String>(
-          value: value,  // The currently selected value
-          hint: const Text("Select an option"),  // Placeholder text when no value is selected
-          onChanged: onChanged,  // Handle value change
+          value: value, // The currently selected value
+          hint: const Text(
+              "Select an option"), // Placeholder text when no value is selected
+          onChanged: onChanged, // Handle value change
           items: options.map<DropdownMenuItem<String>>((String option) {
             return DropdownMenuItem<String>(
               value: option,

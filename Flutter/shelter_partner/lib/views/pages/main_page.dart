@@ -15,7 +15,7 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appUser = ref.watch(appUserProvider);  // Fetch appUser from provider
+    final appUser = ref.watch(appUserProvider); // Fetch appUser from provider
 
     // if (appUser == null) {
     //   return const Center(child: Text("User not found"));
@@ -36,36 +36,38 @@ class MainPage extends ConsumerWidget {
     }
 
     return Scaffold(
-  body: child,
-  bottomNavigationBar: BottomNavigationBar(
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    selectedItemColor: Theme.of(context).colorScheme.primary,
-    unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-    currentIndex: currentIndex,
-    onTap: (index) {
-      switch (index) {
-        case 0:
-          context.go('/animals');  // Use context.go() to replace the route
-          break;
-        case 1:
-          context.go('/visitors');
-          break;
-        case 2:
-          context.go('/volunteers');
-          break;
-        case 3:
-          context.go('/settings');
-          break;
-      }
-    },
-    items: const [
-      BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-      BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-      BottomNavigationBarItem(icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
-      BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-    ],
-  ),
-);
-
+      body: child,
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor:
+            Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        currentIndex: currentIndex,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go('/animals'); // Use context.go() to replace the route
+              break;
+            case 1:
+              context.go('/visitors');
+              break;
+            case 2:
+              context.go('/volunteers');
+              break;
+            case 3:
+              context.go('/settings');
+              break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Settings'),
+        ],
+      ),
+    );
   }
 }

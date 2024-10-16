@@ -10,6 +10,7 @@ class ShelterDetailsRepository {
   }
 }
 
-final shelterDetailsRepositoryProvider = Provider<ShelterDetailsRepository>((ref) {
+final shelterDetailsRepositoryProvider =
+    Provider<ShelterDetailsRepository>((ref) {
   return ShelterDetailsRepository();
 });

@@ -52,7 +52,8 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                       child: Column(children: [
                         NavigationButton(
                             title: "Scheduled Reports",
-                            route: '/settings/shelter-settings/scheduled-reports'),
+                            route:
+                                '/settings/shelter-settings/scheduled-reports'),
                         NavigationButton(
                             title: "Cat Tags",
                             route: '/settings/shelter-settings/cat-tags'),

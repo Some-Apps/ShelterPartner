@@ -26,7 +26,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage> {
             return ListTile(
               title: Text(animal.name),
               subtitle: Text(animal.toString()),
-                );
+            );
           },
         ),
       ),

@@ -1,4 +1,3 @@
-
 class DeviceSettings {
   final bool adminMode;
   final bool photoUploadsAllowed;
@@ -44,30 +43,71 @@ class DeviceSettings {
     required this.appendAnimalDataToURL,
   });
 
-    DeviceSettings copyWith(Map<String, dynamic> changes) {
+  DeviceSettings copyWith(Map<String, dynamic> changes) {
     return DeviceSettings(
-      adminMode: changes.containsKey('adminMode') ? changes['adminMode'] : adminMode,
-      photoUploadsAllowed: changes.containsKey('photoUploadsAllowed') ? changes['photoUploadsAllowed'] : photoUploadsAllowed,
-      mainSort: changes.containsKey('mainSort') ? changes['mainSort'] : mainSort,
-      visitorSort: changes.containsKey('visitorSort') ? changes['visitorSort'] : visitorSort,
-      allowBulkTakeOut: changes.containsKey('allowBulkTakeOut') ? changes['allowBulkTakeOut'] : allowBulkTakeOut,
-      minimumLogMinutes: changes.containsKey('minimumLogMinutes') ? changes['minimumLogMinutes'] : minimumLogMinutes,
-      automaticallyPutBackAnimals: changes.containsKey('automaticallyPutBackAnimals') ? changes['automaticallyPutBackAnimals'] : automaticallyPutBackAnimals,
-      ignoreVisitWhenAutomaticallyPutBack: changes.containsKey('ignoreVisitWhenAutomaticallyPutBack') ? changes['ignoreVisitWhenAutomaticallyPutBack'] : ignoreVisitWhenAutomaticallyPutBack,
-      automaticPutBackHours: changes.containsKey('automaticPutBackHours') ? changes['automaticPutBackHours'] : automaticPutBackHours,
-      requireLetOutType: changes.containsKey('requireLetOutType') ? changes['requireLetOutType'] : requireLetOutType,
-      requireEarlyPutBackReason: changes.containsKey('requireEarlyPutBackReason') ? changes['requireEarlyPutBackReason'] : requireEarlyPutBackReason,
-      requireName: changes.containsKey('requireName') ? changes['requireName'] : requireName,
-      createLogsWhenUnderMinimumDuration: changes.containsKey('createLogsWhenUnderMinimumDuration') ? changes['createLogsWhenUnderMinimumDuration'] : createLogsWhenUnderMinimumDuration,
-      showNoteDates: changes.containsKey('showNoteDates') ? changes['showNoteDates'] : showNoteDates,
-      showLogs: changes.containsKey('showLogs') ? changes['showLogs'] : showLogs,
-      showAllAnimals: changes.containsKey('showAllAnimals') ? changes['showAllAnimals'] : showAllAnimals,
-      showCustomForm: changes.containsKey('showCustomForm') ? changes['showCustomForm'] : showCustomForm,
-      customFormURL: changes.containsKey('customFormURL') ? changes['customFormURL'] : customFormURL,
-      buttonType: changes.containsKey('buttonType') ? changes['buttonType'] : buttonType,
-      appendAnimalDataToURL: changes.containsKey('appendAnimalDataToURL') ? changes['appendAnimalDataToURL'] : appendAnimalDataToURL,
+      adminMode:
+          changes.containsKey('adminMode') ? changes['adminMode'] : adminMode,
+      photoUploadsAllowed: changes.containsKey('photoUploadsAllowed')
+          ? changes['photoUploadsAllowed']
+          : photoUploadsAllowed,
+      mainSort:
+          changes.containsKey('mainSort') ? changes['mainSort'] : mainSort,
+      visitorSort: changes.containsKey('visitorSort')
+          ? changes['visitorSort']
+          : visitorSort,
+      allowBulkTakeOut: changes.containsKey('allowBulkTakeOut')
+          ? changes['allowBulkTakeOut']
+          : allowBulkTakeOut,
+      minimumLogMinutes: changes.containsKey('minimumLogMinutes')
+          ? changes['minimumLogMinutes']
+          : minimumLogMinutes,
+      automaticallyPutBackAnimals:
+          changes.containsKey('automaticallyPutBackAnimals')
+              ? changes['automaticallyPutBackAnimals']
+              : automaticallyPutBackAnimals,
+      ignoreVisitWhenAutomaticallyPutBack:
+          changes.containsKey('ignoreVisitWhenAutomaticallyPutBack')
+              ? changes['ignoreVisitWhenAutomaticallyPutBack']
+              : ignoreVisitWhenAutomaticallyPutBack,
+      automaticPutBackHours: changes.containsKey('automaticPutBackHours')
+          ? changes['automaticPutBackHours']
+          : automaticPutBackHours,
+      requireLetOutType: changes.containsKey('requireLetOutType')
+          ? changes['requireLetOutType']
+          : requireLetOutType,
+      requireEarlyPutBackReason:
+          changes.containsKey('requireEarlyPutBackReason')
+              ? changes['requireEarlyPutBackReason']
+              : requireEarlyPutBackReason,
+      requireName: changes.containsKey('requireName')
+          ? changes['requireName']
+          : requireName,
+      createLogsWhenUnderMinimumDuration:
+          changes.containsKey('createLogsWhenUnderMinimumDuration')
+              ? changes['createLogsWhenUnderMinimumDuration']
+              : createLogsWhenUnderMinimumDuration,
+      showNoteDates: changes.containsKey('showNoteDates')
+          ? changes['showNoteDates']
+          : showNoteDates,
+      showLogs:
+          changes.containsKey('showLogs') ? changes['showLogs'] : showLogs,
+      showAllAnimals: changes.containsKey('showAllAnimals')
+          ? changes['showAllAnimals']
+          : showAllAnimals,
+      showCustomForm: changes.containsKey('showCustomForm')
+          ? changes['showCustomForm']
+          : showCustomForm,
+      customFormURL: changes.containsKey('customFormURL')
+          ? changes['customFormURL']
+          : customFormURL,
+      buttonType: changes.containsKey('buttonType')
+          ? changes['buttonType']
+          : buttonType,
+      appendAnimalDataToURL: changes.containsKey('appendAnimalDataToURL')
+          ? changes['appendAnimalDataToURL']
+          : appendAnimalDataToURL,
     );
-    }
+  }
 
   // Convert DeviceSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
@@ -79,7 +119,8 @@ class DeviceSettings {
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
-      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
+      'ignoreVisitWhenAutomaticallyPutBack':
+          ignoreVisitWhenAutomaticallyPutBack,
       'automaticPutBackHours': automaticPutBackHours,
       'requireLetOutType': requireLetOutType,
       'requireEarlyPutBackReason': requireEarlyPutBackReason,
@@ -105,12 +146,14 @@ class DeviceSettings {
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
-      ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
+      ignoreVisitWhenAutomaticallyPutBack:
+          data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
       automaticPutBackHours: data['automaticPutBackHours'] ?? 0,
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,
-      createLogsWhenUnderMinimumDuration: data['createLogsWhenUnderMinimumDuration'] ?? false,
+      createLogsWhenUnderMinimumDuration:
+          data['createLogsWhenUnderMinimumDuration'] ?? false,
       showNoteDates: data['showNoteDates'] ?? false,
       showLogs: data['showLogs'] ?? false,
       showAllAnimals: data['showAllAnimals'] ?? false,

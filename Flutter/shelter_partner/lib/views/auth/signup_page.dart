@@ -38,14 +38,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   void signup() async {
     if (passwordController.text != confirmPasswordController.text) {
       Fluttertoast.showToast(
-          msg: 'Passwords don\'t match',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-        return;
+        msg: 'Passwords don\'t match',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
     }
     await ref.read(authViewModelProvider.notifier).signup(
           email: emailController.text.trim(),

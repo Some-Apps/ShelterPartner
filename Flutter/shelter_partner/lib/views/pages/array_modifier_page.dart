@@ -48,7 +48,8 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
         ),
       ),
       data: (shelter) {
-        final List arrayItems = shelter!.shelterSettings.getArray(widget.arrayKey);
+        final List arrayItems =
+            shelter!.shelterSettings.getArray(widget.arrayKey);
 
         return Scaffold(
           appBar: AppBar(
@@ -110,11 +111,13 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                           });
                           ref
                               .read(shelterSettingsViewModelProvider.notifier)
-                              .reorderShelterSettingsArray(
-                                  shelter.id, widget.arrayKey, arrayItems.cast<String>());
+                              .reorderShelterSettingsArray(shelter.id,
+                                  widget.arrayKey, arrayItems.cast<String>());
                         },
                         children: [
-                          for (int index = 0; index < arrayItems.length; index++)
+                          for (int index = 0;
+                              index < arrayItems.length;
+                              index++)
                             Dismissible(
                               key: ValueKey(arrayItems[index]),
                               direction: DismissDirection.endToStart,
@@ -124,8 +127,8 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                                   arrayItems.removeAt(index);
                                 });
                                 ref
-                                    .read(
-                                        shelterSettingsViewModelProvider.notifier)
+                                    .read(shelterSettingsViewModelProvider
+                                        .notifier)
                                     .removeStringFromShelterSettingsArray(
                                         shelter.id,
                                         widget.arrayKey,

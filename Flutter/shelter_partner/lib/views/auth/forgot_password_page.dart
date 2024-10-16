@@ -30,7 +30,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     );
 
     // Call the sendPasswordReset method in AuthViewModel
-    final errorMessage = await ref.read(authViewModelProvider.notifier).sendPasswordReset(email);
+    final errorMessage =
+        await ref.read(authViewModelProvider.notifier).sendPasswordReset(email);
 
     // Close the loading indicator
     Navigator.of(context).pop();
@@ -41,7 +42,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text("Success"),
-          content: const Text("A password reset email has been sent. Please check your inbox."),
+          content: const Text(
+              "A password reset email has been sent. Please check your inbox."),
           actions: [
             TextButton(
               onPressed: () {
@@ -63,7 +65,6 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           textColor: Colors.white,
           fontSize: 16.0,
         );
-
       });
       // Show error message if something goes wrong
       // showDialog(

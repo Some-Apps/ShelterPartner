@@ -116,8 +116,8 @@ class _GeorestrictionSettingsPageState
       final userLocation = LatLng(position.latitude, position.longitude);
       setState(() {
         _center = userLocation;
-        _mapController?.animateCamera(
-            CameraUpdate.newLatLngZoom(_center!, _zoomLevel));
+        _mapController
+            ?.animateCamera(CameraUpdate.newLatLngZoom(_center!, _zoomLevel));
         _updateCircle();
       });
     } catch (e) {
@@ -253,7 +253,8 @@ class _GeorestrictionSettingsPageState
         if (_center == null) {
           _center = LatLng(
             shelter?.volunteerSettings.geofence?.location.latitude ?? 37.7749,
-            shelter?.volunteerSettings.geofence?.location.longitude ?? -122.4194,
+            shelter?.volunteerSettings.geofence?.location.longitude ??
+                -122.4194,
           );
           _radius = shelter?.volunteerSettings.geofence?.radius ?? 1000;
           _zoomLevel = shelter?.volunteerSettings.geofence?.zoom ?? 10;
@@ -267,7 +268,8 @@ class _GeorestrictionSettingsPageState
           body: SafeArea(
             child: GestureDetector(
               onTap: () {
-                FocusScope.of(context).unfocus(); // Unfocus when tapping outside
+                FocusScope.of(context)
+                    .unfocus(); // Unfocus when tapping outside
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -291,7 +293,8 @@ class _GeorestrictionSettingsPageState
                             _mapController = controller;
                             _mapController?.animateCamera(
                               CameraUpdate.newCameraPosition(
-                                CameraPosition(target: _center!, zoom: _zoomLevel),
+                                CameraPosition(
+                                    target: _center!, zoom: _zoomLevel),
                               ),
                             );
                           },
@@ -318,12 +321,17 @@ class _GeorestrictionSettingsPageState
                           children: [
                             // Dropdown Menu
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
                               child: DropdownButtonFormField<String>(
                                 value: _locationOption,
-                                decoration: const InputDecoration(labelText: "Geofence Center"),
-                                items: ['Screen', 'Current Location', 'Address']
-                                    .map<DropdownMenuItem<String>>((String value) {
+                                decoration: const InputDecoration(
+                                    labelText: "Geofence Center"),
+                                items: [
+                                  'Screen',
+                                  'Current Location',
+                                  'Address'
+                                ].map<DropdownMenuItem<String>>((String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Text(value),
@@ -333,9 +341,12 @@ class _GeorestrictionSettingsPageState
                                   if (newValue != null) {
                                     setState(() {
                                       _locationOption = newValue;
-                                      _selectedAddress = null; // Reset selected address
-                                      _addressController.clear(); // Clear the text field
-                                      _addressSuggestions = []; // Clear suggestions
+                                      _selectedAddress =
+                                          null; // Reset selected address
+                                      _addressController
+                                          .clear(); // Clear the text field
+                                      _addressSuggestions =
+                                          []; // Clear suggestions
                                     });
 
                                     if (newValue == 'Current Location') {
@@ -348,11 +359,12 @@ class _GeorestrictionSettingsPageState
                             // Address Input and Suggestions
                             if (_locationOption == 'Address') ...[
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0, vertical: 10.0),
                                 child: TextField(
                                   controller: _addressController,
-                                  focusNode: _addressFocusNode, // Attach the FocusNode
+                                  focusNode:
+                                      _addressFocusNode, // Attach the FocusNode
                                   decoration: const InputDecoration(
                                     labelText: 'Enter Address',
                                   ),
@@ -370,17 +382,20 @@ class _GeorestrictionSettingsPageState
                                   child: ListView.builder(
                                     itemCount: _addressSuggestions.length,
                                     itemBuilder: (context, index) {
-                                      final suggestion = _addressSuggestions[index];
+                                      final suggestion =
+                                          _addressSuggestions[index];
                                       return ListTile(
                                         title: Text(suggestion.description),
                                         onTap: () async {
                                           setState(() {
-                                            _selectedAddress = suggestion.description;
+                                            _selectedAddress =
+                                                suggestion.description;
                                             _addressController.clear();
                                             _addressSuggestions = [];
                                             _addressFocusNode.unfocus();
                                           });
-                                          await _getPlaceDetails(suggestion.placeId);
+                                          await _getPlaceDetails(
+                                              suggestion.placeId);
                                         },
                                       );
                                     },
@@ -408,8 +423,6 @@ class _GeorestrictionSettingsPageState
     );
   }
 }
-
-
 
 // Define a model for address suggestions
 class AddressSuggestion {

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shelter_partner/models/animal.dart';
 
-class AnimalsRepository {
+class VisitorsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Stream<List<Animal>> fetchAnimals(String shelterID) {
@@ -23,6 +23,6 @@ class AnimalsRepository {
   }
 }
 
-final animalsRepositoryProvider = Provider<AnimalsRepository>((ref) {
-  return AnimalsRepository();
+final visitorsRepositoryProvider = Provider<VisitorsRepository>((ref) {
+  return VisitorsRepository();
 });

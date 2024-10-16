@@ -54,8 +54,9 @@ class AuthPage extends ConsumerWidget {
 
       if (appUser != null) {
         Future.microtask(() {
-          ref.read(appUserProvider.notifier).state = appUser;  // Store appUser globally
-          context.go('/animals');  // No need to pass appUser here
+          ref.read(appUserProvider.notifier).state =
+              appUser; // Store appUser globally
+          context.go('/animals'); // No need to pass appUser here
         });
       } else {
         Future.microtask(() {
@@ -77,9 +78,7 @@ class AuthPage extends ConsumerWidget {
     // Default to Login or Signup page
     return const LoginOrSignup();
   }
-}/*  */
-
-
+} /*  */
 
 enum AuthPageType { login, signup, forgotPassword }
 

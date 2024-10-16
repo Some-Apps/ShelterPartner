@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -30,7 +29,6 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyBQZs0WVeZt91hc4fQtfuTg4kY4-bFq9qw',
