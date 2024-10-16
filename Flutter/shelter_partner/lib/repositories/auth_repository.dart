@@ -65,6 +65,49 @@ class AuthRepository {
     await _firebaseAuth.signOut();
   }
 
+ Future<void> deleteAccount(String email, String password) async {
+  final user = _firebaseAuth.currentUser;
+  if (user != null) {
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: password, 
+    );
+
+    try {
+      await user.reauthenticateWithCredential(credential);
+
+      // Fetch the shelter ID linked to the user
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      final shelterId = userDoc.data()?['shelterID'];
+
+      if (shelterId != null) {
+        // Manually delete documents from known subcollections
+        final subcollections = ['cats', 'dogs']; // replace with actual subcollection names
+
+        for (var subcollectionName in subcollections) {
+          final snapshots = await _firestore.collection('shelters').doc(shelterId).collection(subcollectionName).get();
+          for (var doc in snapshots.docs) {
+            await doc.reference.delete();
+          }
+        }
+
+        // Delete the shelter document from Firestore
+        await _firestore.collection('shelters').doc(shelterId).delete();
+      }
+
+      // Delete user document from Firestore
+      await _firestore.collection('users').doc(user.uid).delete();
+
+      // Delete user from Firebase Auth
+      await user.delete();
+
+    } catch (e) {
+      print('Error reauthenticating user: $e');
+    }
+  }
+}
+
+
   Future<void> createUserDocument({
     required String uid,
     required String firstName,

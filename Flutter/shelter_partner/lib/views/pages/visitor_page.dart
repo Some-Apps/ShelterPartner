@@ -244,7 +244,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 class SlideshowScreen extends StatefulWidget {
   final List<Animal> animals;
 
-  const SlideshowScreen({Key? key, required this.animals}) : super(key: key);
+  const SlideshowScreen({super.key, required this.animals});
 
   @override
   _SlideshowScreenState createState() => _SlideshowScreenState();
@@ -283,7 +283,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
   void _startSlideshow() {
     // Start the timer to change images every 10 seconds
-    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       setState(() {
         _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
         _setCurrentImage();
@@ -310,7 +310,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
         height: double.infinity,
       );
     } else {
-      imageWidget = Center(
+      imageWidget = const Center(
         child: Text(
           'No Image Available',
           style: TextStyle(color: Colors.white, fontSize: 24),
@@ -351,7 +351,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       child: Scaffold(
         backgroundColor: Colors.black,
         body: AnimatedSwitcher(
-          duration: Duration(seconds: 2), // Duration of the fade transition
+          duration: const Duration(seconds: 2), // Duration of the fade transition
           transitionBuilder: (Widget child, Animation<double> animation) {
             return FadeTransition(opacity: animation, child: child);
           },

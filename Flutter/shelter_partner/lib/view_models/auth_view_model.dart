@@ -110,6 +110,23 @@ class AuthViewModel extends StateNotifier<AuthState> {
     }
   }
 
+  // Delete account method
+  Future<void> deleteAccount(BuildContext context, String email, String password) async {
+    state = AuthState.loading(message: "Deleting account...");
+    try {
+      // Delete user account from authentication provider (e.g., Firebase)
+      await _authRepository.deleteAccount(email, password); 
+      
+      // Reset the authentication state
+      state = AuthState.unauthenticated();
+
+      // Navigate back to the login/auth page
+      context.go('/');
+    } catch (e) {
+      state = AuthState.error("Failed to delete account: ${e.toString()}");
+    }
+  }
+
   // Logout method
   Future<void> logout(BuildContext context, WidgetRef ref) async {
     try {

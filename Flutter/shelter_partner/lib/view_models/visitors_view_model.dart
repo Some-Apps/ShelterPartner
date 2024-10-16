@@ -56,7 +56,7 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   final deviceSettingsAsync = ref.read(deviceSettingsViewModelProvider);
   
   deviceSettingsAsync.whenData((appUser) {
-    final visitorSort = appUser?.deviceSettings?.visitorSort ?? 'Alphabetical';
+    final visitorSort = appUser?.deviceSettings.visitorSort ?? 'Alphabetical';
 
     // Add this debug print to verify the sorting method being used
     print('Sorting by: $visitorSort');
@@ -80,7 +80,9 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     // Add this to verify if the sorting happens as expected
     sortedState.forEach((species, animalsList) {
       print('$species sorted list:');
-      animalsList.forEach((animal) => print(animal.name));
+      for (var animal in animalsList) {
+        print(animal.name);
+      }
     });
 
     state = sortedState;
