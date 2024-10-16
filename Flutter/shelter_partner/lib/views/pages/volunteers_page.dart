@@ -256,7 +256,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                           child: NavigationButton(
                                             title: volunteer.firstName,
                                             route:
-                                                '/volunteers/details/${volunteer.firstName}',
+                                                '/volunteers/details', extra: volunteer,
                                           ),
                                         ),
                                         IconButton(

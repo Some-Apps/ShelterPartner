@@ -298,6 +298,23 @@ class AuthRepository {
               'timestamp': Timestamp.now(),
             }
           ], // Example placeholder for photos
+          'notes': [
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note',
+              'author': 'Admin',
+              'timestamp': Timestamp.now(),
+            }
+          ], // Example placeholder for notes
+          'logs': [
+            {
+              'id': const Uuid().v4(),
+              'type': 'Let Out',
+              'author': 'Admin',
+              'startTime': Timestamp.now(),
+              'endTime': Timestamp.now(),
+            }
+          ], // Example placeholder for logs
           'sex': row['sex'] ?? 'Unknown',
           'age': row['age'] ?? 'Unknown',
           'breed': row['breed'] ?? 'Unknown',

@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/firebase_service.dart';
+import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:json_theme_plus/json_theme_plus.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
@@ -17,6 +19,7 @@ import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/scheduled_reports_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:shelter_partner/views/pages/shelter_settings_page.dart';
+import 'package:shelter_partner/views/pages/visitor_animal_detail_page.dart';
 import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
@@ -97,21 +100,35 @@ class MyApp extends StatelessWidget {
                 const MaterialPage(child: AnimalsPage()),
           ),
           GoRoute(
-            path: '/visitors',
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: VisitorPage()),
-          ),
+              path: '/visitors',
+              pageBuilder: (context, state) =>
+                  const MaterialPage(child: VisitorPage()),
+              routes: [
+                GoRoute(
+                path:
+                    'details', // No need for ':id' since we're passing the object directly
+                pageBuilder: (context, state) {
+                  final animal = state.extra
+                      as Animal; // Cast extra to the appropriate type
+                  return MaterialPage(
+                    child: VisitorAnimalDetailPage(animal: animal),
+                  );
+                },
+              ),
+              ]),
           GoRoute(
             path: '/volunteers',
             pageBuilder: (context, state) =>
                 const MaterialPage(child: VolunteersPage()),
             routes: [
               GoRoute(
-                path: 'details/:id', // Dynamic route for volunteer details
+                path:
+                    'details', // No need for ':id' since we're passing the object directly
                 pageBuilder: (context, state) {
-                  final volunteerId = state.pathParameters['id'];
+                  final volunteer = state.extra
+                      as Volunteer; // Cast extra to the appropriate type
                   return MaterialPage(
-                    child: VolunteerDetailPage(id: volunteerId!),
+                    child: VolunteerDetailPage(volunteer: volunteer),
                   );
                 },
               ),

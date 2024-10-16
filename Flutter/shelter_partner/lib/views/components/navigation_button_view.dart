@@ -5,8 +5,14 @@ import 'package:go_router/go_router.dart';
 class NavigationButton extends StatelessWidget {
   final String title;
   final String route; // Route URL to navigate
+  final Object? extra; // Optional extra data to pass
 
-  const NavigationButton({super.key, required this.title, required this.route});
+  const NavigationButton({
+    Key? key,
+    required this.title,
+    required this.route,
+    this.extra, // Initialize extra
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +20,8 @@ class NavigationButton extends StatelessWidget {
       title: Text(title),
       trailing: const Icon(Icons.chevron_right),
       onTap: () {
-        context.push(route); // Use GoRouter to navigate
+        // Pass the extra parameter when navigating
+        context.push(route, extra: extra);
       },
     );
   }
