@@ -301,8 +301,32 @@ class AuthRepository {
           'notes': [
             {
               'id': const Uuid().v4(),
-              'note': 'Example note',
-              'author': 'Admin',
+              'note': 'Example note 1',
+              'author': 'Person 1',
+              'timestamp': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note 2',
+              'author': 'Person 2',
+              'timestamp': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note 3',
+              'author': 'Person 3',
+              'timestamp': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note 4',
+              'author': 'Person 1',
+              'timestamp': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note 5',
+              'author': 'Person 2',
               'timestamp': Timestamp.now(),
             }
           ], // Example placeholder for notes
@@ -313,12 +337,26 @@ class AuthRepository {
               'author': 'Admin',
               'startTime': Timestamp.now(),
               'endTime': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'type': 'Let Out',
+              'author': 'Admin',
+              'startTime': Timestamp.now(),
+              'endTime': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'type': 'Let Out',
+              'author': 'Admin',
+              'startTime': Timestamp.now(),
+              'endTime': Timestamp.now(),
             }
           ], // Example placeholder for logs
-          'sex': row['sex'] ?? 'Unknown',
-          'age': row['age'] ?? 'Unknown',
-          'breed': row['breed'] ?? 'Unknown',
-          'description': row['description'] ?? 'No description available.',
+          'sex': getRandomSex(),
+          'age': "2 years 3 months",
+          'breed': "Example Retriever",
+            'description': "This is an example animal description. This animal is known for its friendly demeanor and playful nature. It enjoys spending time with people and other animals. It has a calm temperament and is very affectionate. This animal is also very intelligent and quick to learn new tricks. It loves to play fetch and enjoys long walks in the park. It is well-behaved and responds well to commands. This animal is looking for a loving home where it can receive plenty of attention and care. It is in good health and has been vaccinated. This animal would make a great addition to any family.",
         };
 
         // Upload the document to Firestore
@@ -396,6 +434,11 @@ class AuthRepository {
   String getRandomBuildingGroup() {
     const buildings = ['Building 1', 'Building 2', 'Building 3'];
     return buildings[Random().nextInt(buildings.length)];
+  }
+
+  String getRandomSex() {
+    const sexes = ["Male", "Female"];
+    return sexes[Random().nextInt(sexes.length)];
   }
 
   String getRandomBehaviorGroup() {

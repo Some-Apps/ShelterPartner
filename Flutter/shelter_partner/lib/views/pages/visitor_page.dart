@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -193,11 +195,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                                 borderRadius: BorderRadius.circular(16.0),
                                 child: GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => VisitorAnimalDetailPage(animal: animal),
-                                  ),
-                                  );
+                                  context.push("/visitors/details", extra: animal);
                                 },
                               child: Container(
                                 color: Colors.grey[300],
