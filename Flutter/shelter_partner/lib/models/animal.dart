@@ -31,14 +31,11 @@ class Animal {
     required this.breed,
     required this.location,
     required this.description,
-
     required this.inKennel,
-
     required this.intakeDate,
-
     required this.photos,
     required this.notes,
-    required this.logs
+    required this.logs,
   });
 
   factory Animal.fromFirestore(Map<String, dynamic> data, String documentId) {
@@ -51,22 +48,48 @@ class Animal {
       breed: data['breed'] ?? 'Unknown',
       location: data['location'] ?? 'Unknown',
       description: data['description'] ?? 'No description available.',
-
       inKennel: data['inKennel'] ?? true,
-
       intakeDate: data['intakeDate'],
-
       photos: (data['photos'] as List)
           .map((photo) => Photo.fromMap(photo))
           .toList(),
       notes: (data['notes'] as List)
           .map((note) => Note.fromMap(note))
           .toList(),
-      logs: (data['logs'] as List)
-          .map((log) => Log.fromMap(log))
-          .toList(),
+      logs: (data['logs'] as List).map((log) => Log.fromMap(log)).toList(),
     );
   }
 
-  static fromSnapshot(DocumentSnapshot<Object?> doc) {}
+  // Add copyWith method
+  Animal copyWith({
+    String? id,
+    String? name,
+    String? sex,
+    String? age,
+    String? species,
+    String? breed,
+    String? location,
+    String? description,
+    bool? inKennel,
+    Timestamp? intakeDate,
+    List<Photo>? photos,
+    List<Note>? notes,
+    List<Log>? logs,
+  }) {
+    return Animal(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      sex: sex ?? this.sex,
+      age: age ?? this.age,
+      species: species ?? this.species,
+      breed: breed ?? this.breed,
+      location: location ?? this.location,
+      description: description ?? this.description,
+      inKennel: inKennel ?? this.inKennel,
+      intakeDate: intakeDate ?? this.intakeDate,
+      photos: photos ?? this.photos,
+      notes: notes ?? this.notes,
+      logs: logs ?? this.logs,
+    );
+  }
 }
