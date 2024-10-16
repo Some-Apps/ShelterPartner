@@ -87,6 +87,9 @@ def update_readme(contributors):
         # Get the list of perks for the contributor (set to "NA" for the owner)
         perks_list = get_perks(contributor['login'], contributions)
 
+        # Set contributions to "NA" if the contributor is the owner
+        contributions_count = "NA" if contributor['login'] == OWNER else f"{len(contributions)} contributions"
+
         # Add each contributor's info in a row
         html_content += f"""
         <tr>
@@ -96,7 +99,7 @@ def update_readme(contributors):
         </a>
       </td>
       <td><a href="{contributor['html_url']}"><strong>{contributor['login']}</strong></a></td>
-      <td><strong>{len(contributions)} contributions</strong></td>
+      <td><strong>{contributions_count}</strong></td>
       <td>{perks_list}</td>
     </tr>"""
 
