@@ -256,6 +256,17 @@ struct AnimalFilterView: View {
             categories.append("Behavior")
         }
         
+        if !filterSelectionOptions(for: "Adoption").isEmpty {
+            categories.append("Adoption")
+        }
+        if !filterSelectionOptions(for: "Medical").isEmpty {
+            categories.append("Medical")
+        }
+        
+        if !filterSelectionOptions(for: "Location").isEmpty {
+            categories.append("Location")
+        }
+        
         return categories
     }
 
