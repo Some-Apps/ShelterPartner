@@ -48,10 +48,6 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     }
   }
 
-  // ... existing initialization code ...
-
-  // Listen to changes in the visitorSort setting
-
   void _sortAnimals() {
   final deviceSettingsAsync = ref.read(deviceSettingsViewModelProvider);
   
