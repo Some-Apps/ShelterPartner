@@ -271,16 +271,13 @@ class AuthRepository {
               : collectionName == 'cats'
                   ? 'cat'
                   : 'Unknown',
-          'canPlay': (row['canPlay'] ?? '').toLowerCase() ==
-              'true', // Ensure boolean conversion
           'symbolColor': getRandomColor(),
           'symbol': 'pawprint.fill', // Example static value, adjust as needed
-          'colorGroup': getRandomColorGroup(),
-          'buildingGroup': getRandomBuildingGroup(),
-          'behaviorGroup': getRandomBehaviorGroup(),
-          'colorSort': getRandomIndex(7),
-          'buildingSort': getRandomIndex(3),
-          'behaviorSort': getRandomIndex(4),
+          'volunteerCategory': getRandomColorGroup(),
+          'locationCategory': getRandomBuildingGroup(),
+          'behaviorCategory': getRandomBehaviorGroup(),
+          'medicalCategory': getRandomColorGroup(),
+          'adoptionCategory': getRandomColorGroup(),
           'id': animalId,
           'inKennel': true,
           'location': row['location'] ?? '',
@@ -315,6 +312,14 @@ class AuthRepository {
               'endTime': Timestamp.now(),
             }
           ], // Example placeholder for logs
+          'tags': [
+            {
+              'id': const Uuid().v4(),
+              'title': 'Friendly',
+              'count': '1',
+              'timestamp': Timestamp.now(),
+            }
+          ], // Example placeholder for tags
           'sex': row['sex'] ?? 'Unknown',
           'age': row['age'] ?? 'Unknown',
           'breed': row['breed'] ?? 'Unknown',

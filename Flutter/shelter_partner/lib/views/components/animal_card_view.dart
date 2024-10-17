@@ -1,16 +1,16 @@
-// animal_card_view.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/view_models/animal_card_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
+import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
+import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 
 class AnimalCardView extends ConsumerStatefulWidget {
   final Animal animal;
 
-  const AnimalCardView({Key? key, required this.animal}) : super(key: key);
+  const AnimalCardView({super.key, required this.animal});
 
   @override
   _AnimalCardViewState createState() => _AnimalCardViewState();
@@ -40,9 +40,17 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       if (status == AnimationStatus.completed) {
         // Reset the animation instantly
         _controller.reset();
-        
+
+        // Retrieve the latest animal state
+        final currentAnimal =
+            ref.read(animalCardViewModelProvider(widget.animal));
+
         // Animation completed, show confirmation dialog
-        _showConfirmationDialog();
+        if (currentAnimal.inKennel) {
+          _showConfirmationDialog();
+        } else {
+          _showPutBackConfirmationDialog();
+        }
       }
     });
   }
@@ -62,29 +70,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   }
 
   Future<void> _showConfirmationDialog() async {
-    final confirmed = await showDialog<bool>(
+    // Show the custom confirmation dialog using the helper
+    final confirmed = await TakeOutConfirmationView.showConfirmationDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Confirm Action'),
-          content: Text(
-              'Do you want to ${widget.animal.inKennel ? 'take ${widget.animal.name} out of the kennel' : 'put ${widget.animal.name} back in the kennel'}?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // User canceled
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true); // User confirmed
-              },
-              child: const Text('Confirm'),
-            ),
-          ],
-        );
-      },
+      animalName: widget.animal.name,
+      inKennel: widget.animal.inKennel,
     );
 
     if (confirmed == true) {
@@ -94,23 +84,34 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
             .read(animalCardViewModelProvider(widget.animal).notifier)
             .toggleInKennel();
       } catch (e) {
-        // Show an error dialog
-        await showDialog(
+        // Show an error dialog using the helper
+        await TakeOutConfirmationView.showErrorDialog(
           context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: Text(e.toString()),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Dismiss error dialog
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
+          message: e.toString(),
+        );
+      }
+    }
+  }
+
+  Future<void> _showPutBackConfirmationDialog() async {
+    // Show the custom confirmation dialog using the helper
+    final confirmed = await PutBackConfirmationView.showConfirmationDialog(
+      context: context,
+      animalName: widget.animal.name,
+      inKennel: widget.animal.inKennel,
+    );
+
+    if (confirmed == true) {
+      try {
+        // User confirmed, call toggleInKennel
+        await ref
+            .read(animalCardViewModelProvider(widget.animal).notifier)
+            .toggleInKennel();
+      } catch (e) {
+        // Show an error dialog using the helper
+        await PutBackConfirmationView.showErrorDialog(
+          context: context,
+          message: e.toString(),
         );
       }
     }
@@ -171,37 +172,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Animal details: name and location
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          animal.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on,
-                                size: 16, color: Colors.black54),
-                            const SizedBox(width: 4),
-                            Text(
-                              animal.location,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
+                  // Updated Animal details: name and information grid
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -246,6 +217,55 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                       ),
                     ],
                   ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment
+                          .start, // Ensures content aligns to the top
+                      children: [
+                        Text(
+                          animal.name,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(
+                            height:
+                                5), // Adjust spacing between name and chips
+                        Wrap(
+                          spacing: 4, // Horizontal space between chips
+                          runSpacing: 4, // Vertical space between chips
+                            children: [
+                            _buildInfoChip(
+                              icon: Icons.location_on,
+                              label: animal.location,
+                            ),
+                            _buildInfoChip(
+                              icon: Icons.category,
+                              label: animal.adoptionCategory,
+                            ),
+                            _buildInfoChip(
+                              icon: Icons.pets,
+                              label: animal.behaviorCategory,
+                            ),
+                            _buildInfoChip(
+                              icon: Icons.place,
+                              label: animal.locationCategory,
+                            ),
+                            _buildInfoChip(
+                              icon: Icons.health_and_safety,
+                              label: animal.medicalCategory,
+                            ),
+                            _buildInfoChip(
+                              icon: Icons.volunteer_activism,
+                              label: animal.volunteerCategory,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -270,6 +290,29 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  /// Helper method to build information chips
+  Widget _buildInfoChip({
+    required IconData icon,
+    required String label,
+    double textSize = 10.0, // Default text size
+  }) {
+    return Chip(
+      avatar: Icon(
+        icon,
+        size: 12,
+        color: Colors.white,
+      ),
+      label: Text(
+        label,
+        style: TextStyle(color: Colors.white, fontSize: textSize),
+      ),
+      backgroundColor: Colors.grey,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
     );
   }
