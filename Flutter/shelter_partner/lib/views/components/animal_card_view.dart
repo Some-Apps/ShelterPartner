@@ -20,6 +20,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _curvedAnimation;
+  bool isPressed = false;
 
   @override
   void initState() {
@@ -115,8 +116,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
         );
       }
     }
-
-    // No need to reset the controller here
   }
 
   @override
@@ -140,43 +139,76 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       },
     );
 
-    return GestureDetector(
-      onLongPressStart: canInteract
-          ? (_) {
-              _controller.forward();
-            }
-          : null,
-      onLongPressEnd: canInteract
-          ? (_) {
-              _controller.reverse(); // Reverse animation when user lets go
-            }
-          : null,
-      onLongPressCancel: canInteract
-          ? () {
-              _controller.reverse();
-            }
-          : null,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Card(
-            color: animal.inKennel
-                ? Colors.lightBlue.shade100
-                : Colors.orange.shade100,
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Updated Animal details: name and information grid
-                  Stack(
+    return Card(
+      color:
+          animal.inKennel ? Colors.lightBlue.shade100 : Colors.orange.shade100,
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Updated Animal details: name and information grid
+            Column(
+              children: [
+                GestureDetector(
+                  onTapDown: canInteract
+                      ? (_) {
+                          setState(() {
+                            isPressed = true;
+                          });
+                                                    _controller.forward();
+
+                        }
+                      : null,
+                  onTapCancel: () {
+                    setState(() {
+                      isPressed = false;
+                    });
+                    _controller.reverse();
+                  },
+                  onLongPressStart: canInteract
+                      ? (_) {
+                          setState(() {
+                            isPressed =
+                                true; // Set isPressed to true when long press starts
+                          });
+                          _controller.forward();
+                        }
+                      : null,
+                  onLongPressEnd: canInteract
+                      ? (_) {
+                          setState(() {
+                            isPressed =
+                                false; // Set isPressed to false when long press ends
+                          });
+                          _controller
+                              .reverse(); // Reverse animation when user lets go
+                        }
+                      : null,
+                  onLongPressCancel: canInteract
+                      ? () {
+                          setState(() {
+                            isPressed =
+                                false; // Set isPressed to false when long press is canceled
+                          });
+                          _controller.reverse();
+                        }
+                      : null,
+                  child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Stroke animation with curved, non-linear progression
+                      // Background stroke (semi-transparent)
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.black
+                            .withOpacity(0.2), // Semi-transparent stroke
+                      ),
+
+                      // Circular progress animation
                       AnimatedBuilder(
                         animation: _curvedAnimation,
                         builder: (context, child) {
@@ -185,114 +217,144 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                             height: 110,
                             child: CircularProgressIndicator(
                               value: _curvedAnimation.value,
-                              strokeWidth: 4,
+                              strokeWidth:
+                                  10, // Match the lineWidth from SwiftUI
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 animal.inKennel
-                                    ? Colors.orange
-                                    : Colors.lightBlue,
+                                    ? Colors.orange.shade100
+                                    : Colors.lightBlue
+                                        .shade100, // Change color based on `inCage`
                               ),
                             ),
                           );
                         },
                       ),
-                      // Image inside the stroke
-                      ClipOval(
-                        child: animal.photos.isNotEmpty
-                            ? CachedNetworkImage(
-                                imageUrl:
-                                    getScaledDownUrl(animal.photos.first.url),
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) =>
-                                    const CircularProgressIndicator(),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              )
-                            : const SizedBox(
-                                width: 100,
-                                height: 100,
-                                child: Icon(Icons.pets, size: 50),
-                              ),
+
+                      // Image with shadow and scale effect
+                      AnimatedScale(
+                        scale: isPressed ? 1.0 : 1.025, // Scale effect on press
+                        duration: const Duration(
+                            milliseconds:
+                                100), // Match SwiftUI scaling duration
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: getScaledDownUrl(animal.photos.first.url),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                const CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment
-                          .start, // Ensures content aligns to the top
-                      children: [
-                        Text(
-                          animal.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                ),
+              ],
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment
+                    .start, // Ensures content aligns to the top
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            animal.name,
+                            style: const TextStyle(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
-                        ),
-                        const SizedBox(
-                            height:
-                                5), // Adjust spacing between name and chips
-                        Wrap(
-                          spacing: 4, // Horizontal space between chips
-                          runSpacing: 4, // Vertical space between chips
-                            children: [
-                            _buildInfoChip(
-                              icon: Icons.location_on,
-                              label: animal.location,
-                            ),
-                            _buildInfoChip(
-                              icon: Icons.category,
-                              label: animal.adoptionCategory,
-                            ),
-                            _buildInfoChip(
-                              icon: Icons.pets,
-                              label: animal.behaviorCategory,
-                            ),
-                            _buildInfoChip(
-                              icon: Icons.place,
-                              label: animal.locationCategory,
-                            ),
-                            _buildInfoChip(
-                              icon: Icons.health_and_safety,
-                              label: animal.medicalCategory,
-                            ),
-                            _buildInfoChip(
-                              icon: Icons.volunteer_activism,
-                              label: animal.volunteerCategory,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 5),
+                          if (animal.symbol.isNotEmpty)
+                            _buildIcon(animal.symbol, animal.symbolColor)
+                        ],
+                      ),
+                        PopupMenuButton<String>(
+                        offset: const Offset(0, 40), // Adjust the offset to attach to one of the corners
+                        onSelected: (value) {
+                          // Handle menu item selection
+                          switch (value) {
+                            case 'Details':
+                              // Handle edit action
+                              break;
+                            case 'Add Note':
+                              // Handle delete action
+                              break;
+                            // Add more cases as needed
+                          }
+                        },
+                        itemBuilder: (BuildContext context) {
+                          return {'Details', 'Add Note'}
+                              .map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(choice),
+                            );
+                          }).toList();
+                        },
+                        icon: const Icon(Icons.more_vert),
+                      ),
+                    ],
                   ),
+                  const SizedBox(
+                      height: 5), // Adjust spacing between name and chips
+                  Wrap(
+                    spacing: 4, // Horizontal space between chips
+                    runSpacing: 4, // Vertical space between chips
+                    children: [
+                      _buildInfoChip(
+                        icon: Icons.location_on,
+                        label: animal.location,
+                      ),
+                      _buildInfoChip(
+                        icon: Icons.category,
+                        label: animal.adoptionCategory,
+                      ),
+                      _buildInfoChip(
+                        icon: Icons.pets,
+                        label: animal.behaviorCategory,
+                      ),
+                      _buildInfoChip(
+                        icon: Icons.location_city,
+                        label: animal.locationCategory,
+                      ),
+                      _buildInfoChip(
+                        icon: Icons.health_and_safety,
+                        label: animal.medicalCategory,
+                      ),
+                      _buildInfoChip(
+                        icon: Icons.volunteer_activism,
+                        label: animal.volunteerCategory,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                      height: 5), // Adjust spacing between name and chips
+                  Wrap(
+                    children: [
+                      // Display tags as chips
+                      for (final tag in animal.tags)
+                        _buildTagChip(label: tag.title),
+                    ],
+                  )
                 ],
               ),
             ),
-          ),
-          // Optional: Disabled overlay if cannot interact
-          if (!canInteract)
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Loading...',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
+}
 
   /// Helper method to build information chips
   Widget _buildInfoChip({
@@ -300,20 +362,104 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     required String label,
     double textSize = 10.0, // Default text size
   }) {
-    return Chip(
-      avatar: Icon(
-        icon,
-        size: 12,
-        color: Colors.white,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.5), // Fully transparent background
+        borderRadius: BorderRadius.circular(20), // Rounded corners like a chip
+        border:
+            Border.all(color: Colors.white.withOpacity(0.5)), // Optional border
       ),
-      label: Text(
-        label,
-        style: TextStyle(color: Colors.white, fontSize: textSize),
-      ),
-      backgroundColor: Colors.grey,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 12,
+            color: Colors.grey,
+          ),
+          const SizedBox(width: 4), // Small space between icon and label
+          Text(
+            label,
+            style: TextStyle(color: Colors.black, fontSize: textSize),
+          ),
+        ],
       ),
     );
   }
+
+  /// Helper method to build information chips
+  Widget _buildTagChip({
+    required String label,
+    double textSize = 10.0, // Default text size
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.5), // Fully transparent background
+        borderRadius: BorderRadius.circular(20), // Rounded corners like a chip
+        border:
+            Border.all(color: Colors.white.withOpacity(0.5)), // Optional border
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.sell,
+            size: 12,
+            color: Colors.grey,
+          ),
+          const SizedBox(width: 4), // Small space between icon and label
+          Text(
+            label,
+            style: TextStyle(color: Colors.black, fontSize: textSize),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+Icon _buildIcon(String symbol, String symbolColor) {
+  IconData iconData;
+
+  switch (symbol) {
+    case 'pets':
+      iconData = Icons.pets;
+      break;
+    case 'location_on':
+      iconData = Icons.location_on;
+      break;
+    case 'star':
+      iconData = Icons.star;
+      break;
+    // Add more mappings here as needed
+    default:
+      iconData = Icons.help_outline; // Fallback icon if no match is found
+  }
+
+  return Icon(
+    iconData,
+    color: _parseColor(symbolColor), // Use the color parsing method here
+    shadows: [
+      Shadow(
+        blurRadius: 1.0,
+        color: Colors.black.withOpacity(1),
+        offset: Offset(0.35, 0.35),
+      ),
+    ],
+  );
+}
+
+Color _parseColor(String colorString) {
+  // Remove leading '#' if present
+  colorString = colorString.replaceAll('#', '');
+
+  // If the color string is not already in ARGB format (starts with "0x"), prefix it with "0xFF" to assume full opacity
+  if (colorString.length == 6) {
+    colorString = 'FF$colorString'; // Adds full opacity if only 6 digits (RGB)
+  }
+
+  // Parse the color string as a hex value
+  return Color(int.parse(colorString, radix: 16));
 }

@@ -34,6 +34,7 @@ class AuthRepository {
     if (doc.exists) {
       return AppUser.fromDocument(doc);
     }
+
     return null;
   }
 
@@ -65,48 +66,54 @@ class AuthRepository {
     await _firebaseAuth.signOut();
   }
 
- Future<void> deleteAccount(String email, String password) async {
-  final user = _firebaseAuth.currentUser;
-  if (user != null) {
-    final credential = EmailAuthProvider.credential(
-      email: user.email!,
-      password: password, 
-    );
+  Future<void> deleteAccount(String email, String password) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: password,
+      );
 
-    try {
-      await user.reauthenticateWithCredential(credential);
+      try {
+        await user.reauthenticateWithCredential(credential);
 
-      // Fetch the shelter ID linked to the user
-      final userDoc = await _firestore.collection('users').doc(user.uid).get();
-      final shelterId = userDoc.data()?['shelterID'];
+        // Fetch the shelter ID linked to the user
+        final userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        final shelterId = userDoc.data()?['shelterID'];
 
-      if (shelterId != null) {
-        // Manually delete documents from known subcollections
-        final subcollections = ['cats', 'dogs']; // replace with actual subcollection names
+        if (shelterId != null) {
+          // Manually delete documents from known subcollections
+          final subcollections = [
+            'cats',
+            'dogs'
+          ]; // replace with actual subcollection names
 
-        for (var subcollectionName in subcollections) {
-          final snapshots = await _firestore.collection('shelters').doc(shelterId).collection(subcollectionName).get();
-          for (var doc in snapshots.docs) {
-            await doc.reference.delete();
+          for (var subcollectionName in subcollections) {
+            final snapshots = await _firestore
+                .collection('shelters')
+                .doc(shelterId)
+                .collection(subcollectionName)
+                .get();
+            for (var doc in snapshots.docs) {
+              await doc.reference.delete();
+            }
           }
+
+          // Delete the shelter document from Firestore
+          await _firestore.collection('shelters').doc(shelterId).delete();
         }
 
-        // Delete the shelter document from Firestore
-        await _firestore.collection('shelters').doc(shelterId).delete();
+        // Delete user document from Firestore
+        await _firestore.collection('users').doc(user.uid).delete();
+
+        // Delete user from Firebase Auth
+        await user.delete();
+      } catch (e) {
+        print('Error reauthenticating user: $e');
       }
-
-      // Delete user document from Firestore
-      await _firestore.collection('users').doc(user.uid).delete();
-
-      // Delete user from Firebase Auth
-      await user.delete();
-
-    } catch (e) {
-      print('Error reauthenticating user: $e');
     }
   }
-}
-
 
   Future<void> createUserDocument({
     required String uid,
@@ -271,13 +278,19 @@ class AuthRepository {
               : collectionName == 'cats'
                   ? 'cat'
                   : 'Unknown',
-          'symbolColor': getRandomColor(),
-          'symbol': 'pawprint.fill', // Example static value, adjust as needed
-          'volunteerCategory': getRandomColorGroup(),
-          'locationCategory': getRandomBuildingGroup(),
-          'behaviorCategory': getRandomBehaviorGroup(),
-          'medicalCategory': getRandomColorGroup(),
-          'adoptionCategory': getRandomColorGroup(),
+          'symbolColor': ['FF0800', 'FF7F00', 'FFFF00', '00FD00', '0000FF', '8F00FF'].randomElement(),
+          'symbol': 'pets', // Example static value, adjust as needed
+          'volunteerCategory': ['Red', 'Green', 'Blue'].randomElement(),
+          'locationCategory':
+              ['Building 1', 'Building 2', 'Building 3'].randomElement(),
+          'behaviorCategory': [
+            'Behavior 1',
+            'Behavior 2',
+            'Behavior 3',
+            'Behavior 4'
+          ].randomElement(),
+          'medicalCategory': ['Medical 1', 'Medical 2', 'Medical 3'].randomElement(),
+          'adoptionCategory': ['Adoption 1', 'Adoption 2', 'Adoption 3'].randomElement(),
           'id': animalId,
           'inKennel': true,
           'location': row['location'] ?? '',
@@ -379,36 +392,11 @@ class AuthRepository {
       return [];
     }
   }
+}
 
-  // Mock functions for random data generation (replace with your logic)
-  String getRandomColor() {
-    const colors = [
-      'Red',
-      'Blue',
-      'Green',
-      'Orange',
-      'Pink',
-      'Yellow',
-      'Brown'
-    ];
-    return colors[Random().nextInt(colors.length)];
-  }
-
-  String getRandomColorGroup() {
-    return getRandomColor();
-  }
-
-  String getRandomBuildingGroup() {
-    const buildings = ['Building 1', 'Building 2', 'Building 3'];
-    return buildings[Random().nextInt(buildings.length)];
-  }
-
-  String getRandomBehaviorGroup() {
-    const behaviors = ['Behavior 1', 'Behavior 2', 'Behavior 3', 'Behavior 4'];
-    return behaviors[Random().nextInt(behaviors.length)];
-  }
-
-  int getRandomIndex(int max) {
-    return Random().nextInt(max);
+extension RandomElement<T> on List<T> {
+  T randomElement() {
+    final random = Random();
+    return this[random.nextInt(length)];
   }
 }
