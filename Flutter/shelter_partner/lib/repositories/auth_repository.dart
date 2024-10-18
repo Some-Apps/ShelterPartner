@@ -311,12 +311,50 @@ class AuthRepository {
           'notes': [
             {
               'id': const Uuid().v4(),
-              'note': 'Example note',
-              'author': 'Admin',
+              'note': 'Example note 1',
+              'author': 'Person 1',
+              'timestamp': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note 2',
+              'author': 'Person 2',
+              'timestamp': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note 3',
+              'author': 'Person 3',
+              'timestamp': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note 4',
+              'author': 'Person 1',
+              'timestamp': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'note': 'Example note 5',
+              'author': 'Person 2',
               'timestamp': Timestamp.now(),
             }
           ], // Example placeholder for notes
           'logs': [
+            {
+              'id': const Uuid().v4(),
+              'type': 'Let Out',
+              'author': 'Admin',
+              'startTime': Timestamp.now(),
+              'endTime': Timestamp.now(),
+            },
+            {
+              'id': const Uuid().v4(),
+              'type': 'Let Out',
+              'author': 'Admin',
+              'startTime': Timestamp.now(),
+              'endTime': Timestamp.now(),
+            },
             {
               'id': const Uuid().v4(),
               'type': 'Let Out',
@@ -337,6 +375,7 @@ class AuthRepository {
           'age': row['age'] ?? 'Unknown',
           'breed': row['breed'] ?? 'Unknown',
           'description': row['description'] ?? 'No description available.',
+
         };
 
         // Upload the document to Firestore
@@ -398,5 +437,6 @@ extension RandomElement<T> on List<T> {
   T randomElement() {
     final random = Random();
     return this[random.nextInt(length)];
+
   }
 }

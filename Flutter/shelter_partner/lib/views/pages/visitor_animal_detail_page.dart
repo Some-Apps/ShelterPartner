@@ -109,10 +109,6 @@ class VisitorAnimalDetailPage extends StatelessWidget {
               subtitle: Text(animal.sex),
             ),
             ListTile(
-              title: const Text('Species'),
-              subtitle: Text(animal.species),
-            ),
-            ListTile(
               title: const Text('Breed'),
               subtitle: Text(animal.breed),
             ),
