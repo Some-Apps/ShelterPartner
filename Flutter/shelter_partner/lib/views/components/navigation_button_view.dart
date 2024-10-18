@@ -8,11 +8,11 @@ class NavigationButton extends StatelessWidget {
   final Object? extra; // Optional extra data to pass
 
   const NavigationButton({
-    Key? key,
+    super.key,
     required this.title,
     required this.route,
     this.extra, // Initialize extra
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

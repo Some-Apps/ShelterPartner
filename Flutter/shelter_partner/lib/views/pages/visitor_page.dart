@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,7 +7,11 @@ import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shelter_partner/views/pages/visitor_animal_detail_page.dart';
+// Conditional import for platform-specific full-screen functionality
+import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub file which will import correct platform-specific file.
+    if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart' 
+    if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
+
 
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
@@ -192,57 +197,60 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                           child: AspectRatio(
                             aspectRatio: 1.0,
                             child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16.0),
-                                child: GestureDetector(
+                              borderRadius: BorderRadius.circular(16.0),
+                              child: GestureDetector(
                                 onTap: () {
-                                  context.push("/visitors/details", extra: animal);
+                                  context.push('/visitors/details',
+                                      extra: animal);
                                 },
-                              child: Container(
-                                color: Colors.grey[300],
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      imageUrl: imageUrl,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => const Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          const Center(
-                                        child: Icon(Icons.error, color: Colors.red),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      bottom: 0,
-                                      left: 0,
-                                      right: 0,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              Colors.transparent,
-                                              Colors.black.withOpacity(0.7),
-                                            ],
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                          ),
+                                child: Container(
+                                  color: Colors.grey[300],
+                                  child: Stack(
+                                    children: [
+                                      CachedNetworkImage(
+                                        imageUrl: imageUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                          child: CircularProgressIndicator(),
                                         ),
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          animal.name,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
+                                        errorWidget: (context, url, error) =>
+                                            const Center(
+                                          child: Icon(Icons.error,
+                                              color: Colors.red),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      Positioned(
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                Colors.transparent,
+                                                Colors.black.withOpacity(0.7),
+                                              ],
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                            ),
+                                          ),
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            animal.name,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
                             ),
                           ),
                         ),
@@ -278,7 +286,8 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   }
 }
 
-// SlideshowScreen widget (as above)
+
+
 
 class SlideshowScreen extends StatefulWidget {
   final List<Animal> animals;
@@ -308,6 +317,9 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
     // Start the slideshow
     _startSlideshow();
+
+    // Enter full-screen mode if appropriate
+    enterFullScreen();
   }
 
   void _setCurrentImage() {
@@ -333,6 +345,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   @override
   void dispose() {
     _timer.cancel();
+    exitFullScreen(); // Exit full-screen mode when the slideshow is dismissed
     super.dispose();
   }
 
@@ -390,7 +403,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       child: Scaffold(
         backgroundColor: Colors.black,
         body: AnimatedSwitcher(
-          duration: const Duration(seconds: 2), // Duration of the fade transition
+          duration:
+              const Duration(seconds: 2), // Duration of the fade transition
           transitionBuilder: (Widget child, Animation<double> animation) {
             return FadeTransition(opacity: animation, child: child);
           },

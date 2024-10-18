@@ -5,7 +5,7 @@ import 'package:shelter_partner/models/animal.dart';
 class VisitorAnimalDetailPage extends StatelessWidget {
   final Animal animal;
 
-  const VisitorAnimalDetailPage({Key? key, required this.animal}) : super(key: key);
+  const VisitorAnimalDetailPage({super.key, required this.animal});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class VisitorAnimalDetailPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
         // Photos in a horizontal scrollable slideshow view
-        Container(
+        SizedBox(
           height: 200.0, // Adjust the height as needed
           child: animal.photos.isNotEmpty
           ? ListView.builder(
@@ -139,8 +139,8 @@ class VisitorAnimalDetailPage extends StatelessWidget {
                       );
                     }).toList(),
                   )
-                : Padding(
-                    padding: const EdgeInsets.all(16.0),
+                : const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Text('No notes available'),
                   ),
           ],

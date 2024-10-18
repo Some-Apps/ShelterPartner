@@ -1,0 +1,40 @@
+// animal_card_view_model.dart
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/models/note.dart';
+import 'package:shelter_partner/repositories/add_note_repository.dart';
+import 'package:shelter_partner/repositories/animal_card_repository.dart';
+import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
+
+class AddNoteViewModel extends StateNotifier<Animal> {
+  final AddNoteRepository _repository;
+  final Ref ref;
+  
+
+  AddNoteViewModel(this._repository, this.ref, Animal animal) : super(animal);
+
+
+  Future<void> addNoteToAnimal(Animal animal, Note note) async {
+    print(note.toMap());
+        // Get shelter ID from shelterDetailsViewModelProvider
+    final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
+    try {
+      await _repository.addNoteToAnimal(animal, shelterDetailsAsync.value!.id, note);
+      // Optionally, update the state if needed
+    } catch (e) {
+      // Handle error
+      print('Failed to add note: $e');
+    }
+  }
+  
+}
+
+// Provider for AddNoteViewModel
+final addNoteViewModelProvider =
+    StateNotifierProvider.family<AddNoteViewModel, Animal, Animal>(
+  (ref, animal) {
+    final repository = ref.watch(addNoteRepositoryProvider);
+    return AddNoteViewModel(repository, ref, animal);
+  },
+);
