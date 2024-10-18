@@ -2,12 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shelter_partner/helper/fullscreen_web.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shelter_partner/helper/fullscreen_web.dart' if (dart.library.io) 'fullscreen_mobile.dart';
+// Conditional import for platform-specific full-screen functionality
+import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub file which will import correct platform-specific file.
+    if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart' 
+    if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
+
 
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
