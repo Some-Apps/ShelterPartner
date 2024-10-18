@@ -1,8 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/models/note.dart';
+import 'package:shelter_partner/view_models/add_note_view_model.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
+import 'package:uuid/uuid.dart';
 
-
-class AddNoteView extends StatefulWidget {
+class AddNoteView extends ConsumerStatefulWidget {
   final Animal animal;
 
   const AddNoteView({super.key, required this.animal});
@@ -11,8 +17,9 @@ class AddNoteView extends StatefulWidget {
   _AddNoteViewState createState() => _AddNoteViewState();
 }
 
-class _AddNoteViewState extends State<AddNoteView> {
+class _AddNoteViewState extends ConsumerState<AddNoteView> {
   final TextEditingController _noteController = TextEditingController();
+  
 
   @override
   void dispose() {
@@ -22,6 +29,9 @@ class _AddNoteViewState extends State<AddNoteView> {
 
   @override
   Widget build(BuildContext context) {
+    final userDetails = ref.read(appUserProvider);
+
+
     return AlertDialog(
       title: Text('Add Note for ${widget.animal.name}'),
       content: TextField(
@@ -41,9 +51,8 @@ class _AddNoteViewState extends State<AddNoteView> {
         ),
         ElevatedButton(
           onPressed: () {
-            // Handle saving the note here
-            String note = _noteController.text;
-            // Save the note for the animal
+            Note note = Note(id: Uuid().v4().toString(), note: _noteController.text, author: ref.read(appUserProvider)!.firstName, timestamp: Timestamp.now());
+            ref.read(addNoteViewModelProvider(widget.animal).notifier).addNoteToAnimal(widget.animal, note);
             Navigator.of(context).pop(note);
           },
           child: const Text('Save'),
