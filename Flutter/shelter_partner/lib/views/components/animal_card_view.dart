@@ -8,7 +8,6 @@ import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/views/components/add_note_view.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
-import 'package:shelter_partner/views/pages/animals_animal_detail_page.dart';
 
 class AnimalCardView extends ConsumerStatefulWidget {
   final Animal animal;

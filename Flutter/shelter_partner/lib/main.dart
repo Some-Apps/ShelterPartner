@@ -76,7 +76,8 @@ class MyApp extends StatelessWidget {
       routerConfig: _router,
       theme: theme,
       darkTheme: darktheme,
-      themeMode: ThemeMode.system,
+      // themeMode: ThemeMode.system
+      themeMode: ThemeMode.light, // Always use light mode - add dark mode later after release
       debugShowCheckedModeBanner: false,
     );
   }

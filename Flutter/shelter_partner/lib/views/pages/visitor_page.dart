@@ -1,11 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shelter_partner/helper/fullscreen_web.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shelter_partner/views/pages/visitor_animal_detail_page.dart';
+import 'package:shelter_partner/helper/fullscreen_web.dart' if (dart.library.io) 'fullscreen_mobile.dart';
 
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
@@ -280,7 +282,8 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   }
 }
 
-// SlideshowScreen widget (as above)
+
+
 
 class SlideshowScreen extends StatefulWidget {
   final List<Animal> animals;
@@ -310,6 +313,9 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
     // Start the slideshow
     _startSlideshow();
+
+    // Enter full-screen mode if appropriate
+    enterFullScreen();
   }
 
   void _setCurrentImage() {
@@ -335,6 +341,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   @override
   void dispose() {
     _timer.cancel();
+    exitFullScreen(); // Exit full-screen mode when the slideshow is dismissed
     super.dispose();
   }
 

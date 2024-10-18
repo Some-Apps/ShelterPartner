@@ -5,7 +5,7 @@ import 'package:shelter_partner/models/animal.dart';
 class AddNoteView extends StatefulWidget {
   final Animal animal;
 
-  AddNoteView({required this.animal});
+  const AddNoteView({super.key, required this.animal});
 
   @override
   _AddNoteViewState createState() => _AddNoteViewState();
@@ -27,7 +27,7 @@ class _AddNoteViewState extends State<AddNoteView> {
       content: TextField(
         controller: _noteController,
         maxLines: 5,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: 'Enter your notes here...',
           border: OutlineInputBorder(),
         ),
@@ -37,7 +37,7 @@ class _AddNoteViewState extends State<AddNoteView> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -46,7 +46,7 @@ class _AddNoteViewState extends State<AddNoteView> {
             // Save the note for the animal
             Navigator.of(context).pop(note);
           },
-          child: Text('Save'),
+          child: const Text('Save'),
         ),
       ],
     );
