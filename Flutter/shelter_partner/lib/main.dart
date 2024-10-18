@@ -11,6 +11,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:json_theme_plus/json_theme_plus.dart';
+import 'package:shelter_partner/views/pages/animals_animal_detail_page.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
 import 'package:shelter_partner/views/pages/api_keys_page.dart';
 import 'package:shelter_partner/views/pages/array_modifier_page.dart';
@@ -98,6 +99,19 @@ class MyApp extends StatelessWidget {
             path: '/animals',
             pageBuilder: (context, state) =>
                 const MaterialPage(child: AnimalsPage()),
+            routes: [
+              GoRoute(
+                path:
+                    'details', // No need for ':id' since we're passing the object directly
+                pageBuilder: (context, state) {
+                  final animal = state.extra
+                      as Animal; // Cast extra to the appropriate type
+                  return MaterialPage(
+                    child: AnimalsAnimalDetailPage(animal: animal),
+                  );
+                },
+              ),
+            ]
           ),
           GoRoute(
               path: '/visitors',

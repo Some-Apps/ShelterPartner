@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
@@ -190,61 +191,60 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                           child: AspectRatio(
                             aspectRatio: 1.0,
                             child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16.0),
-                                child: GestureDetector(
+                              borderRadius: BorderRadius.circular(16.0),
+                              child: GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => VisitorAnimalDetailPage(animal: animal),
-                                  ),
-                                  );
+                                  context.push('/visitors/details',
+                                      extra: animal);
                                 },
-                              child: Container(
-                                color: Colors.grey[300],
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      imageUrl: imageUrl,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => const Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          const Center(
-                                        child: Icon(Icons.error, color: Colors.red),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      bottom: 0,
-                                      left: 0,
-                                      right: 0,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              Colors.transparent,
-                                              Colors.black.withOpacity(0.7),
-                                            ],
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                          ),
+                                child: Container(
+                                  color: Colors.grey[300],
+                                  child: Stack(
+                                    children: [
+                                      CachedNetworkImage(
+                                        imageUrl: imageUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                          child: CircularProgressIndicator(),
                                         ),
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          animal.name,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
+                                        errorWidget: (context, url, error) =>
+                                            const Center(
+                                          child: Icon(Icons.error,
+                                              color: Colors.red),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      Positioned(
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                Colors.transparent,
+                                                Colors.black.withOpacity(0.7),
+                                              ],
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                            ),
+                                          ),
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            animal.name,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
                             ),
                           ),
                         ),
@@ -392,7 +392,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       child: Scaffold(
         backgroundColor: Colors.black,
         body: AnimatedSwitcher(
-          duration: const Duration(seconds: 2), // Duration of the fade transition
+          duration:
+              const Duration(seconds: 2), // Duration of the fade transition
           transitionBuilder: (Widget child, Animation<double> animation) {
             return FadeTransition(opacity: animation, child: child);
           },

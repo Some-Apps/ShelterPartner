@@ -41,7 +41,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Animals"),
+        toolbarHeight: 0,
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -50,10 +50,10 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           ],
         ),
       ),
-      body: animals.isEmpty
+      body: animals.isEmpty/*  */
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-              padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   // Calculate the number of columns based on the screen width
