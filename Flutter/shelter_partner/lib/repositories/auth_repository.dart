@@ -272,7 +272,7 @@ class AuthRepository {
         final animalId = row['id'].toString();
 
         final data = {
-          'alert': row['alert'] ?? '',
+          'alert': ['', '', '', '', 'This is some sort of example alert'].randomElement(),
           'species': collectionName == 'dogs'
               ? 'dog'
               : collectionName == 'cats'

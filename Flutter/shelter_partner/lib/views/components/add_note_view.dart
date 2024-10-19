@@ -5,7 +5,6 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/view_models/add_note_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:uuid/uuid.dart';
 
 class AddNoteView extends ConsumerStatefulWidget {
@@ -51,7 +50,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
         ),
         ElevatedButton(
           onPressed: () {
-            Note note = Note(id: Uuid().v4().toString(), note: _noteController.text, author: ref.read(appUserProvider)!.firstName, timestamp: Timestamp.now());
+            Note note = Note(id: const Uuid().v4().toString(), note: _noteController.text, author: ref.read(appUserProvider)!.firstName, timestamp: Timestamp.now());
             ref.read(addNoteViewModelProvider(widget.animal).notifier).addNoteToAnimal(widget.animal, note);
             Navigator.of(context).pop(note);
           },
