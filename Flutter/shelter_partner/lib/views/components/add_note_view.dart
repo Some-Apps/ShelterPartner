@@ -5,7 +5,6 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/view_models/add_note_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:uuid/uuid.dart';
 
 class AddNoteView extends ConsumerStatefulWidget {

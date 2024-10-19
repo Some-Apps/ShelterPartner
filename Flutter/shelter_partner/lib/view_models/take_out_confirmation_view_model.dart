@@ -3,8 +3,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
-import 'package:shelter_partner/models/note.dart';
-import 'package:shelter_partner/repositories/add_note_repository.dart';
 import 'package:shelter_partner/repositories/take_out_confirmation_repository.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 

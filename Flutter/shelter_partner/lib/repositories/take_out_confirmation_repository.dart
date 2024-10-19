@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
-import 'package:shelter_partner/models/note.dart';
 
 class TakeOutConfirmationRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
