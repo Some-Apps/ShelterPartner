@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shelter_partner/view_models/animal_card_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/views/components/add_note_view.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
@@ -62,14 +61,13 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
         _controller.reset();
 
         // Retrieve the latest animal state
-        final currentAnimal =
-            ref.read(animalCardViewModelProvider(widget.animal));
+        final currentAnimal = widget.animal;
 
         // Animation completed, show confirmation dialog
         if (currentAnimal.inKennel) {
           _showConfirmationDialog();
         } else {
-          _showPutBackConfirmationDialog();
+          // _showPutBackConfirmationDialog();
         }
       }
     });
@@ -81,6 +79,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     super.dispose();
   }
 
+
+
   String getScaledDownUrl(String url) {
     final parts = url.split('.');
     if (parts.length > 1) {
@@ -90,56 +90,49 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   }
 
   Future<void> _showConfirmationDialog() async {
-    // Show the custom confirmation dialog using the helper
-    final confirmed = await TakeOutConfirmationView.showConfirmationDialog(
+    // Show the custom confirmation widget using the ref object
+    await showDialog<bool>(
       context: context,
-      animalName: widget.animal.name,
-      inKennel: widget.animal.inKennel,
-    );
-
-    if (confirmed == true) {
-      try {
-        // User confirmed, call toggleInKennel
-        await ref
-            .read(animalCardViewModelProvider(widget.animal).notifier)
-            .toggleInKennel();
-      } catch (e) {
-        // Show an error dialog using the helper
-        await TakeOutConfirmationView.showErrorDialog(
-          context: context,
-          message: e.toString(),
+      builder: (context) {
+        return TakeOutConfirmationView(
+          animal: widget.animal,
         );
-      }
-    }
+      },
+    );
+  }
+
+  Future<void> showErrorDialog({required BuildContext context, required String message}) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _showPutBackConfirmationDialog() async {
     // Show the custom confirmation dialog using the helper
-    final confirmed = await PutBackConfirmationView.showConfirmationDialog(
+    await PutBackConfirmationView.showConfirmationDialog(
       context: context,
       animalName: widget.animal.name,
       inKennel: widget.animal.inKennel,
     );
-
-    if (confirmed == true) {
-      try {
-        // User confirmed, call toggleInKennel
-        await ref
-            .read(animalCardViewModelProvider(widget.animal).notifier)
-            .toggleInKennel();
-      } catch (e) {
-        // Show an error dialog using the helper
-        await PutBackConfirmationView.showErrorDialog(
-          context: context,
-          message: e.toString(),
-        );
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final animal = ref.watch(animalCardViewModelProvider(widget.animal));
+    final animal = widget.animal;
     final shelterDetailsAsync = ref.watch(shelterDetailsViewModelProvider);
 
     // Determine if shelterID is available
@@ -536,3 +529,4 @@ Color _parseColor(String colorString) {
   // Parse the color string as a hex value
   return Color(int.parse(colorString, radix: 16));
 }
+    

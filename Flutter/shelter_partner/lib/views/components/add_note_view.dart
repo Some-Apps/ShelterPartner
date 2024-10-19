@@ -51,7 +51,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
         ),
         ElevatedButton(
           onPressed: () {
-            Note note = Note(id: Uuid().v4().toString(), note: _noteController.text, author: ref.read(appUserProvider)!.firstName, timestamp: Timestamp.now());
+            Note note = Note(id: const Uuid().v4().toString(), note: _noteController.text, author: ref.read(appUserProvider)!.firstName, timestamp: Timestamp.now());
             ref.read(addNoteViewModelProvider(widget.animal).notifier).addNoteToAnimal(widget.animal, note);
             Navigator.of(context).pop(note);
           },

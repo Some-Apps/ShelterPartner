@@ -15,6 +15,7 @@ class Animal {
   final String description;
   final String symbol;
   final String symbolColor;
+  final String alert;
 
   final String adoptionCategory;
   final String behaviorCategory;
@@ -42,6 +43,7 @@ class Animal {
     required this.description,
     required this.symbol,
     required this.symbolColor,
+    required this.alert,
     required this.adoptionCategory,
     required this.behaviorCategory,
     required this.locationCategory,
@@ -67,6 +69,7 @@ class Animal {
       description: data['description'] ?? 'No description available.',
       symbol: data['symbol'] ?? 'tag',
       symbolColor: data['symbolColor'] ?? 'red',
+      alert: data['alert'] ?? 'Unknown',
       adoptionCategory: data['adoptionCategory'] ?? 'Unknown',
       behaviorCategory: data['behaviorCategory'] ?? 'Unknown',
       locationCategory: data['locationCategory'] ?? 'Unknown',
@@ -95,6 +98,7 @@ class Animal {
     String? description,
     String? symbol,
     String? symbolColor,
+    String? alert,
     String? adoptionCategory,
     String? behaviorCategory,
     String? locationCategory,
@@ -118,6 +122,7 @@ class Animal {
       description: description ?? this.description,
       symbol: symbol ?? this.symbol,
       symbolColor: symbolColor ?? this.symbolColor,
+      alert: alert ?? this.alert,
       adoptionCategory: adoptionCategory ?? this.adoptionCategory,
       behaviorCategory: behaviorCategory ?? this.behaviorCategory,
       locationCategory: locationCategory ?? this.locationCategory,
