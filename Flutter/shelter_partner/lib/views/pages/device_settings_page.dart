@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
@@ -68,22 +69,6 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                             }
                           },
                         ),
-
-                        PickerView(
-                          title: "Main Filter",
-                          options: const ['All'],
-                          value: user?.deviceSettings.mainFilter ??
-                              "All",
-                          onChanged: (String? newValue) {
-                            if (newValue != null && newValue.isNotEmpty) {
-                              ref
-                                  .read(deviceSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
-                                      user!.id, "mainFilter", newValue);
-                            }
-                          },
-                        ),
-
                         PickerView(
                           title: "Visitor Sort",
                           options: const ["Location", "Alphabetical"],
@@ -101,6 +86,11 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                       ]),
                     ),
+                  ),
+                  const Card(
+                    child: NavigationButton(
+                        title: "Main Filter",
+                        route: '/settings/device-settings/main-filter'),
                   ),
                   Card(
                     child: Padding(
@@ -282,7 +272,6 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                 .toggleAttribute(user!.id, "showLogs");
                           },
                         ),
-
                         SwitchToggleView(
                           title: "Show Custom Form",
                           value: user?.deviceSettings.showCustomForm ?? false,
