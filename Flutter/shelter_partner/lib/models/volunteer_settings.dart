@@ -3,6 +3,7 @@ import 'package:shelter_partner/models/geofence.dart';
 class VolunteerSettings {
   final bool photoUploadsAllowed;
   final String mainSort;
+  final String mainFilter;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
   final bool automaticallyPutBackAnimals;
@@ -22,6 +23,7 @@ class VolunteerSettings {
   VolunteerSettings({
     required this.photoUploadsAllowed,
     required this.mainSort,
+    required this.mainFilter,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
     required this.automaticallyPutBackAnimals,
@@ -44,6 +46,7 @@ class VolunteerSettings {
     return {
       'photoUploadsAllowed': photoUploadsAllowed,
       'mainSort': mainSort,
+      'mainFilter': mainFilter,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
@@ -68,6 +71,7 @@ class VolunteerSettings {
     return VolunteerSettings(
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "None",
+      mainFilter: data['mainFilter'] ?? "All",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,

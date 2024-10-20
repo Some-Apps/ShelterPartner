@@ -68,6 +68,22 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                             }
                           },
                         ),
+
+                        PickerView(
+                          title: "Main Filter",
+                          options: const ['All'],
+                          value: user?.deviceSettings.mainFilter ??
+                              "All",
+                          onChanged: (String? newValue) {
+                            if (newValue != null && newValue.isNotEmpty) {
+                              ref
+                                  .read(deviceSettingsViewModelProvider.notifier)
+                                  .modifyDeviceSettingString(
+                                      user!.id, "mainFilter", newValue);
+                            }
+                          },
+                        ),
+
                         PickerView(
                           title: "Visitor Sort",
                           options: const ["Location", "Alphabetical"],

@@ -69,6 +69,21 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             }
                           },
                         ),
+
+                        PickerView(
+                          title: "Main Filter",
+                          options: const ['All'],
+                          value: shelter?.volunteerSettings.mainFilter ??
+                              "All",
+                          onChanged: (String? newValue) {
+                            if (newValue != null && newValue.isNotEmpty) {
+                              ref
+                                  .read(volunteersViewModelProvider.notifier)
+                                  .modifyVolunteerSettingString(
+                                      shelter!.id, "mainFilter", newValue);
+                            }
+                          },
+                        ),
                       ]),
                     ),
                   ),
