@@ -14,7 +14,6 @@ class DeviceSettings {
   final bool createLogsWhenUnderMinimumDuration;
   final bool showNoteDates;
   final bool showLogs;
-  final bool showAllAnimals;
   final bool showCustomForm;
   final String customFormURL;
   final String buttonType;
@@ -36,7 +35,6 @@ class DeviceSettings {
     required this.createLogsWhenUnderMinimumDuration,
     required this.showNoteDates,
     required this.showLogs,
-    required this.showAllAnimals,
     required this.showCustomForm,
     required this.customFormURL,
     required this.buttonType,
@@ -91,9 +89,6 @@ class DeviceSettings {
           : showNoteDates,
       showLogs:
           changes.containsKey('showLogs') ? changes['showLogs'] : showLogs,
-      showAllAnimals: changes.containsKey('showAllAnimals')
-          ? changes['showAllAnimals']
-          : showAllAnimals,
       showCustomForm: changes.containsKey('showCustomForm')
           ? changes['showCustomForm']
           : showCustomForm,
@@ -128,7 +123,6 @@ class DeviceSettings {
       'createLogsWhenUnderMinimumDuration': createLogsWhenUnderMinimumDuration,
       'showNoteDates': showNoteDates,
       'showLogs': showLogs,
-      'showAllAnimals': showAllAnimals,
       'showCustomForm': showCustomForm,
       'customFormURL': customFormURL,
       'buttonType': buttonType,
@@ -156,7 +150,6 @@ class DeviceSettings {
           data['createLogsWhenUnderMinimumDuration'] ?? false,
       showNoteDates: data['showNoteDates'] ?? false,
       showLogs: data['showLogs'] ?? false,
-      showAllAnimals: data['showAllAnimals'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       buttonType: data['buttonType'] ?? "Unknown",

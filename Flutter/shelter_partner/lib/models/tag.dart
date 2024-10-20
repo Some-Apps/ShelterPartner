@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:uuid/uuid.dart';
 
 class Tag {
   final String id;
   final String title;
-  final String count;
+  final int count;
   final Timestamp timestamp;
 
   Tag({
@@ -16,9 +15,9 @@ class Tag {
 
   factory Tag.fromMap(Map<String, dynamic> data) {
     return Tag(
-      id: data['id'] ?? const Uuid().v4(),
+      id: data['id'] ?? "Unknown",
       title: data['title'] ?? "Unknown",
-      count: data['count'] ?? "Unknown",
+      count: data['count'] ?? 0,
       timestamp: data['timestamp'] ?? Timestamp.now(),
     );
   }

@@ -142,7 +142,6 @@ class AuthRepository {
       createLogsWhenUnderMinimumDuration: false,
       showNoteDates: true,
       showLogs: true,
-      showAllAnimals: true,
       showCustomForm: false,
       customFormURL: "https://example.com",
       buttonType: 'In App',
@@ -205,7 +204,6 @@ class AuthRepository {
         createLogsWhenUnderMinimumDuration: false,
         showNoteDates: false,
         showLogs: true,
-        showAllAnimals: true,
         showCustomForm: false,
         customFormURL: "",
         appendAnimalDataToURL: true,
@@ -367,7 +365,7 @@ class AuthRepository {
             {
               'id': const Uuid().v4(),
               'title': 'Friendly',
-              'count': '1',
+              'count': 1,
               'timestamp': Timestamp.now(),
             }
           ], // Example placeholder for tags

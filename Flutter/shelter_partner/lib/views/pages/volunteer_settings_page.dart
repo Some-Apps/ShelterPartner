@@ -250,16 +250,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 .toggleAttribute(shelter!.id, "showLogs");
                           },
                         ),
-                        SwitchToggleView(
-                          title: "Show All Animals",
-                          value: shelter?.volunteerSettings.showAllAnimals ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showAllAnimals");
-                          },
-                        ),
+      
                     
                         SwitchToggleView(
                           title: "Show Custom Form",
