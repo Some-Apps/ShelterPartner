@@ -5,7 +5,6 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
-import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
 import 'package:uuid/uuid.dart';
@@ -41,8 +40,12 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
 
   void _updateConfirmButtonState() {
     setState(() {
-      _isConfirmEnabled = (_selectedLetOutType != null && _selectedLetOutType!.isNotEmpty) &&
-                          (_nameController.text.isNotEmpty);
+      final deviceSettings = ref.read(deviceSettingsViewModelProvider);
+      final requireLetOutType = deviceSettings.value?.deviceSettings.requireLetOutType ?? false;
+      final requireName = deviceSettings.value?.deviceSettings.requireName ?? false;
+
+      _isConfirmEnabled = (!requireLetOutType || (_selectedLetOutType != null && _selectedLetOutType!.isNotEmpty)) &&
+              (!requireName || _nameController.text.isNotEmpty);
     });
   }
 
@@ -67,12 +70,7 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
             Text(widget.animal.alert),
           if (deviceSettings.value?.deviceSettings.requireLetOutType == true &&
               shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text('Let Out Type: '),
-                const Spacer(),
-                DropdownButton<String>(
+            DropdownButton<String>(
                   value: _selectedLetOutType,
                   hint: const Text('Select type'),
                   onChanged: (String? newValue) {
@@ -89,8 +87,6 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
                     );
                   }).toList(),
                 ),
-              ],
-            ),
           if (deviceSettings.value?.deviceSettings.requireName == true &&
               (userDetails?.firstName != null || deviceSettings.value?.deviceSettings.adminMode == true))
             TextField(
@@ -120,7 +116,7 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
                     author: _nameController.text,
                     earlyReason: '',
                     startTime: Timestamp.now(),
-                    endTime: Timestamp.now(),
+                    endTime: widget.animal.logs.last.endTime,
                   ),
                 );
                   Navigator.of(context).pop(true); // User confirmed

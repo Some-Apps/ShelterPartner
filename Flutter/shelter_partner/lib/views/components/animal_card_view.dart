@@ -18,19 +18,19 @@ class AnimalCardView extends ConsumerStatefulWidget {
 }
 
 /// Helper method to calculate time ago from a given DateTime
-String _timeAgo(DateTime dateTime) {
+String _timeAgo(DateTime dateTime, bool inKennel) {
   final Duration difference = DateTime.now().difference(dateTime);
 
   if (difference.inDays > 8) {
-    return '${(difference.inDays / 7).floor()} weeks ago';
+    return '${(difference.inDays / 7).floor()} weeks${inKennel ? ' ago' : ''}';
   } else if (difference.inDays >= 1) {
-    return '${difference.inDays} days ago';
+    return '${difference.inDays} days${inKennel ? ' ago' : ''}';
   } else if (difference.inHours >= 1) {
-    return '${difference.inHours} hours ago';
+    return '${difference.inHours} hours${inKennel ? ' ago' : ''}';
   } else if (difference.inMinutes >= 1) {
-    return '${difference.inMinutes} minutes ago';
+    return '${difference.inMinutes} minutes${inKennel ? ' ago' : ''}';
   } else {
-    return 'just now';
+    return inKennel ? 'Just now' : '0 minutes';
   }
 }
 
@@ -408,7 +408,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
               Icon(Icons.access_time, size: 16.0, color: Theme.of(context).primaryColor),
               const SizedBox(width: 4),
               Text(
-              "${_timeAgo(animal.logs.last.endTime.toDate())} (${animal.logs.last.type})",
+                "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.w400,

@@ -23,7 +23,7 @@ class PutBackConfirmationView extends ConsumerStatefulWidget {
 
 class _PutBackConfirmationViewState extends ConsumerState<PutBackConfirmationView> {
   final TextEditingController _nameController = TextEditingController();
-  String? _selectedLetOutType;
+  String? _selectedEarlyReason;
   bool _isConfirmEnabled = false;
 
   @override
@@ -40,9 +40,8 @@ class _PutBackConfirmationViewState extends ConsumerState<PutBackConfirmationVie
 
   void _updateConfirmButtonState() {
     setState(() {
-      _isConfirmEnabled = (_selectedLetOutType != null && _selectedLetOutType!.isNotEmpty) &&
-                          (_nameController.text.isNotEmpty);
-    });
+      _isConfirmEnabled = (_selectedEarlyReason != null && _selectedEarlyReason!.isNotEmpty);
+          });
   }
 
   @override
@@ -59,28 +58,42 @@ final takeOutViewModel = ref.read(putBackConfirmationViewModelProvider(widget.an
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Do you want to take ${widget.animal.name} out of the kennel?',
+            'Do you want to put ${widget.animal.name} back into their kennel?',
           ),
+
+
+          // earlyReason
+          // after should show a thank you dialog
+
           const SizedBox(height: 20),
           if (widget.animal.alert.isNotEmpty)
             Text(widget.animal.alert),
-          if (deviceSettings.value?.deviceSettings.requireLetOutType == true &&
-              shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
+          if (deviceSettings.value?.deviceSettings.requireEarlyPutBackReason == true &&
+              shelterSettings.value?.shelterSettings.earlyPutBackReasons.isNotEmpty == true)
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text('Let Out Type: '),
+
+
+
+                const Text('Early Put Back Reason: '),
+
+
+
                 const Spacer(),
+
+
+
                 DropdownButton<String>(
-                  value: _selectedLetOutType,
-                  hint: const Text('Select type'),
+                  value: _selectedEarlyReason,
+                  hint: const Text('Select reason'),
                   onChanged: (String? newValue) {
                     setState(() {
-                      _selectedLetOutType = newValue;
+                      _selectedEarlyReason = newValue;
                       _updateConfirmButtonState();
                     });
                   },
-                  items: shelterSettings.value!.shelterSettings.letOutTypes
+                  items: shelterSettings.value!.shelterSettings.earlyPutBackReasons
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -88,16 +101,15 @@ final takeOutViewModel = ref.read(putBackConfirmationViewModelProvider(widget.an
                     );
                   }).toList(),
                 ),
+
+
+
+
               ],
             ),
-          if (deviceSettings.value?.deviceSettings.requireName == true &&
-              (userDetails?.firstName != null || deviceSettings.value?.deviceSettings.adminMode == true))
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Volunteer Name',
-              ),
-            ),
+          
+
+
         ],
       ),
       actions: [
@@ -115,7 +127,7 @@ final takeOutViewModel = ref.read(putBackConfirmationViewModelProvider(widget.an
                   widget.animal,
                   Log(
                     id: const Uuid().v4().toString(),
-                    type: _selectedLetOutType ?? '',
+                    type: _selectedEarlyReason ?? '',
                     author: _nameController.text,
                     earlyReason: '',
                     startTime: Timestamp.now(),
