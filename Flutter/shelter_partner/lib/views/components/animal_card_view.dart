@@ -92,28 +92,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                     ));
           }
         } else {
-          if (ref
-                  .read(deviceSettingsViewModelProvider)
-                  .value
-                  ?.deviceSettings
-                  .requireEarlyPutBackReason ==
-              true) {
             _showPutBackConfirmationDialog();
-          } else {
-            ref
-                .read(putBackConfirmationViewModelProvider(widget.animal)
-                    .notifier)
-                .putBackAnimal(
-                    widget.animal,
-                    Log(
-                      id: const Uuid().v4().toString(),
-                      type: '',
-                      author: '',
-                      earlyReason: '',
-                      startTime: Timestamp.now(),
-                      endTime: Timestamp.now(),
-                    ));
-          }
         }
       }
     });
@@ -460,6 +439,23 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                           color: Theme.of(context).primaryColor,
                         ),
                       ),
+                      
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.person_2_outlined,
+                          size: 16.0, color: Theme.of(context).primaryColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        animal.logs.last.author,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w400,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      
                     ],
                   ),
                 ],

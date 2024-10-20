@@ -270,13 +270,24 @@ class AuthRepository {
         final animalId = row['id'].toString();
 
         final data = {
-          'alert': ['', '', '', '', 'This is some sort of example alert'].randomElement(),
+          'takeOutAlert': ['', '', '', '', 'This is some sort of example alert']
+              .randomElement(),
+          'putBackAlert': ['', '', '', '', 'This is some sort of example alert']
+              .randomElement(),
+
           'species': collectionName == 'dogs'
               ? 'dog'
               : collectionName == 'cats'
                   ? 'cat'
                   : 'Unknown',
-          'symbolColor': ['FF0800', 'FF7F00', 'FFFF00', '00FD00', '0000FF', '8F00FF'].randomElement(),
+          'symbolColor': [
+            'FF0800',
+            'FF7F00',
+            'FFFF00',
+            '00FD00',
+            '0000FF',
+            '8F00FF'
+          ].randomElement(),
           'symbol': 'pets', // Example static value, adjust as needed
           'volunteerCategory': ['Red', 'Green', 'Blue'].randomElement(),
           'locationCategory':
@@ -287,8 +298,10 @@ class AuthRepository {
             'Behavior 3',
             'Behavior 4'
           ].randomElement(),
-          'medicalCategory': ['Medical 1', 'Medical 2', 'Medical 3'].randomElement(),
-          'adoptionCategory': ['Adoption 1', 'Adoption 2', 'Adoption 3'].randomElement(),
+          'medicalCategory':
+              ['Medical 1', 'Medical 2', 'Medical 3'].randomElement(),
+          'adoptionCategory':
+              ['Adoption 1', 'Adoption 2', 'Adoption 3'].randomElement(),
           'id': animalId,
           'inKennel': true,
           'location': row['location'] ?? '',
@@ -373,7 +386,6 @@ class AuthRepository {
           'age': row['age'] ?? 'Unknown',
           'breed': row['breed'] ?? 'Unknown',
           'description': row['description'] ?? 'No description available.',
-
         };
 
         // Upload the document to Firestore
@@ -435,6 +447,5 @@ extension RandomElement<T> on List<T> {
   T randomElement() {
     final random = Random();
     return this[random.nextInt(length)];
-
   }
 }
