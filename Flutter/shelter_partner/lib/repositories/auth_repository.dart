@@ -130,6 +130,7 @@ class AuthRepository {
       adminMode: true,
       photoUploadsAllowed: true,
       mainSort: 'Last Let Out',
+      mainFilter: 'All',
       visitorSort: 'Alphabetical',
       allowBulkTakeOut: true,
       minimumLogMinutes: 10,
@@ -193,6 +194,7 @@ class AuthRepository {
       volunteerSettings: VolunteerSettings(
         photoUploadsAllowed: true,
         mainSort: 'Last Let Out',
+        mainFilter: 'All',
         allowBulkTakeOut: false,
         minimumLogMinutes: 5,
         automaticallyPutBackAnimals: true,

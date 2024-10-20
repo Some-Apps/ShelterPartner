@@ -2,6 +2,7 @@ class DeviceSettings {
   final bool adminMode;
   final bool photoUploadsAllowed;
   final String mainSort;
+  final String mainFilter;
   final String visitorSort;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
@@ -23,6 +24,7 @@ class DeviceSettings {
     required this.adminMode,
     required this.photoUploadsAllowed,
     required this.mainSort,
+    required this.mainFilter,
     required this.visitorSort,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
@@ -50,6 +52,8 @@ class DeviceSettings {
           : photoUploadsAllowed,
       mainSort:
           changes.containsKey('mainSort') ? changes['mainSort'] : mainSort,
+      mainFilter:
+          changes.containsKey('mainFilter') ? changes['mainFilter'] : mainFilter,
       visitorSort: changes.containsKey('visitorSort')
           ? changes['visitorSort']
           : visitorSort,
@@ -136,6 +140,7 @@ class DeviceSettings {
       adminMode: data['adminMode'] ?? false,
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "Unknown",
+      mainFilter: data['mainFilter'] ?? "All",
       visitorSort: data['visitorSort'] ?? "Unknown",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
