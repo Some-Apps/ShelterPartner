@@ -1,5 +1,10 @@
 class DeviceSettings {
+
+
   final bool adminMode;
+
+// instead of adminMode, have it be mode and have the options be admin, volunteer, visitor, or volunteerAndVisitor
+
   final bool photoUploadsAllowed;
   final String mainSort;
   final String mainFilter;

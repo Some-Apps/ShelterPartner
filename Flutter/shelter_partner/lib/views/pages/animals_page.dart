@@ -129,7 +129,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           builder: (context, constraints) {
             final int columns = (constraints.maxWidth / 350).floor();
             final double aspectRatio =
-                constraints.maxWidth / (columns * 200);
+                constraints.maxWidth / (columns * 225);
 
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
