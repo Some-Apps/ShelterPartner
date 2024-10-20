@@ -67,7 +67,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
         if (currentAnimal.inKennel) {
           _showConfirmationDialog();
         } else {
-          // _showPutBackConfirmationDialog();
+          _showPutBackConfirmationDialog();
         }
       }
     });
@@ -123,11 +123,15 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
 
   Future<void> _showPutBackConfirmationDialog() async {
     // Show the custom confirmation dialog using the helper
-    await PutBackConfirmationView.showConfirmationDialog(
+    await showDialog<bool>(
       context: context,
-      animalName: widget.animal.name,
-      inKennel: widget.animal.inKennel,
+      builder: (context) {
+        return PutBackConfirmationView(
+          animal: widget.animal,
+        );
+      },
     );
+
   }
 
   @override
