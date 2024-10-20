@@ -25,7 +25,7 @@ class NumberStepperView extends StatelessWidget {
         const Spacer(),
         IconButton(
           icon: const Icon(Icons.remove),
-          onPressed: decrement, // Use custom decrement function
+          onPressed: value > 0 ? decrement : null, // Disable if value <= 0
         ),
         Text('$value $label'), // Display the passed value
         IconButton(

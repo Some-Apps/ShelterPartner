@@ -14,7 +14,6 @@ class VolunteerSettings {
   final bool createLogsWhenUnderMinimumDuration;
   final bool showNoteDates;
   final bool showLogs;
-  final bool showAllAnimals;
   final bool showCustomForm;
   final String customFormURL;
   final bool appendAnimalDataToURL;
@@ -34,7 +33,6 @@ class VolunteerSettings {
     required this.createLogsWhenUnderMinimumDuration,
     required this.showNoteDates,
     required this.showLogs,
-    required this.showAllAnimals,
     required this.showCustomForm,
     required this.customFormURL,
     required this.appendAnimalDataToURL,
@@ -58,7 +56,6 @@ class VolunteerSettings {
       'createLogsWhenUnderMinimumDuration': createLogsWhenUnderMinimumDuration,
       'showNoteDates': showNoteDates,
       'showLogs': showLogs,
-      'showAllAnimals': showAllAnimals,
       'showCustomForm': showCustomForm,
       'customFormURL': customFormURL,
       'appendAnimalDataToURL': appendAnimalDataToURL,
@@ -84,7 +81,6 @@ class VolunteerSettings {
           data['createLogsWhenUnderMinimumDuration'] ?? false,
       showNoteDates: data['showNoteDates'] ?? false,
       showLogs: data['showLogs'] ?? false,
-      showAllAnimals: data['showAllAnimals'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,

@@ -14,6 +14,19 @@ class AddNoteViewModel extends StateNotifier<Animal> {
   AddNoteViewModel(this._repository, this.ref, Animal animal) : super(animal);
 
 
+  Future<void> updateAnimalTags(Animal animal, List<String> tags) async {
+    try {
+      for (var tag in tags) {
+        await _repository.updateAnimalTags(animal, ref.read(shelterDetailsViewModelProvider).value!.id, tag);
+      }
+      // Optionally, update the state if needed
+    } catch (e) {
+      // Handle error
+      print('Failed to add tags: $e');
+    }
+  }
+
+
   Future<void> addNoteToAnimal(Animal animal, Note note) async {
     print(note.toMap());
         // Get shelter ID from shelterDetailsViewModelProvider

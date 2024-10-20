@@ -266,15 +266,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                 .toggleAttribute(user!.id, "showLogs");
                           },
                         ),
-                        SwitchToggleView(
-                          title: "Show All Animals",
-                          value: user?.deviceSettings.showAllAnimals ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(user!.id, "showAllAnimals");
-                          },
-                        ),
+
                         SwitchToggleView(
                           title: "Show Custom Form",
                           value: user?.deviceSettings.showCustomForm ?? false,

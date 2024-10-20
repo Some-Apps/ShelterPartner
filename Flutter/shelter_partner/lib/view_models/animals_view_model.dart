@@ -52,21 +52,21 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   final deviceSettingsAsync = ref.read(deviceSettingsViewModelProvider);
   
   deviceSettingsAsync.whenData((appUser) {
-    final visitorSort = appUser?.deviceSettings.visitorSort ?? 'Alphabetical';
+    final mainSort = appUser?.deviceSettings.mainSort ?? 'Alphabetical';
 
     // Add this debug print to verify the sorting method being used
-    print('Sorting by: $visitorSort');
+    print('Sorting by: $mainSort');
 
     final sortedState = <String, List<Animal>>{};
 
     state.forEach((species, animalsList) {
       final sortedList = List<Animal>.from(animalsList);
 
-      if (visitorSort == 'Alphabetical') {
+      if (mainSort == 'Alphabetical') {
         sortedList.sort((a, b) => a.name.compareTo(b.name));
         print('Sorted alphabetically');
-      } else if (visitorSort == 'Location') {
-        sortedList.sort((a, b) => a.location.compareTo(b.location));
+      } else if (mainSort == 'Last Let Out') {
+        sortedList.sort((a, b) => a.logs.last.endTime.compareTo(b.logs.last.endTime));
         print('Sorted by intake date');
       }
 

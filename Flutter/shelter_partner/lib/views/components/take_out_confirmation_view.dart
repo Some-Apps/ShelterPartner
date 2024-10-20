@@ -5,7 +5,6 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
-import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
 import 'package:uuid/uuid.dart';
@@ -41,15 +40,19 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
 
   void _updateConfirmButtonState() {
     setState(() {
-      _isConfirmEnabled = (_selectedLetOutType != null && _selectedLetOutType!.isNotEmpty) &&
-                          (_nameController.text.isNotEmpty);
+      final deviceSettings = ref.read(deviceSettingsViewModelProvider);
+      final requireLetOutType = deviceSettings.value?.deviceSettings.requireLetOutType ?? false;
+      final requireName = deviceSettings.value?.deviceSettings.requireName ?? false;
+
+      _isConfirmEnabled = (!requireLetOutType || (_selectedLetOutType != null && _selectedLetOutType!.isNotEmpty)) &&
+              (!requireName || _nameController.text.isNotEmpty);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final deviceSettings = ref.read(deviceSettingsViewModelProvider);
-    final shelterSettings = ref.read(shelterSettingsViewModelProvider);
+    final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final userDetails = ref.read(appUserProvider);
 final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.animal).notifier);
 
@@ -60,37 +63,51 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Do you want to take ${widget.animal.name} out of the kennel?',
+            'Do you want to take ${widget.animal.name} out of ${widget.animal.sex == 'male' ? 'his' : 'her'} kennel?',
           ),
           const SizedBox(height: 20),
-          if (widget.animal.alert.isNotEmpty)
-            Text(widget.animal.alert),
-          if (deviceSettings.value?.deviceSettings.requireLetOutType == true &&
-              shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            if (widget.animal.takeOutAlert.isNotEmpty)
+            RichText(
+              text: TextSpan(
               children: [
-                const Text('Let Out Type: '),
-                const Spacer(),
-                DropdownButton<String>(
-                  value: _selectedLetOutType,
-                  hint: const Text('Select type'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedLetOutType = newValue;
-                      _updateConfirmButtonState();
-                    });
-                  },
-                  items: shelterSettings.value!.shelterSettings.letOutTypes
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+                const TextSpan(
+                text: 'Alert: ',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                TextSpan(
+                text: widget.animal.takeOutAlert,
+                style: const TextStyle(color: Colors.red),
                 ),
               ],
+              ),
             ),
+          if (deviceSettings.value?.deviceSettings.requireLetOutType == true &&
+              shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text('Type of Let Out'),
+                  Spacer(),
+                  DropdownButton<String>(
+                    value: _selectedLetOutType,
+                    hint: const Text('Select type'),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedLetOutType = newValue;
+                        _updateConfirmButtonState();
+                      });
+                    },
+                    items: shelterSettings.value!.shelterSettings.letOutTypes
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            
           if (deviceSettings.value?.deviceSettings.requireName == true &&
               (userDetails?.firstName != null || deviceSettings.value?.deviceSettings.adminMode == true))
             TextField(
@@ -120,7 +137,7 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
                     author: _nameController.text,
                     earlyReason: '',
                     startTime: Timestamp.now(),
-                    endTime: Timestamp.now(),
+                    endTime: widget.animal.logs.last.endTime,
                   ),
                 );
                   Navigator.of(context).pop(true); // User confirmed
