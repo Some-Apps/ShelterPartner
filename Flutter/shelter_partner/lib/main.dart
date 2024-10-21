@@ -260,6 +260,22 @@ class MyApp extends StatelessWidget {
                         );
                       },
                     ),
+                    GoRoute(
+                      path: 'visitor-filter',
+                      pageBuilder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MaterialPage(
+                          child: MainFilterPage(
+                            collection: params.collection,
+                            documentID: params.documentID,
+                            filterFieldPath: params.filterFieldPath,
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ]),

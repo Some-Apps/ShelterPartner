@@ -63,7 +63,7 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Main Filter"),
+        title: Text(widget.filterFieldPath),
         actions: [
           IconButton(
               icon: const Icon(Icons.save),

@@ -131,6 +131,7 @@ class AuthRepository {
       photoUploadsAllowed: true,
       mainSort: 'Last Let Out',
       mainFilter: null,
+      visitorFilter: null,
       visitorSort: 'Alphabetical',
       allowBulkTakeOut: true,
       minimumLogMinutes: 10,

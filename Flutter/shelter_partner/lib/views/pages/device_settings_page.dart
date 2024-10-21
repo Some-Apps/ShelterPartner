@@ -100,6 +100,17 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                     ),
                   ),
                   Card(
+                    child: NavigationButton(
+                      title: "Visitor Filter",
+                      route: '/settings/device-settings/visitor-filter',
+                      extra: FilterParameters(
+                        collection: 'users',
+                        documentID: shelterAsyncValue.value!.id,
+                        filterFieldPath: 'deviceSettings.visitorFilter',
+                      ),
+                    ),
+                  ),
+                  Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [

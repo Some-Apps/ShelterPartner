@@ -8,6 +8,7 @@ class DeviceSettings {
   final bool photoUploadsAllowed;
   final String mainSort;
   final FilterElement? mainFilter;
+  final FilterElement? visitorFilter;
   final String visitorSort;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
@@ -30,6 +31,7 @@ class DeviceSettings {
     required this.photoUploadsAllowed,
     required this.mainSort,
     required this.mainFilter,
+    required this.visitorFilter,
     required this.visitorSort,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
@@ -60,6 +62,9 @@ class DeviceSettings {
       mainFilter: changes.containsKey('mainFilter')
           ? changes['mainFilter']
           : mainFilter,
+      visitorFilter: changes.containsKey('visitorFilter')
+          ? changes['visitorFilter']
+          : visitorFilter,
       visitorSort: changes.containsKey('visitorSort')
           ? changes['visitorSort']
           : visitorSort,
@@ -121,6 +126,7 @@ class DeviceSettings {
       'photoUploadsAllowed': photoUploadsAllowed,
       'mainSort': mainSort,
       if (mainFilter != null) 'mainFilter': mainFilter!.toJson(),
+      if (visitorFilter != null) 'visitorFilter': visitorFilter!.toJson(),
       'visitorSort': visitorSort,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
@@ -172,11 +178,20 @@ class DeviceSettings {
       mainFilter = null;
     }
 
+    FilterElement? visitorFilter;
+    if (data.containsKey('visitorFilter') && data['visitorFilter'] != null) {
+      final visitorFilterData = data['visitorFilter'] as Map<String, dynamic>;
+      visitorFilter = reconstructFilterGroup(visitorFilterData);
+    } else {
+      visitorFilter = null;
+    }
+
     return DeviceSettings(
       adminMode: data['adminMode'] ?? false,
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "Unknown",
       mainFilter: mainFilter,
+      visitorFilter: visitorFilter,
       visitorSort: data['visitorSort'] ?? "Unknown",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
