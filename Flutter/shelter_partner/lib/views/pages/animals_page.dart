@@ -16,7 +16,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   late TabController _tabController;
 
   // State variables for search and attribute selection
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
 
   // For attribute dropdown
@@ -107,7 +107,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           default:
             fieldValue = '';
         }
-        return _containsQuery(fieldValue?.toLowerCase());
+        return _containsQuery(fieldValue.toLowerCase());
       }).toList();
     }
   }
@@ -121,7 +121,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     if (animals.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     } else if (filteredAnimals.isEmpty) {
-      return Center(child: Text('No animals found'));
+      return const Center(child: Text('No animals found'));
     } else {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -129,7 +129,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           builder: (context, constraints) {
             final int columns = (constraints.maxWidth / 350).floor();
             final double aspectRatio =
-                constraints.maxWidth / (columns * 200);
+                constraints.maxWidth / (columns * 225);
 
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -162,7 +162,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
             children: [
               // Collapsible section for search bar and attribute dropdown
               ExpansionTile(
-                title: Text('Additional Options'),
+                title: const Text('Additional Options'),
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
@@ -182,7 +182,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                             },
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         // Attribute dropdown
                         DropdownButton<String>(
                           value: selectedAttributeDisplayName,

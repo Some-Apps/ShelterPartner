@@ -16,6 +16,7 @@ import 'package:shelter_partner/views/pages/animals_page.dart';
 import 'package:shelter_partner/views/pages/api_keys_page.dart';
 import 'package:shelter_partner/views/pages/array_modifier_page.dart';
 import 'package:shelter_partner/views/pages/device_settings_page.dart';
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/scheduled_reports_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
@@ -77,7 +78,8 @@ class MyApp extends StatelessWidget {
       theme: theme,
       darkTheme: darktheme,
       // themeMode: ThemeMode.system
-      themeMode: ThemeMode.light, // Always use light mode - add dark mode later after release
+      themeMode: ThemeMode
+          .light, // Always use light mode - add dark mode later after release
       debugShowCheckedModeBanner: false,
     );
   }
@@ -97,39 +99,38 @@ class MyApp extends StatelessWidget {
         },
         routes: [
           GoRoute(
-            path: '/animals',
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: AnimalsPage()),
-            routes: [
-              GoRoute(
-                path:
-                    'details', // No need for ':id' since we're passing the object directly
-                pageBuilder: (context, state) {
-                  final animal = state.extra
-                      as Animal; // Cast extra to the appropriate type
-                  return MaterialPage(
-                    child: AnimalsAnimalDetailPage(animal: animal),
-                  );
-                },
-              ),
-            ]
-          ),
+              path: '/animals',
+              pageBuilder: (context, state) =>
+                  const MaterialPage(child: AnimalsPage()),
+              routes: [
+                GoRoute(
+                  path:
+                      'details', // No need for ':id' since we're passing the object directly
+                  pageBuilder: (context, state) {
+                    final animal = state.extra
+                        as Animal; // Cast extra to the appropriate type
+                    return MaterialPage(
+                      child: AnimalsAnimalDetailPage(animal: animal),
+                    );
+                  },
+                ),
+              ]),
           GoRoute(
               path: '/visitors',
               pageBuilder: (context, state) =>
                   const MaterialPage(child: VisitorPage()),
               routes: [
                 GoRoute(
-                path:
-                    'details', // No need for ':id' since we're passing the object directly
-                pageBuilder: (context, state) {
-                  final animal = state.extra
-                      as Animal; // Cast extra to the appropriate type
-                  return MaterialPage(
-                    child: VisitorAnimalDetailPage(animal: animal),
-                  );
-                },
-              ),
+                  path:
+                      'details', // No need for ':id' since we're passing the object directly
+                  pageBuilder: (context, state) {
+                    final animal = state.extra
+                        as Animal; // Cast extra to the appropriate type
+                    return MaterialPage(
+                      child: VisitorAnimalDetailPage(animal: animal),
+                    );
+                  },
+                ),
               ]),
           GoRoute(
             path: '/volunteers',
@@ -151,6 +152,24 @@ class MyApp extends StatelessWidget {
                 path: 'volunteer-settings', // This is relative to '/volunteers'
                 pageBuilder: (context, state) =>
                     const MaterialPage(child: VolunteerSettingsPage()),
+                routes: [
+                  GoRoute(
+                      path: 'main-filter',
+                      pageBuilder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MaterialPage(
+                          child: MainFilterPage(
+                            collection: params.collection,
+                            documentID: params.documentID,
+                            filterFieldPath: params.filterFieldPath,
+                          ),
+                        );
+                      },
+                    ),
+                ]
               ),
             ],
           ),
@@ -221,9 +240,43 @@ class MyApp extends StatelessWidget {
                       ),
                     ]),
                 GoRoute(
-                  path: 'device-settings', // This is relative to '/volunteers'
+                  path: 'device-settings',
                   pageBuilder: (context, state) =>
                       const MaterialPage(child: DeviceSettingsPage()),
+                  routes: [
+                    GoRoute(
+                      path: 'main-filter',
+                      pageBuilder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MaterialPage(
+                          child: MainFilterPage(
+                            collection: params.collection,
+                            documentID: params.documentID,
+                            filterFieldPath: params.filterFieldPath,
+                          ),
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'visitor-filter',
+                      pageBuilder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MaterialPage(
+                          child: MainFilterPage(
+                            collection: params.collection,
+                            documentID: params.documentID,
+                            filterFieldPath: params.filterFieldPath,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ]),
         ],

@@ -1,9 +1,10 @@
 import 'package:shelter_partner/models/geofence.dart';
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class VolunteerSettings {
   final bool photoUploadsAllowed;
   final String mainSort;
-  final String mainFilter;
+  final FilterElement? mainFilter;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
   final bool automaticallyPutBackAnimals;
@@ -68,10 +69,24 @@ class VolunteerSettings {
 
   // Factory constructor to create VolunteerSettings from Firestore Map
   factory VolunteerSettings.fromMap(Map<String, dynamic> data) {
+FilterElement? mainFilter;
+    if (data.containsKey('mainFilter') && data['mainFilter'] != null) {
+      final mainFilterData = data['mainFilter'];
+      if (mainFilterData is Map<String, dynamic> &&
+          mainFilterData['type'] != null) {
+        mainFilter =
+            FilterElement.fromJson(Map<String, dynamic>.from(mainFilterData));
+      } else {
+        mainFilter = null;
+      }
+    } else {
+      mainFilter = null;
+    }
+
     return VolunteerSettings(
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "None",
-      mainFilter: data['mainFilter'] ?? "All",
+      mainFilter: mainFilter,
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,

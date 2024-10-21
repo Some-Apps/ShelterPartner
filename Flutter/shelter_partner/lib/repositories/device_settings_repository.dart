@@ -73,6 +73,33 @@ class DeviceSettingsRepository {
       throw Exception("Failed to decrement: $error");
     });
   }
+
+
+ Future<void> saveFilterExpression(String userID, Map<String, dynamic> filterExpression) async {
+  final docRef = _firestore.collection('users').doc(userID);
+  return docRef.update({
+    'deviceSettings.mainFilter': filterExpression,
+  }).catchError((error) {
+    throw Exception("Failed to save filter expression: $error");
+  });
+}
+
+
+
+
+Future<Map<String, dynamic>?> loadFilterExpression(String userID) async {
+  final docRef = _firestore.collection('users').doc(userID);
+  final snapshot = await docRef.get();
+  if (snapshot.exists) {
+    final data = snapshot.data();
+    if (data != null && data['deviceSettings'] != null && data['deviceSettings']['mainFilter'] != null) {
+      return Map<String, dynamic>.from(data['deviceSettings']['mainFilter']);
+    }
+  }
+  return null;
+}
+
+
 }
 
 final deviceSettingsRepositoryProvider =

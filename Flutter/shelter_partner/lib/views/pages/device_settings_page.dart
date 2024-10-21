@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class DeviceSettingsPage extends ConsumerStatefulWidget {
   const DeviceSettingsPage({super.key});
@@ -68,22 +70,6 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                             }
                           },
                         ),
-
-                        PickerView(
-                          title: "Main Filter",
-                          options: const ['All'],
-                          value: user?.deviceSettings.mainFilter ??
-                              "All",
-                          onChanged: (String? newValue) {
-                            if (newValue != null && newValue.isNotEmpty) {
-                              ref
-                                  .read(deviceSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
-                                      user!.id, "mainFilter", newValue);
-                            }
-                          },
-                        ),
-
                         PickerView(
                           title: "Visitor Sort",
                           options: const ["Location", "Alphabetical"],
@@ -100,6 +86,28 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                           },
                         ),
                       ]),
+                    ),
+                  ),
+                  Card(
+                    child: NavigationButton(
+                      title: "Main Filter",
+                      route: '/settings/device-settings/main-filter',
+                      extra: FilterParameters(
+                        collection: 'users',
+                        documentID: shelterAsyncValue.value!.id,
+                        filterFieldPath: 'deviceSettings.mainFilter',
+                      ),
+                    ),
+                  ),
+                  Card(
+                    child: NavigationButton(
+                      title: "Visitor Filter",
+                      route: '/settings/device-settings/visitor-filter',
+                      extra: FilterParameters(
+                        collection: 'users',
+                        documentID: shelterAsyncValue.value!.id,
+                        filterFieldPath: 'deviceSettings.visitorFilter',
+                      ),
                     ),
                   ),
                   Card(
@@ -282,7 +290,6 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                 .toggleAttribute(user!.id, "showLogs");
                           },
                         ),
-
                         SwitchToggleView(
                           title: "Show Custom Form",
                           value: user?.deviceSettings.showCustomForm ?? false,

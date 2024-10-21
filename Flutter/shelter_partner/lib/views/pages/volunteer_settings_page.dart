@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
+import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
 import 'package:shelter_partner/views/pages/georestriction_settings_page.dart';
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class VolunteerSettingsPage extends ConsumerStatefulWidget {
   const VolunteerSettingsPage({super.key});
@@ -70,21 +72,19 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                           },
                         ),
 
-                        PickerView(
-                          title: "Main Filter",
-                          options: const ['All'],
-                          value: shelter?.volunteerSettings.mainFilter ??
-                              "All",
-                          onChanged: (String? newValue) {
-                            if (newValue != null && newValue.isNotEmpty) {
-                              ref
-                                  .read(volunteersViewModelProvider.notifier)
-                                  .modifyVolunteerSettingString(
-                                      shelter!.id, "mainFilter", newValue);
-                            }
-                          },
-                        ),
+                        
                       ]),
+                    ),
+                  ),
+                  Card(
+                    child: NavigationButton(
+                      title: "Main Filter",
+                      route: '/volunteers/volunteer-settings/main-filter',
+                      extra: FilterParameters(
+                        collection: 'shelters',
+                        documentID: shelterAsyncValue.value!.id,
+                        filterFieldPath: 'volunteerSettings.mainFilter',
+                      ),
                     ),
                   ),
                   Card(
