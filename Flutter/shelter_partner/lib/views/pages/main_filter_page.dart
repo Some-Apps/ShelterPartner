@@ -41,7 +41,7 @@ class FilterGroup extends FilterElement {
 }
 
 class MainFilterPage extends StatefulWidget {
-  const MainFilterPage({Key? key}) : super(key: key);
+  const MainFilterPage({super.key});
 
   @override
   _MainFilterPageState createState() => _MainFilterPageState();
@@ -56,10 +56,10 @@ class _MainFilterPageState extends State<MainFilterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Main Filter"),
+        title: const Text("Main Filter"),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: () {
               // Save the filter configuration
               Navigator.pop(context, filterElements);
@@ -99,7 +99,7 @@ class _MainFilterPageState extends State<MainFilterPage> {
                     onPressed: () {
                       _showAddConditionDialog();
                     },
-                    child: Text('Add Condition'),
+                    child: const Text('Add Condition'),
                   )
                 else
                   Row(
@@ -109,16 +109,16 @@ class _MainFilterPageState extends State<MainFilterPage> {
                         onPressed: () {
                           _showAddConditionDialog(logicalOperator: LogicalOperator.and);
                         },
-                        child: Text('And'),
+                        child: const Text('And'),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () {
                           _showAddConditionDialog(logicalOperator: LogicalOperator.or);
                         },
-                        child: Text('Or'),
+                        child: const Text('Or'),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       // "Group with Previous" checkbox
                       Row(
                         children: [
@@ -130,7 +130,7 @@ class _MainFilterPageState extends State<MainFilterPage> {
                               });
                             },
                           ),
-                          Text('Group with Previous'),
+                          const Text('Group with Previous'),
                         ],
                       ),
                     ],
@@ -149,7 +149,7 @@ class _MainFilterPageState extends State<MainFilterPage> {
     } else if (element is FilterGroup) {
       return _buildGroupCard(element, index, indentLevel: indentLevel, logicalOperatorBetween: logicalOperatorBetween);
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -167,11 +167,11 @@ class _MainFilterPageState extends State<MainFilterPage> {
             child: ListTile(
               title: Text(
                 '${condition.attribute} ${_operatorToString(condition.operatorType)} ${condition.value}',
-                style: TextStyle(fontSize: 16.0),
+                style: const TextStyle(fontSize: 16.0),
               ),
               trailing: indentLevel == 0 // Only show delete button for top-level conditions
                   ? IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       onPressed: () {
                         setState(() {
                           removeElementAt(index);
@@ -213,16 +213,16 @@ class _MainFilterPageState extends State<MainFilterPage> {
             color: Colors.green[50],
             elevation: 2,
             child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Group header
                   Row(
                     children: [
-                      Spacer(),
+                      const Spacer(),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.delete),
                         onPressed: () {
                           setState(() {
                             removeElementAt(index);
@@ -252,10 +252,10 @@ class _MainFilterPageState extends State<MainFilterPage> {
         color: Colors.grey[200],
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Text(
               _logicalOperatorToString(operator).toUpperCase(),
-              style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
             ),
           ),
         ),
@@ -337,7 +337,7 @@ class _MainFilterPageState extends State<MainFilterPage> {
         LogicalOperator op = groupOperator ?? getOperatorBetween(i);
         spans.add(TextSpan(
           text: ' ${_logicalOperatorToString(op)} ',
-          style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
         ));
       }
 
@@ -345,20 +345,20 @@ class _MainFilterPageState extends State<MainFilterPage> {
         // Build the condition span
         spans.add(TextSpan(
           children: [
-            TextSpan(text: element.attribute, style: TextStyle(color: Colors.blue)),
-            TextSpan(text: ' ${_operatorToString(element.operatorType)} ', style: TextStyle(color: Colors.red)),
-            TextSpan(text: '${element.value}', style: TextStyle(color: Colors.green)),
+            TextSpan(text: element.attribute, style: const TextStyle(color: Colors.blue)),
+            TextSpan(text: ' ${_operatorToString(element.operatorType)} ', style: const TextStyle(color: Colors.red)),
+            TextSpan(text: '${element.value}', style: const TextStyle(color: Colors.green)),
           ],
         ));
       } else if (element is FilterGroup) {
         // Add opening parenthesis
-        spans.add(TextSpan(text: '(', style: TextStyle(color: Colors.black)));
+        spans.add(const TextSpan(text: '(', style: TextStyle(color: Colors.black)));
 
         // Recursively build the group
         spans.add(buildExpressionSpan(element.elements, groupOperator: element.logicalOperator));
 
         // Add closing parenthesis
-        spans.add(TextSpan(text: ')', style: TextStyle(color: Colors.black)));
+        spans.add(const TextSpan(text: ')', style: TextStyle(color: Colors.black)));
       }
     }
 
@@ -403,7 +403,7 @@ class AddConditionDialog extends StatefulWidget {
   final bool groupWithPrevious;
   final Function(FilterElement element, LogicalOperator logicalOperator) onAdd;
 
-  AddConditionDialog({
+  const AddConditionDialog({super.key, 
     required this.onAdd,
     required this.hasPrevious,
     this.logicalOperator,
@@ -464,14 +464,14 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
     List<OperatorType> operators = attributeOperators[selectedAttribute]!;
 
     return AlertDialog(
-      title: Text('Add Condition'),
+      title: const Text('Add Condition'),
       content: SingleChildScrollView(
         child: Column(
           children: [
             // Attribute Dropdown
             DropdownButtonFormField<String>(
               value: selectedAttribute,
-              decoration: InputDecoration(labelText: 'Attribute'),
+              decoration: const InputDecoration(labelText: 'Attribute'),
               onChanged: (value) {
                 if (value != null) {
                   setState(() {
@@ -491,7 +491,7 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
             // Operator Dropdown
             DropdownButtonFormField<OperatorType>(
               value: selectedOperator,
-              decoration: InputDecoration(labelText: 'Operator'),
+              decoration: const InputDecoration(labelText: 'Operator'),
               onChanged: (value) {
                 setState(() {
                   selectedOperator = value;
@@ -510,7 +510,7 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
                 ![OperatorType.isTrue, OperatorType.isFalse]
                     .contains(selectedOperator))
               TextFormField(
-                decoration: InputDecoration(labelText: 'Value'),
+                decoration: const InputDecoration(labelText: 'Value'),
                 onChanged: (val) {
                   setState(() {
                     value = val;
@@ -538,7 +538,7 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
               Navigator.pop(context);
             }
           },
-          child: Text('Add'),
+          child: const Text('Add'),
         ),
       ],
     );

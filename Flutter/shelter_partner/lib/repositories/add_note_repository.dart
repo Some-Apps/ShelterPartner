@@ -32,7 +32,7 @@ class AddNoteRepository {
       }
 
       if (!tagExists) {
-        tags.add({'title': tagName, 'count': 1, 'timestamp': Timestamp.now(), 'id': Uuid().v4().toString()});
+        tags.add({'title': tagName, 'count': 1, 'timestamp': Timestamp.now(), 'id': const Uuid().v4().toString()});
       }
 
       transaction.update(docRef, {'tags': tags});

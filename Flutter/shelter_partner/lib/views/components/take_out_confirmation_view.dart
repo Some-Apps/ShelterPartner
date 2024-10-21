@@ -87,7 +87,7 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text('Type of Let Out'),
-                  Spacer(),
+                  const Spacer(),
                   DropdownButton<String>(
                     value: _selectedLetOutType,
                     hint: const Text('Select type'),

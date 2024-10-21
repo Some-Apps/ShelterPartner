@@ -6,7 +6,6 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
-import 'package:shelter_partner/view_models/put_back_confirmation_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
 import 'package:shelter_partner/views/components/add_note_view.dart';
