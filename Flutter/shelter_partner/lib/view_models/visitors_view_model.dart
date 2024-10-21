@@ -27,7 +27,7 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     );
 
     // Immediately check the current auth state
-    final authState = ref.read(authViewModelProvider);
+    final authState = ref.watch(authViewModelProvider);
     _onAuthStateChanged(authState);
   }
 
@@ -56,12 +56,13 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
   // Fetch device settings stream (filter)
   final deviceSettingsStream = ref
-      .watch(deviceSettingsViewModelProvider.notifier)
-      .stream
-      .map((asyncValue) {
-        print('DeviceSettingsViewModel state: $asyncValue');
-        return asyncValue.asData?.value;
-      });
+    .watch(deviceSettingsViewModelProvider.notifier)
+    .stream
+    .map((asyncValue) {
+      print('DeviceSettingsViewModel state: $asyncValue');
+      return asyncValue.asData?.value;
+    })
+    .startWith(null); // Ensure the stream emits an initial value
 
   // Combine both streams
   _animalsSubscription = CombineLatestStream.combine2<List<Animal>, AppUser?, void>(

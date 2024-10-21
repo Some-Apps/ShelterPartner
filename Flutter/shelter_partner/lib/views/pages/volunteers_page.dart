@@ -99,30 +99,17 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
     final shelterAsyncValue = ref.watch(shelterDetailsViewModelProvider);
     final volunteerInviteState = ref.watch(volunteersViewModelProvider);
 
-    return GestureDetector(
-      onTap: () => _unfocusTextFields(context),
-      child: shelterAsyncValue.when(
-        loading: () => Scaffold(
-          appBar: AppBar(
-            title: const Text("Volunteers (only admin accounts)"),
-          ),
-          body: const Center(
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => _unfocusTextFields(context),
+        child: shelterAsyncValue.when(
+          loading: () => const Center(
             child: CircularProgressIndicator(),
           ),
-        ),
-        error: (error, stack) => Scaffold(
-          appBar: AppBar(
-            title: const Text("Volunteers (only admin accounts)"),
-          ),
-          body: Center(
+          error: (error, stack) => Center(
             child: Text('Error: $error'),
           ),
-        ),
-        data: (shelter) => Scaffold(
-          appBar: AppBar(
-            title: const Text("Volunteers (only admin accounts)"),
-          ),
-          body: Stack(
+          data: (shelter) => Stack(
             children: [
               SingleChildScrollView(
                 child: Form(

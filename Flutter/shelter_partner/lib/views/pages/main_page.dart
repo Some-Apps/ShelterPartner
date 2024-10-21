@@ -17,23 +17,52 @@ class MainPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appUser = ref.watch(appUserProvider); // Fetch appUser from provider
 
-    // if (appUser == null) {
-    //   return const Center(child: Text("User not found"));
-    // }
+    if (appUser == null) {
+      return const Center(child: Text("User not found"));
+    }
 
     // Use the passed currentLocation to determine the active tab
+    final isAdmin = appUser.type == "admin";
     int currentIndex;
-    if (currentLocation.startsWith('/animals')) {
-      currentIndex = 0;
-    } else if (currentLocation.startsWith('/visitors')) {
-      currentIndex = 1;
-    } else if (currentLocation.startsWith('/volunteers')) {
-      currentIndex = 2;
-    } else if (currentLocation.startsWith('/settings')) {
-      currentIndex = 3;
+    if (isAdmin) {
+      if (currentLocation.startsWith('/animals')) {
+        currentIndex = 0;
+      } else if (currentLocation.startsWith('/visitors')) {
+        currentIndex = 1;
+      } else if (currentLocation.startsWith('/volunteers')) {
+        currentIndex = 2;
+      } else if (currentLocation.startsWith('/settings')) {
+        currentIndex = 3;
+      } else {
+        currentIndex = 0; // Default to the first tab if unknown
+      }
     } else {
-      currentIndex = 0; // Default to the first tab if unknown
+      if (currentLocation.startsWith('/animals')) {
+        currentIndex = 0;
+      } else if (currentLocation.startsWith('/settings')) {
+        currentIndex = 1;
+      } else {
+        currentIndex = 0; // Default to the first tab if unknown
+      }
     }
+
+    // Determine the tabs to display based on user type
+
+    final items = isAdmin
+        ? const [
+            BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.people), label: 'Visitors'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: 'Settings'),
+          ]
+        : const [
+            BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: 'Settings'),
+          ];
 
     return Scaffold(
       body: child,
@@ -44,29 +73,33 @@ class MainPage extends ConsumerWidget {
             Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         currentIndex: currentIndex,
         onTap: (index) {
-          switch (index) {
-            case 0:
-              context.go('/animals'); // Use context.go() to replace the route
-              break;
-            case 1:
-              context.go('/visitors');
-              break;
-            case 2:
-              context.go('/volunteers');
-              break;
-            case 3:
-              context.go('/settings');
-              break;
+          if (isAdmin) {
+            switch (index) {
+              case 0:
+                context.go('/animals'); // Use context.go() to replace the route
+                break;
+              case 1:
+                context.go('/visitors');
+                break;
+              case 2:
+                context.go('/volunteers');
+                break;
+              case 3:
+                context.go('/settings');
+                break;
+            }
+          } else {
+            switch (index) {
+              case 0:
+                context.go('/animals'); // Use context.go() to replace the route
+                break;
+              case 1:
+                context.go('/settings');
+                break;
+            }
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'Settings'),
-        ],
+        items: items,
       ),
     );
   }
