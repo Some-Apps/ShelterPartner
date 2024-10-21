@@ -1,13 +1,13 @@
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
+
 class DeviceSettings {
-
-
   final bool adminMode;
 
 // instead of adminMode, have it be mode and have the options be admin, volunteer, visitor, or volunteerAndVisitor
 
   final bool photoUploadsAllowed;
   final String mainSort;
-  final String mainFilter;
+  final FilterElement? mainFilter;
   final String visitorSort;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
@@ -57,8 +57,9 @@ class DeviceSettings {
           : photoUploadsAllowed,
       mainSort:
           changes.containsKey('mainSort') ? changes['mainSort'] : mainSort,
-      mainFilter:
-          changes.containsKey('mainFilter') ? changes['mainFilter'] : mainFilter,
+      mainFilter: changes.containsKey('mainFilter')
+          ? changes['mainFilter']
+          : mainFilter,
       visitorSort: changes.containsKey('visitorSort')
           ? changes['visitorSort']
           : visitorSort,
@@ -119,6 +120,7 @@ class DeviceSettings {
       'adminMode': adminMode,
       'photoUploadsAllowed': photoUploadsAllowed,
       'mainSort': mainSort,
+      if (mainFilter != null) 'mainFilter': mainFilter!.toJson(),
       'visitorSort': visitorSort,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
@@ -141,11 +143,40 @@ class DeviceSettings {
 
   // Factory constructor to create DeviceSettings from Firestore Map
   factory DeviceSettings.fromMap(Map<String, dynamic> data) {
+    FilterGroup reconstructFilterGroup(Map<String, dynamic> json) {
+      List<FilterElement> elements = [];
+      if (json.containsKey('filterElements')) {
+        elements = (json['filterElements'] as List)
+            .map((e) => FilterElement.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+
+      LogicalOperator logicalOperator =
+          LogicalOperator.and; // Default or derive from data
+      if (json.containsKey('operatorsBetween') &&
+          (json['operatorsBetween'] as Map).values.any((v) => v == 'or')) {
+        logicalOperator = LogicalOperator.or;
+      }
+
+      return FilterGroup(
+        logicalOperator: logicalOperator,
+        elements: elements,
+      );
+    }
+
+    FilterElement? mainFilter;
+    if (data.containsKey('mainFilter') && data['mainFilter'] != null) {
+      final mainFilterData = data['mainFilter'] as Map<String, dynamic>;
+      mainFilter = reconstructFilterGroup(mainFilterData);
+    } else {
+      mainFilter = null;
+    }
+
     return DeviceSettings(
       adminMode: data['adminMode'] ?? false,
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
       mainSort: data['mainSort'] ?? "Unknown",
-      mainFilter: data['mainFilter'] ?? "All",
+      mainFilter: mainFilter,
       visitorSort: data['visitorSort'] ?? "Unknown",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,

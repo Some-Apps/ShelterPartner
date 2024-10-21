@@ -6,6 +6,7 @@ import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class DeviceSettingsPage extends ConsumerStatefulWidget {
   const DeviceSettingsPage({super.key});
@@ -87,10 +88,16 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                       ]),
                     ),
                   ),
-                  const Card(
+                  Card(
                     child: NavigationButton(
-                        title: "Main Filter",
-                        route: '/settings/device-settings/main-filter'),
+                      title: "Main Filter",
+                      route: '/settings/device-settings/main-filter',
+                      extra: FilterParameters(
+                        collection: 'users',
+                        documentID: shelterAsyncValue.value!.id,
+                        filterFieldPath: 'deviceSettings.mainFilter',
+                      ),
+                    ),
                   ),
                   Card(
                     child: Padding(

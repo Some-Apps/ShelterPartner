@@ -152,6 +152,24 @@ class MyApp extends StatelessWidget {
                 path: 'volunteer-settings', // This is relative to '/volunteers'
                 pageBuilder: (context, state) =>
                     const MaterialPage(child: VolunteerSettingsPage()),
+                routes: [
+                  GoRoute(
+                      path: 'main-filter',
+                      pageBuilder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MaterialPage(
+                          child: MainFilterPage(
+                            collection: params.collection,
+                            documentID: params.documentID,
+                            filterFieldPath: params.filterFieldPath,
+                          ),
+                        );
+                      },
+                    ),
+                ]
               ),
             ],
           ),
@@ -222,18 +240,28 @@ class MyApp extends StatelessWidget {
                       ),
                     ]),
                 GoRoute(
-                    path:
-                        'device-settings', // This is relative to '/volunteers'
-                    pageBuilder: (context, state) =>
-                        const MaterialPage(child: DeviceSettingsPage()),
-                    routes: [
-                      GoRoute(
-                        path:
-                            'main-filter', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) =>
-                            const MaterialPage(child: MainFilterPage()),
-                      ),
-                    ]),
+                  path: 'device-settings',
+                  pageBuilder: (context, state) =>
+                      const MaterialPage(child: DeviceSettingsPage()),
+                  routes: [
+                    GoRoute(
+                      path: 'main-filter',
+                      pageBuilder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MaterialPage(
+                          child: MainFilterPage(
+                            collection: params.collection,
+                            documentID: params.documentID,
+                            filterFieldPath: params.filterFieldPath,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ]),
         ],
       ),

@@ -3,16 +3,18 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/app_user.dart';
+import 'package:shelter_partner/repositories/animals_repository.dart';
 import 'package:shelter_partner/repositories/visitors_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
-
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   final VisitorsRepository _repository;
   final Ref ref;
 
-  StreamSubscription<List<Animal>>? _animalsSubscription;
+  StreamSubscription<void>? _animalsSubscription;
 
   AnimalsViewModel(this._repository, this.ref)
       : super({'cats': [], 'dogs': []}) {
@@ -21,12 +23,6 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
       authViewModelProvider,
       (previous, next) {
         _onAuthStateChanged(next);
-      },
-    );
-    ref.listen<AsyncValue<AppUser?>>(
-      deviceSettingsViewModelProvider,
-      (previous, next) {
-        _sortAnimals();
       },
     );
 
@@ -48,14 +44,61 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     }
   }
 
-  void _sortAnimals() {
-  final deviceSettingsAsync = ref.read(deviceSettingsViewModelProvider);
-  
-  deviceSettingsAsync.whenData((appUser) {
-    final mainSort = appUser?.deviceSettings.mainSort ?? 'Alphabetical';
+  // Add a field to store the main filter
+  FilterElement? _mainFilter;
 
-    // Add this debug print to verify the sorting method being used
-    print('Sorting by: $mainSort');
+  // Modify fetchAnimals to apply the filter
+  void fetchAnimals({required String shelterID}) {
+  _animalsSubscription?.cancel(); // Cancel any existing subscription
+
+  // Fetch animals stream
+  final animalsStream = _repository.fetchAnimals(shelterID);
+
+  // Fetch device settings stream (filter)
+  final deviceSettingsStream = ref
+      .watch(deviceSettingsViewModelProvider.notifier)
+      .stream
+      .map((asyncValue) {
+        print('DeviceSettingsViewModel state: $asyncValue');
+        return asyncValue.asData?.value;
+      });
+
+  // Combine both streams
+  _animalsSubscription = CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
+    animalsStream,
+    deviceSettingsStream,
+    (animals, appUser) {
+      print('Combined stream listener triggered');
+      _mainFilter = appUser?.deviceSettings.mainFilter;
+      print('_mainFilter: $_mainFilter');
+
+      // Apply the filter
+      final filteredAnimals = animals.where((animal) {
+        if (_mainFilter != null) {
+          return evaluateFilter(_mainFilter!, animal);
+        } else {
+          return true; // No filter applied
+        }
+      }).toList();
+
+        final cats =
+            filteredAnimals.where((animal) => animal.species == 'cat').toList();
+        final dogs =
+            filteredAnimals.where((animal) => animal.species == 'dog').toList();
+
+        state = {'cats': cats, 'dogs': dogs};
+
+        // Sort the animals after fetching and filtering
+        _sortAnimals();
+      },
+    ).listen((_) {});
+  }
+
+  void _sortAnimals() {
+    final deviceSettings =
+        ref.read(deviceSettingsViewModelProvider).asData?.value;
+
+    final mainSort = deviceSettings?.deviceSettings.mainSort ?? 'Alphabetical';
 
     final sortedState = <String, List<Animal>>{};
 
@@ -64,41 +107,120 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
       if (mainSort == 'Alphabetical') {
         sortedList.sort((a, b) => a.name.compareTo(b.name));
-        print('Sorted alphabetically');
       } else if (mainSort == 'Last Let Out') {
-        sortedList.sort((a, b) => a.logs.last.endTime.compareTo(b.logs.last.endTime));
-        print('Sorted by intake date');
+        sortedList
+            .sort((a, b) => a.logs.last.endTime.compareTo(b.logs.last.endTime));
       }
 
       sortedState[species] = sortedList;
     });
 
-    // Add this to verify if the sorting happens as expected
-    sortedState.forEach((species, animalsList) {
-      print('$species sorted list:');
-      for (var animal in animalsList) {
-        print(animal.name);
-      }
-    });
-
     state = sortedState;
-  });
-}
+  }
 
+  bool evaluateFilter(FilterElement filter, Animal animal) {
+    if (filter is FilterCondition) {
+      return evaluateCondition(filter, animal);
+    } else if (filter is FilterGroup) {
+      return evaluateGroup(filter, animal);
+    } else {
+      return false;
+    }
+  }
 
-  // Modify fetchAnimals to call _sortAnimals after updating state
-  void fetchAnimals({required String shelterID}) {
-    _animalsSubscription?.cancel(); // Cancel any existing subscription
-    _animalsSubscription =
-        _repository.fetchAnimals(shelterID).listen((animals) {
-      final cats = animals.where((animal) => animal.species == 'cat').toList();
-      final dogs = animals.where((animal) => animal.species == 'dog').toList();
+  bool evaluateCondition(FilterCondition condition, Animal animal) {
+    final attributeValue = getAttributeValue(animal, condition.attribute);
+    final conditionValue = condition.value;
 
-      state = {'cats': cats, 'dogs': dogs};
+    if (attributeValue == null) return false;
 
-      // Sort the animals after fetching
-      _sortAnimals();
-    });
+    switch (condition.operatorType) {
+      case OperatorType.equals:
+        return attributeValue.toString().toLowerCase() ==
+            conditionValue.toString().toLowerCase();
+      case OperatorType.notEquals:
+        return attributeValue.toString().toLowerCase() !=
+            conditionValue.toString().toLowerCase();
+      case OperatorType.contains:
+        return attributeValue
+            .toString()
+            .toLowerCase()
+            .contains(conditionValue.toString().toLowerCase());
+      case OperatorType.notContains:
+        return !attributeValue
+            .toString()
+            .toLowerCase()
+            .contains(conditionValue.toString().toLowerCase());
+      case OperatorType.greaterThan:
+        return double.tryParse(attributeValue.toString())! >
+            double.tryParse(conditionValue.toString())!;
+      case OperatorType.lessThan:
+        return double.tryParse(attributeValue.toString())! <
+            double.tryParse(conditionValue.toString())!;
+      case OperatorType.greaterThanOrEqual:
+        return double.tryParse(attributeValue.toString())! >=
+            double.tryParse(conditionValue.toString())!;
+      case OperatorType.lessThanOrEqual:
+        return double.tryParse(attributeValue.toString())! <=
+            double.tryParse(conditionValue.toString())!;
+      case OperatorType.isTrue:
+        return attributeValue == true;
+      case OperatorType.isFalse:
+        return attributeValue == false;
+      default:
+        return false;
+    }
+  }
+
+  bool evaluateGroup(FilterGroup group, Animal animal) {
+    if (group.logicalOperator == LogicalOperator.and) {
+      return group.elements.every((element) => evaluateFilter(element, animal));
+    } else if (group.logicalOperator == LogicalOperator.or) {
+      return group.elements.any((element) => evaluateFilter(element, animal));
+    } else {
+      return false;
+    }
+  }
+
+  dynamic getAttributeValue(Animal animal, String attribute) {
+    switch (attribute) {
+      case 'name':
+        return animal.name;
+      case 'sex':
+        return animal.sex;
+      case 'age':
+        return animal.age;
+      case 'species':
+        return animal.species;
+      case 'breed':
+        return animal.breed;
+      case 'location':
+        return animal.location;
+      case 'description':
+        return animal.description;
+      case 'symbol':
+        return animal.symbol;
+      case 'symbolColor':
+        return animal.symbolColor;
+      case 'takeOutAlert':
+        return animal.takeOutAlert;
+      case 'putBackAlert':
+        return animal.putBackAlert;
+      case 'adoptionCategory':
+        return animal.adoptionCategory;
+      case 'behaviorCategory':
+        return animal.behaviorCategory;
+      case 'locationCategory':
+        return animal.locationCategory;
+      case 'medicalCategory':
+        return animal.medicalCategory;
+      case 'volunteerCategory':
+        return animal.volunteerCategory;
+      case 'inKennel':
+        return animal.inKennel;
+      default:
+        return null;
+    }
   }
 
   @override
@@ -108,7 +230,6 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   }
 }
 
-// Create a provider for the VisitorsViewModel
 final animalsViewModelProvider =
     StateNotifierProvider<AnimalsViewModel, Map<String, List<Animal>>>((ref) {
   final repository =
