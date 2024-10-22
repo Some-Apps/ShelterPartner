@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/repositories/device_settings_repository.dart';
-import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'auth_view_model.dart';
 
 class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {

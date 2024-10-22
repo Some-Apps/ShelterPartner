@@ -21,6 +21,7 @@ import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/scheduled_reports_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:shelter_partner/views/pages/shelter_settings_page.dart';
+import 'package:shelter_partner/views/pages/switch_to_admin_page.dart';
 import 'package:shelter_partner/views/pages/visitor_animal_detail_page.dart';
 import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
@@ -99,6 +100,15 @@ class MyApp extends StatelessWidget {
         },
         routes: [
           GoRoute(
+            path:
+                '/switch-to-admin', // No need for ':id' since we're passing the object directly
+            pageBuilder: (context, state) {
+              return const MaterialPage(
+                child: SwitchToAdminPage(),
+              );
+            },
+          ),
+          GoRoute(
               path: '/animals',
               pageBuilder: (context, state) =>
                   const MaterialPage(child: AnimalsPage()),
@@ -149,11 +159,12 @@ class MyApp extends StatelessWidget {
                 },
               ),
               GoRoute(
-                path: 'volunteer-settings', // This is relative to '/volunteers'
-                pageBuilder: (context, state) =>
-                    const MaterialPage(child: VolunteerSettingsPage()),
-                routes: [
-                  GoRoute(
+                  path:
+                      'volunteer-settings', // This is relative to '/volunteers'
+                  pageBuilder: (context, state) =>
+                      const MaterialPage(child: VolunteerSettingsPage()),
+                  routes: [
+                    GoRoute(
                       path: 'main-filter',
                       pageBuilder: (context, state) {
                         final params = state.extra as FilterParameters?;
@@ -169,8 +180,7 @@ class MyApp extends StatelessWidget {
                         );
                       },
                     ),
-                ]
-              ),
+                  ]),
             ],
           ),
           GoRoute(
@@ -278,7 +288,9 @@ class MyApp extends StatelessWidget {
                     ),
                   ],
                 ),
+                
               ]),
+          
         ],
       ),
     ],

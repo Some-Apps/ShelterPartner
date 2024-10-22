@@ -58,7 +58,6 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
       .watch(deviceSettingsViewModelProvider.notifier)
       .stream
       .map((asyncValue) {
-        print('DeviceSettingsViewModel state: $asyncValue');
         return asyncValue.asData?.value;
       });
 
@@ -67,9 +66,7 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     animalsStream,
     deviceSettingsStream,
     (animals, appUser) {
-      print('Combined stream listener triggered');
       _mainFilter = appUser?.deviceSettings.mainFilter;
-      print('_mainFilter: $_mainFilter');
 
       // Apply the filter
       final filteredAnimals = animals.where((animal) {

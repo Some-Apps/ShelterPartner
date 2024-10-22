@@ -9,11 +9,11 @@ class MainFilterPage extends ConsumerStatefulWidget {
   final String filterFieldPath;
 
   const MainFilterPage({
-    Key? key,
+    super.key,
     required this.collection,
     required this.documentID,
     required this.filterFieldPath,
-  }) : super(key: key);
+  });
   @override
   _MainFilterPageState createState() => _MainFilterPageState();
 }

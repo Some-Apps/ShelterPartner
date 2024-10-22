@@ -61,6 +61,8 @@ class AuthViewModel extends StateNotifier<AuthState> {
     }
   }
 
+
+
   Future<String?> sendPasswordReset(String email) async {
     try {
       await _authRepository.sendPasswordResetEmail(email);

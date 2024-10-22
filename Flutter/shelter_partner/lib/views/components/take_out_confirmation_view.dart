@@ -109,7 +109,7 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
               ),
             
           if (deviceSettings.value?.deviceSettings.requireName == true &&
-              (userDetails?.firstName != null || deviceSettings.value?.deviceSettings.adminMode == true))
+              (userDetails?.firstName != null || deviceSettings.value?.deviceSettings.mode != "Admin"))
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
