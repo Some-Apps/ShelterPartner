@@ -15,8 +15,6 @@ class DeviceSettings {
   final bool requireEarlyPutBackReason;
   final bool requireName;
   final bool createLogsWhenUnderMinimumDuration;
-  final bool showNoteDates;
-  final bool showLogs;
   final bool showCustomForm;
   final String customFormURL;
   final String buttonType;
@@ -35,8 +33,6 @@ class DeviceSettings {
     required this.requireEarlyPutBackReason,
     required this.requireName,
     required this.createLogsWhenUnderMinimumDuration,
-    required this.showNoteDates,
-    required this.showLogs,
     required this.showCustomForm,
     required this.customFormURL,
     required this.buttonType,
@@ -78,8 +74,6 @@ class DeviceSettings {
     requireName: requireName ?? this.requireName,
     createLogsWhenUnderMinimumDuration:
         createLogsWhenUnderMinimumDuration ?? this.createLogsWhenUnderMinimumDuration,
-    showNoteDates: showNoteDates ?? this.showNoteDates,
-    showLogs: showLogs ?? this.showLogs,
     showCustomForm: showCustomForm ?? this.showCustomForm,
     customFormURL: customFormURL ?? this.customFormURL,
     buttonType: buttonType ?? this.buttonType,
@@ -103,8 +97,6 @@ class DeviceSettings {
       'requireEarlyPutBackReason': requireEarlyPutBackReason,
       'requireName': requireName,
       'createLogsWhenUnderMinimumDuration': createLogsWhenUnderMinimumDuration,
-      'showNoteDates': showNoteDates,
-      'showLogs': showLogs,
       'showCustomForm': showCustomForm,
       'customFormURL': customFormURL,
       'buttonType': buttonType,
@@ -165,8 +157,6 @@ class DeviceSettings {
       requireName: data['requireName'] ?? false,
       createLogsWhenUnderMinimumDuration:
           data['createLogsWhenUnderMinimumDuration'] ?? false,
-      showNoteDates: data['showNoteDates'] ?? false,
-      showLogs: data['showLogs'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       buttonType: data['buttonType'] ?? "Unknown",

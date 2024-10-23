@@ -205,26 +205,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                     "createLogsWhenUnderMinimumDuration");
                           },
                         ),
-                        SwitchToggleView(
-                          title: "Show Note Dates",
-                          value:
-                              shelter?.volunteerSettings.showNoteDates ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showNoteDates");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Show Logs",
-                          value: shelter?.volunteerSettings.showLogs ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showLogs");
-                          },
-                        ),
-      
+                      
                     
                         SwitchToggleView(
                           title: "Show Custom Form",

@@ -261,24 +261,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                     "createLogsWhenUnderMinimumDuration");
                           },
                         ),
-                        SwitchToggleView(
-                          title: "Show Note Dates",
-                          value: user?.deviceSettings.showNoteDates ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(user!.id, "showNoteDates");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Show Logs",
-                          value: user?.deviceSettings.showLogs ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(user!.id, "showLogs");
-                          },
-                        ),
+                        
                         SwitchToggleView(
                           title: "Show Custom Form",
                           value: user?.deviceSettings.showCustomForm ?? false,

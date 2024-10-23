@@ -11,8 +11,6 @@ class VolunteerSettings {
   final bool requireEarlyPutBackReason;
   final bool requireName;
   final bool createLogsWhenUnderMinimumDuration;
-  final bool showNoteDates;
-  final bool showLogs;
   final bool showCustomForm;
   final String customFormURL;
   final bool appendAnimalDataToURL;
@@ -28,8 +26,6 @@ class VolunteerSettings {
     required this.requireEarlyPutBackReason,
     required this.requireName,
     required this.createLogsWhenUnderMinimumDuration,
-    required this.showNoteDates,
-    required this.showLogs,
     required this.showCustomForm,
     required this.customFormURL,
     required this.appendAnimalDataToURL,
@@ -48,8 +44,6 @@ class VolunteerSettings {
       'requireEarlyPutBackReason': requireEarlyPutBackReason,
       'requireName': requireName,
       'createLogsWhenUnderMinimumDuration': createLogsWhenUnderMinimumDuration,
-      'showNoteDates': showNoteDates,
-      'showLogs': showLogs,
       'showCustomForm': showCustomForm,
       'customFormURL': customFormURL,
       'appendAnimalDataToURL': appendAnimalDataToURL,
@@ -84,8 +78,6 @@ FilterElement? mainFilter;
       requireName: data['requireName'] ?? false,
       createLogsWhenUnderMinimumDuration:
           data['createLogsWhenUnderMinimumDuration'] ?? false,
-      showNoteDates: data['showNoteDates'] ?? false,
-      showLogs: data['showLogs'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
