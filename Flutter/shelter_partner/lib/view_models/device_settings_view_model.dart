@@ -46,7 +46,6 @@ class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   _userSubscription = _repository.fetchUserDetails(userID).listen(
     (accountDetails) {
       if (accountDetails.exists) {
-        print('User document data: ${accountDetails.data()}');
         state = AsyncValue.data(AppUser.fromDocument(accountDetails));
       } else {
         state = AsyncValue.error('No user found', StackTrace.current);

@@ -6,6 +6,7 @@ import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/repositories/animals_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -17,13 +18,18 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
   AnimalsViewModel(this._repository, this.ref)
       : super({'cats': [], 'dogs': []}) {
-    // Listen to authentication state changes
+
+
+
+
     ref.listen<AuthState>(
       authViewModelProvider,
       (previous, next) {
         _onAuthStateChanged(next);
       },
     );
+
+
 
     // Immediately check the current auth state
     final authState = ref.read(authViewModelProvider);
@@ -66,7 +72,9 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     animalsStream,
     deviceSettingsStream,
     (animals, appUser) {
-      _mainFilter = appUser?.deviceSettings.mainFilter;
+      _mainFilter = appUser?.type == 'admin' 
+          ? appUser?.deviceSettings.mainFilter 
+          : ref.read(volunteersViewModelProvider).value?.volunteerSettings.mainFilter;
 
       // Apply the filter
       final filteredAnimals = animals.where((animal) {
@@ -94,7 +102,10 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     final deviceSettings =
         ref.read(deviceSettingsViewModelProvider).asData?.value;
 
-    final mainSort = deviceSettings?.deviceSettings.mainSort ?? 'Alphabetical';
+    final mainSort = (ref.read(appUserProvider)?.type == 'admin')
+      ? deviceSettings?.deviceSettings.mainSort ?? 'Alphabetical'
+      : ref.read(volunteersViewModelProvider).value?.volunteerSettings.mainSort ?? 'Alphabetical';
+    
 
     final sortedState = <String, List<Animal>>{};
 
