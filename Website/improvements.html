@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #kanban-board-container {
+            /* height: 500px; Set the desired height */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+        #kanban-board {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+        .kanban-column {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            flex: 1;
+            background-color: #f9f9f9;
+        }
+        .kanban-column h2 {
+            margin: 0 0 5px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .milestone-date {
+            font-size: 1.1em;
+            color: gray;
+            text-align: center;
+        }
+        .column-divider {
+            border-top: 1px solid #ccc;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+        .kanban-issue {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #fff;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .kanban-issue.finished {
+            position: relative;
+        }
+        .kanban-issue.finished::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            z-index: 1;
+        }
+        .kanban-issue.finished::after {
+            content: "Completed";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: DarkGray;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 1.2em;
+            text-align: center;
+            z-index: 2;
+        }
+        .kanban-issue h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.25em; /* Slightly larger title */
+            font-weight: 500; /* Bold title */
+        }
+        .kanban-issue .issue-date, .kanban-issue .issue-assignee, .kanban-issue .issue-labels, .kanban-issue .issue-milestones {
+            font-size: 0.8em;
+            color: #888;
+            margin: 5px 0;
+        }
+        .kanban-issue .issue-date span, .kanban-issue .issue-assignee span, .kanban-issue .issue-labels span, .kanban-issue .issue-milestones span {
+            font-weight: bold;
+        }
+        .issue-label {
+            display: inline-block;
+            padding: 2px 5px;
+            margin-right: 5px;
+            border-radius: 3px;
+            background-color: #eee;
+            color: #333;
+            font-size: 0.8em;
+        }
+        .contributor-photo {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        #update-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            position: relative;
+        }
+        #update-info p {
+            margin: 0;
+        }
+        #mobile-message {
+            display: none;
+            font-size: 1.5em;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Update Info -->
+<div id="update-info" style="display: flex; flex-direction: column; align-items: center;">
+    <p style="margin-top: 10px; font-weight: normal;">Android and Web expected to be available by 12/31/2024</p>
+</div>
+
+<!-- Kanban Board Container -->
+<div id="kanban-board-container">
+    <div id="kanban-board"></div>
+</div>
+<div id="mobile-message">This page is not designed for mobile devices</div>
+
+<script>
+    // Function to format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString();
+    }
+
+    // Function to format time since update
+    function formatTimeSince(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+        if (diffHours < 24) {
+            return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        } else {
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        }
+    }
+
+    // Function to fetch all GitHub issues with pagination
+    async function fetchAllIssues(url, issues = []) {
+        const response = await fetch(url);
+        const data = await response.json();
+        issues.push(...data);
+
+        const linkHeader = response.headers.get('link');
+        if (linkHeader) {
+            const links = linkHeader.split(',').map(link => link.trim());
+            const nextLink = links.find(link => link.includes('rel="next"'));
+            if (nextLink) {
+                const nextUrl = nextLink.split(';')[0].slice(1, -1);
+                return fetchAllIssues(nextUrl, issues);
+            }
+        }
+
+        return issues;
+    }
+
+    // Function to fetch and display GitHub issues
+    async function fetchGitHubIssues() {
+        const repo = 'Some-Apps/ShelterPartner';
+        const apiUrl = `https://api.github.com/repos/${repo}/issues?state=all`;
+
+        try {
+            const issues = await fetchAllIssues(apiUrl);
+            const filteredIssues = issues.filter(issue => !issue.pull_request && (issue.state === 'open' || issue.milestone));
+            filteredIssues.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)); // Sort by last updated
+
+            const issuesContainer = document.getElementById('kanban-board');
+            issuesContainer.innerHTML = '';
+
+            // Fetch milestones separately
+            const milestonesResponse = await fetch(`https://api.github.com/repos/${repo}/milestones?state=open`);
+            const milestones = await milestonesResponse.json();
+
+            // Fetch closed milestones separately and get the last completed milestone
+            const closedMilestonesResponse = await fetch(`https://api.github.com/repos/${repo}/milestones?state=closed`);
+            const closedMilestones = await closedMilestonesResponse.json();
+            const lastCompletedMilestone = closedMilestones.length > 0 ? closedMilestones[closedMilestones.length - 1] : null;
+
+            // Add a column for Backlog
+            const backlogColumn = document.createElement('div');
+            backlogColumn.classList.add('kanban-column');
+            backlogColumn.innerHTML = '<div><h2>Backlog</h2><div class="milestone-date"></div><div class="column-divider"></div></div>';
+
+            // Add a column for issues with label "Up Next" (Up Next column)
+            const upNextColumn = document.createElement('div');
+            upNextColumn.classList.add('kanban-column');
+            upNextColumn.innerHTML = '<div><h2>Up Next</h2><div class="milestone-date"></div><div class="column-divider"></div></div>';
+
+            // Append Backlog and Up Next columns to the container
+            issuesContainer.appendChild(backlogColumn);
+            issuesContainer.appendChild(upNextColumn);
+
+            // Sort milestones by due date (nearest due date last)
+            milestones.sort((a, b) => new Date(a.due_on) - new Date(b.due_on));
+
+            // Create a column for each milestone
+            milestones.forEach(milestone => {
+                const column = document.createElement('div');
+                column.classList.add('kanban-column');
+                column.innerHTML = `<div><h2>${milestone.title}</h2><div class="milestone-date">Scheduled to release: ${formatDate(milestone.due_on)}</div><div class="column-divider"></div></div>`;
+
+                issuesContainer.appendChild(column);
+            });
+
+            // Add the last completed milestone as the rightmost column
+            if (lastCompletedMilestone) {
+                const lastCompletedColumn = document.createElement('div');
+                lastCompletedColumn.classList.add('kanban-column');
+                lastCompletedColumn.innerHTML = `<h2>${lastCompletedMilestone.title}</h2><div class="milestone-date">Completed on: ${formatDate(lastCompletedMilestone.closed_at)}</div><div class="column-divider"></div>`;
+                issuesContainer.appendChild(lastCompletedColumn);
+            }
+
+            // Group issues by milestone or assign to Backlog/Up Next
+            for (const issue of filteredIssues) {
+                let issueColumn = null;
+                let isClosed = issue.state === 'closed';
+                let columnTitle = '';
+
+                if (issue.milestone) {
+                    // Issue has a milestone
+                    columnTitle = issue.milestone.title;
+                    issueColumn = [...issuesContainer.children].find(column => column.querySelector('h2').textContent === columnTitle);
+                } else {
+                    // Issue has no milestone
+                    const hasUpNextLabel = issue.labels.some(label => label.name.toLowerCase() === 'up next');
+                    if (hasUpNextLabel) {
+                        columnTitle = 'Up Next';
+                        issueColumn = upNextColumn;
+                    } else {
+                        columnTitle = 'Backlog';
+                        issueColumn = backlogColumn;
+                    }
+                }
+
+                if (!issueColumn) {
+                    continue; // Skip if no column found
+                }
+
+                // Fetch assignee details to get full name
+                let assignees = '';
+                if (issue.assignees && issue.assignees.length > 0) {
+                    for (const assignee of issue.assignees) {
+                        const assigneeResponse = await fetch(assignee.url);
+                        if (assigneeResponse.ok) {
+                            const assigneeData = await assigneeResponse.json();
+                            const assigneeName = assigneeData.name || assignee.login;
+                            assignees += `<p class="issue-assignee"><img src="${assignee.avatar_url}" alt="${assigneeName}" class="contributor-photo">${assigneeName}</p>`;
+                        } else {
+                            assignees += `<p class="issue-assignee"><img src="${assignee.avatar_url}" alt="${assignee.login}" class="contributor-photo">${assignee.login}</p>`;
+                        }
+                    }
+                }
+
+                const labels = issue.labels.length ? `<p class="issue-labels">${issue.labels.map(label => `<span class="issue-label" style="background-color: #${label.color}; color: #fff;">${label.name}</span>`).join(' ')}</p>` : '';
+
+                const issueElement = document.createElement('div');
+                issueElement.classList.add('kanban-issue');
+                if (isClosed && columnTitle !== 'Up Next' && columnTitle !== 'Backlog') {
+                    issueElement.classList.add('finished');
+                }
+
+                issueElement.innerHTML = 
+                    `<div>
+                        <h3><a href="${issue.html_url}" target="_blank">${issue.title}</a></h3>
+                        <p class="issue-date"><span>Created:</span> ${formatDate(issue.created_at)}</p>
+                        <p class="issue-date"><span>Updated:</span> ${formatTimeSince(issue.updated_at)}</p>
+                        ${assignees}
+                        ${labels}
+                    </div>`;
+
+                // Append the issue to the column
+                if (isClosed && columnTitle !== 'Up Next' && columnTitle !== 'Backlog') {
+                    // For closed issues in milestones, append at the end
+                    issueColumn.appendChild(issueElement);
+                } else {
+                    // For open issues, insert before the first closed issue
+                    issueColumn.insertBefore(issueElement, issueColumn.querySelector('.kanban-issue.finished') || null);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching issues:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+            document.getElementById('kanban-board').style.display = 'none';
+            document.getElementById('mobile-message').style.display = 'block';
+            document.getElementById('update-info').style.display = 'none';
+        } else {
+            fetchGitHubIssues();
+        }
+    });
+</script>
+
+</body>
+</html>
