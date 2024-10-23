@@ -10,6 +10,9 @@ class ShelterSettings {
   final List<APIKey> apiKeys;
   final int requestCount;
   final int requestLimit;
+  final bool automaticallyPutBackAnimals;
+  final bool ignoreVisitWhenAutomaticallyPutBack;
+  final int automaticPutBackHours;
 
   ShelterSettings({
     required this.scheduledReports,
@@ -20,6 +23,9 @@ class ShelterSettings {
     required this.apiKeys,
     required this.requestCount,
     required this.requestLimit,
+    this.automaticallyPutBackAnimals = false,
+    this.ignoreVisitWhenAutomaticallyPutBack = false,
+    this.automaticPutBackHours = 12,
   });
 
   // Method to dynamically return a list based on the key
@@ -57,6 +63,9 @@ class ShelterSettings {
           .toList(), // Convert each APIKey to a Map
       'requestCount': requestCount,
       'requestLimit': requestLimit,
+      'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
+      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
+      'automaticPutBackHours': automaticPutBackHours,
     };
   }
 
@@ -93,6 +102,9 @@ class ShelterSettings {
           [],
       requestCount: data['requestCount'] ?? 0,
       requestLimit: data['requestLimit'] ?? 0,
+      automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
+      ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
+      automaticPutBackHours: data['automaticPutBackHours'] ?? 12,
     );
   }
 }

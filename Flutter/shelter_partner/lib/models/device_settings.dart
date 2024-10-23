@@ -11,9 +11,6 @@ class DeviceSettings {
   final String visitorSort;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
-  final bool automaticallyPutBackAnimals;
-  final bool ignoreVisitWhenAutomaticallyPutBack;
-  final int automaticPutBackHours;
   final bool requireLetOutType;
   final bool requireEarlyPutBackReason;
   final bool requireName;
@@ -34,9 +31,6 @@ class DeviceSettings {
     required this.visitorSort,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
-    required this.automaticallyPutBackAnimals,
-    required this.ignoreVisitWhenAutomaticallyPutBack,
-    required this.automaticPutBackHours,
     required this.requireLetOutType,
     required this.requireEarlyPutBackReason,
     required this.requireName,
@@ -58,9 +52,6 @@ class DeviceSettings {
   String? visitorSort,
   bool? allowBulkTakeOut,
   int? minimumLogMinutes,
-  bool? automaticallyPutBackAnimals,
-  bool? ignoreVisitWhenAutomaticallyPutBack,
-  int? automaticPutBackHours,
   bool? requireLetOutType,
   bool? requireEarlyPutBackReason,
   bool? requireName,
@@ -81,11 +72,6 @@ class DeviceSettings {
     visitorSort: visitorSort ?? this.visitorSort,
     allowBulkTakeOut: allowBulkTakeOut ?? this.allowBulkTakeOut,
     minimumLogMinutes: minimumLogMinutes ?? this.minimumLogMinutes,
-    automaticallyPutBackAnimals:
-        automaticallyPutBackAnimals ?? this.automaticallyPutBackAnimals,
-    ignoreVisitWhenAutomaticallyPutBack:
-        ignoreVisitWhenAutomaticallyPutBack ?? this.ignoreVisitWhenAutomaticallyPutBack,
-    automaticPutBackHours: automaticPutBackHours ?? this.automaticPutBackHours,
     requireLetOutType: requireLetOutType ?? this.requireLetOutType,
     requireEarlyPutBackReason:
         requireEarlyPutBackReason ?? this.requireEarlyPutBackReason,
@@ -113,10 +99,6 @@ class DeviceSettings {
       'visitorSort': visitorSort,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
-      'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
-      'ignoreVisitWhenAutomaticallyPutBack':
-          ignoreVisitWhenAutomaticallyPutBack,
-      'automaticPutBackHours': automaticPutBackHours,
       'requireLetOutType': requireLetOutType,
       'requireEarlyPutBackReason': requireEarlyPutBackReason,
       'requireName': requireName,
@@ -178,10 +160,6 @@ class DeviceSettings {
       visitorSort: data['visitorSort'] ?? "Alphabetical",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
-      automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
-      ignoreVisitWhenAutomaticallyPutBack:
-          data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
-      automaticPutBackHours: data['automaticPutBackHours'] ?? 0,
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,

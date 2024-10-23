@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
+import 'package:shelter_partner/views/components/number_stepper_view.dart';
+import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 
 class ShelterSettingsPage extends ConsumerStatefulWidget {
   const ShelterSettingsPage({super.key});
@@ -41,12 +44,12 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
         body: SingleChildScrollView(
           child: Form(
             key: _formKey,
-            child: const Padding(
-              padding: EdgeInsets.all(16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Card(
+                  const Card(
                     child: Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Column(children: [
@@ -70,6 +73,56 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                         NavigationButton(
                             title: "API Keys",
                             route: '/settings/shelter-settings/api-keys'),
+                      ]),
+                    ),
+                  ),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(children: [
+                        SwitchToggleView(
+                          title: "Automatically Put Back Animals",
+                          
+                          value: shelter?.shelterSettings
+                                  .automaticallyPutBackAnimals ??
+                              false,
+                          onChanged: (bool newValue) {
+                            ref
+                                .read(shelterSettingsViewModelProvider.notifier)
+                                .toggleAttribute(
+                                    shelter!.id, "automaticallyPutBackAnimals");
+                          },
+                        ),
+                        SwitchToggleView(
+                          title: "Ignore Visit When Automatically Put Back",
+                          value: shelter?.shelterSettings
+                                  .ignoreVisitWhenAutomaticallyPutBack ??
+                              false,
+                          onChanged: (bool newValue) {
+                            ref
+                                .read(shelterSettingsViewModelProvider.notifier)
+                                .toggleAttribute(shelter!.id,
+                                    "ignoreVisitWhenAutomaticallyPutBack");
+                          },
+                        ),
+                        NumberStepperView(
+                          title: "Automatic Put Back",
+                          label: "hours",
+                          value:
+                              shelter?.shelterSettings.automaticPutBackHours ?? 0,
+                          increment: () {
+                            ref
+                                .read(shelterSettingsViewModelProvider.notifier)
+                                .incrementAttribute(
+                                    shelter!.id, "automaticPutBackHours");
+                          },
+                          decrement: () {
+                            ref
+                                .read(shelterSettingsViewModelProvider.notifier)
+                                .decrementAttribute(
+                                    shelter!.id, "automaticPutBackHours");
+                          },
+                        ),
                       ]),
                     ),
                   ),

@@ -7,9 +7,6 @@ class VolunteerSettings {
   final FilterElement? mainFilter;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
-  final bool automaticallyPutBackAnimals;
-  final bool ignoreVisitWhenAutomaticallyPutBack;
-  final int automaticPutBackHours;
   final bool requireLetOutType;
   final bool requireEarlyPutBackReason;
   final bool requireName;
@@ -27,9 +24,6 @@ class VolunteerSettings {
     required this.mainFilter,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
-    required this.automaticallyPutBackAnimals,
-    required this.ignoreVisitWhenAutomaticallyPutBack,
-    required this.automaticPutBackHours,
     required this.requireLetOutType,
     required this.requireEarlyPutBackReason,
     required this.requireName,
@@ -50,10 +44,6 @@ class VolunteerSettings {
       'mainFilter': mainFilter,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
-      'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
-      'ignoreVisitWhenAutomaticallyPutBack':
-          ignoreVisitWhenAutomaticallyPutBack,
-      'automaticPutBackHours': automaticPutBackHours,
       'requireLetOutType': requireLetOutType,
       'requireEarlyPutBackReason': requireEarlyPutBackReason,
       'requireName': requireName,
@@ -89,10 +79,6 @@ FilterElement? mainFilter;
       mainFilter: mainFilter,
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
-      automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
-      ignoreVisitWhenAutomaticallyPutBack:
-          data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
-      automaticPutBackHours: data['automaticPutBackHours'] ?? 0,
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,

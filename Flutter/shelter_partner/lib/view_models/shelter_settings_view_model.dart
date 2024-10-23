@@ -132,16 +132,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-// Modify attribute in Firestore document within volunteerSettings
-  Future<void> modifyDeviceSettingString(
-      String shelterID, String field, String newValue) async {
-    try {
-      await _repository.modifyDeviceSettingString(shelterID, field, newValue);
-    } catch (error) {
-      print("Error modifying: $error");
-      state = AsyncValue.error("Error modifying: $error", StackTrace.current);
-    }
-  }
+
 
 // Remove map from array within shelterSettings attribute
   Future<void> removeMapFromShelterSettingsArray(
@@ -156,10 +147,20 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-// Decrement attribute in Firestore document within volunteerSettings
-  Future<void> decrementDeviceSetting(String shelterID, String field) async {
+// Increment attribute in Firestore document within volunteerSettings
+  Future<void> incrementAttribute(String userID, String field) async {
     try {
-      await _repository.decrementDeviceSetting(shelterID, field);
+      await _repository.incrementShelterSetting(userID, field);
+    } catch (error) {
+      print("Error incrementing: $error");
+      state =
+          AsyncValue.error("Error incrementing: $error", StackTrace.current);
+    }
+  }
+
+  Future<void> decrementAttribute(String userID, String field) async {
+    try {
+      await _repository.decrementShelterSetting(userID, field);
     } catch (error) {
       print("Error decrementing: $error");
       state =
@@ -167,16 +168,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-  // Increment attribute in Firestore document within volunteerSettings
-  Future<void> incrementDeviceSetting(String shelterID, String field) async {
-    try {
-      await _repository.incrementDeviceSetting(shelterID, field);
-    } catch (error) {
-      print("Error incrementing: $error");
-      state =
-          AsyncValue.error("Error incrementing: $error", StackTrace.current);
-    }
-  }
+
 }
 
 // Provider to access the ShelterSettingsViewModel

@@ -68,16 +68,7 @@ class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 
 
 
-  // Increment attribute in Firestore document within volunteerSettings
-  Future<void> incrementAttribute(String userID, String field) async {
-    try {
-      await _repository.incrementDeviceSetting(userID, field);
-    } catch (error) {
-      print("Error incrementing: $error");
-      state =
-          AsyncValue.error("Error incrementing: $error", StackTrace.current);
-    }
-  }
+  
 
 // Modify attribute in Firestore document within volunteerSettings
   Future<void> modifyDeviceSettingString(
@@ -96,6 +87,17 @@ class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     } catch (error) {
       print("Error toggling: $error");
       state = AsyncValue.error("Error toggling: $error", StackTrace.current);
+    }
+  }
+
+  // Increment attribute in Firestore document within volunteerSettings
+  Future<void> incrementAttribute(String userID, String field) async {
+    try {
+      await _repository.incrementDeviceSetting(userID, field);
+    } catch (error) {
+      print("Error incrementing: $error");
+      state =
+          AsyncValue.error("Error incrementing: $error", StackTrace.current);
     }
   }
 

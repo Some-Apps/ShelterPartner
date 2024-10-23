@@ -128,25 +128,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                     shelter!.id, "minimumLogMinutes");
                           },
                         ),
-                        NumberStepperView(
-                          title: "Automatic Put Back",
-                          label: "hours",
-                          value: shelter
-                                  ?.volunteerSettings.automaticPutBackHours ??
-                              0,
-                          increment: () {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .incrementAttribute(
-                                    shelter!.id, "automaticPutBackHours");
-                          },
-                          decrement: () {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .decrementAttribute(
-                                    shelter!.id, "automaticPutBackHours");
-                          },
-                        ),
+                        
                       ]),
                     ),
                   ),
@@ -177,30 +159,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                     shelter!.id, "allowBulkTakeOut");
                           },
                         ),
-                        SwitchToggleView(
-                          title: "Automatically Put Back Animals",
-                          value: shelter?.volunteerSettings
-                                  .automaticallyPutBackAnimals ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    shelter!.id, "automaticallyPutBackAnimals");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Ignore Visit When Automatically Put Back",
-                          value: shelter?.volunteerSettings
-                                  .ignoreVisitWhenAutomaticallyPutBack ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id,
-                                    "ignoreVisitWhenAutomaticallyPutBack");
-                          },
-                        ),
+                        
                         SwitchToggleView(
                           title: "Require Let Out Type",
                           value: shelter?.volunteerSettings.requireLetOutType ??

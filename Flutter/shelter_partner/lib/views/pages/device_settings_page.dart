@@ -189,24 +189,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                     user!.id, "minimumLogMinutes");
                           },
                         ),
-                        NumberStepperView(
-                          title: "Automatic Put Back",
-                          label: "hours",
-                          value:
-                              user?.deviceSettings.automaticPutBackHours ?? 0,
-                          increment: () {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .incrementAttribute(
-                                    user!.id, "automaticPutBackHours");
-                          },
-                          decrement: () {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .decrementAttribute(
-                                    user!.id, "automaticPutBackHours");
-                          },
-                        ),
+                        
                       ]),
                     ),
                   ),
@@ -234,30 +217,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                 .toggleAttribute(user!.id, "allowBulkTakeOut");
                           },
                         ),
-                        SwitchToggleView(
-                          title: "Automatically Put Back Animals",
-                          value: user?.deviceSettings
-                                  .automaticallyPutBackAnimals ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    user!.id, "automaticallyPutBackAnimals");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Ignore Visit When Automatically Put Back",
-                          value: user?.deviceSettings
-                                  .ignoreVisitWhenAutomaticallyPutBack ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(user!.id,
-                                    "ignoreVisitWhenAutomaticallyPutBack");
-                          },
-                        ),
+                        
                         SwitchToggleView(
                           title: "Require Let Out Type",
                           value:

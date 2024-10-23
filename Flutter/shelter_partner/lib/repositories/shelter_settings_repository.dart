@@ -21,16 +21,6 @@ class ShelterSettingsRepository {
     });
   }
 
-  // Method to modify a specific string attribute within volunteerSettings
-  Future<void> modifyDeviceSettingString(
-      String shelterID, String field, String newValue) async {
-    final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'deviceSettings.$field': newValue, // Update the string value
-    }).catchError((error) {
-      throw Exception("Failed to modify: $error");
-    });
-  }
 
   // Method to add a map to an array within shelterSettings attribute
   Future<void> addMapToShelterSettingsArray(
@@ -99,7 +89,7 @@ class ShelterSettingsRepository {
       throw Exception("Document does not exist");
     }
 
-    dynamic currentValue = snapshot.data()?['deviceSettings'];
+    dynamic currentValue = snapshot.data()?['shelterSettings'];
 
     final fieldParts = field.split('.');
 
@@ -111,7 +101,7 @@ class ShelterSettingsRepository {
 
     if (currentValue != null && currentValue[lastField] is bool) {
       return docRef.update({
-        'deviceSettings.${fieldParts.join('.')}': !currentValue[lastField],
+        'shelterSettings.${fieldParts.join('.')}': !currentValue[lastField],
       }).catchError((error) {
         throw Exception("Failed to toggle: $error");
       });
@@ -153,27 +143,6 @@ class ShelterSettingsRepository {
     });
   }
 
-  // Method to increment a specific field within volunteerSettings attribute
-  Future<void> incrementDeviceSetting(String shelterID, String field) async {
-    final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'deviceSettings.$field':
-          FieldValue.increment(1), // Access nested volunteerSettings field
-    }).catchError((error) {
-      throw Exception("Failed to increment: $error");
-    });
-  }
-
-  // Method to decrement a specific field within volunteerSettings attribute
-  Future<void> decrementDeviceSetting(String shelterID, String field) async {
-    final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'deviceSettings.$field':
-          FieldValue.increment(-1), // Access nested volunteerSettings field
-    }).catchError((error) {
-      throw Exception("Failed to decrement: $error");
-    });
-  }
 }
 
 // Provider to access the ShelterSettingsRepository
