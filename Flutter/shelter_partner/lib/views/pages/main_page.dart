@@ -62,16 +62,16 @@ class MainPage extends ConsumerWidget {
     List<String> routes;
 
     if (isAdmin) {
-      if (appUser.deviceSettings.mode == 'Admin') {
+      if (appUser.deviceSettings!.mode == 'Admin') {
         items = adminItems;
         routes = adminRoutes;
-      } else if (appUser.deviceSettings.mode == 'Volunteer') {
+      } else if (appUser.deviceSettings!.mode == 'Volunteer') {
         items = volunteerItems;
         routes = volunteerRoutes;
-      } else if (appUser.deviceSettings.mode == 'Visitor') {
+      } else if (appUser.deviceSettings!.mode == 'Visitor') {
         items = visitorItems;
         routes = visitorRoutes;
-      } else if (appUser.deviceSettings.mode == 'Volunteer & Visitor') {
+      } else if (appUser.deviceSettings!.mode == 'Volunteer & Visitor') {
         items = volunteerAndVisitorItems;
         routes = volunteerAndVisitorRoutes;
       } else {

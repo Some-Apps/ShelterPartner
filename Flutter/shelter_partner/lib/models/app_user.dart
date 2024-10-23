@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shelter_partner/models/device_settings.dart';
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class AppUser {
   final String id;
@@ -8,7 +9,8 @@ class AppUser {
   final String email;
   final String type;
   final String shelterId;
-  final DeviceSettings deviceSettings;
+  final DeviceSettings? deviceSettings;
+  final FilterElement? userFilter;
 
   AppUser({
     required this.id,
@@ -18,6 +20,7 @@ class AppUser {
     required this.type,
     required this.shelterId,
     required this.deviceSettings,
+    this.userFilter,
   });
 
   factory AppUser.fromDocument(DocumentSnapshot doc) {
@@ -41,6 +44,7 @@ class AppUser {
     String? type,
     String? shelterId,
     DeviceSettings? deviceSettings,
+    FilterElement? userFilter,
   }) {
     return AppUser(
       id: id ?? this.id,
@@ -50,6 +54,7 @@ class AppUser {
       type: type ?? this.type,
       shelterId: shelterId ?? this.shelterId,
       deviceSettings: deviceSettings ?? this.deviceSettings,
+      userFilter: userFilter ?? this.userFilter,
     );
   }
 }

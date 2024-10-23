@@ -72,8 +72,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
         if (currentAnimal.inKennel) {
           final deviceDetails = ref.read(deviceSettingsViewModelProvider).value;
           if (deviceDetails != null &&
-              (deviceDetails.deviceSettings.requireName ||
-                  deviceDetails.deviceSettings.requireLetOutType)) {
+              (deviceDetails.deviceSettings!.requireName ||
+                  deviceDetails.deviceSettings!.requireLetOutType)) {
             _showTakeOutConfirmationDialog();
           } else {
             ref
