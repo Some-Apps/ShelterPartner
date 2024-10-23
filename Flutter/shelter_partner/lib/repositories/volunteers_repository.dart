@@ -148,10 +148,6 @@ class VolunteersRepository {
     final user = FirebaseAuth.instance.currentUser;
     String? idToken = await user?.getIdToken();
 
-    if (idToken == null) {
-      throw Exception('User is not authenticated');
-    }
-
     // Create the URL with query parameters for the DELETE request
     final url = Uri.parse(
       'https://delete-volunteer-222422545919.us-central1.run.app'

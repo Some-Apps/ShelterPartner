@@ -82,8 +82,8 @@ class MainPage extends ConsumerWidget {
       }
     } else {
       items = [
-        BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+        const BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
       ];
       routes = ['/animals', '/settings'];
     }
