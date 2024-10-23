@@ -186,8 +186,6 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
         return animal.name;
       case 'sex':
         return animal.sex;
-      case 'age':
-        return animal.age;
       case 'species':
         return animal.species;
       case 'breed':
