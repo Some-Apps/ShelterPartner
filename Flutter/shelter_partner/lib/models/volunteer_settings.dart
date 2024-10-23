@@ -1,3 +1,4 @@
+import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/models/geofence.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 

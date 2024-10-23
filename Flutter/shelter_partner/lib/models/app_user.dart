@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shelter_partner/models/device_settings.dart';
+import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class AppUser {

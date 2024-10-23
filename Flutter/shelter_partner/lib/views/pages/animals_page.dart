@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/animals_view_model.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/components/animal_card_view.dart';
+import 'package:shelter_partner/views/components/navigation_button_view.dart';
 
 class AnimalsPage extends ConsumerStatefulWidget {
   const AnimalsPage({super.key});
@@ -152,6 +155,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
 
   @override
   Widget build(BuildContext context) {
+    final appUser = ref.watch(appUserProvider);
+
     return SafeArea(
       child: Scaffold(
         body: GestureDetector(
@@ -167,40 +172,54 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 8.0),
-                    child: Row(
+                    child: Column(
                       children: [
-                        // Search bar
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            decoration: const InputDecoration(
-                              hintText: 'Search animals...',
+                        Row(
+                          children: [
+                            // Search bar
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: const InputDecoration(
+                                  hintText: 'Search animals...',
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    searchQuery = value.toLowerCase();
+                                  });
+                                },
+                              ),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                searchQuery = value.toLowerCase();
-                              });
-                            },
-                          ),
+                            const SizedBox(width: 8),
+                            // Attribute dropdown
+                            DropdownButton<String>(
+                              value: selectedAttributeDisplayName,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedAttributeDisplayName = newValue!;
+                                  selectedAttribute =
+                                      attributeDisplayNames[newValue]!;
+                                });
+                              },
+                              items: attributeDisplayNames.keys
+                                  .map<DropdownMenuItem<String>>((String key) {
+                                return DropdownMenuItem<String>(
+                                  value: key,
+                                  child: Text(key),
+                                );
+                              }).toList(),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        // Attribute dropdown
-                        DropdownButton<String>(
-                          value: selectedAttributeDisplayName,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedAttributeDisplayName = newValue!;
-                              selectedAttribute =
-                                  attributeDisplayNames[newValue]!;
-                            });
-                          },
-                          items: attributeDisplayNames.keys
-                              .map<DropdownMenuItem<String>>((String key) {
-                            return DropdownMenuItem<String>(
-                              value: key,
-                              child: Text(key),
-                            );
-                          }).toList(),
+                        NavigationButton(
+                          title: "User Filter",
+                          route: '/animals/main-filter',
+                          extra: FilterParameters(
+                            title: "User Filter",
+                            collection: 'users',
+                            documentID: appUser!.id,
+                            filterFieldPath: 'userFilter',
+                          ),
                         ),
                       ],
                     ),

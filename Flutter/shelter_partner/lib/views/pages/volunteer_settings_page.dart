@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
@@ -81,6 +82,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                       title: "Main Filter",
                       route: '/volunteers/volunteer-settings/main-filter',
                       extra: FilterParameters(
+                        title: "Volunteers Filter",
                         collection: 'shelters',
                         documentID: shelterAsyncValue.value!.id,
                         filterFieldPath: 'volunteerSettings.mainFilter',

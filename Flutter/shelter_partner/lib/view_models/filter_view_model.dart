@@ -28,6 +28,7 @@ class FilterViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   }
 
   Future<Map<String, dynamic>?> loadFilterExpression(
+    String title,
     String collection,
     String documentID,
     String filterFieldPath,
