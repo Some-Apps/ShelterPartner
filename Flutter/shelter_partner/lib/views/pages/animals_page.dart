@@ -24,14 +24,12 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   String selectedAttribute = 'name'; // Corresponding attribute key
   Map<String, String> attributeDisplayNames = {
     'Name': 'name',
+    'Notes': 'notes',
+    'Tags': 'tags',
     'Sex': 'sex',
-    'Age': 'age',
-    'Species': 'species',
     'Breed': 'breed',
     'Location': 'location',
     'Description': 'description',
-    'Symbol': 'symbol',
-    'Symbol Color': 'symbolColor',
     'Take Out Alert': 'takeOutAlert',
     'Put Back Alert': 'putBackAlert',
     'Adoption Category': 'adoptionCategory',
@@ -71,8 +69,11 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           case 'name':
             fieldValue = animal.name;
             break;
-          case 'species':
-            fieldValue = animal.species;
+          case 'notes':
+            fieldValue = animal.notes.map((note) => note.note).join(' ');
+            break;
+          case 'tags':
+            fieldValue = animal.tags.map((tag) => tag.title).join(' ');
             break;
           case 'breed':
             fieldValue = animal.breed;
@@ -128,8 +129,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
         child: LayoutBuilder(
           builder: (context, constraints) {
             final int columns = (constraints.maxWidth / 350).floor();
-            final double aspectRatio =
-                constraints.maxWidth / (columns * 225);
+            final double aspectRatio = constraints.maxWidth / (columns * 225);
 
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -165,7 +165,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                 title: const Text('Additional Options'),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 8.0),
                     child: Row(
                       children: [
                         // Search bar

@@ -45,8 +45,8 @@ class _PutBackConfirmationViewState extends ConsumerState<PutBackConfirmationVie
   }
   void _updateConfirmButtonState() {
     setState(() {
-      _isConfirmEnabled = ((_selectedEarlyReason != null && _selectedEarlyReason!.isNotEmpty) || ref.read(deviceSettingsViewModelProvider).value?.deviceSettings.requireEarlyPutBackReason == false 
-      || Timestamp.now().toDate().difference(widget.animal.logs.last.startTime.toDate()).inMinutes >= ref.read(deviceSettingsViewModelProvider).value!.deviceSettings.minimumLogMinutes);
+      _isConfirmEnabled = ((_selectedEarlyReason != null && _selectedEarlyReason!.isNotEmpty) || ref.read(deviceSettingsViewModelProvider).value?.deviceSettings?.requireEarlyPutBackReason == false 
+      || Timestamp.now().toDate().difference(widget.animal.logs.last.startTime.toDate()).inMinutes >= ref.read(deviceSettingsViewModelProvider).value!.deviceSettings!.minimumLogMinutes);
     });
   }
 
@@ -98,7 +98,7 @@ Widget build(BuildContext context) {
   final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
   final takeOutViewModel = ref.read(putBackConfirmationViewModelProvider(widget.animal).notifier);
 
-  if (deviceSettings.value?.deviceSettings.requireEarlyPutBackReason == false) {
+  if (deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason == false) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       takeOutViewModel.putBackAnimal(
         widget.animal,
@@ -142,10 +142,10 @@ Widget build(BuildContext context) {
               ],
               ),
             ),
-        if (deviceSettings.value?.deviceSettings.requireEarlyPutBackReason == true &&
+        if (deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason == true &&
             shelterSettings.value?.shelterSettings.earlyPutBackReasons.isNotEmpty == true &&
             widget.animal.logs.isNotEmpty &&
-            Timestamp.now().toDate().difference(widget.animal.logs.last.startTime.toDate()).inMinutes < deviceSettings.value!.deviceSettings.minimumLogMinutes)
+            Timestamp.now().toDate().difference(widget.animal.logs.last.startTime.toDate()).inMinutes < deviceSettings.value!.deviceSettings!.minimumLogMinutes)
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

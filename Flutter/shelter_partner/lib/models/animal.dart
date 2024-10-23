@@ -8,7 +8,7 @@ class Animal {
   final String id;
   final String name;
   final String sex;
-  final String age;
+  final int monthsOld;
   final String species;
   final String breed;
   final String location;
@@ -37,7 +37,7 @@ class Animal {
     required this.id,
     required this.name,
     required this.sex,
-    required this.age,
+    required this.monthsOld,
     required this.species,
     required this.breed,
     required this.location,
@@ -64,7 +64,7 @@ class Animal {
       id: documentId,
       name: data['name'] ?? 'Unknown',
       sex: data['sex'] ?? 'Unknown',
-      age: data['age'] ?? 'Unknown',
+      monthsOld: data['monthsOld'] ?? 0,
       species: data['species'] ?? 'Unknown',
       breed: data['breed'] ?? 'Unknown',
       location: data['location'] ?? 'Unknown',
@@ -94,7 +94,7 @@ class Animal {
     String? id,
     String? name,
     String? sex,
-    String? age,
+    int? monthsOld,
     String? species,
     String? breed,
     String? location,
@@ -119,7 +119,7 @@ class Animal {
       id: id ?? this.id,
       name: name ?? this.name,
       sex: sex ?? this.sex,
-      age: age ?? this.age,
+      monthsOld: monthsOld ?? this.monthsOld,
       species: species ?? this.species,
       breed: breed ?? this.breed,
       location: location ?? this.location,

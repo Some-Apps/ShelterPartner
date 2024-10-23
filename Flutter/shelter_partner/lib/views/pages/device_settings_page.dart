@@ -61,7 +61,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                           title: "Main Sort",
                           options: const ["Last Let Out", "Alphabetical"],
                           value:
-                              user?.deviceSettings.mainSort ?? "Last Let Out",
+                              user?.deviceSettings?.mainSort ?? "Last Let Out",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
@@ -75,7 +75,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         PickerView(
                           title: "Visitor Sort",
                           options: const ["Location", "Alphabetical"],
-                          value: user?.deviceSettings.visitorSort ??
+                          value: user?.deviceSettings?.visitorSort ??
                               "Alphabetical",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
@@ -95,7 +95,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                             "Visitor",
                             "Volunteer & Visitor"
                           ],
-                          value: user?.deviceSettings.mode ?? "Admin",
+                          value: user?.deviceSettings?.mode ?? "Admin",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
@@ -108,7 +108,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                   ref.read(appUserProvider.notifier).state;
                               final updatedAppUser = appUser!.copyWith(
                                 deviceSettings: appUser.deviceSettings
-                                    .copyWith(mode: newValue),
+                                    ?.copyWith(mode: newValue),
                               );
 
                               if (context.mounted && newValue != 'Visitor') {
@@ -156,7 +156,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                             title: "Custom Form URL",
                             hint: "Custom Form URL",
                             value:
-                                user?.deviceSettings.customFormURL as String ??
+                                user?.deviceSettings?.customFormURL as String ??
                                     "",
                             onSaved: (String value) {
                               ref
@@ -175,7 +175,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         NumberStepperView(
                           title: "Minimum Duration",
                           label: "minutes",
-                          value: user?.deviceSettings.minimumLogMinutes ?? 0,
+                          value: user?.deviceSettings?.minimumLogMinutes ?? 0,
                           increment: () {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -200,7 +200,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         SwitchToggleView(
                           title: "Photo Uploads Allowed",
                           value:
-                              user?.deviceSettings.photoUploadsAllowed ?? false,
+                              user?.deviceSettings?.photoUploadsAllowed ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -210,7 +210,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                         SwitchToggleView(
                           title: "Allow Bulk Take Out",
-                          value: user?.deviceSettings.allowBulkTakeOut ?? false,
+                          value: user?.deviceSettings?.allowBulkTakeOut ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -221,7 +221,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         SwitchToggleView(
                           title: "Require Let Out Type",
                           value:
-                              user?.deviceSettings.requireLetOutType ?? false,
+                              user?.deviceSettings?.requireLetOutType ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -231,7 +231,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         SwitchToggleView(
                           title: "Require Early Put Back Reason",
                           value:
-                              user?.deviceSettings.requireEarlyPutBackReason ??
+                              user?.deviceSettings?.requireEarlyPutBackReason ??
                                   false,
                           onChanged: (bool newValue) {
                             ref
@@ -242,7 +242,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                         SwitchToggleView(
                           title: "Require Name",
-                          value: user?.deviceSettings.requireName ?? false,
+                          value: user?.deviceSettings?.requireName ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -252,7 +252,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         SwitchToggleView(
                           title: "Create Logs When Under Minimum Duration",
                           value: user?.deviceSettings
-                                  .createLogsWhenUnderMinimumDuration ??
+                                  ?.createLogsWhenUnderMinimumDuration ??
                               false,
                           onChanged: (bool newValue) {
                             ref
@@ -264,7 +264,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         
                         SwitchToggleView(
                           title: "Show Custom Form",
-                          value: user?.deviceSettings.showCustomForm ?? false,
+                          value: user?.deviceSettings?.showCustomForm ?? false,
                           onChanged: (bool newValue) {
                             ref
                                 .read(deviceSettingsViewModelProvider.notifier)
@@ -273,7 +273,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ),
                         SwitchToggleView(
                           title: "Append Animal Data To URL",
-                          value: user?.deviceSettings.appendAnimalDataToURL ??
+                          value: user?.deviceSettings?.appendAnimalDataToURL ??
                               false,
                           onChanged: (bool newValue) {
                             ref

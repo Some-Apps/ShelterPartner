@@ -45,7 +45,7 @@ class SwitchToAdminPage extends ConsumerWidget {
       // If reauthentication is successful, optimistically update the AppUser state to reflect the admin mode
       final appUser = ref.read(appUserProvider.notifier).state;
       final updatedAppUser = appUser!.copyWith(
-        deviceSettings: appUser.deviceSettings.copyWith(mode: 'Admin'),
+        deviceSettings: appUser.deviceSettings?.copyWith(mode: 'Admin'),
       );
 
       // Update the provider with the new state

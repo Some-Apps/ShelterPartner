@@ -378,10 +378,10 @@ class AuthRepository {
               'timestamp': Timestamp.now(),
             }
           ], // Example placeholder for tags
-          'sex': row['sex'] ?? 'Unknown',
-          'age': row['age'] ?? 'Unknown',
-          'breed': row['breed'] ?? 'Unknown',
-          'description': row['description'] ?? 'No description available.',
+          'sex': ['male', 'female'].randomElement(),
+          'monthsOld': [2, 6, 12, 24, 36].randomElement(),
+          'breed': ['some breed', 'another breed'].randomElement(),
+          'description': ['Some description', 'Another description'].randomElement(),
         };
 
         // Upload the document to Firestore

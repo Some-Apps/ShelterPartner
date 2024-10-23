@@ -68,7 +68,7 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     animalsStream,
     deviceSettingsStream,
     (animals, appUser) {
-      _mainFilter = appUser?.deviceSettings.visitorFilter;
+      _mainFilter = appUser?.deviceSettings?.visitorFilter;
 
       // Apply the filter
       final filteredAnimals = animals.where((animal) {
@@ -96,7 +96,7 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     final deviceSettings =
         ref.read(deviceSettingsViewModelProvider).asData?.value;
 
-    final visitorSort = deviceSettings?.deviceSettings.visitorSort ?? 'Alphabetical';
+    final visitorSort = deviceSettings?.deviceSettings?.visitorSort ?? 'Alphabetical';
 
     final sortedState = <String, List<Animal>>{};
 
@@ -186,8 +186,6 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
         return animal.name;
       case 'sex':
         return animal.sex;
-      case 'age':
-        return animal.age;
       case 'species':
         return animal.species;
       case 'breed':

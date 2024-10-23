@@ -41,8 +41,8 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
   void _updateConfirmButtonState() {
     setState(() {
       final deviceSettings = ref.read(deviceSettingsViewModelProvider);
-      final requireLetOutType = deviceSettings.value?.deviceSettings.requireLetOutType ?? false;
-      final requireName = deviceSettings.value?.deviceSettings.requireName ?? false;
+      final requireLetOutType = deviceSettings.value?.deviceSettings?.requireLetOutType ?? false;
+      final requireName = deviceSettings.value?.deviceSettings?.requireName ?? false;
 
       _isConfirmEnabled = (!requireLetOutType || (_selectedLetOutType != null && _selectedLetOutType!.isNotEmpty)) &&
               (!requireName || _nameController.text.isNotEmpty);
@@ -81,7 +81,7 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
               ],
               ),
             ),
-          if (deviceSettings.value?.deviceSettings.requireLetOutType == true &&
+          if (deviceSettings.value?.deviceSettings?.requireLetOutType == true &&
               shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,8 +108,8 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
                 ],
               ),
             
-          if (deviceSettings.value?.deviceSettings.requireName == true &&
-              (userDetails?.firstName != null || deviceSettings.value?.deviceSettings.mode != "Admin"))
+          if (deviceSettings.value?.deviceSettings?.requireName == true &&
+              (userDetails?.firstName != null || deviceSettings.value?.deviceSettings?.mode != "Admin"))
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
