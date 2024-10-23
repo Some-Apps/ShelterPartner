@@ -1,9 +1,8 @@
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class DeviceSettings {
-  final bool adminMode;
+  final String mode;
 
-// instead of adminMode, have it be mode and have the options be admin, volunteer, visitor, or volunteerAndVisitor
 
   final bool photoUploadsAllowed;
   final String mainSort;
@@ -27,7 +26,7 @@ class DeviceSettings {
   final bool appendAnimalDataToURL;
 
   DeviceSettings({
-    required this.adminMode,
+    required this.mode,
     required this.photoUploadsAllowed,
     required this.mainSort,
     required this.mainFilter,
@@ -50,79 +49,63 @@ class DeviceSettings {
     required this.appendAnimalDataToURL,
   });
 
-  DeviceSettings copyWith(Map<String, dynamic> changes) {
-    return DeviceSettings(
-      adminMode:
-          changes.containsKey('adminMode') ? changes['adminMode'] : adminMode,
-      photoUploadsAllowed: changes.containsKey('photoUploadsAllowed')
-          ? changes['photoUploadsAllowed']
-          : photoUploadsAllowed,
-      mainSort:
-          changes.containsKey('mainSort') ? changes['mainSort'] : mainSort,
-      mainFilter: changes.containsKey('mainFilter')
-          ? changes['mainFilter']
-          : mainFilter,
-      visitorFilter: changes.containsKey('visitorFilter')
-          ? changes['visitorFilter']
-          : visitorFilter,
-      visitorSort: changes.containsKey('visitorSort')
-          ? changes['visitorSort']
-          : visitorSort,
-      allowBulkTakeOut: changes.containsKey('allowBulkTakeOut')
-          ? changes['allowBulkTakeOut']
-          : allowBulkTakeOut,
-      minimumLogMinutes: changes.containsKey('minimumLogMinutes')
-          ? changes['minimumLogMinutes']
-          : minimumLogMinutes,
-      automaticallyPutBackAnimals:
-          changes.containsKey('automaticallyPutBackAnimals')
-              ? changes['automaticallyPutBackAnimals']
-              : automaticallyPutBackAnimals,
-      ignoreVisitWhenAutomaticallyPutBack:
-          changes.containsKey('ignoreVisitWhenAutomaticallyPutBack')
-              ? changes['ignoreVisitWhenAutomaticallyPutBack']
-              : ignoreVisitWhenAutomaticallyPutBack,
-      automaticPutBackHours: changes.containsKey('automaticPutBackHours')
-          ? changes['automaticPutBackHours']
-          : automaticPutBackHours,
-      requireLetOutType: changes.containsKey('requireLetOutType')
-          ? changes['requireLetOutType']
-          : requireLetOutType,
-      requireEarlyPutBackReason:
-          changes.containsKey('requireEarlyPutBackReason')
-              ? changes['requireEarlyPutBackReason']
-              : requireEarlyPutBackReason,
-      requireName: changes.containsKey('requireName')
-          ? changes['requireName']
-          : requireName,
-      createLogsWhenUnderMinimumDuration:
-          changes.containsKey('createLogsWhenUnderMinimumDuration')
-              ? changes['createLogsWhenUnderMinimumDuration']
-              : createLogsWhenUnderMinimumDuration,
-      showNoteDates: changes.containsKey('showNoteDates')
-          ? changes['showNoteDates']
-          : showNoteDates,
-      showLogs:
-          changes.containsKey('showLogs') ? changes['showLogs'] : showLogs,
-      showCustomForm: changes.containsKey('showCustomForm')
-          ? changes['showCustomForm']
-          : showCustomForm,
-      customFormURL: changes.containsKey('customFormURL')
-          ? changes['customFormURL']
-          : customFormURL,
-      buttonType: changes.containsKey('buttonType')
-          ? changes['buttonType']
-          : buttonType,
-      appendAnimalDataToURL: changes.containsKey('appendAnimalDataToURL')
-          ? changes['appendAnimalDataToURL']
-          : appendAnimalDataToURL,
-    );
-  }
+  DeviceSettings copyWith({
+  String? mode,
+  bool? photoUploadsAllowed,
+  String? mainSort,
+  FilterElement? mainFilter,
+  FilterElement? visitorFilter,
+  String? visitorSort,
+  bool? allowBulkTakeOut,
+  int? minimumLogMinutes,
+  bool? automaticallyPutBackAnimals,
+  bool? ignoreVisitWhenAutomaticallyPutBack,
+  int? automaticPutBackHours,
+  bool? requireLetOutType,
+  bool? requireEarlyPutBackReason,
+  bool? requireName,
+  bool? createLogsWhenUnderMinimumDuration,
+  bool? showNoteDates,
+  bool? showLogs,
+  bool? showCustomForm,
+  String? customFormURL,
+  String? buttonType,
+  bool? appendAnimalDataToURL,
+}) {
+  return DeviceSettings(
+    mode: mode ?? this.mode,
+    photoUploadsAllowed: photoUploadsAllowed ?? this.photoUploadsAllowed,
+    mainSort: mainSort ?? this.mainSort,
+    mainFilter: mainFilter ?? this.mainFilter,
+    visitorFilter: visitorFilter ?? this.visitorFilter,
+    visitorSort: visitorSort ?? this.visitorSort,
+    allowBulkTakeOut: allowBulkTakeOut ?? this.allowBulkTakeOut,
+    minimumLogMinutes: minimumLogMinutes ?? this.minimumLogMinutes,
+    automaticallyPutBackAnimals:
+        automaticallyPutBackAnimals ?? this.automaticallyPutBackAnimals,
+    ignoreVisitWhenAutomaticallyPutBack:
+        ignoreVisitWhenAutomaticallyPutBack ?? this.ignoreVisitWhenAutomaticallyPutBack,
+    automaticPutBackHours: automaticPutBackHours ?? this.automaticPutBackHours,
+    requireLetOutType: requireLetOutType ?? this.requireLetOutType,
+    requireEarlyPutBackReason:
+        requireEarlyPutBackReason ?? this.requireEarlyPutBackReason,
+    requireName: requireName ?? this.requireName,
+    createLogsWhenUnderMinimumDuration:
+        createLogsWhenUnderMinimumDuration ?? this.createLogsWhenUnderMinimumDuration,
+    showNoteDates: showNoteDates ?? this.showNoteDates,
+    showLogs: showLogs ?? this.showLogs,
+    showCustomForm: showCustomForm ?? this.showCustomForm,
+    customFormURL: customFormURL ?? this.customFormURL,
+    buttonType: buttonType ?? this.buttonType,
+    appendAnimalDataToURL: appendAnimalDataToURL ?? this.appendAnimalDataToURL,
+  );
+}
+
 
   // Convert DeviceSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
     return {
-      'adminMode': adminMode,
+      'mode': mode,
       'photoUploadsAllowed': photoUploadsAllowed,
       'mainSort': mainSort,
       if (mainFilter != null) 'mainFilter': mainFilter!.toJson(),
@@ -187,12 +170,12 @@ class DeviceSettings {
     }
 
     return DeviceSettings(
-      adminMode: data['adminMode'] ?? false,
+      mode: data['mode'] ?? "Admin",
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
-      mainSort: data['mainSort'] ?? "Unknown",
+      mainSort: data['mainSort'] ?? "Last Let Out",
       mainFilter: mainFilter,
       visitorFilter: visitorFilter,
-      visitorSort: data['visitorSort'] ?? "Unknown",
+      visitorSort: data['visitorSort'] ?? "Alphabetical",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,

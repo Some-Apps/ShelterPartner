@@ -4,14 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/repositories/animals_repository.dart';
-import 'package:shelter_partner/repositories/visitors_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
-  final VisitorsRepository _repository;
+  final AnimalsRepository _repository;
   final Ref ref;
 
   StreamSubscription<void>? _animalsSubscription;
@@ -59,7 +58,6 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
       .watch(deviceSettingsViewModelProvider.notifier)
       .stream
       .map((asyncValue) {
-        print('DeviceSettingsViewModel state: $asyncValue');
         return asyncValue.asData?.value;
       });
 
@@ -68,9 +66,7 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     animalsStream,
     deviceSettingsStream,
     (animals, appUser) {
-      print('Combined stream listener triggered');
       _mainFilter = appUser?.deviceSettings.mainFilter;
-      print('_mainFilter: $_mainFilter');
 
       // Apply the filter
       final filteredAnimals = animals.where((animal) {
@@ -233,6 +229,6 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 final animalsViewModelProvider =
     StateNotifierProvider<AnimalsViewModel, Map<String, List<Animal>>>((ref) {
   final repository =
-      ref.watch(visitorsRepositoryProvider); // Access the repository
+      ref.watch(animalsRepositoryProvider); // Access the repository
   return AnimalsViewModel(repository, ref); // Pass the repository and ref
 });

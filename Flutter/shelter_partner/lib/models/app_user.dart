@@ -32,4 +32,24 @@ class AppUser {
       deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
     );
   }
+
+  AppUser copyWith({
+    String? id,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? type,
+    String? shelterId,
+    DeviceSettings? deviceSettings,
+  }) {
+    return AppUser(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      type: type ?? this.type,
+      shelterId: shelterId ?? this.shelterId,
+      deviceSettings: deviceSettings ?? this.deviceSettings,
+    );
+  }
 }

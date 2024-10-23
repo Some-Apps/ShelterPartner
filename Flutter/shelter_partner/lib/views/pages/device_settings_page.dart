@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
@@ -82,6 +84,42 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                                       deviceSettingsViewModelProvider.notifier)
                                   .modifyDeviceSettingString(
                                       user!.id, "visitorSort", newValue);
+                            }
+                          },
+                        ),
+                        PickerView(
+                          title: "Mode",
+                          options: const [
+                            "Admin",
+                            "Volunteer",
+                            "Visitor",
+                            "Volunteer & Visitor"
+                          ],
+                          value: user?.deviceSettings.mode ?? "Admin",
+                          onChanged: (String? newValue) {
+                            if (newValue != null && newValue.isNotEmpty) {
+                              ref
+                                  .read(
+                                      deviceSettingsViewModelProvider.notifier)
+                                  .modifyDeviceSettingString(
+                                      user!.id, "mode", newValue);
+
+                              final appUser =
+                                  ref.read(appUserProvider.notifier).state;
+                              final updatedAppUser = appUser!.copyWith(
+                                deviceSettings: appUser.deviceSettings
+                                    .copyWith(mode: newValue),
+                              );
+
+                              if (context.mounted && newValue != 'Visitor') {
+                                context.go('/animals');
+                              } else {
+                                context.go('/visitors');
+                              }
+
+                              // Update the provider with the new state
+                              ref.read(appUserProvider.notifier).state =
+                                  updatedAppUser;
                             }
                           },
                         ),
@@ -176,15 +214,6 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [
-                        SwitchToggleView(
-                          title: "Admin Mode",
-                          value: user?.deviceSettings.adminMode ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .toggleAttribute(user!.id, "adminMode");
-                          },
-                        ),
                         SwitchToggleView(
                           title: "Photo Uploads Allowed",
                           value:

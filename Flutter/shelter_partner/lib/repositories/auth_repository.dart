@@ -127,12 +127,12 @@ class AuthRepository {
   }) async {
     // Create default device settings for the user
     final defaultDeviceSettings = DeviceSettings(
-      adminMode: true,
       photoUploadsAllowed: true,
       mainSort: 'Last Let Out',
       mainFilter: null,
       visitorFilter: null,
       visitorSort: 'Alphabetical',
+      mode: 'Admin',
       allowBulkTakeOut: true,
       minimumLogMinutes: 10,
       automaticallyPutBackAnimals: true,
