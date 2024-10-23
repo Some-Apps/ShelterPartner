@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/view_models/filter_view_model.dart';
 
 class MainFilterPage extends ConsumerStatefulWidget {
