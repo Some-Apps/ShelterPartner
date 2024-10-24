@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/filter_condition.dart';
+import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/view_models/filter_view_model.dart';
 
 class MainFilterPage extends ConsumerStatefulWidget {
+  final String title;
   final String collection;
   final String documentID;
   final String filterFieldPath;
 
   const MainFilterPage({
     super.key,
+    required this.title,
     required this.collection,
     required this.documentID,
     required this.filterFieldPath,
@@ -31,6 +35,7 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
   Future<void> _loadFilterExpression() async {
     final filterViewModel = ref.read(filterViewModelProvider.notifier);
     final result = await filterViewModel.loadFilterExpression(
+      widget.title,
       widget.collection,
       widget.documentID,
       widget.filterFieldPath,
@@ -62,7 +67,7 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.filterFieldPath),
+        title: Text(widget.title),
         actions: [
           IconButton(
               icon: const Icon(Icons.save),
@@ -663,91 +668,3 @@ enum OperatorType {
   isFalse,
 }
 
-abstract class FilterElement {
-  Map<String, dynamic> toJson();
-
-  static FilterElement fromJson(Map<String, dynamic> json) {
-    if (json['type'] == 'condition') {
-      return FilterCondition.fromJson(json);
-    } else if (json['type'] == 'group') {
-      return FilterGroup.fromJson(json);
-    } else {
-      throw Exception('Unknown FilterElement type: ${json['type']}');
-    }
-  }
-}
-
-class FilterCondition extends FilterElement {
-  String attribute;
-  OperatorType operatorType;
-  dynamic value;
-
-  FilterCondition({
-    required this.attribute,
-    required this.operatorType,
-    this.value,
-  });
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'type': 'condition',
-      'attribute': attribute,
-      'operatorType': operatorType.toString().split('.').last,
-      if (value != null) 'value': value,
-    };
-  }
-
-  factory FilterCondition.fromJson(Map<String, dynamic> json) {
-    return FilterCondition(
-      attribute: json['attribute'],
-      operatorType: OperatorType.values.firstWhere(
-        (e) => e.toString().split('.').last == json['operatorType'],
-      ),
-      value: json.containsKey('value') ? json['value'] : null,
-    );
-  }
-}
-
-class FilterGroup extends FilterElement {
-  LogicalOperator logicalOperator;
-  List<FilterElement> elements;
-
-  FilterGroup({
-    required this.logicalOperator,
-    required this.elements,
-  });
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'type': 'group',
-      'logicalOperator': logicalOperator.toString().split('.').last,
-      'elements': elements.map((e) => e.toJson()).toList(),
-    };
-  }
-
-  factory FilterGroup.fromJson(Map<String, dynamic> json) {
-    return FilterGroup(
-      logicalOperator: LogicalOperator.values.firstWhere(
-        (e) => e.toString().split('.').last == json['logicalOperator'],
-      ),
-      elements: (json['elements'] as List<dynamic>)
-          .map((e) =>
-              FilterElement.fromJson(Map<String, dynamic>.from(e as Map)))
-          .toList(),
-    );
-  }
-}
-
-class FilterParameters {
-  final String collection;
-  final String documentID;
-  final String filterFieldPath;
-
-  FilterParameters({
-    required this.collection,
-    required this.documentID,
-    required this.filterFieldPath,
-  });
-}

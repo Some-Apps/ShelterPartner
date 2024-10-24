@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/app_user.dart';
+import 'package:shelter_partner/models/filter_condition.dart';
+import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/repositories/visitors_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';

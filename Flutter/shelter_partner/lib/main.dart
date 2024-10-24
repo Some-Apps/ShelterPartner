@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/firebase_service.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:json_theme_plus/json_theme_plus.dart';
@@ -124,6 +125,23 @@ class MyApp extends StatelessWidget {
                     );
                   },
                 ),
+                GoRoute(
+                      path: 'main-filter',
+                      pageBuilder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MaterialPage(
+                          child: MainFilterPage(
+                            title: params.title,
+                            collection: params.collection,
+                            documentID: params.documentID,
+                            filterFieldPath: params.filterFieldPath,
+                          ),
+                        );
+                      },
+                    ),
               ]),
           GoRoute(
               path: '/visitors',
@@ -173,6 +191,7 @@ class MyApp extends StatelessWidget {
                         }
                         return MaterialPage(
                           child: MainFilterPage(
+                            title: params.title,
                             collection: params.collection,
                             documentID: params.documentID,
                             filterFieldPath: params.filterFieldPath,
@@ -263,6 +282,7 @@ class MyApp extends StatelessWidget {
                         }
                         return MaterialPage(
                           child: MainFilterPage(
+                            title: params.title,
                             collection: params.collection,
                             documentID: params.documentID,
                             filterFieldPath: params.filterFieldPath,
@@ -279,6 +299,7 @@ class MyApp extends StatelessWidget {
                         }
                         return MaterialPage(
                           child: MainFilterPage(
+                            title: params.title,
                             collection: params.collection,
                             documentID: params.documentID,
                             filterFieldPath: params.filterFieldPath,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
@@ -8,7 +9,6 @@ import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
-import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class DeviceSettingsPage extends ConsumerStatefulWidget {
   const DeviceSettingsPage({super.key});
@@ -131,6 +131,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                       title: "Main Filter",
                       route: '/settings/device-settings/main-filter',
                       extra: FilterParameters(
+                        title: "Device Animals Filter",
                         collection: 'users',
                         documentID: shelterAsyncValue.value!.id,
                         filterFieldPath: 'deviceSettings.mainFilter',
@@ -142,6 +143,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                       title: "Visitor Filter",
                       route: '/settings/device-settings/visitor-filter',
                       extra: FilterParameters(
+                        title: "Device Visitor Filter",
                         collection: 'users',
                         documentID: shelterAsyncValue.value!.id,
                         filterFieldPath: 'deviceSettings.visitorFilter',

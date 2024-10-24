@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/app_user.dart';
+import 'package:shelter_partner/models/filter_condition.dart';
+import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/repositories/animals_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
@@ -19,17 +21,12 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   AnimalsViewModel(this._repository, this.ref)
       : super({'cats': [], 'dogs': []}) {
 
-
-
-
     ref.listen<AuthState>(
       authViewModelProvider,
       (previous, next) {
         _onAuthStateChanged(next);
       },
     );
-
-
 
     // Immediately check the current auth state
     final authState = ref.read(authViewModelProvider);
@@ -49,41 +46,43 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     }
   }
 
-  // Add a field to store the main filter
+  // Add fields to store the main filter and secondary filter
   FilterElement? _mainFilter;
+  FilterElement? _secondaryFilter;
 
-  // Modify fetchAnimals to apply the filter
+  // Modify fetchAnimals to apply the filters
   void fetchAnimals({required String shelterID}) {
-  _animalsSubscription?.cancel(); // Cancel any existing subscription
+    _animalsSubscription?.cancel(); // Cancel any existing subscription
 
-  // Fetch animals stream
-  final animalsStream = _repository.fetchAnimals(shelterID);
+    // Fetch animals stream
+    final animalsStream = _repository.fetchAnimals(shelterID);
 
-  // Fetch device settings stream (filter)
-  final deviceSettingsStream = ref
-      .watch(deviceSettingsViewModelProvider.notifier)
-      .stream
-      .map((asyncValue) {
-        return asyncValue.asData?.value;
-      });
+    // Fetch device settings stream (filter)
+    final deviceSettingsStream = ref
+        .watch(deviceSettingsViewModelProvider.notifier)
+        .stream
+        .map((asyncValue) {
+          return asyncValue.asData?.value;
+        });
 
-  // Combine both streams
-  _animalsSubscription = CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
-    animalsStream,
-    deviceSettingsStream,
-    (animals, appUser) {
-      _mainFilter = appUser?.type == 'admin' 
-          ? appUser?.deviceSettings?.mainFilter 
-          : ref.read(volunteersViewModelProvider).value?.volunteerSettings.mainFilter;
+    // Combine both streams
+    _animalsSubscription = CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
+      animalsStream,
+      deviceSettingsStream,
+      (animals, appUser) {
+        _mainFilter = appUser?.type == 'admin' 
+            ? appUser?.deviceSettings?.mainFilter 
+            : ref.read(volunteersViewModelProvider).value?.volunteerSettings.mainFilter;
 
-      // Apply the filter
-      final filteredAnimals = animals.where((animal) {
-        if (_mainFilter != null) {
-          return evaluateFilter(_mainFilter!, animal);
-        } else {
-          return true; // No filter applied
-        }
-      }).toList();
+        _secondaryFilter = appUser?.userFilter;
+        print(_secondaryFilter.toString());
+
+        // Apply the filters
+        final filteredAnimals = animals.where((animal) {
+          final mainFilterResult = _mainFilter != null ? evaluateFilter(_mainFilter!, animal) : true;
+          final secondaryFilterResult = _secondaryFilter != null ? evaluateFilter(_secondaryFilter!, animal) : true;
+          return mainFilterResult && secondaryFilterResult;
+        }).toList();
 
         final cats =
             filteredAnimals.where((animal) => animal.species == 'cat').toList();
