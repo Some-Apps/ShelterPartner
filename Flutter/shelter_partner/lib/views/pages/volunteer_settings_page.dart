@@ -8,7 +8,6 @@ import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/text_field_view.dart';
 import 'package:shelter_partner/views/pages/georestriction_settings_page.dart';
-import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class VolunteerSettingsPage extends ConsumerStatefulWidget {
   const VolunteerSettingsPage({super.key});

@@ -24,8 +24,38 @@ class AppUser {
     this.userFilter,
   });
 
+  // Factory constructor to create AppUser from Firestore document
   factory AppUser.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    // Reconstruct filter group (similar to how it's done in DeviceSettings)
+    FilterGroup reconstructFilterGroup(Map<String, dynamic> json) {
+      List<FilterElement> elements = [];
+      if (json.containsKey('filterElements')) {
+        elements = (json['filterElements'] as List)
+            .map((e) => FilterElement.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+
+      LogicalOperator logicalOperator = LogicalOperator.and; // Default to AND
+      if (json.containsKey('operatorsBetween') &&
+          (json['operatorsBetween'] as Map).values.any((v) => v == 'or')) {
+        logicalOperator = LogicalOperator.or;
+      }
+
+      return FilterGroup(
+        logicalOperator: logicalOperator,
+        elements: elements,
+      );
+    }
+
+    // Deserialize userFilter (if it exists in Firestore)
+    FilterElement? userFilter;
+    if (data.containsKey('userFilter') && data['userFilter'] != null) {
+      final userFilterData = data['userFilter'] as Map<String, dynamic>;
+      userFilter = reconstructFilterGroup(userFilterData);
+    }
+
     return AppUser(
       id: doc.id,
       firstName: data['firstName'],
@@ -34,9 +64,11 @@ class AppUser {
       type: data['type'],
       shelterId: data['shelterID'],
       deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
+      userFilter: userFilter, // Assign the deserialized userFilter here
     );
   }
 
+  // CopyWith method to create a copy of AppUser with optional changes
   AppUser copyWith({
     String? id,
     String? firstName,
