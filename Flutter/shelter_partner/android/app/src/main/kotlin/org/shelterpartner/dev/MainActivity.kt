@@ -1,4 +1,4 @@
-package org.shelter_partner.dev
+package org.shelterpartner.dev
 
 import io.flutter.embedding.android.FlutterActivity
 

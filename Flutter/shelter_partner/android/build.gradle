@@ -1,7 +1,7 @@
 ext {
-    compileSdkVersion flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+//    ndkVersion "27.2.12479018"
 }
+
 allprojects {
     repositories {
         google()
