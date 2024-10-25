@@ -28,8 +28,8 @@ class _GeorestrictionSettingsPageState
   String? _selectedAddress;
   List<AddressSuggestion> _addressSuggestions = [];
 
-  // Replace with your actual Google API key
-  String googleApiKey = 'AIzaSyBGsaMT4Fo-4_d-z4NoTmPEPVUm9pjuWQE';
+  // Replace with your actual API URL
+  final String placesApiUrl = 'https://places-api-222422545919.us-central1.run.app';
 
   final TextEditingController _addressController = TextEditingController();
   final FocusNode _addressFocusNode = FocusNode(); // Create a FocusNode
@@ -41,7 +41,7 @@ class _GeorestrictionSettingsPageState
     super.dispose();
   }
 
-  // Fetch address suggestions using Google Places API
+  // Fetch address suggestions using your Cloud Function
   Future<void> _fetchAddressSuggestions(String input) async {
     if (input.isEmpty) {
       setState(() {
@@ -51,7 +51,7 @@ class _GeorestrictionSettingsPageState
     }
 
     final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$googleApiKey&components=country:us',
+      '$placesApiUrl?input=$input',
     );
     final response = await http.get(url);
 
@@ -72,10 +72,13 @@ class _GeorestrictionSettingsPageState
     }
   }
 
-  Future<void> _getPlaceDetails(String placeId) async {
-    final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$googleApiKey',
-    );
+  // Fetch place details using the Cloud Function API
+Future<void> _getPlaceDetails(String placeId) async {
+  final url = Uri.parse(
+    'https://places-api-details-222422545919.us-central1.run.app?place_id=$placeId',
+  );
+
+  try {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -96,7 +99,11 @@ class _GeorestrictionSettingsPageState
     } else {
       _showErrorMessage('Unable to get location details.');
     }
+  } catch (e) {
+    _showErrorMessage('Error: $e');
   }
+}
+
 
   // Center the map on the user's current location
   Future<void> _centerOnUserLocation() async {
