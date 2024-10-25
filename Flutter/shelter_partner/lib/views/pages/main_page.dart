@@ -16,21 +16,28 @@ class MainPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appUser = ref.watch(appUserProvider); // Fetch appUser from provider
+    final authViewModel = ref.read(authViewModelProvider.notifier);
 
     if (appUser == null) {
-      return const Center(child: Text("User not found"));
+      authViewModel.logout(context, ref);
+      return const Center(child: CircularProgressIndicator());
     }
 
     final isAdmin = appUser.type == "admin";
 
     // Modes that act like Volunteer
-    Set<String> volunteerModes = {'Volunteer', 'Visitor', 'Volunteer & Visitor'};
+    Set<String> volunteerModes = {
+      'Volunteer',
+      'Visitor',
+      'Volunteer & Visitor'
+    };
 
     // Define the items and routes
     const adminItems = [
       BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
       BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-      BottomNavigationBarItem(icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
+      BottomNavigationBarItem(
+          icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
       BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
     ];
 
@@ -38,14 +45,16 @@ class MainPage extends ConsumerWidget {
 
     const volunteerItems = [
       BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-      BottomNavigationBarItem(icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+      BottomNavigationBarItem(
+          icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
     ];
 
     const volunteerRoutes = ['/animals', '/switch-to-admin'];
 
     const visitorItems = [
       BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-      BottomNavigationBarItem(icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+      BottomNavigationBarItem(
+          icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
     ];
 
     const visitorRoutes = ['/visitors', '/switch-to-admin'];
@@ -53,10 +62,15 @@ class MainPage extends ConsumerWidget {
     const volunteerAndVisitorItems = [
       BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
       BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-      BottomNavigationBarItem(icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+      BottomNavigationBarItem(
+          icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
     ];
 
-    const volunteerAndVisitorRoutes = ['/animals', '/visitors', '/switch-to-admin'];
+    const volunteerAndVisitorRoutes = [
+      '/animals',
+      '/visitors',
+      '/switch-to-admin'
+    ];
 
     List<BottomNavigationBarItem> items;
     List<String> routes;
@@ -82,13 +96,15 @@ class MainPage extends ConsumerWidget {
     } else {
       items = [
         const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-        const BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        const BottomNavigationBarItem(
+            icon: Icon(Icons.settings), label: 'Settings'),
       ];
       routes = ['/animals', '/settings'];
     }
 
     // Determine currentIndex based on currentLocation
-    int currentIndex = routes.indexWhere((route) => currentLocation.startsWith(route));
+    int currentIndex =
+        routes.indexWhere((route) => currentLocation.startsWith(route));
     if (currentIndex == -1) {
       currentIndex = 0; // Default to first tab
     }
