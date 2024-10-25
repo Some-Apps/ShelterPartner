@@ -4,6 +4,8 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/animals_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 
@@ -156,6 +158,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   @override
   Widget build(BuildContext context) {
     final appUser = ref.watch(appUserProvider);
+    final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
+    final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
 
     return SafeArea(
       child: Scaffold(
@@ -165,7 +169,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           },
           child: Column(
             children: [
-              // Collapsible section for search bar and attribute dropdown
+              // Collapsible section for search bar, attribute dropdown, and "Take Out All Animals" button
               ExpansionTile(
                 title: const Text('Additional Options'),
                 children: [
@@ -211,6 +215,10 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                             ),
                           ],
                         ),
+                        const SizedBox(height: 8),
+                        // "Take Out All Animals" button
+
+                        // Navigation button for user filter
                         NavigationButton(
                           title: "User Filter",
                           route: '/animals/main-filter',
@@ -221,6 +229,21 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                             filterFieldPath: 'userFilter',
                           ),
                         ),
+                        if ((deviceSettings.value != null &&
+                                deviceSettings.value!.deviceSettings != null &&
+                                deviceSettings.value!.deviceSettings!.allowBulkTakeOut &&
+                                appUser.type == 'admin') ||
+                            (appUser.type == 'volunteer' &&
+                                shelterSettings.value!.volunteerSettings
+                                    .allowBulkTakeOut)) ...[
+                          ElevatedButton(
+                            onPressed: () {
+                              // Implement the logic to take out all animals here
+                            },
+                            child: const Text("Take Out All Animals"),
+                          ),
+                          const SizedBox(height: 8),
+                        ]
                       ],
                     ),
                   ),
