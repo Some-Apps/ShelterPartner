@@ -10,8 +10,8 @@ plugins {
 
 android {
     namespace = "org.shelterpartner.dev"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = ndkVersion
+    compileSdk 34
+    ndkVersion "28.0.12433566"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

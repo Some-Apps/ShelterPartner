@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
@@ -91,7 +92,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                     ));
           }
         } else {
-            _showPutBackConfirmationDialog();
+          _showPutBackConfirmationDialog();
         }
       }
     });
@@ -195,46 +196,33 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 GestureDetector(
                   onTapDown: canInteract
                       ? (_) {
-                          setState(() {
-                            isPressed = true;
-                          });
-                          _controller.forward();
-                        }
+                      setState(() {
+                        isPressed = true;
+                      });
+                      _controller.forward();
+                      HapticFeedback.mediumImpact();
+                      }
                       : null,
-                  onTapCancel: () {
-                    setState(() {
-                      isPressed = false;
-                    });
-                    _controller.reverse();
-                  },
-                  onLongPressStart: canInteract
+                    onTapUp: canInteract
                       ? (_) {
-                          setState(() {
-                            isPressed =
-                                true; // Set isPressed to true when long press starts
-                          });
-                          _controller.forward();
-                        }
+                      setState(() {
+                        isPressed = false;
+                      });
+                      _controller.reverse();
+                      HapticFeedback.lightImpact();
+                      }
                       : null,
-                  onLongPressEnd: canInteract
-                      ? (_) {
-                          setState(() {
-                            isPressed =
-                                false; // Set isPressed to false when long press ends
-                          });
-                          _controller
-                              .reverse(); // Reverse animation when user lets go
-                        }
-                      : null,
-                  onLongPressCancel: canInteract
+                    
+                    onTapCancel: canInteract
                       ? () {
-                          setState(() {
-                            isPressed =
-                                false; // Set isPressed to false when long press is canceled
-                          });
-                          _controller.reverse();
-                        }
+                      setState(() {
+                        isPressed = false;
+                      });
+                      _controller.reverse();
+                      HapticFeedback.lightImpact();
+                      }
                       : null,
+                      
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -415,15 +403,17 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                     ],
                   ),
                   const SizedBox(height: 5),
-                    Wrap(
+                  Wrap(
                     spacing: 4,
                     runSpacing: 4,
                     children: [
                       // Display the top 3 most popular tags as chips
-                      for (final tag in (animal.tags..sort((a, b) => b.count.compareTo(a.count))).take(3))
-                      _buildTagChip(label: tag.title),
+                      for (final tag in (animal.tags
+                            ..sort((a, b) => b.count.compareTo(a.count)))
+                          .take(3))
+                        _buildTagChip(label: tag.title),
                     ],
-                    ),
+                  ),
                   const SizedBox(height: 5),
                   Row(
                     children: [
@@ -438,7 +428,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                           color: Theme.of(context).primaryColor,
                         ),
                       ),
-                      
                     ],
                   ),
                   Row(
@@ -454,7 +443,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                           color: Theme.of(context).primaryColor,
                         ),
                       ),
-                      
                     ],
                   ),
                 ],
