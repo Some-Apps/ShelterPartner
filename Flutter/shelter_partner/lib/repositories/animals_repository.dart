@@ -21,6 +21,7 @@ class AnimalsRepository {
       return allAnimals;
     });
   }
+
 }
 
 final animalsRepositoryProvider = Provider<AnimalsRepository>((ref) {

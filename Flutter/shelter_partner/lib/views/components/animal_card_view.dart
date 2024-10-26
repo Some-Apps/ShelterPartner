@@ -118,7 +118,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       context: context,
       builder: (context) {
         return TakeOutConfirmationView(
-          animal: widget.animal,
+          animals: [widget.animal],
         );
       },
     );
@@ -151,7 +151,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       context: context,
       builder: (context) {
         return PutBackConfirmationView(
-          animal: widget.animal,
+          animals: [widget.animal],
         );
       },
     );

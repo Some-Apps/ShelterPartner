@@ -10,22 +10,23 @@ import 'package:shelter_partner/views/components/add_note_view.dart';
 import 'package:uuid/uuid.dart';
 
 class PutBackConfirmationView extends ConsumerStatefulWidget {
-  final Animal animal;
+  final List<Animal> animals; // Accepts a list of animals
 
   const PutBackConfirmationView({
     super.key,
-    required this.animal,
+    required this.animals,
   });
 
   @override
-  _PutBackConfirmationViewState createState() => _PutBackConfirmationViewState();
+  _PutBackConfirmationViewState createState() =>
+      _PutBackConfirmationViewState();
 }
 
-class _PutBackConfirmationViewState extends ConsumerState<PutBackConfirmationView> {
+class _PutBackConfirmationViewState
+    extends ConsumerState<PutBackConfirmationView> {
   final TextEditingController _nameController = TextEditingController();
   String? _selectedEarlyReason;
   bool _isConfirmEnabled = false;
-
 
   @override
   void initState() {
@@ -38,15 +39,26 @@ class _PutBackConfirmationViewState extends ConsumerState<PutBackConfirmationVie
     _nameController.dispose();
     super.dispose();
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _updateConfirmButtonState();
   }
+
   void _updateConfirmButtonState() {
+    final deviceSettings = ref.read(deviceSettingsViewModelProvider);
     setState(() {
-      _isConfirmEnabled = ((_selectedEarlyReason != null && _selectedEarlyReason!.isNotEmpty) || ref.read(deviceSettingsViewModelProvider).value?.deviceSettings?.requireEarlyPutBackReason == false 
-      || Timestamp.now().toDate().difference(widget.animal.logs.last.startTime.toDate()).inMinutes >= ref.read(deviceSettingsViewModelProvider).value!.deviceSettings!.minimumLogMinutes);
+      _isConfirmEnabled =
+          ((_selectedEarlyReason != null && _selectedEarlyReason!.isNotEmpty) ||
+              deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason ==
+                  false ||
+              widget.animals.every((animal) =>
+                  Timestamp.now()
+                      .toDate()
+                      .difference(animal.logs.last.startTime.toDate())
+                      .inMinutes >=
+                  deviceSettings.value!.deviceSettings!.minimumLogMinutes));
     });
   }
 
@@ -56,17 +68,20 @@ class _PutBackConfirmationViewState extends ConsumerState<PutBackConfirmationVie
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Thank You'),
-          content: Column(
+            content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 20),
-              
-              Text('Thank you for spending time with ${widget.animal.name}!'),
+              Text(
+              widget.animals.length == 1
+                ? 'Thank you for spending time with ${widget.animals.first.name}!'
+                : 'Thank you for spending time with the selected animals!',
+              ),
             ],
-          ),
+            ),
           actions: [
             TextButton(
-                onPressed: () {
+              onPressed: () {
                 if (Navigator.of(context).canPop()) {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 }
@@ -75,14 +90,15 @@ class _PutBackConfirmationViewState extends ConsumerState<PutBackConfirmationVie
             ),
             TextButton(
               onPressed: () {
-                // Add your addNote functionality here
                 Navigator.of(context).pop();
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AddNoteView(animal: widget.animal);
-                  },
-                );
+                for (var animal in widget.animals) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AddNoteView(animal: animal);
+                    },
+                  );
+                }
               },
               child: const Text('Add Note'),
             ),
@@ -93,114 +109,161 @@ class _PutBackConfirmationViewState extends ConsumerState<PutBackConfirmationVie
   }
 
   @override
-Widget build(BuildContext context) {
-  final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
-  final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
-  final takeOutViewModel = ref.read(putBackConfirmationViewModelProvider(widget.animal).notifier);
+  Widget build(BuildContext context) {
+    final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
+    final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
+    final putBackViewModel = ref.read(
+        putBackConfirmationViewModelProvider(widget.animals.first).notifier);
 
-  if (deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason == false) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      takeOutViewModel.putBackAnimal(
-        widget.animal,
-        Log(
-          id: const Uuid().v4().toString(),
-          type: '',
-          author: _nameController.text,
-          earlyReason: '',
-          startTime: Timestamp.now(),
-          endTime: Timestamp.now(),
+    if (deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason ==
+        false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (var animal in widget.animals) {
+          putBackViewModel.putBackAnimal(
+            animal,
+            Log(
+              id: const Uuid().v4().toString(),
+              type: '',
+              author: _nameController.text,
+              earlyReason: '',
+              startTime: Timestamp.now(),
+              endTime: Timestamp.now(),
+            ),
+          );
+        }
+        _showThankYouDialog(context);
+      });
+      return const SizedBox.shrink();
+    }
+
+    if (shelterSettings.value?.shelterSettings.earlyPutBackReasons == null) {
+      return const CircularProgressIndicator();
+    }
+
+    return AlertDialog(
+      title: Center(
+        child: Text(
+          widget.animals.length == 1
+              ? 'Confirm Action for ${widget.animals.first.name}'
+              : 'Confirm Action for ${widget.animals.length} animals',
         ),
-      );
-      _showThankYouDialog(context);
-    });
-    return const SizedBox.shrink();
-  }
-
-  if (shelterSettings.value?.shelterSettings.earlyPutBackReasons == null) {
-    return const CircularProgressIndicator(); // Show a loading indicator while the data loads
-  }
-
-  return AlertDialog(
-    title: const Text('Confirm Action'),
-    content: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text('Do you want to put ${widget.animal.name} back into ${widget.animal.sex == 'male' ? 'his' : 'her'} kennel?'),
-        const SizedBox(height: 20),
-        if (widget.animal.putBackAlert.isNotEmpty) 
-        RichText(
-              text: TextSpan(
-              children: [
-                const TextSpan(
-                text: 'Alert: ',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+            Text(
+            widget.animals.length == 1
+              ? 'Do you want to put ${widget.animals.first.name} back into their kennel?'
+              : 'Do you want to put the selected animals back into their kennels?',
+            ),
+          const SizedBox(height: 20),
+          for (var animal in widget.animals)
+            if (animal.putBackAlert.isNotEmpty)
+              RichText(
+                text: TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: 'Alert for ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                    TextSpan(
+                      text: animal.name,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                    const TextSpan(
+                      text: ': ',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    TextSpan(
+                      text: animal.putBackAlert,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ],
                 ),
-                TextSpan(
-                text: widget.animal.putBackAlert,
-                style: const TextStyle(color: Colors.red),
+              ),
+          if (deviceSettings
+                      .value?.deviceSettings?.requireEarlyPutBackReason ==
+                  true &&
+              shelterSettings
+                      .value?.shelterSettings.earlyPutBackReasons.isNotEmpty ==
+                  true &&
+              widget.animals.any((animal) =>
+                  Timestamp.now()
+                      .toDate()
+                      .difference(animal.logs.last.startTime.toDate())
+                      .inMinutes <
+                  deviceSettings.value!.deviceSettings!.minimumLogMinutes))
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text('Early Put Back Reason: '),
+                const Spacer(),
+                DropdownButton<String>(
+                  value: _selectedEarlyReason,
+                  hint: const Text('Select reason'),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedEarlyReason = newValue;
+                      _updateConfirmButtonState();
+                    });
+                  },
+                  items: shelterSettings
+                      .value!.shelterSettings.earlyPutBackReasons
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
               ],
-              ),
             ),
-        if (deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason == true &&
-            shelterSettings.value?.shelterSettings.earlyPutBackReasons.isNotEmpty == true &&
-            widget.animal.logs.isNotEmpty &&
-            Timestamp.now().toDate().difference(widget.animal.logs.last.startTime.toDate()).inMinutes < deviceSettings.value!.deviceSettings!.minimumLogMinutes)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text('Early Put Back Reason: '),
-              const Spacer(),
-              DropdownButton<String>(
-                value: _selectedEarlyReason,
-                hint: const Text('Select reason'),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedEarlyReason = newValue;
-                    _updateConfirmButtonState();
-                  });
-                },
-                items: shelterSettings.value!.shelterSettings.earlyPutBackReasons
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: _isConfirmEnabled
+              ? () async {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
                   );
-                }).toList(),
-              ),
-            ],
-          ),
-      ],
-    ),
-    actions: [
-      TextButton(
-        onPressed: () {
-          Navigator.of(context).pop(false); // User canceled
-        },
-        child: const Text('Cancel'),
-      ),
-      TextButton(
-        onPressed: _isConfirmEnabled
-            ? () {
-                takeOutViewModel.putBackAnimal(
-                  widget.animal,
-                  Log(
-                    id: const Uuid().v4().toString(),
-                    type: _selectedEarlyReason ?? '',
-                    author: _nameController.text,
-                    earlyReason: '',
-                    startTime: Timestamp.now(),
-                    endTime: Timestamp.now(),
-                  ),
-                );
-                Navigator.of(context).pop(true); // User confirmed
-                _showThankYouDialog(context);
-              }
-            : null,
-        child: const Text('Confirm'),
-      ),
-    ],
-  );
-}
 
+                  for (var animal in widget.animals) {
+                    await putBackViewModel.putBackAnimal(
+                      animal,
+                      Log(
+                        id: const Uuid().v4().toString(),
+                        type: _selectedEarlyReason ?? '',
+                        author: _nameController.text,
+                        earlyReason: '',
+                        startTime: Timestamp.now(),
+                        endTime: Timestamp.now(),
+                      ),
+                    );
+                  }
+
+                  Navigator.of(context).pop(); // Close the progress indicator
+                  Navigator.of(context).pop(true);
+                  _showThankYouDialog(context);
+                }
+              : null,
+          child: const Text('Confirm'),
+        ),
+      ],
+    );
+  }
 }
