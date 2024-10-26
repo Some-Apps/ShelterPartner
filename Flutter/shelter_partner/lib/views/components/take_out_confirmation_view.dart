@@ -10,11 +10,11 @@ import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dar
 import 'package:uuid/uuid.dart';
 
 class TakeOutConfirmationView extends ConsumerStatefulWidget {
-  final Animal animal;
+  final List<Animal> animals; // Accepts a list of animals
 
   const TakeOutConfirmationView({
     super.key,
-    required this.animal,
+    required this.animals,
   });
 
   @override
@@ -54,60 +54,72 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
     final deviceSettings = ref.read(deviceSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final userDetails = ref.read(appUserProvider);
-final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.animal).notifier);
 
+    final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.animals.first).notifier);
 
     return AlertDialog(
-      title: const Text('Confirm Action'),
+      title: Center(
+        child: Text(
+          widget.animals.length == 1
+          ? 'Confirm Action for ${widget.animals.first.name}'
+          : 'Confirm Action for ${widget.animals.length} animals',
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Do you want to take ${widget.animal.name} out of ${widget.animal.sex == 'male' ? 'his' : 'her'} kennel?',
+        widget.animals.length == 1
+            ? 'Do you want to take out ${widget.animals.first.name}?'
+            : 'Do you want to take out the selected animals?',
           ),
           const SizedBox(height: 20),
-            if (widget.animal.takeOutAlert.isNotEmpty)
-            RichText(
-              text: TextSpan(
-              children: [
-                const TextSpan(
-                text: 'Alert: ',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                TextSpan(
-                text: widget.animal.takeOutAlert,
-                style: const TextStyle(color: Colors.red),
-                ),
-              ],
-              ),
+          if (widget.animals.any((animal) => animal.takeOutAlert.isNotEmpty))
+            Column(
+              children: widget.animals
+                  .where((animal) => animal.takeOutAlert.isNotEmpty)
+                  .map((animal) => RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Alert for ${animal.name}: ',
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                            ),
+                            TextSpan(
+                              text: animal.takeOutAlert,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ))
+                  .toList(),
             ),
           if (deviceSettings.value?.deviceSettings?.requireLetOutType == true &&
               shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text('Type of Let Out'),
-                  const Spacer(),
-                  DropdownButton<String>(
-                    value: _selectedLetOutType,
-                    hint: const Text('Select type'),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedLetOutType = newValue;
-                        _updateConfirmButtonState();
-                      });
-                    },
-                    items: shelterSettings.value!.shelterSettings.letOutTypes
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text('Type of Let Out'),
+                const Spacer(),
+                DropdownButton<String>(
+                  value: _selectedLetOutType,
+                  hint: const Text('Select type'),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedLetOutType = newValue;
+                      _updateConfirmButtonState();
+                    });
+                  },
+                  items: shelterSettings.value!.shelterSettings.letOutTypes
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           if (deviceSettings.value?.deviceSettings?.requireName == true &&
               (userDetails?.firstName != null || deviceSettings.value?.deviceSettings?.mode != "Admin"))
             TextField(
@@ -127,19 +139,37 @@ final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.an
         ),
         TextButton(
           onPressed: _isConfirmEnabled
-              ? () {
+                ? () async {
+                  setState(() {
+                  _isConfirmEnabled = false; // Disable the button to prevent multiple taps
+                  });
 
-                  takeOutViewModel.takeOutAnimal(
-                  widget.animal,
-                  Log(
+                  showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return const Center(
+                    child: CircularProgressIndicator(),
+                    );
+                  },
+                  );
+
+                  // Apply take-out action for each animal in the list
+                  for (final animal in widget.animals) {
+                  await takeOutViewModel.takeOutAnimal(
+                    animal,
+                    Log(
                     id: const Uuid().v4().toString(),
                     type: _selectedLetOutType ?? '',
                     author: _nameController.text,
                     earlyReason: '',
                     startTime: Timestamp.now(),
-                    endTime: widget.animal.logs.last.endTime,
-                  ),
-                );
+                    endTime: animal.logs.last.endTime,
+                    ),
+                  );
+                  }
+
+                  Navigator.of(context).pop(); // Close the loading indicator
                   Navigator.of(context).pop(true); // User confirmed
                 }
               : null,

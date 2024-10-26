@@ -100,8 +100,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 .doc(userId)
                                 .update({'type': newType});
                             // Update the appUser provider with the new type
-                            ref.read(appUserProvider.notifier).update(
-                                (state) => state?.copyWith(type: newType));
+                            ref.read(appUserProvider.notifier).state =
+                                appUser?.copyWith(type: newType);
+    
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content:

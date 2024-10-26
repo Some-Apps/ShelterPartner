@@ -4,8 +4,12 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/animals_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
+import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
+import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 
 class AnimalsPage extends ConsumerStatefulWidget {
   const AnimalsPage({super.key});
@@ -156,6 +160,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   @override
   Widget build(BuildContext context) {
     final appUser = ref.watch(appUserProvider);
+    final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
+    final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
 
     return SafeArea(
       child: Scaffold(
@@ -165,7 +171,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           },
           child: Column(
             children: [
-              // Collapsible section for search bar and attribute dropdown
+              // Collapsible section for search bar, attribute dropdown, and "Take Out All Animals" button
               ExpansionTile(
                 title: const Text('Additional Options'),
                 children: [
@@ -211,6 +217,10 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                             ),
                           ],
                         ),
+                        const SizedBox(height: 8),
+                        // "Take Out All Animals" button
+
+                        // Navigation button for user filter
                         NavigationButton(
                           title: "User Filter",
                           route: '/animals/main-filter',
@@ -221,6 +231,78 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                             filterFieldPath: 'userFilter',
                           ),
                         ),
+                        if ((deviceSettings.value != null &&
+                                deviceSettings.value!.deviceSettings != null &&
+                                deviceSettings
+                                    .value!.deviceSettings!.allowBulkTakeOut &&
+                                appUser.type == 'admin') ||
+                            (appUser.type == 'volunteer' &&
+                                shelterSettings.value!.volunteerSettings
+                                    .allowBulkTakeOut)) ...[
+                          ElevatedButton(
+                            onPressed: () {
+                              // Get the visible animals in the current tab
+                              final animalType =
+                                  _tabController.index == 0 ? 'dogs' : 'cats';
+                              final animals = _filterAnimals(ref.watch(
+                                      animalsViewModelProvider)[animalType] ??
+                                  []);
+
+                              // Determine the majority inKennel status
+                              final inKennelCount = animals
+                                  .where((animal) => animal.inKennel)
+                                  .length;
+                              final majorityInKennel =
+                                  inKennelCount > animals.length / 2;
+
+                              if (majorityInKennel) {
+                                showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return TakeOutConfirmationView(
+                                      animals: animals,
+                                    );
+                                  },
+                                );
+                              } else {
+                                showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return PutBackConfirmationView(
+                                      animals: animals,
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                            child: Text(
+                              _tabController.index == 0
+                                  ? (_filterAnimals(ref.watch(animalsViewModelProvider)['dogs'] ?? [])
+                                              .where(
+                                                  (animal) => animal.inKennel)
+                                              .length >
+                                          (_filterAnimals(ref.watch(
+                                                              animalsViewModelProvider)[
+                                                          'dogs'] ??
+                                                      [])
+                                                  .length /
+                                              2)
+                                      ? "Take Out All Visible Dogs"
+                                      : "Put Back All Visible Dogs")
+                                  : (_filterAnimals(ref.watch(animalsViewModelProvider)['cats'] ?? [])
+                                              .where(
+                                                  (animal) => animal.inKennel)
+                                              .length >
+                                          (_filterAnimals(
+                                                      ref.watch(animalsViewModelProvider)['cats'] ?? [])
+                                                  .length /
+                                              2)
+                                      ? "Take Out All Visible Cats"
+                                      : "Put Back All Visible Cats"),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ]
                       ],
                     ),
                   ),

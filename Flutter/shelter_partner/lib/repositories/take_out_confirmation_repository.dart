@@ -11,24 +11,28 @@ class TakeOutConfirmationRepository {
       print('Starting takeOutAnimal for ${animal.id} in shelter $shelterID');
 
       // Determine the collection based on species
-      final collection = animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
+      final collection =
+          animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
       print('Determined collection: $collection');
 
       // Add the note to the notes attribute in Firestore
-      await _firestore
-          .collection('shelters/$shelterID/$collection')
-          .doc(animal.id)
-          .update({
-        'logs': FieldValue.arrayUnion([log.toMap()])
-      });
+      if (animal.inKennel) {
+        await _firestore
+            .collection('shelters/$shelterID/$collection')
+            .doc(animal.id)
+            .update({
+          'logs': FieldValue.arrayUnion([log.toMap()])
+        });
+      }
+
       print('Updated logs for ${animal.id}');
 
       await _firestore
           .collection('shelters/$shelterID/$collection')
           .doc(animal.id)
-          .update({'inKennel': !animal.inKennel});
+          .update({'inKennel': false});
       print('Updated inKennel status for ${animal.id}');
-      
+
       print('Successfully completed takeOutAnimal for ${animal.id}');
     } catch (e) {
       print('Error in takeOutAnimal: $e');

@@ -232,6 +232,7 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     _animalsSubscription?.cancel();
     super.dispose();
   }
+
 }
 
 final animalsViewModelProvider =

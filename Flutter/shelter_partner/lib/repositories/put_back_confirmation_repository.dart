@@ -9,11 +9,14 @@ class PutBackConfirmationRepository {
   Future<void> putBackAnimal(Animal animal, String shelterID, Log log) async {
     try {
       // Determine the collection based on species
-      final collection = animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
+      final collection =
+          animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
       print('Determined collection: $collection');
 
       // Fetch the current logs
-      final docRef = _firestore.collection('shelters/$shelterID/$collection').doc(animal.id);
+      final docRef = _firestore
+          .collection('shelters/$shelterID/$collection')
+          .doc(animal.id);
       final docSnapshot = await docRef.get();
       final data = docSnapshot.data();
       if (data == null || !data.containsKey('logs')) {
@@ -31,13 +34,14 @@ class PutBackConfirmationRepository {
       lastLog['endTime'] = log.endTime;
 
       // Update the logs array in Firestore
-      await docRef.update({'logs': logs});
-      print('Updated last log for ${animal.id}');
+      if (!animal.inKennel) {
+        await docRef.update({'logs': logs});
+        print('Updated last log for ${animal.id}');
 
-      // Update the inKennel status
-      await docRef.update({'inKennel': !animal.inKennel});
-      print('Updated inKennel status for ${animal.id}');
-      
+        // Update the inKennel status
+        await docRef.update({'inKennel': true});
+        print('Updated inKennel status for ${animal.id}');
+      }
     } catch (e) {
       print('Error in putBackAnimal: $e');
     }
