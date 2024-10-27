@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/view_models/add_note_view_model.dart';
@@ -20,6 +24,18 @@ class AddNoteView extends ConsumerStatefulWidget {
 class _AddNoteViewState extends ConsumerState<AddNoteView> {
   final TextEditingController _noteController = TextEditingController();
   final Set<String> _selectedTags = {};
+
+  XFile? _selectedImage; // Use XFile instead of File
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _selectedImage = image; // Store as XFile
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -46,13 +62,32 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             ),
           ),
           const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _pickImage,
+            child: const Text('Add Photo from Gallery'),
+          ),
+          if (_selectedImage != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: kIsWeb
+                  ? Image.network(
+                      _selectedImage!.path) // Display network image on web
+                  : Image.file(
+                      File(_selectedImage!
+                          .path), // Convert XFile to File on mobile/desktop
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+            ),
+          const SizedBox(height: 16),
           Consumer(
             builder: (context, watch, child) {
               final tags = widget.animal.species == 'dog'
                   ? shelterSettings.value?.shelterSettings.dogTags
                   : shelterSettings.value?.shelterSettings.catTags;
               if (tags == null || tags.isEmpty) {
-                return Container(); // Return an empty container if there are no tags
+                return Container(); // Empty container if no tags
               }
               return Wrap(
                 spacing: 8.0,
@@ -88,15 +123,26 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             Note note = Note(
               id: const Uuid().v4().toString(),
               note: _noteController.text,
-              author: ref.read(appUserProvider)!.firstName,
+              author: userDetails!.firstName,
               timestamp: Timestamp.now(),
+              // You may need to add a way to store _selectedImage if you plan to save it
             );
-            ref
-                .read(addNoteViewModelProvider(widget.animal).notifier)
-                .addNoteToAnimal(widget.animal, note);
-            ref
-                .read(addNoteViewModelProvider(widget.animal).notifier)
-                .updateAnimalTags(widget.animal, _selectedTags.toList());
+            if (note.note.isNotEmpty) {
+              ref
+                  .read(addNoteViewModelProvider(widget.animal).notifier)
+                  .addNoteToAnimal(widget.animal, note);
+            }
+            if (_selectedTags.isNotEmpty) {
+              ref
+                  .read(addNoteViewModelProvider(widget.animal).notifier)
+                  .updateAnimalTags(widget.animal, _selectedTags.toList());
+            }
+
+            if (_selectedImage != null) {
+              ref
+                  .read(addNoteViewModelProvider(widget.animal).notifier)
+                  .uploadImageToAnimal(widget.animal, _selectedImage!);
+            }
 
             Navigator.of(context).pop(note);
           },

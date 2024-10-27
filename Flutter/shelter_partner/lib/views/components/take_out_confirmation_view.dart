@@ -83,7 +83,7 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
                           children: [
                             TextSpan(
                               text: 'Alert for ${animal.name}: ',
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                             ),
                             TextSpan(
                               text: animal.takeOutAlert,

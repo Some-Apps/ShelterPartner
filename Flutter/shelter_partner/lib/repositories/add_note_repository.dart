@@ -1,10 +1,16 @@
 // animal_card_repository.dart
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
+import 'package:shelter_partner/models/photo.dart';
 import 'package:uuid/uuid.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddNoteRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -51,6 +57,44 @@ class AddNoteRepository {
           'notes': FieldValue.arrayUnion([note.toMap()])
         });
   }
+
+  Future<void> uploadImageToAnimal(Animal animal, String shelterID, XFile image) async {
+  final storageRef = FirebaseStorage.instance.ref().child('$shelterID/${animal.id}/${const Uuid().v4()}');
+
+  // Determine the upload task based on the platform
+  UploadTask uploadTask;
+  if (kIsWeb) {
+    // On web, upload image bytes directly with metadata
+    final imageBytes = await image.readAsBytes();
+    uploadTask = storageRef.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'));
+  } else {
+    // On mobile/desktop, upload using File conversion
+    uploadTask = storageRef.putFile(File(image.path), SettableMetadata(contentType: 'image/jpeg'));
+  }
+
+  // Get the download URL after the upload completes
+  final snapshot = await uploadTask.whenComplete(() => {});
+  final downloadUrl = await snapshot.ref.getDownloadURL();
+
+  // Create the Photo object with the download URL
+  final photo = Photo(
+    id: const Uuid().v4().toString(),
+    url: downloadUrl,
+    timestamp: Timestamp.now(),
+  );
+
+  // Determine the correct collection for the animal and update Firestore
+  final collection = animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
+  await _firestore
+      .collection('shelters/$shelterID/$collection')
+      .doc(animal.id)
+      .update({
+        'photos': FieldValue.arrayUnion([photo.toMap()])
+      });
+}
+
+
+
 }
 
 // Provider for AddNoteRepository

@@ -27,6 +27,10 @@ dependencies:
   go_router: ^14.3.0
   email_validator: ^2.0.1
   cached_network_image: ^3.4.1
+  firebase_storage: ^12.3.4
+  image_picker: ^1.1.2
+
+
 
 
 dev_dependencies:
@@ -40,6 +44,8 @@ dev_dependencies:
   mockito: ^5.4.4
   fake_cloud_firestore: ^3.0.3
   firebase_auth_mocks: ^0.14.1
+
+
 
 dependency_overrides:
   google_maps_flutter_web: ^0.5.6  
