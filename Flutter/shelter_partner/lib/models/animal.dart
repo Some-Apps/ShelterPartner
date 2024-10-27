@@ -141,4 +141,33 @@ class Animal {
       tags: tags ?? this.tags,
     );
   }
+  
+  // Add toMap method
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'sex': sex,
+      'monthsOld': monthsOld,
+      'species': species,
+      'breed': breed,
+      'location': location,
+      'description': description,
+      'symbol': symbol,
+      'symbolColor': symbolColor,
+      'takeOutAlert': takeOutAlert,
+      'putBackAlert': putBackAlert,
+      'adoptionCategory': adoptionCategory,
+      'behaviorCategory': behaviorCategory,
+      'locationCategory': locationCategory,
+      'medicalCategory': medicalCategory,
+      'volunteerCategory': volunteerCategory,
+      'inKennel': inKennel,
+      'intakeDate': intakeDate,
+      'photos': photos.map((photo) => photo.toMap()).toList(),
+      'notes': notes.map((note) => note.toMap()).toList(),
+      'logs': logs.map((log) => log.toMap()).toList(),
+      'tags': tags.map((tag) => tag.toMap()).toList(),
+    };
+  }
 }

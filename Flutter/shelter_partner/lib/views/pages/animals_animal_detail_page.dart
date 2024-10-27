@@ -112,28 +112,28 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                                     Positioned(
                                       right: 0,
                                       child: IconButton(
-                                        icon: Icon(Icons.delete,
+                                        icon: const Icon(Icons.delete,
                                             color: Colors.red),
                                         onPressed: () async {
                                           // Show confirmation dialog
                                           final shouldDelete = await showDialog<bool>(
                                             context: context,
                                             builder: (context) => AlertDialog(
-                                              title: Text('Confirm Delete'),
-                                              content: Text(
+                                              title: const Text('Confirm Delete'),
+                                              content: const Text(
                                                   'Are you sure you want to delete this photo?'),
                                               actions: [
                                                 TextButton(
                                                   onPressed: () =>
                                                       Navigator.of(context)
                                                           .pop(false), // Do not delete
-                                                  child: Text('Cancel'),
+                                                  child: const Text('Cancel'),
                                                 ),
                                                 TextButton(
                                                   onPressed: () =>
                                                       Navigator.of(context)
                                                           .pop(true), // Proceed to delete
-                                                  child: Text('Delete'),
+                                                  child: const Text('Delete'),
                                                 ),
                                               ],
                                             ),
@@ -219,27 +219,27 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                             title: Text(tag.title ?? ''),
                             trailing: isAdmin()
                                 ? IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    icon: const Icon(Icons.delete, color: Colors.red),
                                     onPressed: () async {
                                       // Show confirmation dialog
                                       final shouldDelete = await showDialog<bool>(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title: Text('Confirm Delete'),
-                                          content: Text(
+                                          title: const Text('Confirm Delete'),
+                                          content: const Text(
                                               'Are you sure you want to delete this tag?'),
                                           actions: [
                                             TextButton(
                                               onPressed: () =>
                                                   Navigator.of(context)
                                                       .pop(false), // Do not delete
-                                              child: Text('Cancel'),
+                                              child: const Text('Cancel'),
                                             ),
                                             TextButton(
                                               onPressed: () =>
                                                   Navigator.of(context)
                                                       .pop(true), // Proceed to delete
-                                              child: Text('Delete'),
+                                              child: const Text('Delete'),
                                             ),
                                           ],
                                         ),
@@ -284,27 +284,27 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                             title: Text(note.note ?? 'Note'),
                             trailing: isAdmin()
                                 ? IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    icon: const Icon(Icons.delete, color: Colors.red),
                                     onPressed: () async {
                                       // Show confirmation dialog
                                       final shouldDelete = await showDialog<bool>(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title: Text('Confirm Delete'),
-                                          content: Text(
+                                          title: const Text('Confirm Delete'),
+                                          content: const Text(
                                               'Are you sure you want to delete this note?'),
                                           actions: [
                                             TextButton(
                                               onPressed: () =>
                                                   Navigator.of(context)
                                                       .pop(false), // Do not delete
-                                              child: Text('Cancel'),
+                                              child: const Text('Cancel'),
                                             ),
                                             TextButton(
                                               onPressed: () =>
                                                   Navigator.of(context)
                                                       .pop(true), // Proceed to delete
-                                              child: Text('Delete'),
+                                              child: const Text('Delete'),
                                             ),
                                           ],
                                         ),
@@ -349,27 +349,27 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                             title: Text(log.id ?? 'Log'),
                             trailing: isAdmin()
                                 ? IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    icon: const Icon(Icons.delete, color: Colors.red),
                                     onPressed: () async {
                                       // Show confirmation dialog
                                       final shouldDelete = await showDialog<bool>(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title: Text('Confirm Delete'),
-                                          content: Text(
+                                          title: const Text('Confirm Delete'),
+                                          content: const Text(
                                               'Are you sure you want to delete this log?'),
                                           actions: [
                                             TextButton(
                                               onPressed: () =>
                                                   Navigator.of(context)
                                                       .pop(false), // Do not delete
-                                              child: Text('Cancel'),
+                                              child: const Text('Cancel'),
                                             ),
                                             TextButton(
                                               onPressed: () =>
                                                   Navigator.of(context)
                                                       .pop(true), // Proceed to delete
-                                              child: Text('Delete'),
+                                              child: const Text('Delete'),
                                             ),
                                           ],
                                         ),

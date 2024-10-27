@@ -94,10 +94,10 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
               fit: BoxFit.cover,
             );
           } else {
-            return Text('Failed to load image');
+            return const Text('Failed to load image');
           }
         } else {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
       },
     ),
