@@ -39,4 +39,22 @@ class Log {
       'earlyReason': earlyReason,
     };
   }
+
+  Log copyWith({
+    String? id,
+    String? type,
+    String? author,
+    Timestamp? startTime,
+    Timestamp? endTime,
+    String? earlyReason,
+  }) {
+    return Log(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      author: author ?? this.author,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      earlyReason: earlyReason ?? this.earlyReason,
+    );
+}
 }

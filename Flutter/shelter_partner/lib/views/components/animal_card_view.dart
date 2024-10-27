@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/repositories/animal_card_repository.dart';
+import 'package:shelter_partner/view_models/animal_card_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
@@ -40,8 +42,9 @@ String _timeAgo(DateTime dateTime, bool inKennel) {
   }
 }
 
-class _AnimalCardViewState extends ConsumerState<AnimalCardView>
-    with SingleTickerProviderStateMixin {
+class _AnimalCardViewState extends ConsumerState<AnimalCardView> with TickerProviderStateMixin {
+  bool _automaticPutBackHandled = false;
+
   late AnimationController _controller;
   late Animation<double> _curvedAnimation;
   bool isPressed = false;
@@ -49,6 +52,28 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_automaticPutBackHandled) {
+        final shelterDetails = ref.read(shelterDetailsViewModelProvider).value;
+
+        if (shelterDetails != null && shelterDetails.shelterSettings != null) {
+          final shelterSettings = shelterDetails.shelterSettings!;
+          final shelterId = shelterDetails.id;
+          final animalType = widget.animal.species;
+
+          final viewModel = AnimalCardViewModel(
+            repository: AnimalRepository(),
+            shelterId: shelterId,
+            animalType: animalType,
+            shelterSettings: shelterSettings,
+          );
+
+          viewModel.handleAutomaticPutBack(widget.animal);
+        }
+        _automaticPutBackHandled = true;
+      }
+    });
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2), // 2 seconds duration
@@ -97,6 +122,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       }
     });
   }
+
+  
 
   @override
   void dispose() {

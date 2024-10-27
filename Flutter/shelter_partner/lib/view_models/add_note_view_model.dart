@@ -1,6 +1,5 @@
 // animal_card_view_model.dart
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shelter_partner/models/animal.dart';
