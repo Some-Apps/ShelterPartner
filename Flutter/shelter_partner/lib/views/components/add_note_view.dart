@@ -28,14 +28,27 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
   XFile? _selectedImage; // Use XFile instead of File
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+ Future<void> _pickImage() async {
+  try {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
     if (image != null) {
       setState(() {
-        _selectedImage = image; // Store as XFile
+        _selectedImage = image;
       });
     }
+  } catch (e) {
+    print('Error picking image: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to pick image: $e')),
+    );
   }
+}
+
+
+
 
   @override
   void dispose() {
@@ -67,23 +80,29 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             child: const Text('Add Photo from Gallery'),
           ),
           if (_selectedImage != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: kIsWeb
-                    ? Image.network(
-                      _selectedImage!.path, // Display network image on web
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    )
-                  : Image.file(
-                      File(_selectedImage!
-                          .path), // Convert XFile to File on mobile/desktop
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    ),
-            ),
+  Padding(
+    padding: const EdgeInsets.only(top: 16.0),
+    child: FutureBuilder<Uint8List>(
+      future: _selectedImage!.readAsBytes(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            return Image.memory(
+              snapshot.data!,
+              height: 100,
+              width: 100,
+              fit: BoxFit.cover,
+            );
+          } else {
+            return Text('Failed to load image');
+          }
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
+    ),
+  ),
+
           const SizedBox(height: 16),
           Consumer(
             builder: (context, watch, child) {

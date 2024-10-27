@@ -59,7 +59,8 @@ class AddNoteRepository {
   }
 
   Future<void> uploadImageToAnimal(Animal animal, String shelterID, XFile image) async {
-  final storageRef = FirebaseStorage.instance.ref().child('$shelterID/${animal.id}/${const Uuid().v4()}');
+  final photoId = const Uuid().v4().toString(); // Generate UUID once
+  final storageRef = FirebaseStorage.instance.ref().child('$shelterID/${animal.id}/$photoId');
 
   // Determine the upload task based on the platform
   UploadTask uploadTask;
@@ -78,7 +79,7 @@ class AddNoteRepository {
 
   // Create the Photo object with the download URL
   final photo = Photo(
-    id: const Uuid().v4().toString(),
+    id: photoId, // Use the same ID as storage path
     url: downloadUrl,
     timestamp: Timestamp.now(),
   );

@@ -27,4 +27,16 @@ class Photo {
       'timestamp': timestamp,
     };
   }
+
+  Photo copyWith({
+    String? id,
+    String? url,
+    Timestamp? timestamp,
+  }) {
+    return Photo(
+      id: id ?? this.id,
+      url: url ?? this.url,
+      timestamp: timestamp ?? this.timestamp,
+    );
+  }
 }

@@ -121,7 +121,7 @@ class MyApp extends StatelessWidget {
                     final animal = state.extra
                         as Animal; // Cast extra to the appropriate type
                     return MaterialPage(
-                      child: AnimalsAnimalDetailPage(animal: animal),
+                      child: AnimalsAnimalDetailPage(initialAnimal: animal),
                     );
                   },
                 ),
