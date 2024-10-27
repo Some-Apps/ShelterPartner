@@ -70,8 +70,12 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
               child: kIsWeb
-                  ? Image.network(
-                      _selectedImage!.path) // Display network image on web
+                    ? Image.network(
+                      _selectedImage!.path, // Display network image on web
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    )
                   : Image.file(
                       File(_selectedImage!
                           .path), // Convert XFile to File on mobile/desktop
