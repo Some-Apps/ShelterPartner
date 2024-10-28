@@ -64,6 +64,11 @@ class _PutBackConfirmationViewState
   }
 
   void _showThankYouDialog(BuildContext context) {
+    final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
+    final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
+    final putBackViewModel = ref.read(
+        putBackConfirmationViewModelProvider(widget.animals.first).notifier);
+    final appUser = ref.watch(appUserProvider);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -103,11 +108,21 @@ class _PutBackConfirmationViewState
               },
               child: const Text('Add Note'),
             ),
+            if ((appUser?.type == 'admin' && deviceSettings.value?.deviceSettings?.showCustomForm == true) || 
+            (appUser?.type == 'volunteer' && shelterSettings.value?.volunteerSettings.showCustomForm == true)) 
+              TextButton(
+                onPressed: () {
+                  // Custom Form button pressed
+                },
+                child: const Text('Custom Form'),
+              ),
+           
           ],
         );
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
