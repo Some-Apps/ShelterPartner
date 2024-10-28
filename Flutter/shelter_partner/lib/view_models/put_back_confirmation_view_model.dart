@@ -24,6 +24,18 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
       print('Failed to add note: $e');
     }
   }
+
+  Future<void> deleteLastLog(Animal animal) async {
+    // Get shelter ID from shelterDetailsViewModelProvider
+    final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
+    try {
+      await _repository.deleteLastLog(animal, shelterDetailsAsync.value!.id);
+      // Optionally, update the state if needed
+    } catch (e) {
+      // Handle error
+      print('Failed to add note: $e');
+    }
+  }
   
 }
 

@@ -57,8 +57,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView> with TickerProv
       if (!_automaticPutBackHandled) {
         final shelterDetails = ref.read(shelterDetailsViewModelProvider).value;
 
-        if (shelterDetails != null && shelterDetails.shelterSettings != null) {
-          final shelterSettings = shelterDetails.shelterSettings!;
+        if (shelterDetails != null) {
+          final shelterSettings = shelterDetails.shelterSettings;
           final shelterId = shelterDetails.id;
           final animalType = widget.animal.species;
 
