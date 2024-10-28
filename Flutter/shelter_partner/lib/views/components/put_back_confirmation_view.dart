@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/view_models/put_back_confirmation_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
@@ -68,17 +69,17 @@ class _PutBackConfirmationViewState
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Thank You'),
-            content: Column(
+          content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 20),
               Text(
-              widget.animals.length == 1
-                ? 'Thank you for spending time with ${widget.animals.first.name}!'
-                : 'Thank you for spending time with the selected animals!',
+                widget.animals.length == 1
+                    ? 'Thank you for spending time with ${widget.animals.first.name}!'
+                    : 'Thank you for spending time with the selected animals!',
               ),
             ],
-            ),
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -114,6 +115,7 @@ class _PutBackConfirmationViewState
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final putBackViewModel = ref.read(
         putBackConfirmationViewModelProvider(widget.animals.first).notifier);
+    final appUser = ref.watch(appUserProvider);
 
     if (deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason ==
         false) {
@@ -151,11 +153,11 @@ class _PutBackConfirmationViewState
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-            Text(
+          Text(
             widget.animals.length == 1
-              ? 'Do you want to put ${widget.animals.first.name} back into their kennel?'
-              : 'Do you want to put the selected animals back into their kennels?',
-            ),
+                ? 'Do you want to put ${widget.animals.first.name} back into their kennel?'
+                : 'Do you want to put the selected animals back into their kennels?',
+          ),
           const SizedBox(height: 20),
           for (var animal in widget.animals)
             if (animal.putBackAlert.isNotEmpty)
@@ -243,17 +245,36 @@ class _PutBackConfirmationViewState
                   );
 
                   for (var animal in widget.animals) {
-                    await putBackViewModel.putBackAnimal(
-                      animal,
-                      Log(
-                        id: const Uuid().v4().toString(),
-                        type: _selectedEarlyReason ?? '',
-                        author: _nameController.text,
-                        earlyReason: '',
-                        startTime: Timestamp.now(),
-                        endTime: Timestamp.now(),
-                      ),
-                    );
+
+
+                    if ((!deviceSettings.value!.deviceSettings!
+                            .createLogsWhenUnderMinimumDuration &&
+                        Timestamp.now()
+                                .toDate()
+                                .difference(animal.logs.last.startTime.toDate())
+                                .inMinutes <
+                            deviceSettings
+                                .value!.deviceSettings!.minimumLogMinutes && appUser?.type == 'admin') || (!shelterSettings.value!.volunteerSettings.createLogsWhenUnderMinimumDuration &&
+                        Timestamp.now()
+                                .toDate()
+                                .difference(animal.logs.last.startTime.toDate())
+                                .inMinutes <
+                            shelterSettings
+                                .value!.volunteerSettings.minimumLogMinutes && appUser?.type == 'volunteer')) {
+                      await putBackViewModel.deleteLastLog(animal);
+                    } else {
+                      await putBackViewModel.putBackAnimal(
+                        animal,
+                        Log(
+                          id: const Uuid().v4().toString(),
+                          type: _selectedEarlyReason ?? '',
+                          author: _nameController.text,
+                          earlyReason: '',
+                          startTime: Timestamp.now(),
+                          endTime: Timestamp.now(),
+                        ),
+                      );
+                    }
                   }
 
                   Navigator.of(context).pop(); // Close the progress indicator

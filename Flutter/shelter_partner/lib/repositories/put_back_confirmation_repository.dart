@@ -46,6 +46,42 @@ class PutBackConfirmationRepository {
       print('Error in putBackAnimal: $e');
     }
   }
+
+  Future<void> deleteLastLog(Animal animal, String shelterID) async {
+    try {
+      // Determine the collection based on species
+      final collection =
+          animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
+      print('Determined collection: $collection');
+
+      // Fetch the current logs
+      final docRef = _firestore
+          .collection('shelters/$shelterID/$collection')
+          .doc(animal.id);
+      final docSnapshot = await docRef.get();
+      final data = docSnapshot.data();
+      if (data == null || !data.containsKey('logs')) {
+        throw Exception('No logs found for animal ${animal.id}');
+      }
+
+      List<dynamic> logs = data['logs'];
+      if (logs.isEmpty) {
+        throw Exception('Logs are empty for animal ${animal.id}');
+      }
+
+      // Remove the last log
+      logs.removeLast();
+
+      // Update the logs array and inKennel status in Firestore
+      await docRef.update({
+        'logs': logs,
+        'inKennel': true,
+      });
+      print('Deleted last log and set inKennel to true for ${animal.id}');
+    } catch (e) {
+      print('Error in deleteLastLog: $e');
+    }
+  }
 }
 
 // Provider for PutBackConfirmationRepository
