@@ -4,14 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 
 class MainPage extends ConsumerWidget {
-  final Widget child;
-  final String currentLocation; // Pass the location as a parameter
+  final StatefulNavigationShell navigationShell;
 
   const MainPage({
-    super.key,
-    required this.child,
-    required this.currentLocation, // Initialize the location
-  });
+    Key? key,
+    required this.navigationShell,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,66 +30,52 @@ class MainPage extends ConsumerWidget {
       'Volunteer & Visitor'
     };
 
-    // Define the items and routes
-    const adminItems = [
-      BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-      BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-      BottomNavigationBarItem(
-          icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
-      BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-    ];
-
-    const adminRoutes = ['/animals', '/visitors', '/volunteers', '/settings'];
-
-    const volunteerItems = [
-      BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-      BottomNavigationBarItem(
-          icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
-    ];
-
-    const volunteerRoutes = ['/animals', '/switch-to-admin'];
-
-    const visitorItems = [
-      BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-      BottomNavigationBarItem(
-          icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
-    ];
-
-    const visitorRoutes = ['/visitors', '/switch-to-admin'];
-
-    const volunteerAndVisitorItems = [
-      BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-      BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
-      BottomNavigationBarItem(
-          icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
-    ];
-
-    const volunteerAndVisitorRoutes = [
-      '/animals',
-      '/visitors',
-      '/switch-to-admin'
-    ];
-
-    List<BottomNavigationBarItem> items;
-    List<String> routes;
+    // Define the items
+    List<BottomNavigationBarItem> items = [];
+    List<int> visibleIndexes = [];
 
     if (isAdmin) {
       if (appUser.deviceSettings!.mode == 'Admin') {
-        items = adminItems;
-        routes = adminRoutes;
+        items = [
+          const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+          const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
+          const BottomNavigationBarItem(
+              icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
+          const BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        ];
+        visibleIndexes = [0, 1, 2, 3];
       } else if (appUser.deviceSettings!.mode == 'Volunteer') {
-        items = volunteerItems;
-        routes = volunteerRoutes;
+        items = [
+          const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+          const BottomNavigationBarItem(
+              icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+        ];
+        visibleIndexes = [0, 4]; // Indexes corresponding to the branches
       } else if (appUser.deviceSettings!.mode == 'Visitor') {
-        items = visitorItems;
-        routes = visitorRoutes;
+        items = [
+          const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
+          const BottomNavigationBarItem(
+              icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+        ];
+        visibleIndexes = [1, 4];
       } else if (appUser.deviceSettings!.mode == 'Volunteer & Visitor') {
-        items = volunteerAndVisitorItems;
-        routes = volunteerAndVisitorRoutes;
+        items = [
+          const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+          const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
+          const BottomNavigationBarItem(
+              icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+        ];
+        visibleIndexes = [0, 1, 4];
       } else {
         // Default to admin items
-        items = adminItems;
-        routes = adminRoutes;
+        items = [
+          const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+          const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
+          const BottomNavigationBarItem(
+              icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
+          const BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        ];
+        visibleIndexes = [0, 1, 2, 3];
       }
     } else {
       items = [
@@ -99,18 +83,19 @@ class MainPage extends ConsumerWidget {
         const BottomNavigationBarItem(
             icon: Icon(Icons.settings), label: 'Settings'),
       ];
-      routes = ['/animals', '/settings'];
+      visibleIndexes = [0, 3]; // Non-admin users can access 'Animals' and 'Settings'
     }
 
-    // Determine currentIndex based on currentLocation
-    int currentIndex =
-        routes.indexWhere((route) => currentLocation.startsWith(route));
-    if (currentIndex == -1) {
-      currentIndex = 0; // Default to first tab
+    // Map the visible indexes to their positions in the items list
+    Map<int, int> indexMap = {};
+    for (int i = 0; i < visibleIndexes.length; i++) {
+      indexMap[visibleIndexes[i]] = i;
     }
+
+    int currentIndex = indexMap[navigationShell.currentIndex] ?? 0;
 
     return Scaffold(
-      body: child,
+      body: navigationShell,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         selectedItemColor: Theme.of(context).colorScheme.primary,
@@ -118,7 +103,17 @@ class MainPage extends ConsumerWidget {
             Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         currentIndex: currentIndex,
         onTap: (index) {
-          context.go(routes[index]);
+          int branchIndex = visibleIndexes[index];
+          if (navigationShell.currentIndex == branchIndex) {
+            // User tapped the current tab again
+            // Reset the navigation stack to the root of the branch
+            navigationShell.goBranch(
+              branchIndex,
+              initialLocation: true,
+            );
+          } else {
+            navigationShell.goBranch(branchIndex);
+          }
         },
         items: items,
       ),

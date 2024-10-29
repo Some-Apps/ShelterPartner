@@ -87,233 +87,220 @@ class MyApp extends StatelessWidget {
   }
 
   final GoRouter _router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        pageBuilder: (context, state) => const MaterialPage(child: AuthPage()),
-      ),
-      ShellRoute(
-        builder: (context, state, child) {
-          return MainPage(
-            currentLocation: state.uri.toString(),
-            child: child, // Pass the current location to MainPage
-          );
-        },
-        routes: [
-          GoRoute(
-            path:
-                '/switch-to-admin', // No need for ':id' since we're passing the object directly
-            pageBuilder: (context, state) {
-              return const MaterialPage(
-                child: SwitchToAdminPage(),
-              );
-            },
-          ),
-          GoRoute(
+  initialLocation: '/animals',
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const AuthPage(),
+    ),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return MainPage(
+          navigationShell: navigationShell,
+        );
+      },
+      branches: [
+        // Branch for the 'Animals' tab
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
               path: '/animals',
-              pageBuilder: (context, state) =>
-                  const MaterialPage(child: AnimalsPage()),
+              builder: (context, state) => const AnimalsPage(),
               routes: [
                 GoRoute(
-                  path:
-                      'details', // No need for ':id' since we're passing the object directly
-                  pageBuilder: (context, state) {
-                    final animal = state.extra
-                        as Animal; // Cast extra to the appropriate type
-                    return MaterialPage(
-                      child: AnimalsAnimalDetailPage(initialAnimal: animal),
-                    );
+                  path: 'details',
+                  builder: (context, state) {
+                    final animal = state.extra as Animal;
+                    return AnimalsAnimalDetailPage(initialAnimal: animal);
                   },
                 ),
                 GoRoute(
-                      path: 'main-filter',
-                      pageBuilder: (context, state) {
-                        final params = state.extra as FilterParameters?;
-                        if (params == null) {
-                          throw Exception('FilterParameters not provided');
-                        }
-                        return MaterialPage(
-                          child: MainFilterPage(
-                            title: params.title,
-                            collection: params.collection,
-                            documentID: params.documentID,
-                            filterFieldPath: params.filterFieldPath,
-                          ),
-                        );
-                      },
-                    ),
-              ]),
-          GoRoute(
+                  path: 'main-filter',
+                  builder: (context, state) {
+                    final params = state.extra as FilterParameters?;
+                    if (params == null) {
+                      throw Exception('FilterParameters not provided');
+                    }
+                    return MainFilterPage(
+                      title: params.title,
+                      collection: params.collection,
+                      documentID: params.documentID,
+                      filterFieldPath: params.filterFieldPath,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+        // Branch for the 'Visitors' tab
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
               path: '/visitors',
-              pageBuilder: (context, state) =>
-                  const MaterialPage(child: VisitorPage()),
+              builder: (context, state) => const VisitorPage(),
               routes: [
                 GoRoute(
-                  path:
-                      'details', // No need for ':id' since we're passing the object directly
-                  pageBuilder: (context, state) {
-                    final animal = state.extra
-                        as Animal; // Cast extra to the appropriate type
-                    return MaterialPage(
-                      child: VisitorAnimalDetailPage(animal: animal),
-                    );
+                  path: 'details',
+                  builder: (context, state) {
+                    final animal = state.extra as Animal;
+                    return VisitorAnimalDetailPage(animal: animal);
                   },
                 ),
-              ]),
-          GoRoute(
-            path: '/volunteers',
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: VolunteersPage()),
-            routes: [
-              GoRoute(
-                path:
-                    'details', // No need for ':id' since we're passing the object directly
-                pageBuilder: (context, state) {
-                  final volunteer = state.extra
-                      as Volunteer; // Cast extra to the appropriate type
-                  return MaterialPage(
-                    child: VolunteerDetailPage(volunteer: volunteer),
-                  );
-                },
-              ),
-              GoRoute(
-                  path:
-                      'volunteer-settings', // This is relative to '/volunteers'
-                  pageBuilder: (context, state) =>
-                      const MaterialPage(child: VolunteerSettingsPage()),
-                  routes: [
-                    GoRoute(
-                      path: 'main-filter',
-                      pageBuilder: (context, state) {
-                        final params = state.extra as FilterParameters?;
-                        if (params == null) {
-                          throw Exception('FilterParameters not provided');
-                        }
-                        return MaterialPage(
-                          child: MainFilterPage(
-                            title: params.title,
-                            collection: params.collection,
-                            documentID: params.documentID,
-                            filterFieldPath: params.filterFieldPath,
-                          ),
-                        );
-                      },
-                    ),
-                  ]),
-            ],
-          ),
-          GoRoute(
-              path: '/settings',
-              pageBuilder: (context, state) =>
-                  const MaterialPage(child: SettingsPage()),
+              ],
+            ),
+          ],
+        ),
+        // Branch for the 'Volunteers' tab
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/volunteers',
+              builder: (context, state) => const VolunteersPage(),
               routes: [
                 GoRoute(
-                    path:
-                        'shelter-settings', // This is relative to '/volunteers'
-                    pageBuilder: (context, state) =>
-                        const MaterialPage(child: ShelterSettingsPage()),
-                    routes: [
-                      GoRoute(
-                        path:
-                            'scheduled-reports', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) => const MaterialPage(
-                            child: ScheduledReportsPage(
-                                title: 'Scheduled Reports',
-                                arrayKey: 'scheduledReports')),
-                      ),
-                      GoRoute(
-                        path: 'cat-tags', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) {
-                          return const MaterialPage(
-                            child: ArrayModifierPage(
-                                title: 'Cat Tags', arrayKey: 'catTags'),
-                          );
-                        },
-                      ),
-                      GoRoute(
-                        path: 'dog-tags', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) {
-                          return const MaterialPage(
-                            child: ArrayModifierPage(
-                                title: 'Dog Tags', arrayKey: 'dogTags'),
-                          );
-                        },
-                      ),
-                      GoRoute(
-                        path:
-                            'early-put-back-reasons', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) {
-                          return const MaterialPage(
-                            child: ArrayModifierPage(
-                                title: 'Early Put Back Reasons',
-                                arrayKey: 'earlyPutBackReasons'),
-                          );
-                        },
-                      ),
-                      GoRoute(
-                        path:
-                            'let-out-types', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) {
-                          return const MaterialPage(
-                            child: ArrayModifierPage(
-                                title: 'Let Out Types',
-                                arrayKey: 'letOutTypes'),
-                          );
-                        },
-                      ),
-                      GoRoute(
-                        path: 'api-keys', // This is relative to '/volunteers'
-                        pageBuilder: (context, state) => const MaterialPage(
-                            child: ApiKeysPage(
-                                title: 'API Keys', arrayKey: 'apiKeys')),
-                      ),
-                    ]),
+                  path: 'details',
+                  builder: (context, state) {
+                    final volunteer = state.extra as Volunteer;
+                    return VolunteerDetailPage(volunteer: volunteer);
+                  },
+                ),
                 GoRoute(
-                  path: 'device-settings',
-                  pageBuilder: (context, state) =>
-                      const MaterialPage(child: DeviceSettingsPage()),
+                  path: 'volunteer-settings',
+                  builder: (context, state) =>
+                      const VolunteerSettingsPage(),
                   routes: [
                     GoRoute(
                       path: 'main-filter',
-                      pageBuilder: (context, state) {
+                      builder: (context, state) {
                         final params = state.extra as FilterParameters?;
                         if (params == null) {
                           throw Exception('FilterParameters not provided');
                         }
-                        return MaterialPage(
-                          child: MainFilterPage(
-                            title: params.title,
-                            collection: params.collection,
-                            documentID: params.documentID,
-                            filterFieldPath: params.filterFieldPath,
-                          ),
-                        );
-                      },
-                    ),
-                    GoRoute(
-                      path: 'visitor-filter',
-                      pageBuilder: (context, state) {
-                        final params = state.extra as FilterParameters?;
-                        if (params == null) {
-                          throw Exception('FilterParameters not provided');
-                        }
-                        return MaterialPage(
-                          child: MainFilterPage(
-                            title: params.title,
-                            collection: params.collection,
-                            documentID: params.documentID,
-                            filterFieldPath: params.filterFieldPath,
-                          ),
+                        return MainFilterPage(
+                          title: params.title,
+                          collection: params.collection,
+                          documentID: params.documentID,
+                          filterFieldPath: params.filterFieldPath,
                         );
                       },
                     ),
                   ],
                 ),
-                
-              ]),
-          
-        ],
-      ),
-    ],
-  );
+              ],
+            ),
+          ],
+        ),
+        // Branch for the 'Settings' tab
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/settings',
+              builder: (context, state) => const SettingsPage(),
+              routes: [
+                GoRoute(
+                  path: 'shelter-settings',
+                  builder: (context, state) =>
+                      const ShelterSettingsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'scheduled-reports',
+                      builder: (context, state) =>
+                          const ScheduledReportsPage(
+                              title: 'Scheduled Reports',
+                              arrayKey: 'scheduledReports'),
+                    ),
+                    GoRoute(
+                      path: 'cat-tags',
+                      builder: (context, state) {
+                        return const ArrayModifierPage(
+                            title: 'Cat Tags', arrayKey: 'catTags');
+                      },
+                    ),
+                    GoRoute(
+                      path: 'dog-tags',
+                      builder: (context, state) {
+                        return const ArrayModifierPage(
+                            title: 'Dog Tags', arrayKey: 'dogTags');
+                      },
+                    ),
+                    GoRoute(
+                      path: 'early-put-back-reasons',
+                      builder: (context, state) {
+                        return const ArrayModifierPage(
+                            title: 'Early Put Back Reasons',
+                            arrayKey: 'earlyPutBackReasons');
+                      },
+                    ),
+                    GoRoute(
+                      path: 'let-out-types',
+                      builder: (context, state) {
+                        return const ArrayModifierPage(
+                            title: 'Let Out Types',
+                            arrayKey: 'letOutTypes');
+                      },
+                    ),
+                    GoRoute(
+                      path: 'api-keys',
+                      builder: (context, state) => const ApiKeysPage(
+                          title: 'API Keys', arrayKey: 'apiKeys'),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'device-settings',
+                  builder: (context, state) =>
+                      const DeviceSettingsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'main-filter',
+                      builder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MainFilterPage(
+                          title: params.title,
+                          collection: params.collection,
+                          documentID: params.documentID,
+                          filterFieldPath: params.filterFieldPath,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'visitor-filter',
+                      builder: (context, state) {
+                        final params = state.extra as FilterParameters?;
+                        if (params == null) {
+                          throw Exception('FilterParameters not provided');
+                        }
+                        return MainFilterPage(
+                          title: params.title,
+                          collection: params.collection,
+                          documentID: params.documentID,
+                          filterFieldPath: params.filterFieldPath,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+        // Branch for 'Switch to Admin' or other tabs
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/switch-to-admin',
+              builder: (context, state) =>
+                  const SwitchToAdminPage(),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
+
 }
