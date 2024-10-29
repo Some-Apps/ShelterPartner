@@ -61,6 +61,31 @@
 		<string>We need access to your photo library to select photos.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>We need access to your camera to take photos.</string>
-
+		<key>io.flutter.embedded_views_preview</key>
+		<string>yes</string>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+			<key>NSAllowsArbitraryLoadsInWebContent</key>
+			<true/>
+		</dict>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+			<key>NSExceptionDomains</key>
+			<dict>
+				<key>yourdomain.com</key>
+				<dict>
+					<key>NSIncludesSubdomains</key>
+					<true/>
+					<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+					<true/>
+				</dict>
+			</dict>
+		</dict>
+		<key>io.flutter.embedded_views_preview</key>
+		<string>YES</string>
 	</dict>
 </plist>

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
@@ -8,7 +9,9 @@ import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/view_models/put_back_confirmation_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/views/components/add_note_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class PutBackConfirmationView extends ConsumerStatefulWidget {
   final List<Animal> animals; // Accepts a list of animals
@@ -108,21 +111,52 @@ class _PutBackConfirmationViewState
               },
               child: const Text('Add Note'),
             ),
-            if ((appUser?.type == 'admin' && deviceSettings.value?.deviceSettings?.showCustomForm == true) || 
-            (appUser?.type == 'volunteer' && shelterSettings.value?.volunteerSettings.showCustomForm == true)) 
+            if ((appUser?.type == 'admin' &&
+                    deviceSettings.value?.deviceSettings?.showCustomForm ==
+                        true) ||
+                (appUser?.type == 'volunteer' &&
+                    shelterSettings.value?.volunteerSettings.showCustomForm ==
+                        true))
               TextButton(
-                onPressed: () {
-                  // Custom Form button pressed
-                },
+               onPressed: () async {
+  // Custom Form button pressed
+  String url = deviceSettings.value?.deviceSettings?.customFormURL ?? '';
+  if (deviceSettings.value?.deviceSettings?.appendAnimalDataToURL == true) {
+    final animalData = widget.animals
+        .map((animal) => 'id=${animal.id}&name=${animal.name}')
+        .join('&');
+    url = '$url?$animalData';
+  }
+  if (url.isNotEmpty) {
+    if (kIsWeb) {
+      // For web platform, directly launch the URL
+      await launchUrl(
+        Uri.parse(url),
+        webOnlyWindowName: '_blank', // Open in a new tab
+      );
+    } else {
+      // For mobile platforms, use WebView
+      final controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..loadRequest(Uri.parse(url));
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: const Text('Custom Form')),
+          body: WebViewWidget(controller: controller),
+        ),
+      ));
+    }
+  }
+},
+
+
                 child: const Text('Custom Form'),
               ),
-           
           ],
         );
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -260,22 +294,26 @@ class _PutBackConfirmationViewState
                   );
 
                   for (var animal in widget.animals) {
-
-
                     if ((!deviceSettings.value!.deviceSettings!
-                            .createLogsWhenUnderMinimumDuration &&
-                        Timestamp.now()
-                                .toDate()
-                                .difference(animal.logs.last.startTime.toDate())
-                                .inMinutes <
-                            deviceSettings
-                                .value!.deviceSettings!.minimumLogMinutes && appUser?.type == 'admin') || (!shelterSettings.value!.volunteerSettings.createLogsWhenUnderMinimumDuration &&
-                        Timestamp.now()
-                                .toDate()
-                                .difference(animal.logs.last.startTime.toDate())
-                                .inMinutes <
-                            shelterSettings
-                                .value!.volunteerSettings.minimumLogMinutes && appUser?.type == 'volunteer')) {
+                                .createLogsWhenUnderMinimumDuration &&
+                            Timestamp.now()
+                                    .toDate()
+                                    .difference(
+                                        animal.logs.last.startTime.toDate())
+                                    .inMinutes <
+                                deviceSettings
+                                    .value!.deviceSettings!.minimumLogMinutes &&
+                            appUser?.type == 'admin') ||
+                        (!shelterSettings.value!.volunteerSettings
+                                .createLogsWhenUnderMinimumDuration &&
+                            Timestamp.now()
+                                    .toDate()
+                                    .difference(
+                                        animal.logs.last.startTime.toDate())
+                                    .inMinutes <
+                                shelterSettings.value!.volunteerSettings
+                                    .minimumLogMinutes &&
+                            appUser?.type == 'volunteer')) {
                       await putBackViewModel.deleteLastLog(animal);
                     } else {
                       await putBackViewModel.putBackAnimal(
