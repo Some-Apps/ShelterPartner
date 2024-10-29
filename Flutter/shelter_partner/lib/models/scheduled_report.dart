@@ -3,12 +3,14 @@ class ScheduledReport {
   final String title;
   final String email;
   final String type;
+  final String frequency;
 
   ScheduledReport({
     required this.id,
     required this.title,
     required this.email,
     required this.type,
+    required this.frequency,
   });
 
   Map<String, dynamic> toMap() {
@@ -17,6 +19,7 @@ class ScheduledReport {
       'title': title,
       'email': email,
       'type': type,
+      'frequency': frequency,
     };
   }
 
@@ -26,6 +29,7 @@ class ScheduledReport {
       title: data['title'] ?? "Unknown",
       email: data['email'] ?? "Unknown",
       type: data['type'] ?? "Unknown",
+      frequency: data['frequency'] ?? "Unknown",
     );
   }
 }

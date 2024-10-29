@@ -119,6 +119,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                         },
                       ),
                       const SizedBox(height: 10.0),
+                      
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
@@ -130,6 +131,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                               id: newID,
                               email: email,
                               type: _selectedType,
+                              frequency: 'Weekly',
                             );
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
