@@ -118,38 +118,39 @@ class _PutBackConfirmationViewState
                     shelterSettings.value?.volunteerSettings.showCustomForm ==
                         true))
               TextButton(
-               onPressed: () async {
-  // Custom Form button pressed
-  String url = deviceSettings.value?.deviceSettings?.customFormURL ?? '';
-  if (deviceSettings.value?.deviceSettings?.appendAnimalDataToURL == true) {
-    final animalData = widget.animals
-        .map((animal) => 'id=${animal.id}&name=${animal.name}')
-        .join('&');
-    url = '$url?$animalData';
-  }
-  if (url.isNotEmpty) {
-    if (kIsWeb) {
-      // For web platform, directly launch the URL
-      await launchUrl(
-        Uri.parse(url),
-        webOnlyWindowName: '_blank', // Open in a new tab
-      );
-    } else {
-      // For mobile platforms, use WebView
-      final controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..loadRequest(Uri.parse(url));
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: const Text('Custom Form')),
-          body: WebViewWidget(controller: controller),
-        ),
-      ));
-    }
-  }
-},
-
-
+                onPressed: () async {
+                  // Custom Form button pressed
+                  String url =
+                      deviceSettings.value?.deviceSettings?.customFormURL ?? '';
+                  if (deviceSettings
+                          .value?.deviceSettings?.appendAnimalDataToURL ==
+                      true) {
+                    final animalData = widget.animals
+                        .map((animal) => 'id=${animal.id}&name=${animal.name}')
+                        .join('&');
+                    url = '$url?$animalData';
+                  }
+                  if (url.isNotEmpty) {
+                    if (kIsWeb) {
+                      // For web platform, directly launch the URL
+                      await launchUrl(
+                        Uri.parse(url),
+                        webOnlyWindowName: '_blank', // Open in a new tab
+                      );
+                    } else {
+                      // For mobile platforms, use WebView
+                      final controller = WebViewController()
+                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                        ..loadRequest(Uri.parse(url));
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(title: const Text('Custom Form')),
+                          body: WebViewWidget(controller: controller),
+                        ),
+                      ));
+                    }
+                  }
+                },
                 child: const Text('Custom Form'),
               ),
           ],
