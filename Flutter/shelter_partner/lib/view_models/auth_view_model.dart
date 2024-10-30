@@ -7,22 +7,20 @@ import 'package:uuid/uuid.dart';
 
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
 
-
-
 final authViewModelProvider =
     StateNotifierProvider<AuthViewModel, AuthState>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
-  return AuthViewModel(authRepository);
+  return AuthViewModel(authRepository, ref);
 });
 
 class AuthViewModel extends StateNotifier<AuthState> {
   final AuthRepository _authRepository;
+  final Ref _ref;
 
-  AuthViewModel(this._authRepository) : super(AuthState.loading()) {
+  AuthViewModel(this._authRepository, this._ref) : super(AuthState.loading()) {
     _checkAuthStatus(); // Check auth status when initializing
   }
 
-  // Method to check current auth status
   Future<void> _checkAuthStatus() async {
     try {
       final user = _authRepository.getCurrentUser();
@@ -30,6 +28,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
         final appUser = await _authRepository.getUserById(user.uid);
         if (appUser != null) {
           state = AuthState.authenticated(appUser);
+          _ref.read(appUserProvider.notifier).state = appUser;
         } else {
           state = AuthState.unauthenticated();
         }
@@ -55,6 +54,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
           await _authRepository.getUserById(userCredential.user!.uid);
       if (appUser != null) {
         state = AuthState.authenticated(appUser);
+        _ref.read(appUserProvider.notifier).state = appUser;
       } else {
         state = AuthState.unauthenticated();
       }
@@ -62,8 +62,6 @@ class AuthViewModel extends StateNotifier<AuthState> {
       state = AuthState.error(e.toString());
     }
   }
-
-
 
   Future<String?> sendPasswordReset(String email) async {
     try {
@@ -106,6 +104,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
       final appUser = await _authRepository.getUserById(uid);
       if (appUser != null) {
         state = AuthState.authenticated(appUser);
+        _ref.read(appUserProvider.notifier).state = appUser;
       } else {
         state = AuthState.unauthenticated();
       }
@@ -115,14 +114,16 @@ class AuthViewModel extends StateNotifier<AuthState> {
   }
 
   // Delete account method
-  Future<void> deleteAccount(BuildContext context, String email, String password) async {
+  Future<void> deleteAccount(
+      BuildContext context, String email, String password) async {
     state = AuthState.loading(message: "Deleting account...");
     try {
       // Delete user account from authentication provider (e.g., Firebase)
-      await _authRepository.deleteAccount(email, password); 
-      
+      await _authRepository.deleteAccount(email, password);
+
       // Reset the authentication state
       state = AuthState.unauthenticated();
+      _ref.read(appUserProvider.notifier).state = null;
 
       // Navigate back to the login/auth page
       context.go('/');
@@ -132,13 +133,13 @@ class AuthViewModel extends StateNotifier<AuthState> {
   }
 
   // Logout method
-  Future<void> logout(BuildContext context, WidgetRef ref) async {
+  Future<void> logout(BuildContext context) async {
     try {
       // Sign out from authentication provider (e.g., Firebase)
       await _authRepository.signOut();
 
       // Clear the appUserProvider (set to null)
-      ref.read(appUserProvider.notifier).state = null;
+      _ref.read(appUserProvider.notifier).state = null;
 
       // Reset the authentication state
       state = AuthState.unauthenticated();
@@ -176,4 +177,24 @@ class AuthState {
       AuthState(status: AuthStatus.unauthenticated);
   factory AuthState.error(String message) =>
       AuthState(status: AuthStatus.error, errorMessage: message);
+}
+
+
+class AuthStateChangeNotifier extends ChangeNotifier {
+  late final ProviderSubscription _subscription;
+
+  AuthStateChangeNotifier(Ref ref) {
+    // Listen to the authViewModelProvider changes
+    _subscription = ref.listen<AuthState>(authViewModelProvider, (_, __) {
+      // Whenever auth state changes, notify listeners
+      notifyListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    // Cancel the subscription when this notifier is disposed
+    _subscription.close();
+    super.dispose();
+  }
 }

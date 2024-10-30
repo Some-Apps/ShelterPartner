@@ -126,9 +126,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       title: const Text("Logout"),
                       trailing: const Icon(Icons.logout),
                       onTap: () {
-                        ref
-                            .read(authViewModelProvider.notifier)
-                            .logout(context, ref);
+                        ref.read(authViewModelProvider.notifier).logout(context);
                       },
                     ),
                   ),
