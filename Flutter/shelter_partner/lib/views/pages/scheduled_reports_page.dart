@@ -22,7 +22,9 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  String _selectedType = 'Type 1';
+  String _selectedFrequency = 'Weekly';
+  String _selectedDayOfWeek = 'Monday';
+  String _selectedDayOfMonth = '1';
   List<ScheduledReport> _arrayItems = [];
 
   @override
@@ -56,6 +58,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
       data: (shelter) {
         if (_arrayItems.isEmpty) {
           _arrayItems = shelter!.shelterSettings.scheduledReports;
+          _arrayItems.sort((a, b) => a.title.compareTo(b.title));
         }
 
         return Scaffold(
@@ -101,11 +104,11 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                       ),
                       const SizedBox(height: 10.0),
                       DropdownButtonFormField<String>(
-                        value: _selectedType,
+                        value: _selectedFrequency,
                         decoration: const InputDecoration(
-                          labelText: 'Type',
+                          labelText: 'Frequency',
                         ),
-                        items: <String>['Type 1', 'Type 2', 'Type 3']
+                        items: <String>['Monthly', 'Weekly', 'Daily']
                             .map((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -114,12 +117,58 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                         }).toList(),
                         onChanged: (newValue) {
                           setState(() {
-                            _selectedType = newValue!;
+                            _selectedFrequency = newValue!;
                           });
                         },
                       ),
                       const SizedBox(height: 10.0),
-                      
+                      if (_selectedFrequency == 'Weekly')
+                        DropdownButtonFormField<String>(
+                          value: _selectedDayOfWeek,
+                          decoration: const InputDecoration(
+                            labelText: 'Day of the Week',
+                          ),
+                          items: <String>[
+                            'Monday',
+                            'Tuesday',
+                            'Wednesday',
+                            'Thursday',
+                            'Friday',
+                            'Saturday',
+                            'Sunday'
+                          ].map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedDayOfWeek = newValue!;
+                            });
+                          },
+                        ),
+                      if (_selectedFrequency == 'Monthly')
+                        DropdownButtonFormField<String>(
+                          value: _selectedDayOfMonth,
+                          decoration: const InputDecoration(
+                            labelText: 'Day of the Month',
+                          ),
+                          items: List<String>.generate(
+                                  31, (index) => '${index + 1}')
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedDayOfMonth = newValue!;
+                            });
+                          },
+                        ),
+                      const SizedBox(height: 10.0),
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
@@ -130,8 +179,13 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                               title: itemName,
                               id: newID,
                               email: email,
-                              type: _selectedType,
-                              frequency: 'Weekly',
+                              frequency: _selectedFrequency,
+                              dayOfWeek: _selectedFrequency == 'Weekly'
+                                  ? _selectedDayOfWeek
+                                  : '',
+                              dayOfMonth: _selectedFrequency == 'Monthly'
+                                  ? _selectedDayOfMonth
+                                  : '',
                             );
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
@@ -139,6 +193,8 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                                     "scheduledReports", newReport.toMap());
                             setState(() {
                               _arrayItems.add(newReport);
+                              _arrayItems
+                                  .sort((a, b) => a.title.compareTo(b.title));
                             });
                             _itemController.clear();
                             _emailController.clear();
@@ -152,62 +208,50 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 10.0),
-                      ReorderableListView(
+                      ListView.builder(
                         shrinkWrap: true,
-                        onReorder: (oldIndex, newIndex) {
-                          setState(() {
-                            if (newIndex > oldIndex) {
-                              newIndex -= 1;
-                            }
-                            final item = _arrayItems.removeAt(oldIndex);
-                            _arrayItems.insert(newIndex, item);
-                          });
-                          final List<Map<String, dynamic>> arrayItemsMap =
-                              _arrayItems
-                                  .map((scheduledReport) =>
-                                      scheduledReport.toMap())
-                                  .toList();
-                          ref
-                              .read(shelterSettingsViewModelProvider.notifier)
-                              .reorderMapArrayInShelterSettings(
-                                  shelter!.id, widget.arrayKey, arrayItemsMap);
-                        },
-                        children: [
-                          for (int index = 0;
-                              index < _arrayItems.length;
-                              index++)
-                            Dismissible(
-                              key: ValueKey(_arrayItems[index]),
-                              direction: DismissDirection.endToStart,
-                              onDismissed: (direction) {
-                                final removedItem = _arrayItems[index];
-                                setState(() {
-                                  _arrayItems.removeAt(index);
-                                });
-                                ref
-                                    .read(shelterSettingsViewModelProvider
-                                        .notifier)
-                                    .removeMapFromShelterSettingsArray(
-                                      shelter!.id,
-                                      widget.arrayKey,
-                                      removedItem.toMap(),
-                                    );
-                              },
-                              background: Container(
-                                color: Colors.red,
-                                alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0),
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              child: ListTile(
-                                title: Text(_arrayItems[index].title),
+                        itemCount: _arrayItems.length,
+                        itemBuilder: (context, index) {
+                          return Dismissible(
+                            key: ValueKey(_arrayItems[index]),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (direction) async {
+                              final removedItem = _arrayItems[index];
+                              setState(() {
+                                _arrayItems.removeAt(index);
+                              });
+                              ref
+                                  .read(
+                                      shelterSettingsViewModelProvider.notifier)
+                                  .removeMapFromShelterSettingsArray(
+                                    shelter!.id,
+                                    widget.arrayKey,
+                                    removedItem.toMap(),
+                                  );
+                              if (_arrayItems.isEmpty) {
+                                await ref
+                                    .refresh(shelterSettingsViewModelProvider);
+                              }
+                            },
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
                               ),
                             ),
-                        ],
+                            child: ListTile(
+                              title: Text(_arrayItems[index].title),
+                              subtitle: Text(
+                                '${_arrayItems[index].email}\n'
+                                '${_arrayItems[index].frequency == 'Daily' ? 'Daily' : _arrayItems[index].frequency == 'Weekly' ? _arrayItems[index].dayOfWeek : 'Every ${_arrayItems[index].dayOfMonth}'}',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 20.0),
                     ],

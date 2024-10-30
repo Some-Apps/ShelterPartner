@@ -7,14 +7,14 @@ class MainPage extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
   const MainPage({
-    Key? key,
+    super.key,
     required this.navigationShell,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appUser = ref.watch(appUserProvider); // Fetch appUser from provider
-    final authViewModel = ref.read(authViewModelProvider.notifier);
+    final authViewModel = ref.watch(authViewModelProvider.notifier);
 
     if (appUser == null) {
       authViewModel.logout(context, ref);
