@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/view_models/add_log_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:uuid/uuid.dart';
@@ -148,22 +149,10 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
               endTime: Timestamp.fromDate(DateTime.parse(_endTimeController.text)),
               earlyReason: _selectedEarlyReason,
             );
-            // if (log.type.isNotEmpty) {
-            //   ref
-            //       .read(addLogViewModelProvider(widget.animal).notifier)
-            //       .addLogToAnimal(widget.animal, log);
-            // }
-            // if (_selectedTags.isNotEmpty) {
-            //   ref
-            //       .read(addLogViewModelProvider(widget.animal).notifier)
-            //       .updateAnimalTags(widget.animal, _selectedTags.toList());
-            // }
 
-            // if (_selectedImage != null) {
-            //   ref
-            //       .read(addLogViewModelProvider(widget.animal).notifier)
-            //       .uploadImageToAnimal(widget.animal, _selectedImage!);
-            // }
+              ref
+                  .read(addLogViewModelProvider(widget.animal).notifier)
+                  .addLogToAnimal(widget.animal, log);
 
             Navigator.of(context).pop(log);
           },
