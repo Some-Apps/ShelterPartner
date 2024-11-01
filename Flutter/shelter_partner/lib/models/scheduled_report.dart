@@ -2,13 +2,17 @@ class ScheduledReport {
   final String id;
   final String title;
   final String email;
-  final String type;
+  final String frequency;
+  final String dayOfWeek;
+  final int dayOfMonth;
 
   ScheduledReport({
     required this.id,
     required this.title,
     required this.email,
-    required this.type,
+    required this.frequency,
+    required this.dayOfWeek,
+    required this.dayOfMonth,
   });
 
   Map<String, dynamic> toMap() {
@@ -16,7 +20,9 @@ class ScheduledReport {
       'id': id,
       'title': title,
       'email': email,
-      'type': type,
+      'frequency': frequency,
+      'dayOfWeek': dayOfWeek,
+      'dayOfMonth': dayOfMonth,
     };
   }
 
@@ -25,7 +31,9 @@ class ScheduledReport {
       id: data['id'] ?? "Unknown",
       title: data['title'] ?? "Unknown",
       email: data['email'] ?? "Unknown",
-      type: data['type'] ?? "Unknown",
+      frequency: data['frequency'] ?? "Unknown",
+      dayOfWeek: data['dayOfWeek'] ?? "Unknown",
+      dayOfMonth: data['dayOfMonth'] ?? 0,
     );
   }
 }
