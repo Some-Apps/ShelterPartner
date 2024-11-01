@@ -184,8 +184,8 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                                   ? _selectedDayOfWeek
                                   : '',
                               dayOfMonth: _selectedFrequency == 'Monthly'
-                                  ? _selectedDayOfMonth
-                                  : '',
+                                  ? int.parse(_selectedDayOfMonth)
+                                  : 0,
                             );
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)

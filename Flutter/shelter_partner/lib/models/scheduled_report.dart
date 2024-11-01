@@ -4,7 +4,7 @@ class ScheduledReport {
   final String email;
   final String frequency;
   final String dayOfWeek;
-  final String dayOfMonth;
+  final int dayOfMonth;
 
   ScheduledReport({
     required this.id,
@@ -33,7 +33,7 @@ class ScheduledReport {
       email: data['email'] ?? "Unknown",
       frequency: data['frequency'] ?? "Unknown",
       dayOfWeek: data['dayOfWeek'] ?? "Unknown",
-      dayOfMonth: data['dayOfMonth'] ?? "Unknown",
+      dayOfMonth: data['dayOfMonth'] ?? 0,
     );
   }
 }

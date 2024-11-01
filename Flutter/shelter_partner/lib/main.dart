@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,7 +59,7 @@ class MyApp extends ConsumerWidget {
   final ThemeData theme;
   final ThemeData darktheme;
 
-  MyApp({
+  const MyApp({
     super.key,
     required this.theme,
     required this.darktheme,

@@ -17,7 +17,7 @@ class MainPage extends ConsumerWidget {
 
     if (authState.status == AuthStatus.loading) {
       // Show a loading indicator while checking authentication status
-      return Scaffold(
+      return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     } else if (authState.status == AuthStatus.unauthenticated) {
@@ -25,7 +25,7 @@ class MainPage extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.go('/');
       });
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else if (authState.status == AuthStatus.authenticated) {
       // User is authenticated; proceed with the main content
       final appUser = authState.user!;
@@ -133,7 +133,7 @@ class MainPage extends ConsumerWidget {
       );
     } else {
       // Default case (should not reach here)
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 }
