@@ -13,6 +13,8 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final appUser = ref.watch(appUserProvider);
+
     final authState = ref.watch(authViewModelProvider);
 
     if (authState.status == AuthStatus.loading) {
@@ -28,8 +30,12 @@ class MainPage extends ConsumerWidget {
       return const SizedBox.shrink();
     } else if (authState.status == AuthStatus.authenticated) {
       // User is authenticated; proceed with the main content
-      final appUser = authState.user!;
-      final isAdmin = appUser.type == "admin";
+
+      if (appUser == null) {
+        return const Scaffold(
+          body: Center(child: Text('Error: User data not available')),
+        );
+      }
 
       // Modes that act like Volunteer
       Set<String> volunteerModes = {
@@ -42,53 +48,63 @@ class MainPage extends ConsumerWidget {
       List<BottomNavigationBarItem> items = [];
       List<int> visibleIndexes = [];
 
-      if (isAdmin) {
-        if (appUser.deviceSettings!.mode == 'Admin') {
+      if (appUser.type == 'admin') {
+        if (appUser.deviceSettings?.mode == 'Admin') {
           items = [
-            const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-            const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.pets), label: 'Animals'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.people), label: 'Visitors'),
             const BottomNavigationBarItem(
                 icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
-            const BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: 'Settings'),
           ];
           visibleIndexes = [0, 1, 2, 3];
-        } else if (appUser.deviceSettings!.mode == 'Volunteer') {
+        } else if (appUser.deviceSettings?.mode == 'Volunteer') {
           items = [
-            const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+                icon: Icon(Icons.pets), label: 'Animals'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.door_front_door_outlined),
+                label: 'Switch To Admin'),
           ];
           visibleIndexes = [0, 4]; // Indexes corresponding to the branches
-        } else if (appUser.deviceSettings!.mode == 'Visitor') {
+        } else if (appUser.deviceSettings?.mode == 'Visitor') {
           items = [
-            const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+                icon: Icon(Icons.people), label: 'Visitors'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.door_front_door_outlined),
+                label: 'Switch To Admin'),
           ];
           visibleIndexes = [1, 4];
-        } else if (appUser.deviceSettings!.mode == 'Volunteer & Visitor') {
+        } else if (appUser.deviceSettings?.mode == 'Volunteer & Visitor') {
           items = [
-            const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-            const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.door_front_door_outlined), label: 'Switch To Admin'),
+                icon: Icon(Icons.pets), label: 'Animals'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.people), label: 'Visitors'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.door_front_door_outlined),
+                label: 'Switch To Admin'),
           ];
           visibleIndexes = [0, 1, 4];
         } else {
           // Default to admin items
           items = [
-            const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
-            const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Visitors'),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
-            const BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+                icon: Icon(Icons.pets), label: 'Animals'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: 'Settings'),
           ];
           visibleIndexes = [0, 1, 2, 3];
         }
       } else {
         // Non-admin users can access 'Animals' and 'Settings'
         items = [
-          const BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Animals'),
+          const BottomNavigationBarItem(
+              icon: Icon(Icons.pets), label: 'Animals'),
           const BottomNavigationBarItem(
               icon: Icon(Icons.settings), label: 'Settings'),
         ];
