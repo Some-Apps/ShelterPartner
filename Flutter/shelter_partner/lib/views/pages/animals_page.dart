@@ -163,6 +163,21 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
 
+    // Handle loading and error states
+    if (appUser == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Proceed even if shelterSettings or deviceSettings are still loading or null
+
+    // Extract values with null safety
+    final isAdmin = appUser.type == 'admin';
+    final isVolunteer = appUser.type == 'volunteer';
+    final deviceAllowsBulkTakeOut =
+        deviceSettings.value?.deviceSettings?.allowBulkTakeOut ?? false;
+    final shelterAllowsBulkTakeOut =
+        shelterSettings.value?.volunteerSettings?.allowBulkTakeOut ?? false;
+
     return SafeArea(
       child: Scaffold(
         body: GestureDetector(
@@ -208,7 +223,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                                 });
                               },
                               items: attributeDisplayNames.keys
-                                  .map<DropdownMenuItem<String>>((String key) {
+                                  .map<DropdownMenuItem<String>>(
+                                      (String key) {
                                 return DropdownMenuItem<String>(
                                   value: key,
                                   child: Text(key),
@@ -218,8 +234,6 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                           ],
                         ),
                         const SizedBox(height: 8),
-                        // "Take Out All Animals" button
-
                         // Navigation button for user filter
                         NavigationButton(
                           title: "User Filter",
@@ -227,26 +241,23 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                           extra: FilterParameters(
                             title: "User Filter",
                             collection: 'users',
-                            documentID: appUser!.id,
+                            documentID: appUser.id,
                             filterFieldPath: 'userFilter',
                           ),
                         ),
-                        if ((deviceSettings.value != null &&
-                                deviceSettings.value!.deviceSettings != null &&
-                                deviceSettings
-                                    .value!.deviceSettings!.allowBulkTakeOut &&
-                                appUser.type == 'admin') ||
-                            (appUser.type == 'volunteer' &&
-                                shelterSettings.value!.volunteerSettings
-                                    .allowBulkTakeOut)) ...[
+                        const SizedBox(height: 8),
+                        // Conditionally show the bulk take out button
+                        if ((deviceAllowsBulkTakeOut && isAdmin) ||
+                            (isVolunteer && shelterAllowsBulkTakeOut))
                           ElevatedButton(
                             onPressed: () {
                               // Get the visible animals in the current tab
                               final animalType =
                                   _tabController.index == 0 ? 'dogs' : 'cats';
-                              final animals = _filterAnimals(ref.watch(
-                                      animalsViewModelProvider)[animalType] ??
-                                  []);
+                              final animals = _filterAnimals(
+                                  ref.watch(animalsViewModelProvider)[
+                                          animalType] ??
+                                      []);
 
                               // Determine the majority inKennel status
                               final inKennelCount = animals
@@ -277,11 +288,15 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                             },
                             child: Text(
                               _tabController.index == 0
-                                  ? (_filterAnimals(ref.watch(animalsViewModelProvider)['dogs'] ?? [])
-                                              .where(
-                                                  (animal) => animal.inKennel)
+                                  ? (_filterAnimals(
+                                                  ref.watch(
+                                                          animalsViewModelProvider)[
+                                                      'dogs'] ??
+                                                  [])
+                                              .where((animal) => animal.inKennel)
                                               .length >
-                                          (_filterAnimals(ref.watch(
+                                          (_filterAnimals(
+                                                      ref.watch(
                                                               animalsViewModelProvider)[
                                                           'dogs'] ??
                                                       [])
@@ -289,20 +304,24 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                                               2)
                                       ? "Take Out All Visible Dogs"
                                       : "Put Back All Visible Dogs")
-                                  : (_filterAnimals(ref.watch(animalsViewModelProvider)['cats'] ?? [])
-                                              .where(
-                                                  (animal) => animal.inKennel)
+                                  : (_filterAnimals(
+                                                  ref.watch(
+                                                          animalsViewModelProvider)[
+                                                      'cats'] ??
+                                                  [])
+                                              .where((animal) => animal.inKennel)
                                               .length >
                                           (_filterAnimals(
-                                                      ref.watch(animalsViewModelProvider)['cats'] ?? [])
+                                                      ref.watch(
+                                                              animalsViewModelProvider)[
+                                                          'cats'] ??
+                                                      [])
                                                   .length /
                                               2)
                                       ? "Take Out All Visible Cats"
                                       : "Put Back All Visible Cats"),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                        ]
                       ],
                     ),
                   ),

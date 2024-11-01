@@ -8,9 +8,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/animal_card_repository.dart';
 import 'package:shelter_partner/view_models/animal_card_view_model.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
+import 'package:shelter_partner/views/components/add_log_view.dart';
 import 'package:shelter_partner/views/components/add_note_view.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
@@ -42,7 +44,8 @@ String _timeAgo(DateTime dateTime, bool inKennel) {
   }
 }
 
-class _AnimalCardViewState extends ConsumerState<AnimalCardView> with TickerProviderStateMixin {
+class _AnimalCardViewState extends ConsumerState<AnimalCardView>
+    with TickerProviderStateMixin {
   bool _automaticPutBackHandled = false;
 
   late AnimationController _controller;
@@ -122,8 +125,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView> with TickerProv
       }
     });
   }
-
-  
 
   @override
   void dispose() {
@@ -223,33 +224,31 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView> with TickerProv
                 GestureDetector(
                   onTapDown: canInteract
                       ? (_) {
-                      setState(() {
-                        isPressed = true;
-                      });
-                      _controller.forward();
-                      HapticFeedback.mediumImpact();
-                      }
+                          setState(() {
+                            isPressed = true;
+                          });
+                          _controller.forward();
+                          HapticFeedback.mediumImpact();
+                        }
                       : null,
-                    onTapUp: canInteract
+                  onTapUp: canInteract
                       ? (_) {
-                      setState(() {
-                        isPressed = false;
-                      });
-                      _controller.reverse();
-                      HapticFeedback.lightImpact();
-                      }
+                          setState(() {
+                            isPressed = false;
+                          });
+                          _controller.reverse();
+                          HapticFeedback.lightImpact();
+                        }
                       : null,
-                    
-                    onTapCancel: canInteract
+                  onTapCancel: canInteract
                       ? () {
-                      setState(() {
-                        isPressed = false;
-                      });
-                      _controller.reverse();
-                      HapticFeedback.lightImpact();
-                      }
+                          setState(() {
+                            isPressed = false;
+                          });
+                          _controller.reverse();
+                          HapticFeedback.lightImpact();
+                        }
                       : null,
-                      
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -366,12 +365,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView> with TickerProv
                           switch (value) {
                             case 'Details':
                               context.push('/animals/details', extra: animal);
-                              // Navigator.of(context,).push(
-                              // MaterialPageRoute(
-                              //   builder: (context) =>
-                              //     AnimalsAnimalDetailPage(animal: animal),
-                              // ),
-                              // );
                               break;
                             case 'Add Note':
                               // show a sheet on top of the current screen with the AddNoteView
@@ -380,13 +373,29 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView> with TickerProv
                                 builder: (context) =>
                                     AddNoteView(animal: animal),
                               );
-
                               break;
-                            // Add more cases as needed
+                            case 'Add Log':
+                              showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      AddLogView(animal: animal));
+                              // Handle Add Log action
+                              // You can implement the logic to add a log here
+                              break;
                           }
                         },
                         itemBuilder: (BuildContext context) {
-                          return {'Details', 'Add Note'}.map((String choice) {
+                          final appUser = ref.read(appUserProvider);
+                          final deviceSettings =
+                              ref.read(deviceSettingsViewModelProvider).value;
+
+                          final menuItems = {'Details', 'Add Note'};
+                          if (appUser?.type == "admin" &&
+                              deviceSettings!.deviceSettings?.mode == "Admin") {
+                            menuItems.add('Add Log');
+                          }
+
+                          return menuItems.map((String choice) {
                             return PopupMenuItem<String>(
                               value: choice,
                               child: Text(choice),
