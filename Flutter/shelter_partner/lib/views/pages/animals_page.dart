@@ -135,8 +135,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final int columns = (constraints.maxWidth / 375).floor();
-            final double aspectRatio = constraints.maxWidth / (columns * 235);
+            final int columns = (constraints.maxWidth / 400).floor();
+            final double aspectRatio = constraints.maxWidth / (columns * 200);
 
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

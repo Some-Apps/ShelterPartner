@@ -1,4 +1,5 @@
 // Import statements
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -215,9 +216,10 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25),
       ),
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Top Row: Image and details
             Row(
@@ -383,9 +385,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
 
                               final menuItems = {'Details', 'Add Note'};
                               if (appUser?.type == "admin" &&
-                                  deviceSettings!
-                                          .deviceSettings
-                                          ?.mode ==
+                                  deviceSettings!.deviceSettings?.mode ==
                                       "Admin") {
                                 menuItems.add('Add Log');
                               }
@@ -437,17 +437,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               icon: Icons.volunteer_activism,
                               label: animal.volunteerCategory,
                             ),
-                          if (animal.logs.isNotEmpty)
+                          // Add the top 3 tags as info chips
+                          for (int i = 0; i < min(3, animal.tags.length); i++)
                             _buildInfoChip(
-                              icon: Icons.access_time,
-                              label:
-                                  "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
-                            ),
-                          if (animal.logs.isNotEmpty &&
-                              animal.logs.last.author.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.person_2_outlined,
-                              label: animal.logs.last.author,
+                              icon: Icons.label,
+                              label: animal.tags[i].title,
                             ),
                         ],
                       ),
@@ -456,18 +450,39 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 ),
               ],
             ),
-            // Tags at the bottom left
             Spacer(),
+            // Spacer(),
+            // Author and timeago at the bottom center
             Align(
               alignment: Alignment.bottomCenter,
-              child: Wrap(
-                spacing: 4,
-                runSpacing: 4,
-                children: [
-                  // Display the tags as chips
-                  for (final tag in animal.tags)
-                    _buildTagChip(label: tag.title),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  // mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (animal.logs.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(Icons.access_time, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
+                          ),
+                        ],
+                      ),
+                    const SizedBox(width: 16),
+                    if (animal.logs.isNotEmpty &&
+                        animal.logs.last.author.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(Icons.person_2_outlined, size: 16),
+                          const SizedBox(width: 4),
+                          Text(animal.logs.last.author),
+                        ],
+                      ),
+                  ],
+                ),
               ),
             ),
           ],
