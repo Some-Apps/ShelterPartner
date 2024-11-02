@@ -69,7 +69,7 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                     value: type,
                     child: Text(type),
                   );
-                }).toList(),
+                }),
               ],
               onChanged: (String? newValue) {
                 setState(() {
@@ -96,7 +96,7 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                     value: reason,
                     child: Text(reason),
                   );
-                }).toList(),
+                }),
               ],
               onChanged: (String? newValue) {
                 setState(() {

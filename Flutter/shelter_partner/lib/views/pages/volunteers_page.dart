@@ -129,6 +129,15 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                             },
                           ),
                         ),
+                        Card(
+                          child: ListTile(
+                            title: const Text("Sync With Better Impact"),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () {
+                              context.push('/volunteers/better-impact');
+                            },
+                          ),
+                        ),
                         const SizedBox(height: 20),
                         // Invite a Volunteer Section
                         Card(

@@ -15,6 +15,7 @@ import 'package:shelter_partner/views/pages/animals_animal_detail_page.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
 import 'package:shelter_partner/views/pages/api_keys_page.dart';
 import 'package:shelter_partner/views/pages/array_modifier_page.dart';
+import 'package:shelter_partner/views/pages/better_impact_page.dart';
 import 'package:shelter_partner/views/pages/device_settings_page.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
@@ -442,6 +443,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       ),
                     ],
                   ),
+                  GoRoute(
+                    path: "better-impact",
+                    builder: (context, state) => const BetterImpactPage(),
+                  )
                 ],
               ),
             ],

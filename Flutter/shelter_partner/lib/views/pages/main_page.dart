@@ -10,9 +10,9 @@ class MainPage extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
   const MainPage({
-    Key? key,
+    super.key,
     required this.navigationShell,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -293,7 +293,7 @@ final geofenceStatusProvider = StreamProvider.autoDispose<bool>((ref) async* {
   try {
     initialPosition = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
-    ).timeout(Duration(seconds: 10));
+    ).timeout(const Duration(seconds: 10));
   } catch (e) {
     // Handle timeout or other exceptions
     yield false;

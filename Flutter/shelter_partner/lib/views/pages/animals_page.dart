@@ -176,7 +176,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     final deviceAllowsBulkTakeOut =
         deviceSettings.value?.deviceSettings?.allowBulkTakeOut ?? false;
     final shelterAllowsBulkTakeOut =
-        shelterSettings.value?.volunteerSettings?.allowBulkTakeOut ?? false;
+        shelterSettings.value?.volunteerSettings.allowBulkTakeOut ?? false;
 
     return SafeArea(
       child: Scaffold(
