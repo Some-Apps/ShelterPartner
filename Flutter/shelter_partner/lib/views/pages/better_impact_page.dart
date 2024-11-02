@@ -18,15 +18,15 @@ class BetterImpactPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final TextEditingController _usernameController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
 
     // Watch the loading state
     final isLoading = ref.watch(isLoadingProvider);
 
-    Future<void> _sync() async {
-      final String username = _usernameController.text;
-      final String password = _passwordController.text;
+    Future<void> sync() async {
+      final String username = usernameController.text;
+      final String password = passwordController.text;
 
       final String basicAuth =
           'Basic ${base64Encode(utf8.encode('$username:$password'))}';
@@ -165,17 +165,17 @@ class BetterImpactPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 20),
                   TextField(
-                    controller: _usernameController,
+                    controller: usernameController,
                     decoration: const InputDecoration(labelText: 'Username'),
                   ),
                   TextField(
-                    controller: _passwordController,
+                    controller: passwordController,
                     decoration: const InputDecoration(labelText: 'Password'),
                     obscureText: true,
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: _sync,
+                    onPressed: sync,
                     child: const Text('Sync'),
                   ),
                 ],
@@ -197,7 +197,7 @@ class BetterImpactPage extends ConsumerWidget {
 
 class SyncDialog extends ConsumerWidget {
   final String shelterID;
-  const SyncDialog({Key? key, required this.shelterID}) : super(key: key);
+  const SyncDialog({super.key, required this.shelterID});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -276,7 +276,6 @@ class SyncDialog extends ConsumerWidget {
               },
             ),
             TextButton(
-              child: const Text('Sync'),
               onPressed: isLoading
                   ? null
                   : () async {
@@ -349,6 +348,7 @@ class SyncDialog extends ConsumerWidget {
                         ref.read(isLoadingProvider.notifier).state = false;
                       }
                     },
+              child: const Text('Sync'),
             ),
           ],
         ),

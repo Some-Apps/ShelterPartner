@@ -1,3 +1,4 @@
+// Import statements
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -207,20 +208,22 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     );
 
     return Card(
-      color:
-          animal.inKennel ? Colors.lightBlue.shade100 : Colors.orange.shade100,
+      color: animal.inKennel
+          ? Colors.lightBlue.shade100
+          : Colors.orange.shade100,
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25),
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
           children: [
-            // Updated Animal details: name and information grid
-            Column(
+            // Top Row: Image and details
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Animal image and interaction
                 GestureDetector(
                   onTapDown: canInteract
                       ? (_) {
@@ -255,8 +258,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                       // Background stroke (semi-transparent)
                       CircleAvatar(
                         radius: 65,
-                        backgroundColor: Colors.black
-                            .withOpacity(0.2), // Semi-transparent stroke
+                        backgroundColor: Colors.black.withOpacity(0.2),
                       ),
 
                       // Circular progress animation
@@ -268,13 +270,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                             height: 115,
                             child: CircularProgressIndicator(
                               value: _curvedAnimation.value,
-                              strokeWidth:
-                                  15, // Match the lineWidth from SwiftUI
+                              strokeWidth: 15,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 animal.inKennel
                                     ? Colors.orange.shade100
-                                    : Colors.lightBlue
-                                        .shade100, // Change color based on `inCage`
+                                    : Colors.lightBlue.shade100,
                               ),
                             ),
                           );
@@ -283,9 +283,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
 
                       // Image with shadow and scale effect
                       AnimatedScale(
-                        scale: isPressed ? 1.0 : 1.025, // Scale effect on press
-                        duration: const Duration(
-                            milliseconds: 0), // Match SwiftUI scaling duration
+                        scale: isPressed ? 1.0 : 1.025,
+                        duration: const Duration(milliseconds: 0),
                         child: Container(
                           width: 100,
                           height: 100,
@@ -293,14 +292,12 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.6), // Shadow color
-                                blurRadius: 0.9, // Blur radius for the shadow
-                                spreadRadius: 0, // Spread radius for the shadow
+                                color: Colors.black.withOpacity(0.6),
+                                blurRadius: 0.9,
+                                spreadRadius: 0,
                                 offset: isPressed
                                     ? const Offset(0, 0)
-                                    : const Offset(
-                                        1, 1), // Offset for the shadow
+                                    : const Offset(1, 1),
                               ),
                             ],
                           ),
@@ -309,12 +306,12 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               colorFilter: ColorFilter.mode(
                                 isPressed
                                     ? Colors.black.withOpacity(0.03)
-                                    : Colors.transparent, // Darken when pressed
-                                BlendMode.darken, // Apply darkening effect
+                                    : Colors.transparent,
+                                BlendMode.darken,
                               ),
                               child: CachedNetworkImage(
-                                imageUrl:
-                                    getScaledDownUrl(animal.photos.first.url),
+                                imageUrl: getScaledDownUrl(
+                                    animal.photos.first.url),
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.cover,
@@ -330,157 +327,146 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                     ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment
-                    .start, // Ensures content aligns to the top
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                const SizedBox(width: 10),
+                // Animal details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Name, symbol, and menu
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            animal.name,
-                            style: TextStyle(
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.w900,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                animal.name,
+                                style: TextStyle(
+                                  fontSize: 25.0,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              if (animal.symbol.isNotEmpty)
+                                _buildIcon(animal.symbol, animal.symbolColor),
+                            ],
                           ),
-                          const SizedBox(width: 5),
-                          if (animal.symbol.isNotEmpty)
-                            _buildIcon(animal.symbol, animal.symbolColor)
+                          PopupMenuButton<String>(
+                            offset: const Offset(0, 40),
+                            onSelected: (value) {
+                              // Handle menu item selection
+                              switch (value) {
+                                case 'Details':
+                                  context.push('/animals/details',
+                                      extra: animal);
+                                  break;
+                                case 'Add Note':
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        AddNoteView(animal: animal),
+                                  );
+                                  break;
+                                case 'Add Log':
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          AddLogView(animal: animal));
+                                  break;
+                              }
+                            },
+                            itemBuilder: (BuildContext context) {
+                              final appUser = ref.read(appUserProvider);
+                              final deviceSettings = ref
+                                  .read(deviceSettingsViewModelProvider)
+                                  .value;
+
+                              final menuItems = {'Details', 'Add Note'};
+                              if (appUser?.type == "admin" &&
+                                  deviceSettings!
+                                          .deviceSettings
+                                          ?.mode ==
+                                      "Admin") {
+                                menuItems.add('Add Log');
+                              }
+
+                              return menuItems.map((String choice) {
+                                return PopupMenuItem<String>(
+                                  value: choice,
+                                  child: Text(choice),
+                                );
+                              }).toList();
+                            },
+                            icon: const Icon(Icons.more_vert),
+                          ),
                         ],
                       ),
-                      PopupMenuButton<String>(
-                        offset: const Offset(0,
-                            40), // Adjust the offset to attach to one of the corners
-                        onSelected: (value) {
-                          // Handle menu item selection
-                          switch (value) {
-                            case 'Details':
-                              context.push('/animals/details', extra: animal);
-                              break;
-                            case 'Add Note':
-                              // show a sheet on top of the current screen with the AddNoteView
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    AddNoteView(animal: animal),
-                              );
-                              break;
-                            case 'Add Log':
-                              showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      AddLogView(animal: animal));
-                              // Handle Add Log action
-                              // You can implement the logic to add a log here
-                              break;
-                          }
-                        },
-                        itemBuilder: (BuildContext context) {
-                          final appUser = ref.read(appUserProvider);
-                          final deviceSettings =
-                              ref.read(deviceSettingsViewModelProvider).value;
-
-                          final menuItems = {'Details', 'Add Note'};
-                          if (appUser?.type == "admin" &&
-                              deviceSettings!.deviceSettings?.mode == "Admin") {
-                            menuItems.add('Add Log');
-                          }
-
-                          return menuItems.map((String choice) {
-                            return PopupMenuItem<String>(
-                              value: choice,
-                              child: Text(choice),
-                            );
-                          }).toList();
-                        },
-                        icon: const Icon(Icons.more_vert),
+                      const SizedBox(height: 5),
+                      // Info chips
+                      Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: [
+                          if (animal.location.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.location_on,
+                              label: animal.location,
+                            ),
+                          if (animal.adoptionCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.shopping_bag,
+                              label: animal.adoptionCategory,
+                            ),
+                          if (animal.behaviorCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.face,
+                              label: animal.behaviorCategory,
+                            ),
+                          if (animal.locationCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.location_city,
+                              label: animal.locationCategory,
+                            ),
+                          if (animal.medicalCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.health_and_safety,
+                              label: animal.medicalCategory,
+                            ),
+                          if (animal.volunteerCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.volunteer_activism,
+                              label: animal.volunteerCategory,
+                            ),
+                          if (animal.logs.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.access_time,
+                              label:
+                                  "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
+                            ),
+                          if (animal.logs.isNotEmpty &&
+                              animal.logs.last.author.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.person_2_outlined,
+                              label: animal.logs.last.author,
+                            ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(
-                      height: 5), // Adjust spacing between name and chips
-                  Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: [
-                      _buildInfoChip(
-                        icon: Icons.location_on,
-                        label: animal.location,
-                      ),
-                      _buildInfoChip(
-                        icon: Icons.shopping_bag,
-                        label: animal.adoptionCategory,
-                      ),
-                      _buildInfoChip(
-                        icon: Icons.face,
-                        label: animal.behaviorCategory,
-                      ),
-                      _buildInfoChip(
-                        icon: Icons.location_city,
-                        label: animal.locationCategory,
-                      ),
-                      _buildInfoChip(
-                        icon: Icons.health_and_safety,
-                        label: animal.medicalCategory,
-                      ),
-                      _buildInfoChip(
-                        icon: Icons.volunteer_activism,
-                        label: animal.volunteerCategory,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: [
-                      // Display the top 3 most popular tags as chips
-                      for (final tag in (animal.tags
-                            ..sort((a, b) => b.count.compareTo(a.count)))
-                          .take(3))
-                        _buildTagChip(label: tag.title),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  Row(
-                    children: [
-                      Icon(Icons.access_time,
-                          size: 16.0, color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 4),
-                      Text(
-                        "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.w400,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.person_2_outlined,
-                          size: 16.0, color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 4),
-                      Text(
-                        animal.logs.last.author,
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.w400,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
+                ),
+              ],
+            ),
+            // Tags at the bottom left
+            Spacer(),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: [
+                  // Display the tags as chips
+                  for (final tag in animal.tags)
+                    _buildTagChip(label: tag.title),
                 ],
               ),
             ),
@@ -528,24 +514,13 @@ Widget _buildTagChip({
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
     decoration: BoxDecoration(
-      color: Colors.blue.withOpacity(0.25),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.black.withOpacity(0.25)),
+      color: Colors.black.withOpacity(0.05),
+      borderRadius: BorderRadius.circular(5),
+      // border: Border.all(color: Colors.black.withOpacity(0.1)),
     ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(
-          Icons.sell,
-          size: 12,
-          color: Colors.grey,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(color: Colors.black, fontSize: textSize),
-        ),
-      ],
+    child: Text(
+      label,
+      style: TextStyle(color: Colors.black.withOpacity(0.5), fontSize: textSize),
     ),
   );
 }
