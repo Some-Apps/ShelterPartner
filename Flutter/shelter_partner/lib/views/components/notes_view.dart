@@ -9,11 +9,11 @@ class NotesWidget extends StatelessWidget {
   final Function(String noteId) onDelete;
 
   const NotesWidget({
-    Key? key,
+    super.key,
     required this.notes,
     required this.isAdmin,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

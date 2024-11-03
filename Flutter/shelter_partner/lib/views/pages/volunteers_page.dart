@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:shelter_partner/views/components/navigation_button_view.dart'; // Add this package to pubspec.yaml
+import 'package:shelter_partner/views/components/navigation_button_view.dart';
 
 class VolunteersPage extends ConsumerStatefulWidget {
   const VolunteersPage({super.key});
@@ -20,7 +20,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  bool _hasSentInvite = false; // Track if invite has been sent by the user
+  bool _hasSentInvite = false;
 
   @override
   void dispose() {
@@ -50,7 +50,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
               },
             ),
             TextButton(
-              child: const Text('Delete'),
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
               onPressed: () async {
                 try {
                   await ref
@@ -64,7 +64,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                     SnackBar(content: Text('Failed to delete volunteer: $e')),
                   );
                 }
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -75,27 +75,6 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<void>>(volunteersViewModelProvider, (previous, next) {
-      if (next.isLoading) {
-        // Do nothing; the loading indicator will be shown
-      } else if (next.hasError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${next.error}'),
-          ),
-        );
-        // Handle error case
-      } else if (!next.isLoading && next.hasValue && _hasSentInvite) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invite sent successfully')),
-        );
-        _firstNameController.clear();
-        _lastNameController.clear();
-        _emailController.clear();
-        _hasSentInvite = false; // Reset the flag after showing the message
-      }
-    });
-
     final shelterAsyncValue = ref.watch(shelterDetailsViewModelProvider);
     final volunteerInviteState = ref.watch(volunteersViewModelProvider);
 
@@ -109,186 +88,179 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
           error: (error, stack) => Center(
             child: Text('Error: $error'),
           ),
-          data: (shelter) => Stack(
-            children: [
-              SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          data: (shelter) => Scaffold(
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 25),
+                  Card.outlined(
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       children: [
-                        // Volunteer Settings Section
-                        Card(
-                          child: ListTile(
-                            title: const Text("Volunteer Settings"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/volunteers/volunteer-settings');
-                            },
-                          ),
+                        ListTile(
+                          leading: const Icon(Icons.settings),
+                          title: const Text("Volunteer Settings"),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            context.push('/volunteers/volunteer-settings');
+                          },
                         ),
-                        Card(
-                          child: ListTile(
-                            title: const Text("Sync With Better Impact"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/volunteers/better-impact');
-                            },
-                          ),
+                        Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
                         ),
-                        const SizedBox(height: 20),
-                        // Invite a Volunteer Section
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Invite a Volunteer",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                TextFormField(
-                                  controller: _firstNameController,
-                                  decoration: const InputDecoration(
-                                    border: UnderlineInputBorder(),
-                                    labelText: 'Volunteer first name',
-                                    contentPadding: EdgeInsets.all(16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter the volunteer\'s first name';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                TextFormField(
-                                  controller: _lastNameController,
-                                  decoration: const InputDecoration(
-                                    border: UnderlineInputBorder(),
-                                    labelText: 'Volunteer last name',
-                                    contentPadding: EdgeInsets.all(16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter the volunteer\'s last name';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                TextFormField(
-                                  controller: _emailController,
-                                  decoration: const InputDecoration(
-                                    border: UnderlineInputBorder(),
-                                    labelText: 'Volunteer email',
-                                    contentPadding: EdgeInsets.all(16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter the volunteer email';
-                                    } else if (!EmailValidator.validate(
-                                        value)) {
-                                      return 'Please enter a valid email address';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      final firstName =
-                                          _firstNameController.text.trim();
-                                      final lastName =
-                                          _lastNameController.text.trim();
-                                      final email =
-                                          _emailController.text.trim();
-                                      ref
-                                          .read(volunteersViewModelProvider
-                                              .notifier)
-                                          .sendVolunteerInvite(firstName,
-                                              lastName, email, shelter!.id);
-                                      _hasSentInvite =
-                                          true; // Set the flag when invite is sent
-                                    }
-                                  },
-                                  child: const Text('Send Invite'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Volunteers List Section
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Volunteers",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                if (shelter!.volunteers.isNotEmpty)
-                                  ...shelter.volunteers.map(
-                                    (volunteer) => Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: NavigationButton(
-                                            title: volunteer.firstName,
-                                            route:
-                                                '/volunteers/details', extra: volunteer,
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete,
-                                              color: Colors.red),
-                                          onPressed: () {
-                                            _confirmDeleteVolunteer(
-                                              context,
-                                              volunteer.id,
-                                              shelter.id,
-                                              volunteer.firstName,
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                else
-                                  const Text(
-                                      'No volunteers available at the moment'),
-                              ],
-                            ),
-                          ),
+                        ListTile(
+                          leading: const Icon(Icons.sync),
+                          title: const Text("Sync With Better Impact"),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            context.push('/volunteers/better-impact');
+                          },
                         ),
                       ],
                     ),
                   ),
-                ),
+                  const SizedBox(height: 25),
+                  Card.outlined(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Invite a Volunteer",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: _firstNameController,
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              labelText: 'Volunteer first name',
+                              contentPadding: EdgeInsets.all(16),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter the volunteer\'s first name';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: _lastNameController,
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              labelText: 'Volunteer last name',
+                              contentPadding: EdgeInsets.all(16),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter the volunteer\'s last name';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: _emailController,
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              labelText: 'Volunteer email',
+                              contentPadding: EdgeInsets.all(16),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter the volunteer email';
+                              } else if (!EmailValidator.validate(value)) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                final firstName =
+                                    _firstNameController.text.trim();
+                                final lastName =
+                                    _lastNameController.text.trim();
+                                final email = _emailController.text.trim();
+                                ref
+                                    .read(volunteersViewModelProvider.notifier)
+                                    .sendVolunteerInvite(firstName, lastName,
+                                        email, shelter!.id);
+                                _hasSentInvite = true;
+                              }
+                            },
+                            child: const Text('Send Invite'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  Card.outlined(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Volunteers",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10),
+                          if (shelter!.volunteers.isNotEmpty)
+                            ...shelter.volunteers.map(
+                              (volunteer) => Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(volunteer.firstName),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete,
+                                          color: Colors.red.withOpacity(0.5)),
+                                      onPressed: () {
+                                        _confirmDeleteVolunteer(
+                                          context,
+                                          volunteer.id,
+                                          shelter.id,
+                                          volunteer.firstName,
+                                        );
+                                      },
+                                    ),
+                                    onTap: () {
+                                      context.push(
+                                        '/volunteers/details',
+                                        extra: volunteer,
+                                      );
+                                    },
+                                  ),
+                                  Divider(
+                                    color: Colors.black.withOpacity(0.1),
+                                    height: 0,
+                                    thickness: 1,
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            const Text('No volunteers available at the moment'),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                ],
               ),
-              // Show progress indicator when loading
-              if (volunteerInviteState.isLoading)
-                Container(
-                  color: Colors.black54,
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-            ],
+            ),
           ),
         ),
       ),

@@ -225,6 +225,7 @@ Future<void> _getPlaceDetails(String placeId) async {
                 _radius,
                 _zoomLevel,
               );
+              Navigator.of(context).pop();
           print('Save changes pressed');
         } else {
           _showErrorMessage('Center location is not set.');

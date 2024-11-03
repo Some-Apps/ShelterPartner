@@ -133,7 +133,7 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       animal.description,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15.0,
                       ),
                     ),
@@ -248,10 +248,10 @@ class FullScreenGallery extends StatefulWidget {
   final int initialIndex;
 
   const FullScreenGallery({
-    Key? key,
+    super.key,
     required this.imageUrls,
     required this.initialIndex,
-  }) : super(key: key);
+  });
 
   @override
   _FullScreenGalleryState createState() => _FullScreenGalleryState();
@@ -319,7 +319,7 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
 
   @override
   Widget build(BuildContext context) {
-    final isWeb = kIsWeb;
+    const isWeb = kIsWeb;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -386,12 +386,12 @@ class PhotoList extends StatefulWidget {
   final Function(int index) onPhotoTap;
 
   const PhotoList({
-    Key? key,
+    super.key,
     required this.photos,
     required this.isAdmin,
     required this.onDelete,
     required this.onPhotoTap,
-  }) : super(key: key);
+  });
 
   @override
   _PhotoListState createState() => _PhotoListState();
@@ -428,7 +428,7 @@ class _PhotoListState extends State<PhotoList> {
 
   @override
   Widget build(BuildContext context) {
-    final isWeb = kIsWeb;
+    const isWeb = kIsWeb;
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -476,13 +476,13 @@ class PhotoItem extends StatelessWidget {
   final VoidCallback onDelete;
 
   const PhotoItem({
-    Key? key,
+    super.key,
     required this.photo,
     required this.index,
     required this.isAdmin,
     required this.onTap,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
