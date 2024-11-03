@@ -76,6 +76,9 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           case 'name':
             fieldValue = animal.name;
             break;
+          case 'sex':
+            fieldValue = animal.sex;
+            break;
           case 'notes':
             fieldValue = animal.notes.map((note) => note.note).join(' ');
             break;
@@ -135,8 +138,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final int columns = (constraints.maxWidth / 350).floor();
-            final double aspectRatio = constraints.maxWidth / (columns * 225);
+            final int columns = (constraints.maxWidth / 400).floor();
+            final double aspectRatio = constraints.maxWidth / (columns * 200);
 
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
