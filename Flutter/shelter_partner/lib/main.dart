@@ -23,7 +23,6 @@ import 'package:shelter_partner/views/pages/scheduled_reports_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:shelter_partner/views/pages/shelter_settings_page.dart';
 import 'package:shelter_partner/views/pages/switch_to_admin_page.dart';
-import 'package:shelter_partner/views/pages/visitor_animal_detail_page.dart';
 import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
@@ -106,7 +105,7 @@ class MyApp extends ConsumerWidget {
                   path: 'details',
                   builder: (context, state) {
                     final animal = state.extra as Animal;
-                    return AnimalsAnimalDetailPage(initialAnimal: animal);
+                    return AnimalsAnimalDetailPage(initialAnimal: animal, visitorPage: false);
                   },
                 ),
                 GoRoute(
@@ -139,7 +138,7 @@ class MyApp extends ConsumerWidget {
                   path: 'details',
                   builder: (context, state) {
                     final animal = state.extra as Animal;
-                    return VisitorAnimalDetailPage(animal: animal);
+                    return AnimalsAnimalDetailPage(initialAnimal: animal, visitorPage: true);
                   },
                 ),
               ],
@@ -368,7 +367,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'details',
                     builder: (context, state) {
                       final animal = state.extra as Animal;
-                      return AnimalsAnimalDetailPage(initialAnimal: animal);
+                      return AnimalsAnimalDetailPage(initialAnimal: animal, visitorPage: false);
                     },
                   ),
                   GoRoute(
@@ -401,7 +400,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'details',
                     builder: (context, state) {
                       final animal = state.extra as Animal;
-                      return VisitorAnimalDetailPage(animal: animal);
+                      return AnimalsAnimalDetailPage(initialAnimal: animal, visitorPage: true);
                     },
                   ),
                 ],

@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
-class Log {
+class Integration {
   final String id;
   final String type;
   final String key;
   final String? username;
   final Timestamp password;
 
-  Log({
+  Integration({
     required this.id,
     required this.type,
     required this.key,
@@ -16,8 +16,8 @@ class Log {
     required this.password,
   });
 
-  factory Log.fromMap(Map<String, dynamic> data) {
-    return Log(
+  factory Integration.fromMap(Map<String, dynamic> data) {
+    return Integration(
       id: data['id'] ?? const Uuid().v4(),
       type: data['type'] ?? "Unknown",
       key: data['key'] ?? "Unknown",
@@ -36,14 +36,14 @@ class Log {
     };
   }
 
-  Log copyWith({
+  Integration copyWith({
     String? id,
     String? type,
     String? key,
     String? username,
     Timestamp? password,
   }) {
-    return Log(
+    return Integration(
       id: id ?? this.id,
       type: type ?? this.type,
       key: key ?? this.key,

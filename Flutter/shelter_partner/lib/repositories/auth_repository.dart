@@ -381,7 +381,13 @@ class AuthRepository {
           'sex': ['m', 'f'].randomElement(),
           'monthsOld': [2, 6, 12, 24, 36].randomElement(),
           'breed': ['some breed', 'another breed'].randomElement(),
-          'description': ['Some description', 'Another description'].randomElement(),
+            'description': [
+            'This animal is very friendly and loves to play with toys. He enjoys long walks and is very good with children. He has a calm temperament and is very affectionate.',
+            'This animal is energetic and loves to run around. She is very playful and enjoys playing fetch. She is very loyal and protective of her family.',
+            'This animal is very independent and likes to explore his surroundings. He is curious and intelligent, and enjoys solving puzzles and playing with interactive toys.',
+            'This animal is very gentle and loves to cuddle. She is very affectionate and enjoys being around people. She has a calm demeanor and is very good with other animals.',
+            'This animal is very playful and loves to be the center of attention. He enjoys playing with other animals and is very social. He has a lot of energy and loves to run and play.'
+            ].randomElement(),
         };
 
         // Upload the document to Firestore
