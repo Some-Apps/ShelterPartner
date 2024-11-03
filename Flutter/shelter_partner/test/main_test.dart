@@ -40,9 +40,9 @@ void main() {
       child: MyApp(
         theme: ThemeData.light(),
         darktheme: ThemeData.dark(),
-        firebaseAuth: mockAuth,
-        firestore: fakeFirestore,
-        firebaseService: mockFirebaseService,
+        // firebaseAuth: mockAuth,
+        // firestore: fakeFirestore,
+        // firebaseService: mockFirebaseService,
       ),
     ));
 

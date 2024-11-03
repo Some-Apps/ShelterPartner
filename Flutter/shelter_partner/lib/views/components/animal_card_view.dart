@@ -215,7 +215,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       elevation: 1,
       shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(25),
-      side: BorderSide(color: Colors.white, width: 0.25),
+      // side: BorderSide(color: Colors.white, width: 0.25),
       ),
       shadowColor: Colors.black, // Customize shadow color
       child: Container(
