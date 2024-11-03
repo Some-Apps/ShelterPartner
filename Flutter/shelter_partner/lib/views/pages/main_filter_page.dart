@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/filter_condition.dart';
 import 'package:shelter_partner/models/filter_group.dart';
@@ -56,7 +57,7 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
     'Location Category': 'locationCategory',
     'Medical Category': 'medicalCategory',
     'Volunteer Category': 'volunteerCategory',
-    'Age': 'age',
+    'Months Old': 'monthsOld',
     'In Kennel': 'inKennel',
     // Add other display names and attribute keys as needed
   };
@@ -558,7 +559,7 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
     'Location Category': 'locationCategory',
     'Medical Category': 'medicalCategory',
     'Volunteer Category': 'volunteerCategory',
-    'Age': 'age',
+    'Months Old': 'monthsOld',
     'In Kennel': 'inKennel',
     // Add other display names and attribute keys as needed
   };
@@ -643,7 +644,7 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
       OperatorType.contains,
       OperatorType.notContains
     ],
-    'age': [
+    'monthsOld': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.greaterThan,
@@ -715,6 +716,12 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
                     .contains(selectedOperator))
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Value'),
+                keyboardType: selectedAttribute == 'monthsOld'
+                    ? TextInputType.number
+                    : TextInputType.text,
+                inputFormatters: selectedAttribute == 'monthsOld'
+                    ? [FilteringTextInputFormatter.digitsOnly]
+                    : null,
                 onChanged: (val) {
                   setState(() {
                     value = val;
@@ -731,11 +738,25 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
                 (selectedOperator == OperatorType.isTrue ||
                     selectedOperator == OperatorType.isFalse ||
                     value != null)) {
+              dynamic parsedValue = value;
+
+              if (selectedAttribute == 'monthsOld') {
+                parsedValue = int.tryParse(value);
+                if (parsedValue == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid number for Months Old'),
+                    ),
+                  );
+                  return;
+                }
+              }
+
               widget.onAdd(
                 FilterCondition(
                   attribute: selectedAttribute,
                   operatorType: selectedOperator!,
-                  value: value,
+                  value: parsedValue,
                 ),
                 selectedLogicalOperator,
               );

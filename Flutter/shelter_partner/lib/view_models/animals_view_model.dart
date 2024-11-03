@@ -189,43 +189,46 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   }
 
   dynamic getAttributeValue(Animal animal, String attribute) {
-    switch (attribute) {
-      case 'name':
-        return animal.name;
-      case 'sex':
-        return animal.sex;
-      case 'species':
-        return animal.species;
-      case 'breed':
-        return animal.breed;
-      case 'location':
-        return animal.location;
-      case 'description':
-        return animal.description;
-      case 'symbol':
-        return animal.symbol;
-      case 'symbolColor':
-        return animal.symbolColor;
-      case 'takeOutAlert':
-        return animal.takeOutAlert;
-      case 'putBackAlert':
-        return animal.putBackAlert;
-      case 'adoptionCategory':
-        return animal.adoptionCategory;
-      case 'behaviorCategory':
-        return animal.behaviorCategory;
-      case 'locationCategory':
-        return animal.locationCategory;
-      case 'medicalCategory':
-        return animal.medicalCategory;
-      case 'volunteerCategory':
-        return animal.volunteerCategory;
-      case 'inKennel':
-        return animal.inKennel;
-      default:
-        return null;
-    }
+  switch (attribute) {
+    case 'name':
+      return animal.name;
+    case 'sex':
+      return animal.sex;
+    case 'species':
+      return animal.species;
+    case 'breed':
+      return animal.breed;
+    case 'location':
+      return animal.location;
+    case 'description':
+      return animal.description;
+    case 'symbol':
+      return animal.symbol;
+    case 'symbolColor':
+      return animal.symbolColor;
+    case 'takeOutAlert':
+      return animal.takeOutAlert;
+    case 'putBackAlert':
+      return animal.putBackAlert;
+    case 'adoptionCategory':
+      return animal.adoptionCategory;
+    case 'behaviorCategory':
+      return animal.behaviorCategory;
+    case 'locationCategory':
+      return animal.locationCategory;
+    case 'medicalCategory':
+      return animal.medicalCategory;
+    case 'volunteerCategory':
+      return animal.volunteerCategory;
+    case 'inKennel':
+      return animal.inKennel;
+    case 'monthsOld': // Add this case
+      return animal.monthsOld;
+    default:
+      return null;
   }
+}
+
 
   @override
   void dispose() {
