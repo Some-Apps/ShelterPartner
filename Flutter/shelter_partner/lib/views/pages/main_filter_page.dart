@@ -4,6 +4,21 @@ import 'package:shelter_partner/models/filter_condition.dart';
 import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/view_models/filter_view_model.dart';
 
+enum LogicalOperator { and, or }
+
+enum OperatorType {
+  equals,
+  notEquals,
+  contains,
+  notContains,
+  greaterThan,
+  lessThan,
+  greaterThanOrEqual,
+  lessThanOrEqual,
+  isTrue,
+  isFalse,
+}
+
 class MainFilterPage extends ConsumerStatefulWidget {
   final String title;
   final String collection;
@@ -25,6 +40,26 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
   List<FilterElement> filterElements = [];
   Map<int, LogicalOperator> operatorsBetween = {};
   bool groupWithPrevious = false; // State of the "Group with Previous" checkbox
+
+  final Map<String, String> attributeDisplayNames = {
+    'Name': 'name',
+    'Notes': 'notes',
+    'Tags': 'tags',
+    'Sex': 'sex',
+    'Breed': 'breed',
+    'Location': 'location',
+    'Description': 'description',
+    'Take Out Alert': 'takeOutAlert',
+    'Put Back Alert': 'putBackAlert',
+    'Adoption Category': 'adoptionCategory',
+    'Behavior Category': 'behaviorCategory',
+    'Location Category': 'locationCategory',
+    'Medical Category': 'medicalCategory',
+    'Volunteer Category': 'volunteerCategory',
+    'Age': 'age',
+    'In Kennel': 'inKennel',
+    // Add other display names and attribute keys as needed
+  };
 
   @override
   void initState() {
@@ -207,7 +242,7 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
             elevation: 2,
             child: ListTile(
               title: Text(
-                '${condition.attribute} ${_operatorToString(condition.operatorType)} ${condition.value}',
+                '${_getDisplayName(condition.attribute)} ${_operatorToString(condition.operatorType)} ${condition.value}',
                 style: const TextStyle(fontSize: 16.0),
               ),
               trailing: indentLevel ==
@@ -416,7 +451,7 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
         spans.add(TextSpan(
           children: [
             TextSpan(
-                text: element.attribute,
+                text: _getDisplayName(element.attribute),
                 style: const TextStyle(color: Colors.blue)),
             TextSpan(
                 text: ' ${_operatorToString(element.operatorType)} ',
@@ -428,16 +463,16 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
         ));
       } else if (element is FilterGroup) {
         // Add opening parenthesis
-        spans.add(
-            const TextSpan(text: '(', style: TextStyle(color: Colors.black)));
+        spans.add(const TextSpan(
+            text: '(', style: TextStyle(color: Colors.black)));
 
         // Recursively build the group
         spans.add(buildExpressionSpan(element.elements,
             groupOperator: element.logicalOperator));
 
         // Add closing parenthesis
-        spans.add(
-            const TextSpan(text: ')', style: TextStyle(color: Colors.black)));
+        spans.add(const TextSpan(
+            text: ')', style: TextStyle(color: Colors.black)));
       }
     }
 
@@ -447,32 +482,38 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
   String _operatorToString(OperatorType operatorType) {
     switch (operatorType) {
       case OperatorType.equals:
-        return '==';
+        return 'Equals';
       case OperatorType.notEquals:
-        return '!=';
+        return 'Not Equals';
       case OperatorType.contains:
-        return 'contains';
+        return 'Contains';
       case OperatorType.notContains:
-        return 'not contains';
+        return 'Not Contains';
       case OperatorType.greaterThan:
-        return '>';
+        return 'Greater Than';
       case OperatorType.lessThan:
-        return '<';
+        return 'Less Than';
       case OperatorType.greaterThanOrEqual:
-        return '>=';
+        return 'Greater Than Or Equal';
       case OperatorType.lessThanOrEqual:
-        return '<=';
+        return 'Less Than Or Equal';
       case OperatorType.isTrue:
-        return 'is true';
+        return 'Is True';
       case OperatorType.isFalse:
-        return 'is false';
+        return 'Is False';
       default:
         return '';
     }
   }
 
   String _logicalOperatorToString(LogicalOperator operator) {
-    return operator == LogicalOperator.and ? 'and' : 'or';
+    return operator == LogicalOperator.and ? 'AND' : 'OR';
+  }
+
+  String _getDisplayName(String attributeKey) {
+    return attributeDisplayNames.entries
+        .firstWhere((entry) => entry.value == attributeKey)
+        .key;
   }
 }
 
@@ -495,11 +536,32 @@ class AddConditionDialog extends StatefulWidget {
 }
 
 class _AddConditionDialogState extends State<AddConditionDialog> {
-  String selectedAttribute = 'name';
+  String selectedAttributeDisplayName = 'Name'; // Default display name
+  String selectedAttribute = 'name'; // Corresponding attribute key
   OperatorType? selectedOperator;
   dynamic value;
 
   late LogicalOperator selectedLogicalOperator;
+
+  final Map<String, String> attributeDisplayNames = {
+    'Name': 'name',
+    'Notes': 'notes',
+    'Tags': 'tags',
+    'Sex': 'sex',
+    'Breed': 'breed',
+    'Location': 'location',
+    'Description': 'description',
+    'Take Out Alert': 'takeOutAlert',
+    'Put Back Alert': 'putBackAlert',
+    'Adoption Category': 'adoptionCategory',
+    'Behavior Category': 'behaviorCategory',
+    'Location Category': 'locationCategory',
+    'Medical Category': 'medicalCategory',
+    'Volunteer Category': 'volunteerCategory',
+    'Age': 'age',
+    'In Kennel': 'inKennel',
+    // Add other display names and attribute keys as needed
+  };
 
   final Map<String, List<OperatorType>> attributeOperators = {
     'name': [
@@ -508,14 +570,19 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
       OperatorType.contains,
       OperatorType.notContains
     ],
-    'sex': [OperatorType.equals, OperatorType.notEquals],
-    'age': [
+    'notes': [
       OperatorType.equals,
       OperatorType.notEquals,
-      OperatorType.greaterThan,
-      OperatorType.lessThan
+      OperatorType.contains,
+      OperatorType.notContains
     ],
-    'species': [OperatorType.equals, OperatorType.notEquals],
+    'tags': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'sex': [OperatorType.equals, OperatorType.notEquals],
     'breed': [
       OperatorType.equals,
       OperatorType.notEquals,
@@ -527,6 +594,62 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
       OperatorType.notEquals,
       OperatorType.contains,
       OperatorType.notContains
+    ],
+    'description': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'takeOutAlert': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'putBackAlert': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'adoptionCategory': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'behaviorCategory': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'locationCategory': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'medicalCategory': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'volunteerCategory': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains
+    ],
+    'age': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.greaterThan,
+      OperatorType.lessThan,
+      OperatorType.greaterThanOrEqual,
+      OperatorType.lessThanOrEqual
     ],
     'inKennel': [OperatorType.isTrue, OperatorType.isFalse],
     // Add other attributes and their valid operators
@@ -540,8 +663,8 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> attributes = attributeOperators.keys.toList();
-    List<OperatorType> operators = attributeOperators[selectedAttribute]!;
+    List<OperatorType> operators =
+        attributeOperators[selectedAttribute] ?? [];
 
     return AlertDialog(
       title: const Text('Add Condition'),
@@ -550,21 +673,22 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
           children: [
             // Attribute Dropdown
             DropdownButtonFormField<String>(
-              value: selectedAttribute,
+              value: selectedAttributeDisplayName,
               decoration: const InputDecoration(labelText: 'Attribute'),
               onChanged: (value) {
                 if (value != null) {
                   setState(() {
-                    selectedAttribute = value;
+                    selectedAttributeDisplayName = value;
+                    selectedAttribute = attributeDisplayNames[value]!;
                     selectedOperator = null;
                     this.value = null;
                   });
                 }
               },
-              items: attributes.map((attr) {
+              items: attributeDisplayNames.keys.map((displayName) {
                 return DropdownMenuItem(
-                  value: attr,
-                  child: Text(attr),
+                  value: displayName,
+                  child: Text(displayName),
                 );
               }).toList(),
             ),
@@ -627,44 +751,27 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
   String _operatorToString(OperatorType operatorType) {
     switch (operatorType) {
       case OperatorType.equals:
-        return '==';
+        return 'Equals';
       case OperatorType.notEquals:
-        return '!=';
+        return 'Not Equals';
       case OperatorType.contains:
-        return 'contains';
+        return 'Contains';
       case OperatorType.notContains:
-        return 'not contains';
+        return 'Not Contains';
       case OperatorType.greaterThan:
-        return '>';
+        return 'Greater Than';
       case OperatorType.lessThan:
-        return '<';
+        return 'Less Than';
       case OperatorType.greaterThanOrEqual:
-        return '>=';
+        return 'Greater Than Or Equal';
       case OperatorType.lessThanOrEqual:
-        return '<=';
+        return 'Less Than Or Equal';
       case OperatorType.isTrue:
-        return 'is true';
+        return 'Is True';
       case OperatorType.isFalse:
-        return 'is false';
+        return 'Is False';
       default:
         return '';
     }
   }
 }
-
-// Enums and classes for filter conditions and groups
-enum LogicalOperator { and, or }
-
-enum OperatorType {
-  equals,
-  notEquals,
-  contains,
-  notContains,
-  greaterThan,
-  lessThan,
-  greaterThanOrEqual,
-  lessThanOrEqual,
-  isTrue,
-  isFalse,
-}
-

@@ -76,6 +76,9 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
           case 'name':
             fieldValue = animal.name;
             break;
+          case 'sex':
+            fieldValue = animal.sex;
+            break;
           case 'notes':
             fieldValue = animal.notes.map((note) => note.note).join(' ');
             break;

@@ -378,7 +378,7 @@ class AuthRepository {
               'timestamp': Timestamp.now(),
             }
           ], // Example placeholder for tags
-          'sex': ['male', 'female'].randomElement(),
+          'sex': ['m', 'f'].randomElement(),
           'monthsOld': [2, 6, 12, 24, 36].randomElement(),
           'breed': ['some breed', 'another breed'].randomElement(),
           'description': ['Some description', 'Another description'].randomElement(),
