@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -48,32 +49,34 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
-                        ListTile(
-                          leading: const Icon(Icons.home_outlined),
-                          title: const Text("Shelter Settings"),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            context.push('/settings/shelter-settings');
-                          },
-                        ),
-                        Divider(
-                          color: Colors.black.withOpacity(0.1),
-                          height: 0,
-                          thickness: 1,
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.devices),
-                          title: const Text("Device Settings"),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            context.push('/settings/device-settings');
-                          },
-                        ),
-                        Divider(
-                          color: Colors.black.withOpacity(0.1),
-                          height: 0,
-                          thickness: 1,
-                        ),
+                        if (appUser?.type == 'admin') ...[
+                          ListTile(
+                            leading: const Icon(Icons.home_outlined),
+                            title: const Text("Shelter Settings"),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () {
+                              context.push('/settings/shelter-settings');
+                            },
+                          ),
+                          Divider(
+                            color: Colors.black.withOpacity(0.1),
+                            height: 0,
+                            thickness: 1,
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.devices),
+                            title: const Text("Device Settings"),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () {
+                              context.push('/settings/device-settings');
+                            },
+                          ),
+                          Divider(
+                            color: Colors.black.withOpacity(0.1),
+                            height: 0,
+                            thickness: 1,
+                          ),
+                        ],
                         ListTile(
                           leading: const Icon(Icons.swap_horiz),
                           title: Text("Toggle Account Type: ${appUser?.type}"),
@@ -235,20 +238,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           height: 0,
                           thickness: 1,
                         ),
-                        const ListTile(
-                          leading: Icon(Icons.help_outline),
-                          title: Text("Wiki"),
-                          trailing: Icon(Icons.chevron_right),
+                        ListTile(
+                          leading: const Icon(Icons.help_outline),
+                          title: const Text("Wiki"),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                          launchUrl(Uri.parse('https://shelterpartner.org/wiki'));
+                          },
                         ),
                         Divider(
                           color: Colors.black.withOpacity(0.1),
                           height: 0,
                           thickness: 1,
                         ),
-                        const ListTile(
-                          leading: Icon(Icons.info_outline),
-                          title: Text("Acknowledgements"),
-                          trailing: Icon(Icons.chevron_right),
+                        ListTile(
+                          leading: const Icon(Icons.info_outline),
+                          title: const Text("Acknowledgements"),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            context.push('/settings/acknowledgements');
+                          },
                         ),
                         Divider(
                           color: Colors.black.withOpacity(0.1),

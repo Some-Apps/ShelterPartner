@@ -10,14 +10,12 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 
   VolunteersViewModel(this._repository, this.ref)
       : super(const AsyncValue.loading()) {
-    _initialize(); // Start the initialization process to fetch account details
+    _initialize();
   }
 
-  // Initialize and start listening to the account details stream
   void _initialize() {
     final authState = ref.watch(authViewModelProvider);
 
-    // If authenticated, fetch account details based on the shelterID
     if (authState.status == AuthStatus.authenticated) {
       final shelterID = authState.user?.shelterId;
       if (shelterID != null) {
@@ -28,6 +26,18 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     } else {
       state = AsyncValue.error('User not authenticated', StackTrace.current);
     }
+  }
+
+  void fetchShelterDetails({required String shelterID}) {
+    _repository.fetchShelterDetails(shelterID).listen((accountDetails) {
+      if (accountDetails.exists) {
+        state = AsyncValue.data(Shelter.fromDocument(accountDetails));
+      } else {
+        state = AsyncValue.error('No shelter found', StackTrace.current);
+      }
+    }, onError: (error) {
+      state = AsyncValue.error(error, StackTrace.current);
+    });
   }
 
   // Method to change geofence settings in Firestore document within volunteerSettings
@@ -42,20 +52,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-  // Method to fetch account details from the repository
-  void fetchShelterDetails({required String shelterID}) {
-    _repository.fetchShelterDetails(shelterID).listen((accountDetails) {
-      if (accountDetails.exists) {
-        state = AsyncValue.data(Shelter.fromDocument(
-            accountDetails)); // Update state with Shelter object
-      } else {
-        state = AsyncValue.error('No shelter found',
-            StackTrace.current); // Handle case where no shelter is found
-      }
-    }, onError: (error) {
-      state = AsyncValue.error(error, StackTrace.current); // Handle any errors
-    });
-  }
+  
 
   // Increment attribute in Firestore document within volunteerSettings
   Future<void> incrementAttribute(String shelterID, String field) async {
@@ -92,28 +89,22 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 
   Future<void> sendVolunteerInvite(
       String firstName, String lastName, String email, String shelterID) async {
-    state = const AsyncLoading();
-
     try {
       await ref
           .read(volunteersRepositoryProvider)
           .sendVolunteerInvite(firstName, lastName, email, shelterID);
-      state = const AsyncData(null);
     } catch (e, st) {
-      state = AsyncError(e, st);
+      // Handle error appropriately, perhaps by showing a SnackBar or dialog
     }
   }
 
   Future<void> deleteVolunteer(String id, String shelterId) async {
-    state = const AsyncLoading();
-
     try {
       await ref
           .read(volunteersRepositoryProvider)
           .deleteVolunteer(id, shelterId);
-      state = const AsyncData(null);
     } catch (e, st) {
-      state = AsyncError(e, st);
+      // Handle error appropriately, perhaps by showing a SnackBar or dialog
     }
   }
 
