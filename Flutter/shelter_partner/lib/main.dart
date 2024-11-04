@@ -11,6 +11,7 @@ import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:json_theme_plus/json_theme_plus.dart';
+import 'package:shelter_partner/views/pages/acknowledgements_page.dart';
 import 'package:shelter_partner/views/pages/animals_animal_detail_page.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
 import 'package:shelter_partner/views/pages/api_keys_page.dart';
@@ -54,7 +55,6 @@ void main() async {
   )));
 }
 
-
 class MyApp extends ConsumerWidget {
   final ThemeData theme;
   final ThemeData darktheme;
@@ -78,224 +78,6 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-
-
-  final GoRouter _router = GoRouter(
-  initialLocation: '/animals',
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const AuthPage(),
-    ),
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) {
-        return MainPage(
-          navigationShell: navigationShell,
-        );
-      },
-      branches: [
-        // Branch for the 'Animals' tab
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/animals',
-              builder: (context, state) => const AnimalsPage(),
-              routes: [
-                GoRoute(
-                  path: 'details',
-                  builder: (context, state) {
-                    final animal = state.extra as Animal;
-                    return AnimalsAnimalDetailPage(initialAnimal: animal, visitorPage: false);
-                  },
-                ),
-                GoRoute(
-                  path: 'main-filter',
-                  builder: (context, state) {
-                    final params = state.extra as FilterParameters?;
-                    if (params == null) {
-                      throw Exception('FilterParameters not provided');
-                    }
-                    return MainFilterPage(
-                      title: params.title,
-                      collection: params.collection,
-                      documentID: params.documentID,
-                      filterFieldPath: params.filterFieldPath,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-        // Branch for the 'Visitors' tab
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/visitors',
-              builder: (context, state) => const VisitorPage(),
-              routes: [
-                GoRoute(
-                  path: 'details',
-                  builder: (context, state) {
-                    final animal = state.extra as Animal;
-                    return AnimalsAnimalDetailPage(initialAnimal: animal, visitorPage: true);
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-        // Branch for the 'Volunteers' tab
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/volunteers',
-              builder: (context, state) => const VolunteersPage(),
-              routes: [
-                GoRoute(
-                  path: 'details',
-                  builder: (context, state) {
-                    final volunteer = state.extra as Volunteer;
-                    return VolunteerDetailPage(volunteer: volunteer);
-                  },
-                ),
-                GoRoute(
-                  path: 'volunteer-settings',
-                  builder: (context, state) =>
-                      const VolunteerSettingsPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'main-filter',
-                      builder: (context, state) {
-                        final params = state.extra as FilterParameters?;
-                        if (params == null) {
-                          throw Exception('FilterParameters not provided');
-                        }
-                        return MainFilterPage(
-                          title: params.title,
-                          collection: params.collection,
-                          documentID: params.documentID,
-                          filterFieldPath: params.filterFieldPath,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-        // Branch for the 'Settings' tab
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/settings',
-              builder: (context, state) => const SettingsPage(),
-              routes: [
-                GoRoute(
-                  path: 'shelter-settings',
-                  builder: (context, state) =>
-                      const ShelterSettingsPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'scheduled-reports',
-                      builder: (context, state) =>
-                          const ScheduledReportsPage(
-                              title: 'Scheduled Reports',
-                              arrayKey: 'scheduledReports'),
-                    ),
-                    GoRoute(
-                      path: 'cat-tags',
-                      builder: (context, state) {
-                        return const ArrayModifierPage(
-                            title: 'Cat Tags', arrayKey: 'catTags');
-                      },
-                    ),
-                    GoRoute(
-                      path: 'dog-tags',
-                      builder: (context, state) {
-                        return const ArrayModifierPage(
-                            title: 'Dog Tags', arrayKey: 'dogTags');
-                      },
-                    ),
-                    GoRoute(
-                      path: 'early-put-back-reasons',
-                      builder: (context, state) {
-                        return const ArrayModifierPage(
-                            title: 'Early Put Back Reasons',
-                            arrayKey: 'earlyPutBackReasons');
-                      },
-                    ),
-                    GoRoute(
-                      path: 'let-out-types',
-                      builder: (context, state) {
-                        return const ArrayModifierPage(
-                            title: 'Let Out Types',
-                            arrayKey: 'letOutTypes');
-                      },
-                    ),
-                    GoRoute(
-                      path: 'api-keys',
-                      builder: (context, state) => const ApiKeysPage(
-                          title: 'API Keys', arrayKey: 'apiKeys'),
-                    ),
-                  ],
-                ),
-                GoRoute(
-                  path: 'device-settings',
-                  builder: (context, state) =>
-                      const DeviceSettingsPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'main-filter',
-                      builder: (context, state) {
-                        final params = state.extra as FilterParameters?;
-                        if (params == null) {
-                          throw Exception('FilterParameters not provided');
-                        }
-                        return MainFilterPage(
-                          title: params.title,
-                          collection: params.collection,
-                          documentID: params.documentID,
-                          filterFieldPath: params.filterFieldPath,
-                        );
-                      },
-                    ),
-                    GoRoute(
-                      path: 'visitor-filter',
-                      builder: (context, state) {
-                        final params = state.extra as FilterParameters?;
-                        if (params == null) {
-                          throw Exception('FilterParameters not provided');
-                        }
-                        return MainFilterPage(
-                          title: params.title,
-                          collection: params.collection,
-                          documentID: params.documentID,
-                          filterFieldPath: params.filterFieldPath,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-        // Branch for 'Switch to Admin' or other tabs
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/switch-to-admin',
-              builder: (context, state) =>
-                  const SwitchToAdminPage(),
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
-);
 
 
 // Create the AuthStateChangeNotifier
@@ -367,7 +149,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'details',
                     builder: (context, state) {
                       final animal = state.extra as Animal;
-                      return AnimalsAnimalDetailPage(initialAnimal: animal, visitorPage: false);
+                      return AnimalsAnimalDetailPage(
+                          initialAnimal: animal, visitorPage: false);
                     },
                   ),
                   GoRoute(
@@ -400,7 +183,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'details',
                     builder: (context, state) {
                       final animal = state.extra as Animal;
-                      return AnimalsAnimalDetailPage(initialAnimal: animal, visitorPage: true);
+                      return AnimalsAnimalDetailPage(
+                          initialAnimal: animal, visitorPage: true);
                     },
                   ),
                 ],
@@ -458,13 +242,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const SettingsPage(),
                 routes: [
                   GoRoute(
+                  path: "acknowledgements",
+                  builder: (context, state) => const AcknowledgementsPage(),
+                ),
+                  GoRoute(
                     path: 'shelter-settings',
                     builder: (context, state) => const ShelterSettingsPage(),
                     routes: [
                       GoRoute(
                         path: 'scheduled-reports',
                         builder: (context, state) => const ScheduledReportsPage(
-                            title: 'Scheduled Reports', arrayKey: 'scheduledReports'),
+                            title: 'Scheduled Reports',
+                            arrayKey: 'scheduledReports'),
                       ),
                       GoRoute(
                         path: 'cat-tags',

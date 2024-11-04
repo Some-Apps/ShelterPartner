@@ -9,11 +9,11 @@ class LogsWidget extends StatelessWidget {
   final Function(String logId) onDelete;
 
   const LogsWidget({
-    Key? key,
+    super.key,
     required this.logs,
     required this.isAdmin,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +40,9 @@ class LogsWidget extends StatelessWidget {
                   crossAxisSpacing: 8.0,
                   children: List.generate(logs.length, (int index) {
                     final log = logs[index];
-                    final startTime = log.startTime?.toDate();
-                    final endTime = log.endTime?.toDate();
-                    final duration = startTime != null && endTime != null
+                    final startTime = log.startTime.toDate();
+                    final endTime = log.endTime.toDate();
+                    final duration = endTime != null
                         ? endTime.difference(startTime).inMinutes
                         : null;
                     final formattedDate = endTime != null
@@ -102,13 +102,13 @@ class LogCard extends StatelessWidget {
   final VoidCallback? onDelete;
 
   const LogCard({
-    Key? key,
+    super.key,
     required this.log,
     required this.duration,
     required this.formattedDate,
     required this.isAdmin,
     this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

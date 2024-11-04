@@ -6,7 +6,6 @@ import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
-import 'package:shelter_partner/views/components/text_field_view.dart';
 import 'package:shelter_partner/views/pages/georestriction_settings_page.dart';
 
 class VolunteerSettingsPage extends ConsumerStatefulWidget {
@@ -17,7 +16,19 @@ class VolunteerSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
-  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _customFormURLController;
+
+  @override
+  void initState() {
+    super.initState();
+    _customFormURLController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _customFormURLController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,28 +51,29 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
           child: Text('Error: $error'),
         ),
       ),
-      data: (shelter) => Scaffold(
-        appBar: AppBar(
-          title: const Text("Volunteer Settings"),
-        ),
-        body: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(children: [
+      data: (shelter) {
+        _customFormURLController.text = shelter?.volunteerSettings.customFormURL ?? "";
 
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Volunteer Settings"),
+          ),
+          body: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Card.outlined(
+                      child: Column(children: [
                         PickerView(
                           title: "Main Sort",
                           options: const ["Last Let Out", "Alphabetical"],
-                          value: shelter?.volunteerSettings.mainSort ??
-                              "Last Let Out",
+                          value: shelter?.volunteerSettings.mainSort ?? "Last Let Out",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
@@ -71,205 +83,217 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             }
                           },
                         ),
-
-                        
                       ]),
                     ),
-                  ),
-                  Card(
-                    child: NavigationButton(
-                      title: "Main Filter",
-                      route: '/volunteers/volunteer-settings/main-filter',
-                      extra: FilterParameters(
-                        title: "Volunteers Filter",
-                        collection: 'shelters',
-                        documentID: shelterAsyncValue.value!.id,
-                        filterFieldPath: 'volunteerSettings.mainFilter',
+                    const SizedBox(height: 25),
+                    Card.outlined(
+                      child: NavigationButton(
+                        title: "Main Filter",
+                        route: '/volunteers/volunteer-settings/main-filter',
+                        extra: FilterParameters(
+                          title: "Volunteers Filter",
+                          collection: 'shelters',
+                          documentID: shelterAsyncValue.value!.id,
+                          filterFieldPath: 'volunteerSettings.mainFilter',
+                        ),
                       ),
                     ),
-                  ),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(children: [
-                        TextFieldView(
-                            title: "Custom Form URL",
-                            hint: "Custom Form URL",
-                            value: shelter?.volunteerSettings.customFormURL
-                                    as String ??
-                                "",
-                            onSaved: (String value) {
-                              ref
-                                  .read(volunteersViewModelProvider.notifier)
-                                  .modifyVolunteerSettingString(
-                                      shelter!.id, "customFormURL", value);
-                            }),
-                      ]),
+                    const SizedBox(height: 25),
+                    Card.outlined(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            labelText: "Custom Form URL",
+                            hintText: "Custom Form URL",
+                          ),
+                          controller: _customFormURLController,
+                          onChanged: (String value) {
+                            ref
+                                .read(volunteersViewModelProvider.notifier)
+                                .modifyVolunteerSettingString(
+                                    shelter!.id, "customFormURL", value);
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(children: [
-                        NumberStepperView(
-                          title: "Minimum Duration",
-                          label: "minutes",
-                          value:
-                              shelter?.volunteerSettings.minimumLogMinutes ?? 0,
-                          increment: () {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .incrementAttribute(
-                                    shelter!.id, "minimumLogMinutes");
-                          },
-                          decrement: () {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .decrementAttribute(
-                                    shelter!.id, "minimumLogMinutes");
-                          },
-                        ),
-                        
-                      ]),
-                    ),
-                  ),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(children: [
-                        SwitchToggleView(
-                          title: "Photo Uploads Allowed",
-                          value:
-                              shelter?.volunteerSettings.photoUploadsAllowed ??
-                                  false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    shelter!.id, "photoUploadsAllowed");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Allow Bulk Take Out",
-                          value: shelter?.volunteerSettings.allowBulkTakeOut ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    shelter!.id, "allowBulkTakeOut");
-                          },
-                        ),
-                        
-                        SwitchToggleView(
-                          title: "Require Let Out Type",
-                          value: shelter?.volunteerSettings.requireLetOutType ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    shelter!.id, "requireLetOutType");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Require Early Put Back Reason",
-                          value: shelter?.volunteerSettings
-                                  .requireEarlyPutBackReason ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    shelter!.id, "requireEarlyPutBackReason");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Require Name",
-                          value:
-                              shelter?.volunteerSettings.requireName ?? false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "requireName");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Create Logs When Under Minimum Duration",
-                          value: shelter?.volunteerSettings
-                                  .createLogsWhenUnderMinimumDuration ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id,
-                                    "createLogsWhenUnderMinimumDuration");
-                          },
-                        ),
-                      
-                    
-                        SwitchToggleView(
-                          title: "Show Custom Form",
-                          value: shelter?.volunteerSettings.showCustomForm ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(shelter!.id, "showCustomForm");
-                          },
-                        ),
-                        SwitchToggleView(
-                          title: "Append Animal Data To URL",
-                          value: shelter
-                                  ?.volunteerSettings.appendAnimalDataToURL ??
-                              false,
-                          onChanged: (bool newValue) {
-                            ref
-                                .read(volunteersViewModelProvider.notifier)
-                                .toggleAttribute(
-                                    shelter!.id, "appendAnimalDataToURL");
-                          },
-                        ),
-                      ]),
-                    ),
-                  ),
-                    Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                      children: [
-                        SwitchToggleView(
-                        title: "Georestrict",
-                        value: shelter?.volunteerSettings.geofence?.isEnabled ?? false,
-                        onChanged: (bool newValue) {
+                    const SizedBox(height: 25),
+                    Card.outlined(
+                      child: 
+                      ListTile(title: NumberStepperView(
+                        title: "Minimum Duration",
+                        label: "minutes",
+                        value: shelter?.volunteerSettings.minimumLogMinutes ?? 0,
+                        increment: () {
                           ref
-                            .read(volunteersViewModelProvider.notifier)
-                            .toggleAttribute(shelter!.id, "geofence.isEnabled");
+                              .read(volunteersViewModelProvider.notifier)
+                              .incrementAttribute(
+                                  shelter!.id, "minimumLogMinutes");
                         },
+                        decrement: () {
+                          ref
+                              .read(volunteersViewModelProvider.notifier)
+                              .decrementAttribute(
+                                  shelter!.id, "minimumLogMinutes");
+                        },
+                      ),),
+                      
+                    ),
+                    const SizedBox(height: 25),
+                    Card.outlined(
+                      child: Column(children: [
+                        ListTile(
+                          title: SwitchToggleView(
+                            title: "Photo Uploads Allowed",
+                            value: shelter?.volunteerSettings.photoUploadsAllowed ?? false,
+                            onChanged: (bool newValue) {
+                              ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "photoUploadsAllowed");
+                            },
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
                         ),
                         ListTile(
-                        title: const Text("Georestriction Settings"),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () {
-                          Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const GeorestrictionSettingsPage(),
+                          title: SwitchToggleView(
+                            title: "Allow Bulk Take Out",
+                            value: shelter?.volunteerSettings.allowBulkTakeOut ?? false,
+                            onChanged: (bool newValue) {
+                              ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "allowBulkTakeOut");
+                            },
                           ),
-                          );
-                        },
                         ),
-                      ],
+                        Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
+                        ),
+                        ListTile(
+                          title: SwitchToggleView(
+                            title: "Require Let Out Type",
+                            value: shelter?.volunteerSettings.requireLetOutType ?? false,
+                            onChanged: (bool newValue) {
+                              ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "requireLetOutType");
+                            },
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
+                        ),
+                        ListTile(
+                          title: SwitchToggleView(
+                            title: "Require Early Put Back Reason",
+                            value: shelter?.volunteerSettings.requireEarlyPutBackReason ?? false,
+                            onChanged: (bool newValue) {
+                              ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "requireEarlyPutBackReason");
+                            },
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
+                        ),
+                        ListTile(
+                          title: SwitchToggleView(
+                            title: "Require Name",
+                            value: shelter?.volunteerSettings.requireName ?? false,
+                            onChanged: (bool newValue) {
+                              ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "requireName");
+                            },
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
+                        ),
+                        ListTile(
+                          title: SwitchToggleView(
+                            title: "Create Logs When Under Minimum Duration",
+                            value: shelter?.volunteerSettings.createLogsWhenUnderMinimumDuration ?? false,
+                            onChanged: (bool newValue) {
+                              ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "createLogsWhenUnderMinimumDuration");
+                            },
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
+                        ),
+                        ListTile(
+                          title: SwitchToggleView(
+                            title: "Show Custom Form",
+                            value: shelter?.volunteerSettings.showCustomForm ?? false,
+                            onChanged: (bool newValue) {
+                              ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "showCustomForm");
+                            },
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
+                        ),
+                        ListTile(
+                          title: SwitchToggleView(
+                            title: "Append Animal Data To URL",
+                            value: shelter?.volunteerSettings.appendAnimalDataToURL ?? false,
+                            onChanged: (bool newValue) {
+                              ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "appendAnimalDataToURL");
+                            },
+                          ),
+                        ),
+                      ]),
+                    ),
+                    const SizedBox(height: 25),
+                    Card.outlined(
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title: SwitchToggleView(
+                              title: "Georestrict",
+                              value: shelter?.volunteerSettings.geofence?.isEnabled ?? false,
+                              onChanged: (bool newValue) {
+                                ref
+                                    .read(volunteersViewModelProvider.notifier)
+                                    .toggleAttribute(shelter!.id, "geofence.isEnabled");
+                              },
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.black.withOpacity(0.1),
+                            height: 0,
+                            thickness: 1,
+                          ),
+                          ListTile(
+                            title: const Text("Georestriction Settings"),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const GeorestrictionSettingsPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                    ),
-                  const SizedBox(height: 20.0),
-                ],
+                    const SizedBox(height: 25),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

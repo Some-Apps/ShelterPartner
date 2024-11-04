@@ -17,10 +17,23 @@ class SwitchToggleView extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title),
-        Switch(
-          value: value,
-          onChanged: onChanged, // Handle switch toggle
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              title,
+              style: const TextStyle(
+          fontSize: 16.0,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: Switch(
+            value: value,
+            onChanged: onChanged, // Handle switch toggle
+          ),
         ),
       ],
     );

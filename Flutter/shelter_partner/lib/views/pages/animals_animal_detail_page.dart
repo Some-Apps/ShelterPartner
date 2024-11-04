@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
-import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/models/photo.dart';
 import 'package:shelter_partner/repositories/edit_animal_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/view_models/edit_animal_view_model.dart';
-import 'package:intl/intl.dart';
 import 'package:shelter_partner/views/components/logs_view.dart';
 import 'package:shelter_partner/views/components/notes_view.dart';
 import 'package:photo_view/photo_view.dart';
@@ -133,7 +131,7 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       animal.description,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15.0,
                       ),
                     ),
@@ -248,10 +246,10 @@ class FullScreenGallery extends StatefulWidget {
   final int initialIndex;
 
   const FullScreenGallery({
-    Key? key,
+    super.key,
     required this.imageUrls,
     required this.initialIndex,
-  }) : super(key: key);
+  });
 
   @override
   _FullScreenGalleryState createState() => _FullScreenGalleryState();
@@ -319,7 +317,7 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
 
   @override
   Widget build(BuildContext context) {
-    final isWeb = kIsWeb;
+    const isWeb = kIsWeb;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -386,12 +384,12 @@ class PhotoList extends StatefulWidget {
   final Function(int index) onPhotoTap;
 
   const PhotoList({
-    Key? key,
+    super.key,
     required this.photos,
     required this.isAdmin,
     required this.onDelete,
     required this.onPhotoTap,
-  }) : super(key: key);
+  });
 
   @override
   _PhotoListState createState() => _PhotoListState();
@@ -428,7 +426,7 @@ class _PhotoListState extends State<PhotoList> {
 
   @override
   Widget build(BuildContext context) {
-    final isWeb = kIsWeb;
+    const isWeb = kIsWeb;
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -476,13 +474,13 @@ class PhotoItem extends StatelessWidget {
   final VoidCallback onDelete;
 
   const PhotoItem({
-    Key? key,
+    super.key,
     required this.photo,
     required this.index,
     required this.isAdmin,
     required this.onTap,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

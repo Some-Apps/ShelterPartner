@@ -215,7 +215,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       elevation: 1,
       shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(25),
-      side: BorderSide(color: Colors.white, width: 0.25),
+      // side: BorderSide(color: Colors.white, width: 0.25),
       ),
       shadowColor: Colors.black, // Customize shadow color
       child: Container(
@@ -345,9 +345,9 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 children: [
                   Text(
                   animal.name,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 25.0,
-                    fontWeight: FontWeight.w900,
+                    // fontWeight: FontWeight.bold,
                   ),
                   ),
                   const SizedBox(width: 5),
@@ -461,25 +461,28 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
           padding: const EdgeInsets.only(top: 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            // mainAxisSize: MainAxisSize.min,
             children: [
             if (animal.logs.isNotEmpty)
               Row(
               children: [
-                Icon(Icons.access_time, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
-                ),
+          Icon(Icons.access_time, size: 16, color: Colors.grey.shade600),
+          const SizedBox(width: 4),
+          Text(
+          "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
+          style: TextStyle(color: Colors.grey.shade600),
+          ),
               ],
               ),
             if (animal.logs.isNotEmpty &&
               animal.logs.last.author.isNotEmpty)
               Row(
               children: [
-                Icon(Icons.person_2_outlined, size: 16),
-                const SizedBox(width: 4),
-                Text(animal.logs.last.author),
+          Icon(Icons.person_2_outlined, size: 16, color: Colors.grey.shade600),
+          const SizedBox(width: 4),
+          Text(
+            animal.logs.last.author,
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
               ],
               ),
             ],
