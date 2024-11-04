@@ -123,42 +123,60 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     }
   }
 
-  // Method to build the animal grid view for each tab
   Widget _buildAnimalGridView(String animalType) {
-    final animalsMap = ref.watch(animalsViewModelProvider);
-    final animals = animalsMap[animalType] ?? [];
-    final filteredAnimals = _filterAnimals(animals);
+  final animalsMap = ref.watch(animalsViewModelProvider);
+  final animals = animalsMap[animalType] ?? [];
+  final filteredAnimals = _filterAnimals(animals);
 
-    if (animals.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (filteredAnimals.isEmpty) {
-      return const Center(child: Text('No animals found'));
-    } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final int columns = (constraints.maxWidth / 400).floor();
-            final double aspectRatio = constraints.maxWidth / (columns * 200);
+  if (animals.isEmpty) {
+    return const Center(child: CircularProgressIndicator());
+  } else if (filteredAnimals.isEmpty) {
+    return const Center(child: Text('No animals found'));
+  } else {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final int columns = (constraints.maxWidth / 400).floor();
+          final double aspectRatio = constraints.maxWidth / (columns * 200);
 
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columns,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: aspectRatio,
-              ),
-              itemCount: filteredAnimals.length,
-              itemBuilder: (context, index) {
-                final animal = filteredAnimals[index];
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0,
+              childAspectRatio: aspectRatio,
+            ),
+            itemCount: filteredAnimals.length + (filteredAnimals.length ~/ 10),
+            itemBuilder: (context, index) {
+              if ((index + 1) % 11 == 0) {
+                // This is an ad position
+                return _buildAdCard();
+              } else {
+                // Adjust the index to account for the ads
+                int adjustedIndex = index - (index ~/ 11);
+                final animal = filteredAnimals[adjustedIndex];
                 return AnimalCardView(animal: animal);
-              },
-            );
-          },
-        ),
-      );
-    }
+              }
+            },
+          );
+        },
+      ),
+    );
   }
+}
+
+Widget _buildAdCard() {
+  return Card(
+    child: Center(
+      child: Text(
+        'Your Ad Here',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -357,3 +375,4 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     );
   }
 }
+

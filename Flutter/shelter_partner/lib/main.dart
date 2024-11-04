@@ -48,6 +48,7 @@ void main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
   };
+
   runApp(ProviderScope(
       child: MyApp(
     theme: theme,
