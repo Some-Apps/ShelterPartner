@@ -82,7 +82,7 @@ class AcknowledgementsPage extends StatelessWidget {
                     ListTile(
                       title: Text("Early Adopters"),
                       subtitle: Text(
-                          "A lot of shelters were willing to try the app when it was new and unproven."),
+                          "A lot of shelters were willing to try the app when it was new and unproven and helped guide the direction of the app."),
                     ),
                   ],
                 ),
