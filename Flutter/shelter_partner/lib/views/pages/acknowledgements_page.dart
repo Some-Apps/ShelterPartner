@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AcknowledgementsPage extends StatelessWidget {
-  const AcknowledgementsPage({Key? key}) : super(key: key);
+  const AcknowledgementsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class AcknowledgementsPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 25),
+              SizedBox(height: 25),
               Card.outlined(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +55,7 @@ class AcknowledgementsPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 25),
+              SizedBox(height: 25),
               Card.outlined(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

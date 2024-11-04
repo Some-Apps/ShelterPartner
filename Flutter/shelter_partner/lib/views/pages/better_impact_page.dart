@@ -14,7 +14,7 @@ final usersToAddProvider = StateProvider<List<Map<String, dynamic>>>((ref) => []
 final usersToRemoveProvider = StateProvider<List<Volunteer>>((ref) => []);
 
 class BetterImpactPage extends ConsumerStatefulWidget {
-  const BetterImpactPage({Key? key}) : super(key: key);
+  const BetterImpactPage({super.key});
 
   @override
   _BetterImpactPageState createState() => _BetterImpactPageState();
@@ -262,10 +262,10 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
             ),
           ),
           if (isLoading)
-            Center(
+            const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 16),
                   Text('Loading...'),
@@ -280,7 +280,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
 
 class SyncDialog extends ConsumerWidget {
   final String shelterID;
-  const SyncDialog({Key? key, required this.shelterID}) : super(key: key);
+  const SyncDialog({super.key, required this.shelterID});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

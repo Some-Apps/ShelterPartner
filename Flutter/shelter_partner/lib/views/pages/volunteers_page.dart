@@ -5,7 +5,7 @@ import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:email_validator/email_validator.dart';
 
 class VolunteersPage extends ConsumerStatefulWidget {
-  const VolunteersPage({Key? key}) : super(key: key);
+  const VolunteersPage({super.key});
 
   @override
   _VolunteersPageState createState() => _VolunteersPageState();
