@@ -42,7 +42,7 @@ class LogsWidget extends StatelessWidget {
                     final log = logs[index];
                     final startTime = log.startTime.toDate();
                     final endTime = log.endTime.toDate();
-                    final duration = startTime != null && endTime != null
+                    final duration = endTime != null
                         ? endTime.difference(startTime).inMinutes
                         : null;
                     final formattedDate = endTime != null

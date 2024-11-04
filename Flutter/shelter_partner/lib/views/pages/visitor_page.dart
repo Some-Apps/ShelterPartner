@@ -189,75 +189,76 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                   final imageUrl =
                     getResizedImageUrl(animal, maxItemExtent.toInt());
         
-                  return Padding(
+                    return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
-                    onTap: () {},
-                    child: AspectRatio(
+                      onTap: () {},
+                      child: AspectRatio(
                       aspectRatio: 1.0,
-                      child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16.0),
-                      child: GestureDetector(
-                        onTap: () {
-                        context.push('/visitors/details',
-                          extra: animal);
-                        },
-                        child: Container(
-                        color: Colors.grey[300],
-                        child: Stack(
-                          children: [
-                          CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                              const Center(
-                            child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) =>
-                              const Center(
-                            child: Icon(Icons.error,
-                              color: Colors.red),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.7),
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25.0),
+                        child: GestureDetector(
+                          onTap: () {
+                          context.push('/visitors/details', extra: animal);
+                          },
+                          child: Container(
+                          color: Colors.grey[300],
+                          child: Stack(
+                            children: [
+                            CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => const Center(
+                              child: CircularProgressIndicator(),
+                              ),
+                              errorWidget: (context, url, error) => const Center(
+                              child: Icon(Icons.error, color: Colors.red),
                               ),
                             ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              animal.name,
-                              style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.7),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                ),
                               ),
-                              textAlign: TextAlign.center,
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                animal.name,
+                                style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              ),
                             ),
-                            ),
+                            ],
                           ),
-                          ],
+                          ),
                         ),
                         ),
                       ),
                       ),
                     ),
-                    ),
-                  );
-                  },
-                  childCount: animals.length,
-                ),
-                ),
+                    );
+                    },
+                    childCount: animals.length,
+                  ),
+                  ),
                 // "Start Slideshow" button at the end of the scroll view
                 SliverToBoxAdapter(
                 child: Padding(

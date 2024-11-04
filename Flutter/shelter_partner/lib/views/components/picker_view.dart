@@ -17,7 +17,7 @@ class PickerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(title: Text(this.title),
+    return ListTile(title: Text(title),
     trailing: DropdownButton<String>(
       value: value, // The currently selected value
       hint: const Text(

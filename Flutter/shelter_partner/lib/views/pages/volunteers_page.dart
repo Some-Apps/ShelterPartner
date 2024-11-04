@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:shelter_partner/views/components/navigation_button_view.dart';
 
 class VolunteersPage extends ConsumerStatefulWidget {
   const VolunteersPage({super.key});
