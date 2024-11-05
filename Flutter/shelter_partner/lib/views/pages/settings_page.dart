@@ -26,8 +26,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   List<ProductDetails> _products = [];
   bool _loading = true;
   // Add a variable to track the subscription status
-  bool _isSubscribed = false;
-  Set<String> _kProductIds = {'RemoveAds'};
+  final bool _isSubscribed = false;
+  final Set<String> _kProductIds = {'RemoveAds'};
 
   @override
   void initState() {
@@ -378,28 +378,28 @@ Future<void> _validateReceipt(String receiptData, String platform, String userId
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
-                        ListTile(
+                        if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android) 
+                          ListTile(
                           leading: const Icon(Icons.favorite_border),
                           title: const Text("Support Us And Remove Ads"),
-                          // trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
+                          onTap: () async {
                             if (_isAvailable && _products.isNotEmpty) {
-                              final ProductDetails product =
-                                  _products.firstWhere((product) =>
-                                      product.id == 'RemoveAds');
-                              final PurchaseParam purchaseParam =
-                                  PurchaseParam(productDetails: product);
-                              _inAppPurchase.buyNonConsumable(
-                                  purchaseParam: purchaseParam);
+                            setState(() {
+                              _loading = true;
+                            });
+                            final ProductDetails product = _products.firstWhere((product) => product.id == 'RemoveAds');
+                            final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+                            await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+                            setState(() {
+                              _loading = false;
+                            });
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Store is unavailable or products not loaded')),
-                              );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Store is unavailable or products not loaded')),
+                            );
                             }
                           },
-                        ),
+                          ),
                         // ListTile(
                         //   leading: const Icon(Icons.restore),
                         //   title: const Text("Restore Purchases"),

@@ -28,25 +28,6 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // List of ads
-  final List<Map<String, String>> ads = [
-    {
-      'imageUrl': 'https://m.media-amazon.com/images/I/71Ay6ojN2mL._AC_SX679_.jpg',
-      'productName': 'Durable Dog Chew Toy',
-      'productUrl': 'https://www.amazon.com/dp/B09WHBG4DV/?tag=YOUR_AFFILIATE_ID',
-    },
-    {
-      'imageUrl': 'https://m.media-amazon.com/images/I/71sUr2o3ViL._AC_SL1500_.jpg',
-      'productName': 'Premium Cat Tree Tower',
-      'productUrl': 'https://www.amazon.com/dp/B08FX7VQJH/?tag=YOUR_AFFILIATE_ID',
-    },
-    {
-      'imageUrl': 'https://m.media-amazon.com/images/I/81+Y-ZKNb7L._AC_SL1500_.jpg',
-      'productName': 'Automatic Pet Feeder',
-      'productUrl': 'https://www.amazon.com/dp/B07L5DYZB5/?tag=YOUR_AFFILIATE_ID',
-    },
-    // Add more ads as needed
-  ];
 
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
@@ -164,7 +145,7 @@ Widget _buildAnimalGridView(String animalType, AsyncValue<List<Ad>> adsAsyncValu
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final int columns = (constraints.maxWidth / 400).floor();
+          final int columns = (constraints.maxWidth / 375).floor();
           final double aspectRatio = constraints.maxWidth / (columns * 200);
 
           // Adjust item count based on whether ads are removed
@@ -494,7 +475,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
               // Carousel with continuous scrolling ListView
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: 8),
                   child: ListView.builder(
                     controller: _scrollController,
                     scrollDirection: Axis.horizontal,

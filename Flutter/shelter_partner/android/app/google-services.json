@@ -31,7 +31,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:222422545919:android:15dbcb59093cb5fd41e3ca",
         "android_client_info": {
-          "package_name": "org.shelterpartner.dev"
+          "package_name": "me.jareddanieljones.HumaneSociety"
         }
       },
       "oauth_client": [],
