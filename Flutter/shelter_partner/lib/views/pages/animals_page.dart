@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/ad.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/animals_view_model.dart';
@@ -10,6 +15,7 @@ import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AnimalsPage extends ConsumerStatefulWidget {
   const AnimalsPage({super.key});
@@ -21,6 +27,7 @@ class AnimalsPage extends ConsumerStatefulWidget {
 class _AnimalsPageState extends ConsumerState<AnimalsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
 
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
@@ -123,45 +130,79 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     }
   }
 
-  // Method to build the animal grid view for each tab
-  Widget _buildAnimalGridView(String animalType) {
-    final animalsMap = ref.watch(animalsViewModelProvider);
-    final animals = animalsMap[animalType] ?? [];
-    final filteredAnimals = _filterAnimals(animals);
+Widget _buildAnimalGridView(String animalType, AsyncValue<List<Ad>> adsAsyncValue) {
+  final appUser = ref.watch(appUserProvider);
+  final animalsMap = ref.watch(animalsViewModelProvider);
+  final animals = animalsMap[animalType] ?? [];
+  final filteredAnimals = _filterAnimals(animals);
 
-    if (animals.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (filteredAnimals.isEmpty) {
-      return const Center(child: Text('No animals found'));
-    } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final int columns = (constraints.maxWidth / 400).floor();
-            final double aspectRatio = constraints.maxWidth / (columns * 200);
+  if (animals.isEmpty) {
+    return const Center(child: CircularProgressIndicator());
+  } else if (filteredAnimals.isEmpty) {
+    return const Center(child: Text('No animals found'));
+  } else {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final int columns = (constraints.maxWidth / 400).floor();
+          final double aspectRatio = constraints.maxWidth / (columns * 200);
 
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columns,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: aspectRatio,
-              ),
-              itemCount: filteredAnimals.length,
-              itemBuilder: (context, index) {
-                final animal = filteredAnimals[index];
+          // Adjust item count based on whether ads are removed
+          int itemCount = filteredAnimals.length;
+          if (!appUser!.removeAds) {
+            itemCount += filteredAnimals.length ~/ 10;
+          }
+
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0,
+              childAspectRatio: aspectRatio,
+            ),
+            itemCount: itemCount,
+            itemBuilder: (context, index) {
+              if (!appUser.removeAds && (index + 1) % 11 == 0) {
+                // This is an ad position
+                return _buildAdCard(adsAsyncValue);
+              } else {
+                // Adjust the index to account for the ads
+                int adjustedIndex = index;
+                if (!appUser.removeAds) {
+                  adjustedIndex = index - (index ~/ 11);
+                }
+                final animal = filteredAnimals[adjustedIndex];
                 return AnimalCardView(animal: animal);
-              },
-            );
-          },
-        ),
-      );
-    }
+              }
+            },
+          );
+        },
+      ),
+    );
   }
+}
+
+Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
+  return adsAsyncValue.when(
+    data: (ads) {
+      if (ads.isEmpty) {
+        return const Text('No ads available');
+      }
+      final randomAd = ads[Random().nextInt(ads.length)];
+      return CustomAffiliateAd(
+        ad: Ad(id: randomAd.id, imageUrls: randomAd.imageUrls, productName: randomAd.productName, productUrl: randomAd.productUrl),
+      );
+    },
+    loading: () => const Center(child: CircularProgressIndicator()),
+    error: (error, stackTrace) => const Text('Error loading ads'),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
+    final adsAsyncValue = ref.watch(adsProvider);
     final appUser = ref.watch(appUserProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
@@ -344,9 +385,9 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                   controller: _tabController,
                   children: [
                     // Dogs
-                    _buildAnimalGridView('dogs'),
+                          _buildAnimalGridView('dogs', adsAsyncValue),
                     // Cats
-                    _buildAnimalGridView('cats'),
+                          _buildAnimalGridView('cats', adsAsyncValue),
                   ],
                 ),
               ),
@@ -357,3 +398,143 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     );
   }
 }
+
+class CustomAffiliateAd extends StatefulWidget {
+  final Ad ad;
+
+  const CustomAffiliateAd({
+    super.key,
+    required this.ad,
+  });
+
+  @override
+  _CustomAffiliateAdState createState() => _CustomAffiliateAdState();
+}
+
+class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
+  late final ScrollController _scrollController;
+  late final Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+
+    // Set up a timer to auto-scroll continuously
+    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      if (_scrollController.hasClients) {
+        double maxScrollExtent = _scrollController.position.maxScrollExtent;
+        double currentScroll = _scrollController.position.pixels;
+        double delta = 1; // Adjust scroll speed here
+
+        if (currentScroll + delta >= maxScrollExtent) {
+          _scrollController.jumpTo(0);
+        } else {
+          _scrollController.animateTo(
+            currentScroll + delta,
+            duration: const Duration(milliseconds: 50),
+            curve: Curves.linear,
+          );
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _timer.cancel();
+    super.dispose();
+  }
+
+  Future<void> _launchUrl() async {
+    final uri = Uri.parse(widget.ad.productUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch ${widget.ad.productUrl}';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Card(
+        color: Colors.grey.shade300,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25.0),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: _launchUrl,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Carousel with continuous scrolling ListView
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      final imageUrl = widget.ad.imageUrls[index % widget.ad.imageUrls.length];
+                      return AspectRatio(
+                        aspectRatio: 1, // Square aspect ratio
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[300],
+                                  child: Icon(Icons.image, size: 50, color: Colors.grey[700]),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              // Product name
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  widget.ad.productName,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              // Buy Now button
+              ElevatedButton(
+                onPressed: _launchUrl,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 36),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                ),
+                child: const Text('Buy Now'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+final adsProvider = StreamProvider<List<Ad>>((ref) {
+  return FirebaseFirestore.instance
+      .collection('ads')
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
+});

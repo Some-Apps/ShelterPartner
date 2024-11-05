@@ -12,6 +12,7 @@ class AppUser {
   final String shelterId;
   final DeviceSettings? deviceSettings;
   final FilterElement? userFilter;
+  final bool removeAds;
 
   AppUser({
     required this.id,
@@ -22,6 +23,7 @@ class AppUser {
     required this.shelterId,
     required this.deviceSettings,
     this.userFilter,
+    required this.removeAds
   });
 
   // Factory constructor to create AppUser from Firestore document
@@ -65,6 +67,7 @@ class AppUser {
       shelterId: data['shelterID'],
       deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
       userFilter: userFilter, // Assign the deserialized userFilter here
+      removeAds: data['removeAds']
     );
   }
 
@@ -78,6 +81,7 @@ class AppUser {
     String? shelterId,
     DeviceSettings? deviceSettings,
     FilterElement? userFilter,
+    bool? removeAds
   }) {
     return AppUser(
       id: id ?? this.id,
@@ -88,6 +92,7 @@ class AppUser {
       shelterId: shelterId ?? this.shelterId,
       deviceSettings: deviceSettings ?? this.deviceSettings,
       userFilter: userFilter ?? this.userFilter,
+      removeAds: removeAds ?? this.removeAds
     );
   }
 }

@@ -93,7 +93,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
       await ref
           .read(volunteersRepositoryProvider)
           .sendVolunteerInvite(firstName, lastName, email, shelterID);
-    } catch (e, st) {
+    } catch (e) {
       // Handle error appropriately, perhaps by showing a SnackBar or dialog
     }
   }
@@ -103,7 +103,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
       await ref
           .read(volunteersRepositoryProvider)
           .deleteVolunteer(id, shelterId);
-    } catch (e, st) {
+    } catch (e) {
       // Handle error appropriately, perhaps by showing a SnackBar or dialog
     }
   }

@@ -1,4 +1,4 @@
-package org.shelterpartner.dev
+package me.jareddanieljones.HumaneSociety
 
 import io.flutter.embedding.android.FlutterActivity
 

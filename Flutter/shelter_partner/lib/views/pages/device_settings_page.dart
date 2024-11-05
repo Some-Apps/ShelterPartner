@@ -8,7 +8,6 @@ import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
-import 'package:shelter_partner/views/components/text_field_view.dart';
 
 class DeviceSettingsPage extends ConsumerStatefulWidget {
   const DeviceSettingsPage({super.key});

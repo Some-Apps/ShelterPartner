@@ -153,6 +153,7 @@ class AuthRepository {
       'shelterID': shelterId,
       'type': 'admin',
       'deviceSettings': defaultDeviceSettings.toMap(),
+      'removeAds': false
     });
 
     // Create the shelter without deviceSettings
