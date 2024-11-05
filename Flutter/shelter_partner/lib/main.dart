@@ -10,7 +10,6 @@ import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
-import 'package:json_theme_plus/json_theme_plus.dart';
 import 'package:shelter_partner/views/pages/acknowledgements_page.dart';
 import 'package:shelter_partner/views/pages/animals_animal_detail_page.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
@@ -32,15 +31,185 @@ import 'package:shelter_partner/views/pages/volunteers_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
-  final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson) ?? ThemeData.light();
+  // Define themes directly in code
+  final ThemeData theme = ThemeData(
+  brightness: Brightness.light,
+  useMaterial3: true,
+  primaryColor: const Color(0xff36618e),
+  canvasColor: const Color(0xfff8f9ff),
+  scaffoldBackgroundColor: const Color(0xfff8f9ff),
+  cardColor: const Color(0xfff8f9ff),
+  dividerColor: const Color(0x1f191c20),
+  disabledColor: const Color(0x61000000),
+  focusColor: const Color(0x1f000000),
+  highlightColor: const Color(0x66bcbcbc),
+  hintColor: const Color(0x99000000),
+  hoverColor: const Color(0x0a000000),
+  splashColor: const Color(0x66c8c8c8),
+  shadowColor: const Color(0xff000000),
+  secondaryHeaderColor: const Color(0xffe3f2fd),
+  indicatorColor: Colors.white,
+  unselectedWidgetColor: const Color(0x8a000000),
+  visualDensity: VisualDensity.compact,
 
-  final darkThemeStr =
-      await rootBundle.loadString('assets/appainter_theme_dark.json');
-  final darkThemeJson = jsonDecode(darkThemeStr);
-  final darktheme =
-      ThemeDecoder.decodeThemeData(darkThemeJson) ?? ThemeData.dark();
+
+
+  // Color scheme based on JSON
+  // colorScheme: const ColorScheme(
+  //   brightness: Brightness.light,
+  //   primary: Color(0xff36618e),
+  //   onPrimary: Colors.white,
+  //   primaryContainer: Color(0xffd1e4ff),
+  //   onPrimaryContainer: Color(0xff001d36),
+  //   secondary: Color(0xff535f70),
+  //   onSecondary: Colors.white,
+  //   secondaryContainer: Color(0xffd7e3f7),
+  //   onSecondaryContainer: Color(0xff101c2b),
+  //   tertiary: Color(0xff6b5778),
+  //   onTertiary: Colors.white,
+  //   tertiaryContainer: Color(0xfff2daff),
+  //   onTertiaryContainer: Color(0xff251431),
+  //   background: Color(0xfff8f9ff),
+  //   onBackground: Color(0xff191c20),
+  //   surface: Color(0xfff8f9ff),
+  //   onSurface: Color(0xff191c20),
+  //   error: Color(0xffba1a1a),
+  //   onError: Colors.white,
+  //   errorContainer: Color(0xffffdad6),
+  //   onErrorContainer: Color(0xff410002),
+  //   outline: Color(0xff73777f),
+  //   shadow: Color(0xff000000),
+  //   surfaceTint: Color(0xff36618e),
+  // ),
+
+  // Icon theme
+  iconTheme: const IconThemeData(color: Color(0xdd000000)),
+  primaryIconTheme: const IconThemeData(color: Colors.white),
+
+  // Text themes
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.5,
+    ),
+    bodyMedium: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.25,
+    ),
+    bodySmall: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.4,
+    ),
+    displayLarge: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 96,
+      fontWeight: FontWeight.w300,
+      letterSpacing: -1.5,
+    ),
+    displayMedium: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 60,
+      fontWeight: FontWeight.w300,
+      letterSpacing: -0.5,
+    ),
+    displaySmall: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 48,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0,
+    ),
+    headlineLarge: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 40,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.25,
+    ),
+    headlineMedium: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 34,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.25,
+    ),
+    headlineSmall: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 24,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0,
+    ),
+    labelLarge: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 1.25,
+    ),
+    labelMedium: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 11,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 1.5,
+    ),
+    labelSmall: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 10,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 1.5,
+    ),
+    titleLarge: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 20,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+    ),
+    titleMedium: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.15,
+    ),
+    titleSmall: TextStyle(
+      color: Color(0xff191c20),
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.1,
+    ),
+  ),
+
+  // Button theme
+  buttonTheme: const ButtonThemeData(
+    alignedDropdown: false,
+    height: 36,
+    minWidth: 88,
+    layoutBehavior: ButtonBarLayoutBehavior.padded,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(2)),
+    ),
+  ),
+
+  // Input decoration theme
+  inputDecorationTheme: const InputDecorationTheme(
+    alignLabelWithHint: false,
+    filled: false,
+    floatingLabelAlignment: FloatingLabelAlignment.start,
+    floatingLabelBehavior: FloatingLabelBehavior.auto,
+    isCollapsed: false,
+    isDense: false,
+  ),
+
+  // Typography
+  typography: Typography.material2021(platform: TargetPlatform.macOS),
+);
+
+
+  final ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    // Additional dark theme customization here
+  );
 
   final FirebaseService firebaseService = FirebaseService();
   await firebaseService.initialize();
@@ -52,18 +221,18 @@ void main() async {
   runApp(ProviderScope(
       child: MyApp(
     theme: theme,
-    darktheme: darktheme,
+    darkTheme: darkTheme,
   )));
 }
 
 class MyApp extends ConsumerWidget {
   final ThemeData theme;
-  final ThemeData darktheme;
+  final ThemeData darkTheme;
 
   const MyApp({
     super.key,
     required this.theme,
-    required this.darktheme,
+    required this.darkTheme,
   });
 
   @override
@@ -73,7 +242,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       routerConfig: goRouter,
       theme: theme,
-      darkTheme: darktheme,
+      darkTheme: darkTheme,
       themeMode: ThemeMode.light, // Set your desired theme mode
       debugShowCheckedModeBanner: false,
     );

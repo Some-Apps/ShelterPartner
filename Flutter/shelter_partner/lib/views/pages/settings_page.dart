@@ -197,6 +197,7 @@ Future<void> _validateReceipt(String receiptData, String platform, String userId
                   Card.outlined(
                     child: ListView(
                       shrinkWrap: true,
+                      
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
                         if (appUser?.type == 'admin') ...[

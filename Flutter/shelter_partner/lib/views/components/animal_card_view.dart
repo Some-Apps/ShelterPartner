@@ -20,6 +20,7 @@ import 'package:shelter_partner/views/components/put_back_confirmation_view.dart
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:uuid/uuid.dart';
 
+
 class AnimalCardView extends ConsumerStatefulWidget {
   final Animal animal;
 
@@ -526,23 +527,6 @@ Widget _buildInfoChip({
   );
 }
 
-Widget _buildTagChip({
-  required String label,
-  double textSize = 10.0,
-}) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-    decoration: BoxDecoration(
-      color: Colors.black.withOpacity(0.05),
-      borderRadius: BorderRadius.circular(5),
-      // border: Border.all(color: Colors.black.withOpacity(0.1)),
-    ),
-    child: Text(
-      label,
-      style: TextStyle(color: Colors.black.withOpacity(0.5), fontSize: textSize),
-    ),
-  );
-}
 
 Icon _buildIcon(String symbol, String symbolColor) {
   IconData iconData;
