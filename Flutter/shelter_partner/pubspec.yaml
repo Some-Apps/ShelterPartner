@@ -37,6 +37,7 @@ dependencies:
   package_info_plus: ^8.1.0
   in_app_purchase: ^3.2.0
   flutter_launcher_icons: ^0.14.1
+  json_theme_plus: ^6.6.4
 
 
 
