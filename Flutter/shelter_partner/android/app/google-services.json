@@ -7,6 +7,28 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:222422545919:android:44fb37af6aea11a441e3ca",
+        "android_client_info": {
+          "package_name": "me.jareddanieljones.HumaneSociety"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9qQTAJ1K4S76jQEBO_kU4TzPkvrI1Y04"
+        },
+        {
+          "current_key": "AIzaSyDazdc6VhXTuYP23LivAzjLiJBU9ap8jUg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:222422545919:android:15dbcb59093cb5fd41e3ca",
         "android_client_info": {
           "package_name": "org.shelterpartner.dev"
@@ -14,6 +36,9 @@
       },
       "oauth_client": [],
       "api_key": [
+        {
+          "current_key": "AIzaSyD9qQTAJ1K4S76jQEBO_kU4TzPkvrI1Y04"
+        },
         {
           "current_key": "AIzaSyDazdc6VhXTuYP23LivAzjLiJBU9ap8jUg"
         }

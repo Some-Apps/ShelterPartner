@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyD3P2kuByZkIO2G_mG9zj_t0UKJfzcsdUU</string>
+	<string>AIzaSyCqKPd59J83BCXIkUotrmh1hu7VySoN1r8</string>
 	<key>GCM_SENDER_ID</key>
 	<string>222422545919</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.shelterpartner.dev</string>
+	<string>me.jareddanieljones.HumaneSociety</string>
 	<key>PROJECT_ID</key>
 	<string>development-e5282</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:222422545919:ios:8c610d5291fe735641e3ca</string>
+	<string>1:222422545919:ios:21dca52a4856aab041e3ca</string>
 </dict>
 </plist>

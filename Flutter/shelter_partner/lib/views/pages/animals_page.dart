@@ -150,6 +150,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   }
 
 Widget _buildAnimalGridView(String animalType, AsyncValue<List<Ad>> adsAsyncValue) {
+  final appUser = ref.watch(appUserProvider);
   final animalsMap = ref.watch(animalsViewModelProvider);
   final animals = animalsMap[animalType] ?? [];
   final filteredAnimals = _filterAnimals(animals);
@@ -166,6 +167,12 @@ Widget _buildAnimalGridView(String animalType, AsyncValue<List<Ad>> adsAsyncValu
           final int columns = (constraints.maxWidth / 400).floor();
           final double aspectRatio = constraints.maxWidth / (columns * 200);
 
+          // Adjust item count based on whether ads are removed
+          int itemCount = filteredAnimals.length;
+          if (!appUser!.removeAds) {
+            itemCount += filteredAnimals.length ~/ 10;
+          }
+
           return GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: columns,
@@ -173,19 +180,21 @@ Widget _buildAnimalGridView(String animalType, AsyncValue<List<Ad>> adsAsyncValu
               mainAxisSpacing: 8.0,
               childAspectRatio: aspectRatio,
             ),
-            itemCount: filteredAnimals.length + (filteredAnimals.length ~/ 10),
+            itemCount: itemCount,
             itemBuilder: (context, index) {
-  if ((index + 1) % 11 == 0) {
-    // This is an ad position
-    return _buildAdCard(adsAsyncValue);
-  } else {
-    // Adjust the index to account for the ads
-    int adjustedIndex = index - (index ~/ 11);
-    final animal = filteredAnimals[adjustedIndex];
-    return AnimalCardView(animal: animal);
-  }
-},
-
+              if (!appUser.removeAds && (index + 1) % 11 == 0) {
+                // This is an ad position
+                return _buildAdCard(adsAsyncValue);
+              } else {
+                // Adjust the index to account for the ads
+                int adjustedIndex = index;
+                if (!appUser.removeAds) {
+                  adjustedIndex = index - (index ~/ 11);
+                }
+                final animal = filteredAnimals[adjustedIndex];
+                return AnimalCardView(animal: animal);
+              }
+            },
           );
         },
       ),
@@ -413,9 +422,9 @@ class CustomAffiliateAd extends StatefulWidget {
   final Ad ad;
 
   const CustomAffiliateAd({
-    Key? key,
+    super.key,
     required this.ad,
-  }) : super(key: key);
+  });
 
   @override
   _CustomAffiliateAdState createState() => _CustomAffiliateAdState();
@@ -431,7 +440,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
     _scrollController = ScrollController();
 
     // Set up a timer to auto-scroll continuously
-    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       if (_scrollController.hasClients) {
         double maxScrollExtent = _scrollController.position.maxScrollExtent;
         double currentScroll = _scrollController.position.pixels;
@@ -442,7 +451,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
         } else {
           _scrollController.animateTo(
             currentScroll + delta,
-            duration: Duration(milliseconds: 50),
+            duration: const Duration(milliseconds: 50),
             curve: Curves.linear,
           );
         }
@@ -471,7 +480,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Card(
-        color: Colors.grey.shade200,
+        color: Colors.grey.shade300,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25.0),
@@ -484,31 +493,34 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
             children: [
               // Carousel with continuous scrolling ListView
               Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    final imageUrl = widget.ad.imageUrls[index % widget.ad.imageUrls.length];
-                    return AspectRatio(
-                      aspectRatio: 1, // Square aspect ratio
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[300],
-                                child: Icon(Icons.image, size: 50, color: Colors.grey[700]),
-                              );
-                            },
+                child: Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      final imageUrl = widget.ad.imageUrls[index % widget.ad.imageUrls.length];
+                      return AspectRatio(
+                        aspectRatio: 1, // Square aspect ratio
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[300],
+                                  child: Icon(Icons.image, size: 50, color: Colors.grey[700]),
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
               // Product name
@@ -522,13 +534,13 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
               // Buy Now button
               ElevatedButton(
                 onPressed: _launchUrl,
-                child: const Text('Buy Now'),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 36),
-                  shape: RoundedRectangleBorder(
+                  minimumSize: const Size(double.infinity, 36),
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero,
                   ),
                 ),
+                child: const Text('Buy Now'),
               ),
             ],
           ),

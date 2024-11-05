@@ -37,40 +37,43 @@ class DefaultFirebaseOptions {
     projectId: 'development-e5282',
     authDomain: 'development-e5282.firebaseapp.com',
     storageBucket: 'development-e5282.appspot.com',
+    measurementId: 'G-8SNYDE7ZFW',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDazdc6VhXTuYP23LivAzjLiJBU9ap8jUg',
-    appId: '1:222422545919:android:15dbcb59093cb5fd41e3ca',
+    apiKey: 'AIzaSyD9qQTAJ1K4S76jQEBO_kU4TzPkvrI1Y04',
+    appId: '1:222422545919:android:44fb37af6aea11a441e3ca',
     messagingSenderId: '222422545919',
     projectId: 'development-e5282',
     storageBucket: 'development-e5282.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD3P2kuByZkIO2G_mG9zj_t0UKJfzcsdUU',
-    appId: '1:222422545919:ios:8c610d5291fe735641e3ca',
+    apiKey: 'AIzaSyCqKPd59J83BCXIkUotrmh1hu7VySoN1r8',
+    appId: '1:222422545919:ios:21dca52a4856aab041e3ca',
     messagingSenderId: '222422545919',
     projectId: 'development-e5282',
     storageBucket: 'development-e5282.appspot.com',
-    iosBundleId: 'org.shelterpartner.dev',
+    iosBundleId: 'me.jareddanieljones.HumaneSociety',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBPY-O2MZPBoXwQPcA4VIih0nrpmYyLEUc',
-    appId: '1:222422545919:ios:8c610d5291fe735641e3ca',
+    apiKey: 'AIzaSyCqKPd59J83BCXIkUotrmh1hu7VySoN1r8',
+    appId: '1:222422545919:ios:21dca52a4856aab041e3ca',
     messagingSenderId: '222422545919',
     projectId: 'development-e5282',
     storageBucket: 'development-e5282.appspot.com',
-    iosBundleId: 'org.shelterpartner.dev',
+    iosBundleId: 'me.jareddanieljones.HumaneSociety',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDlISw9Omgjk3rsfw0ad-EqrBhLaCJiaME',
-    appId: '1:222422545919:ios:8c610d5291fe735641e3ca',
+    apiKey: 'AIzaSyBQZs0WVeZt91hc4fQtfuTg4kY4-bFq9qw',
+    appId: '1:222422545919:web:3d8279b4151d741041e3ca',
     messagingSenderId: '222422545919',
     projectId: 'development-e5282',
     authDomain: 'development-e5282.firebaseapp.com',
     storageBucket: 'development-e5282.appspot.com',
+    measurementId: 'G-0MGZLKMRL2',
   );
+
 }
