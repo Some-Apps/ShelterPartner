@@ -3,14 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shelter_partner/views/auth/my_button.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
+import 'package:uuid/uuid.dart';
+import 'package:shelter_partner/helper/debug.dart';
 
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   final void Function()? onTapLogin;
+  DebugHelper debugHelper;
 
-  const SignupPage({super.key, required this.onTapLogin});
-
+  SignupPage({super.key, required this.onTapLogin, DebugHelper? debugHelper})
+      : debugHelper = debugHelper ?? DebugHelper();
   @override
   _SignupPageState createState() => _SignupPageState();
 }
@@ -55,6 +58,24 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           shelterName: shelterNameController.text.trim(),
           shelterAddress: shelterAddressController.text.trim(),
           selectedManagementSoftware: selectedManagementSoftware,
+        );
+  }
+
+  void createAndLoginTestAccount() async {
+    if (widget.debugHelper.isDebugMode() == false) {
+      return;
+    }
+    final uuid = Uuid();
+    final testEmail = '${uuid.v4()}@example.com';
+    final testPassword = 'password123';
+    await ref.read(authViewModelProvider.notifier).signup(
+          email: testEmail,
+          password: testPassword,
+          firstName: 'Test',
+          lastName: 'User',
+          shelterName: 'Test Shelter',
+          shelterAddress: '123 Test St',
+          selectedManagementSoftware: 'ShelterLuv',
         );
   }
 
@@ -138,6 +159,11 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     title: "Create Shelter",
                     onTap: signup,
                   ),
+                  if (widget.debugHelper.isDebugMode())
+                    MyButton(
+                      title: "Create Test Account",
+                      onTap: createAndLoginTestAccount,
+                    ),
                   const SizedBox(height: 50),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
