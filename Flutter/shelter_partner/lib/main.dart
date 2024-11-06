@@ -1,6 +1,4 @@
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,7 +77,6 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-
 
 // Create the AuthStateChangeNotifier
 class AuthStateChangeNotifier extends ChangeNotifier {
@@ -243,9 +240,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const SettingsPage(),
                 routes: [
                   GoRoute(
-                  path: "acknowledgements",
-                  builder: (context, state) => const AcknowledgementsPage(),
-                ),
+                    path: "acknowledgements",
+                    builder: (context, state) => const AcknowledgementsPage(),
+                  ),
                   GoRoute(
                     path: 'shelter-settings',
                     builder: (context, state) => const ShelterSettingsPage(),
