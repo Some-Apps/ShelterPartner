@@ -31,7 +31,6 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
@@ -256,26 +255,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
         ),
       );
     }
-
   }
-}
-
-Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
-  return adsAsyncValue.when(
-    data: (ads) {
-      if (ads.isEmpty) {
-        return const Text('No ads available');
-      }
-      final randomAd = ads[Random().nextInt(ads.length)];
-      return CustomAffiliateAd(
-        ad: Ad(id: randomAd.id, imageUrls: randomAd.imageUrls, productName: randomAd.productName, productUrl: randomAd.productUrl),
-      );
-    },
-    loading: () => const Center(child: CircularProgressIndicator()),
-    error: (error, stackTrace) => const Text('Error loading ads'),
-  );
-}
-
 
   Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
     return adsAsyncValue.when(
@@ -497,7 +477,6 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
                     _buildAnimalGridView('dogs', adsAsyncValue),
                     // Cats
                     _buildAnimalGridView('cats', adsAsyncValue),
-
                   ],
                 ),
               ),
@@ -648,4 +627,3 @@ final adsProvider = StreamProvider<List<Ad>>((ref) {
       .map((snapshot) =>
           snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
 });
-
