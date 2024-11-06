@@ -44,5 +44,6 @@
     "predeploy": [
       "flutter build web --release --no-tree-shake-icons"
     ]
+
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+
 import 'package:shelter_partner/models/ad.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
@@ -29,6 +30,7 @@ class AnimalsPage extends ConsumerStatefulWidget {
 class _AnimalsPageState extends ConsumerState<AnimalsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
 
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
@@ -254,7 +256,26 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
         ),
       );
     }
+
   }
+}
+
+Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
+  return adsAsyncValue.when(
+    data: (ads) {
+      if (ads.isEmpty) {
+        return const Text('No ads available');
+      }
+      final randomAd = ads[Random().nextInt(ads.length)];
+      return CustomAffiliateAd(
+        ad: Ad(id: randomAd.id, imageUrls: randomAd.imageUrls, productName: randomAd.productName, productUrl: randomAd.productUrl),
+      );
+    },
+    loading: () => const Center(child: CircularProgressIndicator()),
+    error: (error, stackTrace) => const Text('Error loading ads'),
+  );
+}
+
 
   Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
     return adsAsyncValue.when(
@@ -476,6 +497,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                     _buildAnimalGridView('dogs', adsAsyncValue),
                     // Cats
                     _buildAnimalGridView('cats', adsAsyncValue),
+
                   ],
                 ),
               ),
@@ -626,3 +648,4 @@ final adsProvider = StreamProvider<List<Ad>>((ref) {
       .map((snapshot) =>
           snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
 });
+
