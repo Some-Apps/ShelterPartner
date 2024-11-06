@@ -31,8 +31,6 @@ void main() {
 
   testWidgets('AuthPage is displayed when the app starts',
       (WidgetTester tester) async {
-    final mockFirebaseService = MockFirebaseService();
-
     await tester.pumpWidget(ProviderScope(
       overrides: [
         authRepositoryProvider.overrideWithValue(authRepository),
@@ -40,13 +38,9 @@ void main() {
       child: MyApp(
         theme: ThemeData.light(),
         darktheme: ThemeData.dark(),
-        // firebaseAuth: mockAuth,
-        // firestore: fakeFirestore,
-        // firebaseService: mockFirebaseService,
       ),
     ));
 
-    // Verify that the AuthPage is being shown initially.
     expect(find.byType(AuthPage), findsOneWidget);
   });
 }
