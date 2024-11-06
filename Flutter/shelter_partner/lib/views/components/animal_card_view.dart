@@ -314,7 +314,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                     : Colors.transparent,
                   BlendMode.darken,
                   ),
-                  child: CachedNetworkImage(
+                  child: 
+                  CachedNetworkImage(
                   imageUrl: getScaledDownUrl(
                     animal.photos.first.url),
                   width: 100,

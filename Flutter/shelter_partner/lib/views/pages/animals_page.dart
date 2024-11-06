@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+
 import 'package:shelter_partner/models/ad.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
@@ -53,17 +56,34 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     'Volunteer Category': 'volunteerCategory',
   };
 
+  // PagingControllers for infinite scrolling
+  final PagingController<int, dynamic> _dogsPagingController =
+      PagingController(firstPageKey: 0);
+  final PagingController<int, dynamic> _catsPagingController =
+      PagingController(firstPageKey: 0);
+
+  static const int _pageSize = 15;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    // Remove the listener since we're using TabBarView
+
+    _dogsPagingController.addPageRequestListener((pageKey) {
+      _fetchPage(animalType: 'dogs', pageKey: pageKey);
+    });
+
+    _catsPagingController.addPageRequestListener((pageKey) {
+      _fetchPage(animalType: 'cats', pageKey: pageKey);
+    });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _dogsPagingController.dispose();
+    _catsPagingController.dispose();
     super.dispose();
   }
 
@@ -130,56 +150,113 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     }
   }
 
-Widget _buildAnimalGridView(String animalType, AsyncValue<List<Ad>> adsAsyncValue) {
-  final appUser = ref.watch(appUserProvider);
-  final animalsMap = ref.watch(animalsViewModelProvider);
-  final animals = animalsMap[animalType] ?? [];
-  final filteredAnimals = _filterAnimals(animals);
+  Future<void> _fetchPage({required String animalType, required int pageKey}) async {
+    try {
+      final animalsMapAsync = ref.watch(animalsViewModelProvider);
+      final animalsMap = animalsMapAsync[animalType];
+      if (animalsMap == null || animalsMap.isEmpty) {
+        // Data is still loading, retry after a short delay
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _fetchPage(animalType: animalType, pageKey: pageKey);
+        });
+        return;
+      }
 
-  if (animals.isEmpty) {
-    return const Center(child: CircularProgressIndicator());
-  } else if (filteredAnimals.isEmpty) {
-    return const Center(child: Text('No animals found'));
-  } else {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final int columns = (constraints.maxWidth / 400).floor();
-          final double aspectRatio = constraints.maxWidth / (columns * 200);
+      final animals = animalsMap;
+      final filteredAnimals = _filterAnimals(animals);
 
-          // Adjust item count based on whether ads are removed
-          int itemCount = filteredAnimals.length;
-          if (!appUser!.removeAds) {
-            itemCount += filteredAnimals.length ~/ 10;
+      // Insert ads into the list if ads are not removed
+      final appUser = ref.read(appUserProvider)!;
+      List<dynamic> itemsWithAds = [];
+      if (!appUser.removeAds) {
+        int adCounter = 0;
+        for (int i = 0; i < filteredAnimals.length; i++) {
+          if (i > 0 && i % 10 == 0) {
+            itemsWithAds.add('ad_${adCounter++}'); // Placeholder for ad
           }
+          itemsWithAds.add(filteredAnimals[i]);
+        }
+      } else {
+        itemsWithAds = filteredAnimals;
+      }
 
-          return GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columns,
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
-              childAspectRatio: aspectRatio,
-            ),
-            itemCount: itemCount,
-            itemBuilder: (context, index) {
-              if (!appUser.removeAds && (index + 1) % 11 == 0) {
-                // This is an ad position
-                return _buildAdCard(adsAsyncValue);
-              } else {
-                // Adjust the index to account for the ads
-                int adjustedIndex = index;
-                if (!appUser.removeAds) {
-                  adjustedIndex = index - (index ~/ 11);
-                }
-                final animal = filteredAnimals[adjustedIndex];
-                return AnimalCardView(animal: animal);
-              }
-            },
-          );
-        },
-      ),
-    );
+      final int totalItemCount = itemsWithAds.length;
+
+      final bool isLastPage = pageKey + _pageSize >= totalItemCount;
+      final newItems = itemsWithAds.skip(pageKey).take(_pageSize).toList();
+
+      if (animalType == 'dogs') {
+        if (isLastPage) {
+          _dogsPagingController.appendLastPage(newItems);
+        } else {
+          final nextPageKey = pageKey + newItems.length;
+          _dogsPagingController.appendPage(newItems, nextPageKey);
+        }
+      } else {
+        if (isLastPage) {
+          _catsPagingController.appendLastPage(newItems);
+        } else {
+          final nextPageKey = pageKey + newItems.length;
+          _catsPagingController.appendPage(newItems, nextPageKey);
+        }
+      }
+    } catch (error) {
+      if (animalType == 'dogs') {
+        _dogsPagingController.error = error;
+      } else {
+        _catsPagingController.error = error;
+      }
+    }
+  }
+
+  Widget _buildAnimalGridView(String animalType, AsyncValue<List<Ad>> adsAsyncValue) {
+    final pagingController =
+        animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
+
+    final animalsMap = ref.watch(animalsViewModelProvider);
+
+    if (animalsMap[animalType] == null || animalsMap[animalType]!.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    } else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final int columns = (constraints.maxWidth / 400).floor();
+            final double aspectRatio = constraints.maxWidth / (columns * 200);
+
+            return PagedGridView<int, dynamic>(
+              pagingController: pagingController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              builderDelegate: PagedChildBuilderDelegate<dynamic>(
+                itemBuilder: (context, item, index) {
+                  if (item is Animal) {
+                    return AnimalCardView(animal: item);
+                  } else if (item is String && item.startsWith('ad_')) {
+                    return _buildAdCard(adsAsyncValue);
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+                firstPageProgressIndicatorBuilder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
+                newPageProgressIndicatorBuilder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
+                noItemsFoundIndicatorBuilder: (_) =>
+                    const Center(child: Text('No animals found')),
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: aspectRatio,
+              ),
+            );
+          },
+        ),
+      );
+    }
+
   }
 }
 
@@ -200,6 +277,27 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
 }
 
 
+  Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
+    return adsAsyncValue.when(
+      data: (ads) {
+        if (ads.isEmpty) {
+          return const Text('No ads available');
+        }
+        final randomAd = ads[Random().nextInt(ads.length)];
+        return CustomAffiliateAd(
+          ad: Ad(
+            id: randomAd.id,
+            imageUrls: randomAd.imageUrls,
+            productName: randomAd.productName,
+            productUrl: randomAd.productUrl,
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => const Text('Error loading ads'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final adsAsyncValue = ref.watch(adsProvider);
@@ -211,8 +309,6 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
     if (appUser == null) {
       return const Center(child: CircularProgressIndicator());
     }
-
-    // Proceed even if shelterSettings or deviceSettings are still loading or null
 
     // Extract values with null safety
     final isAdmin = appUser.type == 'admin';
@@ -251,6 +347,9 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
                                 onChanged: (value) {
                                   setState(() {
                                     searchQuery = value.toLowerCase();
+                                    // Refresh paging controllers
+                                    _dogsPagingController.refresh();
+                                    _catsPagingController.refresh();
                                   });
                                 },
                               ),
@@ -264,11 +363,13 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
                                   selectedAttributeDisplayName = newValue!;
                                   selectedAttribute =
                                       attributeDisplayNames[newValue]!;
+                                  // Refresh paging controllers
+                                  _dogsPagingController.refresh();
+                                  _catsPagingController.refresh();
                                 });
                               },
                               items: attributeDisplayNames.keys
-                                  .map<DropdownMenuItem<String>>(
-                                      (String key) {
+                                  .map<DropdownMenuItem<String>>((String key) {
                                 return DropdownMenuItem<String>(
                                   value: key,
                                   child: Text(key),
@@ -298,10 +399,10 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
                               // Get the visible animals in the current tab
                               final animalType =
                                   _tabController.index == 0 ? 'dogs' : 'cats';
+                              final animalsMap =
+                                  ref.read(animalsViewModelProvider);
                               final animals = _filterAnimals(
-                                  ref.watch(animalsViewModelProvider)[
-                                          animalType] ??
-                                      []);
+                                  animalsMap[animalType] ?? []);
 
                               // Determine the majority inKennel status
                               final inKennelCount = animals
@@ -336,14 +437,14 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
                                                   ref.watch(
                                                           animalsViewModelProvider)[
                                                       'dogs'] ??
-                                                  [])
+                                                          [])
                                               .where((animal) => animal.inKennel)
                                               .length >
                                           (_filterAnimals(
                                                       ref.watch(
                                                               animalsViewModelProvider)[
                                                           'dogs'] ??
-                                                      [])
+                                                              [])
                                                   .length /
                                               2)
                                       ? "Take Out All Visible Dogs"
@@ -352,14 +453,14 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
                                                   ref.watch(
                                                           animalsViewModelProvider)[
                                                       'cats'] ??
-                                                  [])
+                                                          [])
                                               .where((animal) => animal.inKennel)
                                               .length >
                                           (_filterAnimals(
                                                       ref.watch(
                                                               animalsViewModelProvider)[
                                                           'cats'] ??
-                                                      [])
+                                                              [])
                                                   .length /
                                               2)
                                       ? "Take Out All Visible Cats"
@@ -378,6 +479,14 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
                   Tab(text: 'Dogs'),
                   Tab(text: 'Cats'),
                 ],
+                onTap: (index) {
+                  // Refresh the appropriate paging controller when switching tabs
+                  if (index == 0) {
+                    _dogsPagingController.refresh();
+                  } else {
+                    _catsPagingController.refresh();
+                  }
+                },
               ),
               // TabBarView to display content based on selected tab
               Expanded(
@@ -385,9 +494,10 @@ Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
                   controller: _tabController,
                   children: [
                     // Dogs
-                          _buildAnimalGridView('dogs', adsAsyncValue),
+                    _buildAnimalGridView('dogs', adsAsyncValue),
                     // Cats
-                          _buildAnimalGridView('cats', adsAsyncValue),
+                    _buildAnimalGridView('cats', adsAsyncValue),
+
                   ],
                 ),
               ),
@@ -538,3 +648,4 @@ final adsProvider = StreamProvider<List<Ad>>((ref) {
       .map((snapshot) =>
           snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
 });
+

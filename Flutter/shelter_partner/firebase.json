@@ -40,13 +40,10 @@
   },
   "hosting": {
     "source": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "frameworksBackend": {
-      "region": "us-central1"
-    }
+
+    "predeploy": [
+      "flutter build web --release --no-tree-shake-icons"
+    ]
+
   }
 }
