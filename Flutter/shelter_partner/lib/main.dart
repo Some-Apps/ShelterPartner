@@ -29,6 +29,11 @@ import 'package:shelter_partner/views/pages/volunteers_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+
+  const timePickerThemeData = TimePickerThemeData(
+    hourMinuteTextStyle: TextStyle(fontSize: 36.0),
+  );
+
   final theme = lightTheme;
 
   final FirebaseService firebaseService = FirebaseService();
