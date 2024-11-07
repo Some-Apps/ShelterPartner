@@ -45,12 +45,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     controller: emailController,
                     hintText: 'Email',
                     obscureText: false,
+                    onSubmitted: (_) => login(),
                   ),
                   const SizedBox(height: 10),
                   MyTextField(
                     controller: passwordController,
                     hintText: 'Password',
                     obscureText: true,
+                    onSubmitted: (_) => login(),
                   ),
                   const SizedBox(height: 25),
                   MyButton(
