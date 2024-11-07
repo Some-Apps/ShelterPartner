@@ -65,9 +65,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     if (widget.debugHelper.isDebugMode() == false) {
       return;
     }
-    final uuid = Uuid();
+    const uuid = Uuid();
     final testEmail = '${uuid.v4()}@example.com';
-    final testPassword = 'password123';
+    const testPassword = 'password123';
     await ref.read(authViewModelProvider.notifier).signup(
           email: testEmail,
           password: testPassword,

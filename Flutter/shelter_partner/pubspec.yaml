@@ -37,9 +37,7 @@ dependencies:
   package_info_plus: ^8.1.0
   in_app_purchase: ^3.2.0
   flutter_launcher_icons: ^0.14.1
-  json_theme_plus: ^6.6.3
   infinite_scroll_pagination: ^4.0.0
-
 
 
 
@@ -57,15 +55,13 @@ dev_dependencies:
   firebase_auth_mocks: ^0.14.1
 
 
-
 dependency_overrides:
   google_maps_flutter_web: ^0.5.6  
 
 flutter:
-  uses-material-design: true
+  # uses-material-design: true
 
   assets:
     - assets/images/
     - assets/csv/
-    - assets/appainter_theme.json
-    - assets/appainter_theme_dark.json
+
