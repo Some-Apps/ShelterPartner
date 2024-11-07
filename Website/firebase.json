@@ -1,6 +1,7 @@
 {
   "hosting": {
     "source": ".",
+    "site": "shelterpartner",
     "ignore": [
       "firebase.json",
       "**/.*",

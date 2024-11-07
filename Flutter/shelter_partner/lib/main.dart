@@ -1,15 +1,13 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/firebase_service.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
+import 'package:shelter_partner/models/theme.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
-import 'package:json_theme_plus/json_theme_plus.dart';
 import 'package:shelter_partner/views/pages/acknowledgements_page.dart';
 import 'package:shelter_partner/views/pages/animals_animal_detail_page.dart';
 import 'package:shelter_partner/views/pages/animals_page.dart';
@@ -31,15 +29,7 @@ import 'package:shelter_partner/views/pages/volunteers_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
-  final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson) ?? ThemeData.light();
-
-  final darkThemeStr =
-      await rootBundle.loadString('assets/appainter_theme_dark.json');
-  final darkThemeJson = jsonDecode(darkThemeStr);
-  final darktheme =
-      ThemeDecoder.decodeThemeData(darkThemeJson) ?? ThemeData.dark();
+  final theme = lightTheme;
 
   final FirebaseService firebaseService = FirebaseService();
   await firebaseService.initialize();
@@ -50,18 +40,15 @@ void main() async {
   runApp(ProviderScope(
       child: MyApp(
     theme: theme,
-    darktheme: darktheme,
   )));
 }
 
 class MyApp extends ConsumerWidget {
   final ThemeData theme;
-  final ThemeData darktheme;
 
   const MyApp({
     super.key,
     required this.theme,
-    required this.darktheme,
   });
 
   @override
@@ -71,7 +58,6 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       routerConfig: goRouter,
       theme: theme,
-      darkTheme: darktheme,
       themeMode: ThemeMode.light, // Set your desired theme mode
       debugShowCheckedModeBanner: false,
     );

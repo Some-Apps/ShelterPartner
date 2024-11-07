@@ -38,12 +38,20 @@
       }
     }
   },
-  "hosting": {
-    "source": ".",
-
+  
+    "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "frameworksBackend": {
+      "region": "us-central1"
+    },
     "predeploy": [
-      "flutter build web --release --no-tree-shake-icons"
+      "flutter build web --release"
     ]
-
   }
+  
 }

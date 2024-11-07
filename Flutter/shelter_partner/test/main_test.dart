@@ -37,7 +37,6 @@ void main() {
       ],
       child: MyApp(
         theme: ThemeData.light(),
-        darktheme: ThemeData.dark(),
       ),
     ));
 

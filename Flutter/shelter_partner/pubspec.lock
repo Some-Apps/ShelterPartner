@@ -973,38 +973,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.0"
-  json_class:
-    dependency: transitive
-    description:
-      name: json_class
-      sha256: "668be1a27c493dd8822fe8c3ce3563ccd788e2b214d77a0b8b3bfad50272e7f9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0+16"
-  json_schema:
-    dependency: transitive
-    description:
-      name: json_schema
-      sha256: b183ba828374365a89b81246c06a9a636935897d509cd846998bbc0d9bd0a2cf
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.2.0"
-  json_theme_annotation:
-    dependency: transitive
-    description:
-      name: json_theme_annotation
-      sha256: a38c05487d4ca11dbaeb9b202f5b4e6c51c03b681d5181da1e38bb89c9a83121
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3+11"
-  json_theme_plus:
-    dependency: "direct main"
-    description:
-      name: json_theme_plus
-      sha256: "5254e66f3f6b39ebf562cfe09877ea5e3af778a5a977ac187ed351414f0a15e0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.6.3"
   leak_tracker:
     dependency: transitive
     description:
@@ -1293,14 +1261,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.2"
-  rfc_6901:
-    dependency: transitive
-    description:
-      name: rfc_6901
-      sha256: df1bbfa3d023009598f19636d6114c6ac1e0b7bb7bf6a260f0e6e6ce91416820
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0"
   riverpod:
     dependency: transitive
     description:
@@ -1546,14 +1506,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  uri:
-    dependency: transitive
-    description:
-      name: uri
-      sha256: "889eea21e953187c6099802b7b4cf5219ba8f3518f604a1033064d45b1b8268a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   url_launcher:
     dependency: "direct main"
     description:
@@ -1748,4 +1700,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=3.5.3 <4.0.0"
-  flutter: ">=3.24.3"
+  flutter: ">=3.24.0"
