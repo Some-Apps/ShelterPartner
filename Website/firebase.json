@@ -9,6 +9,9 @@
     ],
     "frameworksBackend": {
       "region": "us-central1"
-    }
+    },
+    "predeploy": [
+      "flutter build web --release"
+    ]
   }
 }

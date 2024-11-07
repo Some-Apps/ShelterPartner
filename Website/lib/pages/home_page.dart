@@ -9,23 +9,24 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Image.asset('logo.png'),
+          icon: Image.asset('assets/logo.png'),
           onPressed: () {
             Navigator.pushNamed(context, '/');
           },
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
-            children: [
+          children: [
             TextButton(
               onPressed: () {
-              launchUrl(Uri(
-                scheme: 'https',
-                host: 'wiki.shelterpartner.org',));
+                launchUrl(Uri(
+                  scheme: 'https',
+                  host: 'wiki.shelterpartner.org',
+                ));
               },
               child: const Text(
-              'Wiki',
-              style: TextStyle(color: Colors.black),
+                'Wiki',
+                style: TextStyle(color: Colors.black),
               ),
             ),
           ],
