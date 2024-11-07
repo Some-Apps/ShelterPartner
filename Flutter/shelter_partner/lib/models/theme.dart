@@ -154,6 +154,7 @@ final ThemeData lightTheme = ThemeData(
   primaryIconTheme: const IconThemeData(
     color: Colors.white,
   ),
+  
   // Define your button theme
   buttonTheme: ButtonThemeData(
     height: 36,
@@ -167,10 +168,16 @@ final ThemeData lightTheme = ThemeData(
     layoutBehavior: ButtonBarLayoutBehavior.padded,
   ),
   // Additional theme customizations can be added here
+  timePickerTheme: const TimePickerThemeData(
+    hourMinuteTextStyle: TextStyle(fontSize: 36.0),
+  ),
 );
 
 final ThemeData darkTheme = ThemeData(
   // Define your dark theme similarly
   brightness: Brightness.dark,
+  timePickerTheme: const TimePickerThemeData(
+    hourMinuteTextStyle: TextStyle(fontSize: 36.0),
+  ),
   // Add your dark theme properties here
 );
