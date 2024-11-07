@@ -1,4 +1,5 @@
-
+import 'dart:html' as html;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 class WikiPage extends StatelessWidget {
@@ -6,6 +7,17 @@ class WikiPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Register the IFrameElement
+    // ignore: undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory(
+      'iframeElement',
+      (int viewId) => html.IFrameElement()
+        ..src = 'https://pawpartner.gitbook.io/pawpartner-wiki/'
+        ..style.border = 'none'
+        ..style.width = '100%'
+        ..style.height = '100%',
+    );
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -29,12 +41,7 @@ class WikiPage extends StatelessWidget {
           ],
         ),
       ),
-      body: const Center(
-        child: Text(
-          'Welcome to the Wiki Page',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
+      body: const HtmlElementView(viewType: 'iframeElement'),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -15,14 +16,16 @@ class HomePage extends StatelessWidget {
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          children: [
+            children: [
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/wiki');
+              launchUrl(Uri(
+                scheme: 'https',
+                host: 'wiki.shelterpartner.org',));
               },
               child: const Text(
-                'Wiki',
-                style: TextStyle(color: Colors.black),
+              'Wiki',
+              style: TextStyle(color: Colors.black),
               ),
             ),
           ],
@@ -31,7 +34,7 @@ class HomePage extends StatelessWidget {
       body: const Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Welcome to ShelterPartner',
