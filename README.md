@@ -82,8 +82,8 @@ Contributors who make 60 approved pull requests or more per year will be given a
         </a>
       </td>
       <td><a href="https://github.com/jacobthejones"><strong>jacobthejones</strong></a></td>
-      <td><strong>4 contributions</strong></td>
-      <td>Gather Account</td>
+      <td><strong>6 contributions</strong></td>
+      <td>Gather Account, GitHub Copilot</td>
     </tr>
         <tr>
       <td>
