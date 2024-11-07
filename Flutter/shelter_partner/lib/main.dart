@@ -31,15 +31,21 @@ import 'package:shelter_partner/views/pages/volunteers_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // TODO: move theme data to a separate file
+  const timePickerThemeData = TimePickerThemeData(
+    hourMinuteTextStyle: TextStyle(fontSize: 36.0),
+  );
   final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
   final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson) ?? ThemeData.light();
+  final theme = (ThemeDecoder.decodeThemeData(themeJson) ?? ThemeData.light())
+      .copyWith(timePickerTheme: timePickerThemeData);
 
   final darkThemeStr =
       await rootBundle.loadString('assets/appainter_theme_dark.json');
   final darkThemeJson = jsonDecode(darkThemeStr);
   final darktheme =
-      ThemeDecoder.decodeThemeData(darkThemeJson) ?? ThemeData.dark();
+      (ThemeDecoder.decodeThemeData(darkThemeJson) ?? ThemeData.dark())
+          .copyWith(timePickerTheme: timePickerThemeData);
 
   final FirebaseService firebaseService = FirebaseService();
   await firebaseService.initialize();
