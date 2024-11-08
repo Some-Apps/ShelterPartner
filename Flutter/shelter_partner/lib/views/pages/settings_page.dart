@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:qonversion_flutter/qonversion_flutter.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -20,149 +20,22 @@ class SettingsPage extends ConsumerStatefulWidget {
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
-  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
-  late StreamSubscription<List<PurchaseDetails>> _subscription;
-  bool _isAvailable = false;
-  List<ProductDetails> _products = [];
-  bool _loading = true;
-  // Add a variable to track the subscription status
-  final bool _isSubscribed = false;
-  final Set<String> _kProductIds = {'RemoveAds'};
 
   @override
   void initState() {
-    super.initState();
-    // Initialize in-app purchase
-    final purchaseUpdated = _inAppPurchase.purchaseStream;
-    _subscription = purchaseUpdated.listen((purchases) {
-      _listenToPurchaseUpdated(purchases);
-    }, onDone: () {
-      _subscription.cancel();
-    }, onError: (error) {
-      // Handle error here.
-    });
-    _initStoreInfo();
+    super.initState();  
+    _getSubscriptionStatus(ref); 
   }
 
-  Future<void> _initStoreInfo() async {
-    final bool isAvailable = await _inAppPurchase.isAvailable();
-    setState(() {
-      _isAvailable = isAvailable;
-      _loading = false;
-    });
 
-    if (!isAvailable) {
-      // The store cannot be reached or accessed. Update UI accordingly.
-      return;
-    }
-
-    ProductDetailsResponse productDetailResponse =
-        await _inAppPurchase.queryProductDetails(_kProductIds);
-
-    if (productDetailResponse.error != null) {
-      // Handle the error.
-    } else if (productDetailResponse.productDetails.isEmpty) {
-      // No products found.
-    } else {
-      setState(() {
-        _products = productDetailResponse.productDetails;
-      });
-    }
-  }
-
-  void _listenToPurchaseUpdated(List<PurchaseDetails> purchases) async {
-    for (var purchase in purchases) {
-      if (purchase.status == PurchaseStatus.purchased ||
-          purchase.status == PurchaseStatus.restored) {
-        bool valid = await _verifyPurchase(purchase);
-        if (valid) {
-          _deliverProduct(purchase);
-        } else {
-          _handleInvalidPurchase(purchase);
-          return;
-        }
-      } else if (purchase.status == PurchaseStatus.error) {
-        // Handle the error.
-      }
-
-      if (purchase.pendingCompletePurchase) {
-        await _inAppPurchase.completePurchase(purchase);
-      }
-    }
-  }
-
-  Future<bool> _verifyPurchase(PurchaseDetails purchase) async {
-  final appUser = ref.read(appUserProvider);
-  String receiptData = purchase.verificationData.serverVerificationData;
-  String platform = defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android';
-
-  final functions = FirebaseFunctions.instance;
-  HttpsCallable callable = functions.httpsCallable('validateReceipt');
-  final result = await callable.call({
-    'platform': platform,
-    'receiptData': receiptData,
-    'userId': appUser?.id,
-  });
-
-  return result.data['isValid'] ?? false;
+  Future<void> _getSubscriptionStatus(WidgetRef ref) async {
+  final entitlements = await Qonversion.getSharedInstance().checkEntitlements();
+  final isActive = entitlements.entries.isNotEmpty;
+  ref.read(subscriptionStatusProvider.notifier).state = isActive ? "Active" : "Inactive";
 }
-
-
-
-  void _deliverProduct(PurchaseDetails purchase) async {
-
-  // Store receipt data and platform
-  final appUser = ref.read(appUserProvider);
-  final firestore = FirebaseFirestore.instance;
-
-  String receiptData = purchase.verificationData.serverVerificationData;
-  String platform = defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android';
-
-  if (appUser?.id != null) {
-    await firestore.collection('users').doc(appUser!.id).update({
-      'isSubscribed': true,
-      'receiptData': receiptData,
-      'platform': platform,
-      'purchaseDate': FieldValue.serverTimestamp(),
-    });
-  }
-
-  // Call the cloud function to validate the receipt
-  await _validateReceipt(receiptData, platform, appUser!.id);
-}
-
-
-Future<void> _validateReceipt(String receiptData, String platform, String userId) async {
-  final functions = FirebaseFunctions.instance;
-  HttpsCallable callable = functions.httpsCallable('validateReceipt');
-  final result = await callable.call({
-    'platform': platform,
-    'receiptData': receiptData,
-    'userId': userId,
-  });
-
-  // Handle the result
-  if (result.data['isValid']) {
-    // Update Firestore with the expiration date
-    await FirebaseFirestore.instance.collection('users').doc(userId).update({
-      'subscriptionExpirationDate': result.data['expirationDate'],
-    });
-  } else {
-    // Handle invalid purchase
-    _handleInvalidPurchase(null);
-  }
-}
-
-
-
-
-  void _handleInvalidPurchase(PurchaseDetails? purchase) {
-    // Handle invalid purchase here.
-  }
 
   @override
   void dispose() {
-    _subscription.cancel();
     super.dispose();
   }
 
@@ -170,6 +43,8 @@ Future<void> _validateReceipt(String receiptData, String platform, String userId
   Widget build(BuildContext context) {
     final shelterAsyncValue = ref.watch(shelterDetailsViewModelProvider);
     final appUser = ref.watch(appUserProvider);
+    final subscriptionStatus = ref.watch(subscriptionStatusProvider);
+
 
     return shelterAsyncValue.when(
       loading: () => const Scaffold(
@@ -379,28 +254,60 @@ Future<void> _validateReceipt(String receiptData, String platform, String userId
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
+                        ListTile(title: Text("Subscription Status: $subscriptionStatus"),),
+                        ListTile(title: const Text("Restore Subscription"), onTap: () async {
+                          try {
+                            await Qonversion.getSharedInstance().restore();
+                            await _getSubscriptionStatus(ref);
+                          } catch (e) {
+                            print('Error restoring subscription: $e');
+                          }
+                        },),
                         if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android) 
                           ListTile(
                           leading: const Icon(Icons.favorite_border),
                           title: const Text("Support Us And Remove Ads"),
+                          // subtitle: FutureBuilder<String>(
+                          //   future: _getSubscriptionStatus(),
+                          //   builder: (context, snapshot) {
+                          //     if (snapshot.connectionState == ConnectionState.waiting) {
+                          //       return const Text("Checking status...");
+                          //     } else if (snapshot.hasError) {
+                          //       return Text('Error: ${snapshot.error}');
+                          //     } else {
+                          //       return Text('Subscription Status: ${snapshot.data}');
+                          //     }
+                          //   },
+                          // ),
                           onTap: () async {
-                            if (_isAvailable && _products.isNotEmpty) {
-                            setState(() {
-                              _loading = true;
-                            });
-                            final ProductDetails product = _products.firstWhere((product) => product.id == 'RemoveAds');
-                            final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-                            await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
-                            setState(() {
-                              _loading = false;
-                            });
-                            } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Store is unavailable or products not loaded')),
-                            );
-                            }
+                            _showSupportUsModal(context, ref);
                           },
                           ),
+
+                          // FutureBuilder<QOfferings>(
+                          //   future: Qonversion.getSharedInstance().offerings(),
+                          //   builder: (context, snapshot) {
+                          //     if (snapshot.connectionState == ConnectionState.waiting) {
+                          //       return const CircularProgressIndicator();
+                          //     } else if (snapshot.hasError) {
+                          //       return Text('Error: ${snapshot.error}');
+                          //     } else if (snapshot.hasData) {
+                          //       final products = snapshot.data!.main?.products;
+                          //       if (products!.isNotEmpty) {
+                          //         return Column(
+                          //           children: products.map((product) {
+                          //             return ListTile(title: Text(product.qonversionId));
+                          //           }).toList(),
+                          //         );
+                          //       } else {
+                          //         return const Text('No products available');
+                          //       }
+                          //     } else {
+                          //       return const Text('No data');
+                          //     }
+                          //   },
+                          // ),
+
 
                         // ListTile(
                         //   leading: const Icon(Icons.restore),
@@ -468,3 +375,153 @@ Future<void> _validateReceipt(String receiptData, String platform, String userId
     );
   }
 }
+Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
+  final offerings = await Qonversion.getSharedInstance().offerings();
+  final removeAdsOffering = offerings.availableOfferings.firstWhere(
+    (offering) => offering.id == 'remove_ads',
+  );
+
+  Future<void> _getSubscriptionStatus(WidgetRef ref) async {
+  final entitlements = await Qonversion.getSharedInstance().checkEntitlements();
+  final isActive = entitlements.entries.isNotEmpty;
+  ref.read(subscriptionStatusProvider.notifier).state = isActive ? "Active" : "Inactive";
+}
+
+  if (removeAdsOffering != null) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          height: 400, // Increased height for the modal
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Support Us And Remove Ads",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Choose your price",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: removeAdsOffering.products.map((product) {
+                      String description;
+                      switch (product.qonversionId) {
+                        case 'support1':
+                          description = "Remove ads and support the developer";
+                          break;
+                        case 'support2':
+                          description = "Remove ads and support the developer...but MORE";
+                          break;
+                        case 'support3':
+                          description = "Remove ads and support the developer...a lot...like holy crap...thanks!";
+                          break;
+                        default:
+                          description = product.skProduct?.localizedDescription ?? 'No Description';
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Card(
+                          elevation: 2,
+                          color: Colors.lightBlue.shade100,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: InkWell(
+                            onTap: () async {
+                              try {
+                                // Perform purchase
+                                final entitlements = await Qonversion.getSharedInstance().purchaseProduct(product);
+                                print(entitlements);
+
+                                // Close the modal
+                                // Navigator.of(context).pop();
+
+                                // Refresh the subscription status
+                                await _getSubscriptionStatus(ref);
+
+                              } on QPurchaseException catch (e) {
+                                if (e.isUserCancelled) {
+                                  print('User cancelled');
+                                } else {
+                                  print('Error: $e');
+                                }
+                              }
+                            },
+                            child: Container(
+                              width: 225, // Adjusted width to fit multiple cards in view
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Placeholder for app icon, replace with actual icon asset or network image
+                                  Center(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10), // Rounded square
+                                      child: Image.asset(
+                                        'assets/images/square_logo.png', // Update with actual icon path
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    product.skProduct?.localizedTitle ?? 'No Title',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '${product.prettyPrice}/month' ?? 'N/A',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    description,
+                                    // maxLines: 2,
+                                    // overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No products available')),
+    );
+  }
+}
+
+final subscriptionStatusProvider = StateProvider<String>((ref) => "Inactive");

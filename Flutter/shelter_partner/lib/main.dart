@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qonversion_flutter/qonversion_flutter.dart';
 import 'package:shelter_partner/firebase_service.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
@@ -37,6 +38,13 @@ void main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
   };
+
+  final config = QonversionConfigBuilder('kgASA45BHEGFzMnqmQPYKQEEGZJCmaok', QLaunchMode.subscriptionManagement)
+  .setEnvironment(QEnvironment.sandbox)
+  .build();
+
+  Qonversion.initialize(config);
+
   runApp(ProviderScope(
       child: MyApp(
     theme: theme,
