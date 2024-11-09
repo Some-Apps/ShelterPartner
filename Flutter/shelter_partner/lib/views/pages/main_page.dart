@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 
-
 class MainPage extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
@@ -44,7 +43,8 @@ class MainPage extends ConsumerWidget {
       if (volunteerSettingsAsyncValue.hasError) {
         return Scaffold(
           body: Center(
-              child: Text('Error: ${volunteerSettingsAsyncValue.error.toString()}')),
+              child: Text(
+                  'Error: ${volunteerSettingsAsyncValue.error.toString()}')),
         );
       }
 
@@ -146,7 +146,8 @@ class MainPage extends ConsumerWidget {
             // Check if the user is a volunteer and geofencing is enabled
             if (isVolunteerUser && isGeofenceEnabled) {
               // Determine the index for the 'Animals' tab
-              int animalsBranchIndex = 0; // Assuming 'Animals' branch index is 0
+              int animalsBranchIndex =
+                  0; // Assuming 'Animals' branch index is 0
               int animalsTabIndex = visibleIndexes.indexOf(animalsBranchIndex);
 
               if (currentIndex == animalsTabIndex) {
@@ -167,7 +168,8 @@ class MainPage extends ConsumerWidget {
                       );
                     }
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (err, stack) => Center(
                     child: Text('Error: ${err.toString()}'),
                   ),
@@ -196,6 +198,18 @@ class MainPage extends ConsumerWidget {
                 branchIndex,
                 initialLocation: true,
               );
+
+              // If the Animals tab is tapped again
+              if (branchIndex == 0) {
+                // Assuming AnimalsPage is at index 0
+                // Set scrollToTopProvider to true
+                ref.read(scrollToTopProvider.notifier).state = true;
+              }
+              if (branchIndex == 1) {
+                // Assuming VisitorsPage is at index 1
+                // Set scrollToTopProvider to true
+                ref.read(scrollToTopProviderVisitors.notifier).state = true;
+              }
             } else {
               navigationShell.goBranch(branchIndex);
             }
@@ -214,7 +228,6 @@ class MainPage extends ConsumerWidget {
     }
   }
 }
-
 
 // providers/geofence_status_provider.dart
 
@@ -339,3 +352,8 @@ final geofenceStatusProvider = StreamProvider.autoDispose<bool>((ref) async* {
     yield isWithinGeofence;
   }
 });
+
+// providers/scroll_to_top_provider.dart
+
+final scrollToTopProvider = StateProvider<bool>((ref) => false);
+final scrollToTopProviderVisitors = StateProvider<bool>((ref) => false);

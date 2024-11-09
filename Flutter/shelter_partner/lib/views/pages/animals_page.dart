@@ -20,6 +20,7 @@ import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
+import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -66,9 +67,14 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
 
   static const int _pageSize = 15;
 
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+
+
     if (!kIsWeb && !Platform.isWindows) {
       _getSubscriptionStatus(ref);
     }
@@ -90,6 +96,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     _searchController.dispose();
     _dogsPagingController.dispose();
     _catsPagingController.dispose();
+    _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -163,12 +171,12 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     final isActive = entitlements.entries.any((entry) =>
         entry.value.isActive &&
         entry.value.expirationDate?.isAfter(DateTime.now()) == true);
-        for (var entry in entitlements.entries) {
-          print('Entry ID: ${entry.key}');
-          print('Is Active: ${entry.value.isActive}');
-          print('Expiration Date: ${entry.value.expirationDate}');
-          print('Product Identifier: ${entry.value.productId}');
-        }
+    for (var entry in entitlements.entries) {
+      print('Entry ID: ${entry.key}');
+      print('Is Active: ${entry.value.isActive}');
+      print('Expiration Date: ${entry.value.expirationDate}');
+      print('Product Identifier: ${entry.value.productId}');
+    }
     ref.read(subscriptionStatusProvider.notifier).state =
         isActive ? "Active" : "Inactive";
   }
@@ -262,6 +270,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
 
             return PagedGridView<int, dynamic>(
               pagingController: pagingController,
+              scrollController: _scrollController, // Add this line
               physics: const AlwaysScrollableScrollPhysics(),
               builderDelegate: PagedChildBuilderDelegate<dynamic>(
                 itemBuilder: (context, item, index) {
@@ -327,6 +336,18 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     }
 
     // Extract values with null safety
+    ref.listen<bool>(scrollToTopProvider, (previous, next) {
+      if (next == true) {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+        // Reset the provider value to false
+        ref.read(scrollToTopProvider.notifier).state = false;
+      }
+    });
+
     final isAdmin = appUser.type == 'admin';
     final isVolunteer = appUser.type == 'volunteer';
     final deviceAllowsBulkTakeOut =
