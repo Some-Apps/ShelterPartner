@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/app_user.dart';
@@ -107,9 +108,9 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
       if (visitorSort == 'Alphabetical') {
         sortedList.sort((a, b) => a.name.compareTo(b.name));
-      } else if (visitorSort == 'Last Let Out') {
+      } else if (visitorSort == 'Intake Date') {
         sortedList
-            .sort((a, b) => a.logs.last.endTime.compareTo(b.logs.last.endTime));
+        .sort((a, b) => (a.intakeDate ?? Timestamp(0, 0)).compareTo(b.intakeDate ?? Timestamp(0, 0)));
       }
 
       sortedState[species] = sortedList;

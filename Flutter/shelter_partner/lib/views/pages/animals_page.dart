@@ -198,7 +198,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
       final filteredAnimals = _filterAnimals(animals);
 
       // Determine whether to show ads
-      final isWeb = kIsWeb;
+      const isWeb = kIsWeb;
 
       List<dynamic> itemsWithAds = [];
       if (!isWeb && !Platform.isWindows) {

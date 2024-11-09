@@ -94,7 +94,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                       ),
                       PickerView(
                         title: "Visitor Sort",
-                        options: const ["Location", "Alphabetical"],
+                        options: const ["Intake Date", "Alphabetical"],
                         value:
                             user?.deviceSettings?.visitorSort ?? "Alphabetical",
                         onChanged: (String? newValue) {

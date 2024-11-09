@@ -398,152 +398,146 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
         isActive ? "Active" : "Inactive";
   }
 
-  if (removeAdsOffering != null) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Container(
-          height: 400, // Increased height for the modal
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Support Us And Remove Ads",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) {
+      return Container(
+        height: 400, // Increased height for the modal
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Support Us And Remove Ads",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 8),
-              const Text(
-                "Choose your price",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
-                ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Choose your price",
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey,
               ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: removeAdsOffering.products.map((product) {
-                      String description;
-                      switch (product.qonversionId) {
-                        case 'support1':
-                          description = "Remove ads and support the developer";
-                          break;
-                        case 'support2':
-                          description =
-                              "Remove ads and support the developer...but MORE";
-                          break;
-                        case 'support3':
-                          description =
-                              "Remove ads and support the developer...a lot...like holy cow...thanks!";
-                          break;
-                        default:
-                          description =
-                              product.skProduct?.localizedDescription ??
-                                  'No Description';
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Card(
-                          elevation: 2,
-                          color: Colors.lightBlue.shade100,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: InkWell(
-                            onTap: () async {
-                              try {
-                                // Perform purchase
-                                final entitlements =
-                                    await Qonversion.getSharedInstance()
-                                        .purchaseProduct(product);
-                                print(entitlements);
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: removeAdsOffering.products.map((product) {
+                    String description;
+                    switch (product.qonversionId) {
+                      case 'support1':
+                        description = "Remove ads and support the developer";
+                        break;
+                      case 'support2':
+                        description =
+                            "Remove ads and support the developer...but MORE";
+                        break;
+                      case 'support3':
+                        description =
+                            "Remove ads and support the developer...a lot...like holy cow...thanks!";
+                        break;
+                      default:
+                        description =
+                            product.skProduct?.localizedDescription ??
+                                'No Description';
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Card(
+                        elevation: 2,
+                        color: Colors.lightBlue.shade100,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            try {
+                              // Perform purchase
+                              final entitlements =
+                                  await Qonversion.getSharedInstance()
+                                      .purchaseProduct(product);
+                              print(entitlements);
 
-                                // Close the modal
-                                // Navigator.of(context).pop();
+                              // Close the modal
+                              // Navigator.of(context).pop();
 
-                                // Refresh the subscription status
-                                await getSubscriptionStatus(ref);
-                              } on QPurchaseException catch (e) {
-                                if (e.isUserCancelled) {
-                                  print('User cancelled');
-                                } else {
-                                  print('Error: $e');
-                                }
+                              // Refresh the subscription status
+                              await getSubscriptionStatus(ref);
+                            } on QPurchaseException catch (e) {
+                              if (e.isUserCancelled) {
+                                print('User cancelled');
+                              } else {
+                                print('Error: $e');
                               }
-                            },
-                            child: Container(
-                              width:
-                                  225, // Adjusted width to fit multiple cards in view
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Placeholder for app icon, replace with actual icon asset or network image
-                                  Center(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                          10), // Rounded square
-                                      child: Image.asset(
-                                        'assets/images/square_logo.png', // Update with actual icon path
-                                        width: 60,
-                                        height: 60,
-                                        fit: BoxFit.cover,
-                                      ),
+                            }
+                          },
+                          child: Container(
+                            width:
+                                225, // Adjusted width to fit multiple cards in view
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Placeholder for app icon, replace with actual icon asset or network image
+                                Center(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                        10), // Rounded square
+                                    child: Image.asset(
+                                      'assets/images/square_logo.png', // Update with actual icon path
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    defaultTargetPlatform ==
-                                            TargetPlatform.android
-                                        ? "Remove Ads" // product.storeDetails?.title. ?? 'No Title'
-                                        : product.skProduct?.localizedTitle ??
-                                            'No Title',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  defaultTargetPlatform ==
+                                          TargetPlatform.android
+                                      ? "Remove Ads" // product.storeDetails?.title. ?? 'No Title'
+                                      : product.skProduct?.localizedTitle ??
+                                          'No Title',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    '${product.prettyPrice}/month' ?? 'N/A',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[600],
-                                    ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '${product.prettyPrice}/month' ?? 'N/A',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    description,
-                                    // maxLines: 2,
-                                    // overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  description,
+                                  // maxLines: 2,
+                                  // overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-            ],
-          ),
-        );
-      },
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No products available')),
-    );
-  }
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 final subscriptionStatusProvider = StateProvider<String>((ref) => "Inactive");
