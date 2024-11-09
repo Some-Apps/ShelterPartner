@@ -289,6 +289,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   },
                           ),
 
+
                         // FutureBuilder<QOfferings>(
                         //   future: Qonversion.getSharedInstance().offerings(),
                         //   builder: (context, snapshot) {

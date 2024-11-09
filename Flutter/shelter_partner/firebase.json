@@ -50,7 +50,7 @@
       "region": "us-central1"
     },
     "predeploy": [
-      "flutter build web --release"
+      "flutter build web --release --no-tree-shake-icons"
     ]
   }
   
