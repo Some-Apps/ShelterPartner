@@ -21,7 +21,6 @@ class AddNoteViewModel extends StateNotifier<Animal> {
       for (var tag in tags) {
         await _repository.updateAnimalTags(animal, ref.read(shelterDetailsViewModelProvider).value!.id, tag);
       }
-                ref.read(noteAddedProvider.notifier).state = true;
 
       // Optionally, update the state if needed
     } catch (e) {
@@ -38,7 +37,6 @@ class AddNoteViewModel extends StateNotifier<Animal> {
     try {
       await _repository.addNoteToAnimal(animal, shelterDetailsAsync.value!.id, note);
       // Optionally, update the state if needed
-          ref.read(noteAddedProvider.notifier).state = true;
 
     } catch (e) {
       // Handle error
@@ -51,7 +49,6 @@ class AddNoteViewModel extends StateNotifier<Animal> {
   final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
   try {
     await _repository.uploadImageToAnimal(animal, shelterDetailsAsync.value!.id, image);
-              ref.read(noteAddedProvider.notifier).state = true;
 
     // Optionally, update the state if needed
   } catch (e) {
