@@ -150,11 +150,13 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
               // You may need to add a way to store _selectedImage if you plan to save it
             );
             if (note.note.isNotEmpty) {
+              print("adding a note");
               ref
                   .read(addNoteViewModelProvider(widget.animal).notifier)
                   .addNoteToAnimal(widget.animal, note);
             }
             if (_selectedTags.isNotEmpty) {
+              print(_selectedTags); 
               ref
                   .read(addNoteViewModelProvider(widget.animal).notifier)
                   .updateAnimalTags(widget.animal, _selectedTags.toList());

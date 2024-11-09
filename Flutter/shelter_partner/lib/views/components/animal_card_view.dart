@@ -390,7 +390,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                   final menuItems = {'Details', 'Add Note'};
                   if (appUser?.type == "admin" &&
                     deviceSettings!.deviceSettings?.mode ==
-                      "Admin") {
+                      "Admin" && animal.inKennel) {
                   menuItems.add('Add Log');
                   }
 
