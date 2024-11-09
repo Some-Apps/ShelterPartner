@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart'; // Import kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:qonversion_flutter/qonversion_flutter.dart';
 
 import 'package:shelter_partner/models/ad.dart';
 import 'package:shelter_partner/models/animal.dart';
@@ -17,6 +20,7 @@ import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
+import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AnimalsPage extends ConsumerStatefulWidget {
@@ -65,6 +69,10 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   @override
   void initState() {
     super.initState();
+    if (!kIsWeb && !Platform.isWindows) {
+      _getSubscriptionStatus(ref);
+    }
+
     _tabController = TabController(length: 2, vsync: this);
 
     _dogsPagingController.addPageRequestListener((pageKey) {
@@ -148,7 +156,25 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     }
   }
 
-  Future<void> _fetchPage({required String animalType, required int pageKey}) async {
+  Future<void> _getSubscriptionStatus(WidgetRef ref) async {
+    final entitlements =
+        await Qonversion.getSharedInstance().checkEntitlements();
+    print("Number of entitlement entries: ${entitlements.entries.length}");
+    final isActive = entitlements.entries.any((entry) =>
+        entry.value.isActive &&
+        entry.value.expirationDate?.isAfter(DateTime.now()) == true);
+        for (var entry in entitlements.entries) {
+          print('Entry ID: ${entry.key}');
+          print('Is Active: ${entry.value.isActive}');
+          print('Expiration Date: ${entry.value.expirationDate}');
+          print('Product Identifier: ${entry.value.productId}');
+        }
+    ref.read(subscriptionStatusProvider.notifier).state =
+        isActive ? "Active" : "Inactive";
+  }
+
+  Future<void> _fetchPage(
+      {required String animalType, required int pageKey}) async {
     try {
       final animalsMapAsync = ref.watch(animalsViewModelProvider);
       final animalsMap = animalsMapAsync[animalType];
@@ -163,18 +189,28 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
       final animals = animalsMap;
       final filteredAnimals = _filterAnimals(animals);
 
-      // Insert ads into the list if ads are not removed
-      final appUser = ref.read(appUserProvider)!;
+      // Determine whether to show ads
+      final isWeb = kIsWeb;
+
       List<dynamic> itemsWithAds = [];
-      if (!appUser.removeAds) {
-        int adCounter = 0;
-        for (int i = 0; i < filteredAnimals.length; i++) {
-          if (i > 0 && i % 10 == 0) {
-            itemsWithAds.add('ad_${adCounter++}'); // Placeholder for ad
+      if (!isWeb && !Platform.isWindows) {
+        // Use subscription status on mobile platforms
+        final subscriptionStatus = ref.read(subscriptionStatusProvider);
+        bool shouldShowAds = subscriptionStatus != 'Active';
+
+        if (shouldShowAds) {
+          int adCounter = 0;
+          for (int i = 0; i < filteredAnimals.length; i++) {
+            if (i > 0 && i % 10 == 0) {
+              itemsWithAds.add('ad_${adCounter++}'); // Placeholder for ad
+            }
+            itemsWithAds.add(filteredAnimals[i]);
           }
-          itemsWithAds.add(filteredAnimals[i]);
+        } else {
+          itemsWithAds = filteredAnimals;
         }
       } else {
+        // Never show ads on web
         itemsWithAds = filteredAnimals;
       }
 
@@ -207,7 +243,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     }
   }
 
-  Widget _buildAnimalGridView(String animalType, AsyncValue<List<Ad>> adsAsyncValue) {
+  Widget _buildAnimalGridView(
+      String animalType, AsyncValue<List<Ad>> adsAsyncValue) {
     final pagingController =
         animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
 
@@ -220,8 +257,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final int columns = (constraints.maxWidth / 400).floor();
-            final double aspectRatio = constraints.maxWidth / (columns * 200);
+            final int columns = (constraints.maxWidth / 390).floor();
+            final double aspectRatio = constraints.maxWidth / (columns * 215);
 
             return PagedGridView<int, dynamic>(
               pagingController: pagingController,
@@ -380,8 +417,8 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                                   _tabController.index == 0 ? 'dogs' : 'cats';
                               final animalsMap =
                                   ref.read(animalsViewModelProvider);
-                              final animals = _filterAnimals(
-                                  animalsMap[animalType] ?? []);
+                              final animals =
+                                  _filterAnimals(animalsMap[animalType] ?? []);
 
                               // Determine the majority inKennel status
                               final inKennelCount = animals
@@ -412,34 +449,24 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
                             },
                             child: Text(
                               _tabController.index == 0
-                                  ? (_filterAnimals(
-                                                  ref.watch(
-                                                          animalsViewModelProvider)[
-                                                      'dogs'] ??
-                                                          [])
-                                              .where((animal) => animal.inKennel)
+                                  ? (_filterAnimals(ref.watch(animalsViewModelProvider)['dogs'] ?? [])
+                                              .where(
+                                                  (animal) => animal.inKennel)
                                               .length >
-                                          (_filterAnimals(
-                                                      ref.watch(
+                                          (_filterAnimals(ref.watch(
                                                               animalsViewModelProvider)[
                                                           'dogs'] ??
-                                                              [])
+                                                      [])
                                                   .length /
                                               2)
                                       ? "Take Out All Visible Dogs"
                                       : "Put Back All Visible Dogs")
-                                  : (_filterAnimals(
-                                                  ref.watch(
-                                                          animalsViewModelProvider)[
-                                                      'cats'] ??
-                                                          [])
-                                              .where((animal) => animal.inKennel)
+                                  : (_filterAnimals(ref.watch(animalsViewModelProvider)['cats'] ?? [])
+                                              .where(
+                                                  (animal) => animal.inKennel)
                                               .length >
                                           (_filterAnimals(
-                                                      ref.watch(
-                                                              animalsViewModelProvider)[
-                                                          'cats'] ??
-                                                              [])
+                                                      ref.watch(animalsViewModelProvider)['cats'] ?? [])
                                                   .length /
                                               2)
                                       ? "Take Out All Visible Cats"
@@ -568,7 +595,8 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
                     controller: _scrollController,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
-                      final imageUrl = widget.ad.imageUrls[index % widget.ad.imageUrls.length];
+                      final imageUrl = widget
+                          .ad.imageUrls[index % widget.ad.imageUrls.length];
                       return AspectRatio(
                         aspectRatio: 1, // Square aspect ratio
                         child: Padding(
@@ -581,7 +609,8 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
                                   color: Colors.grey[300],
-                                  child: Icon(Icons.image, size: 50, color: Colors.grey[700]),
+                                  child: Icon(Icons.image,
+                                      size: 50, color: Colors.grey[700]),
                                 );
                               },
                             ),
@@ -597,7 +626,8 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   widget.ad.productName,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
               // Buy Now button
@@ -620,9 +650,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
 }
 
 final adsProvider = StreamProvider<List<Ad>>((ref) {
-  return FirebaseFirestore.instance
-      .collection('ads')
-      .snapshots()
-      .map((snapshot) =>
+  return FirebaseFirestore.instance.collection('ads').snapshots().map(
+      (snapshot) =>
           snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
 });

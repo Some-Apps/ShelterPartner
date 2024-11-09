@@ -5,6 +5,7 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qonversion_flutter/qonversion_flutter.dart';
 import 'package:shelter_partner/models/device_settings.dart';
 import 'package:shelter_partner/models/geofence.dart';
 import 'package:shelter_partner/models/shelter.dart';
@@ -32,6 +33,16 @@ class AuthRepository {
   Future<AppUser?> getUserById(String userId) async {
     final doc = await _firestore.collection('users').doc(userId).get();
     if (doc.exists) {
+      Qonversion.getSharedInstance().setUserProperty(
+          QUserPropertyKey.customUserId, AppUser.fromDocument(doc).id);
+      print("User ID: ${AppUser.fromDocument(doc).id}");
+      try {
+        final userInfo = await Qonversion.getSharedInstance()
+            .identify(AppUser.fromDocument(doc).id);
+        // use userInfo if necessary
+      } catch (e) {
+        // handle error here
+      }
       return AppUser.fromDocument(doc);
     }
 
@@ -382,13 +393,13 @@ class AuthRepository {
           'sex': ['m', 'f'].randomElement(),
           'monthsOld': [2, 6, 12, 24, 36].randomElement(),
           'breed': ['some breed', 'another breed'].randomElement(),
-            'description': [
+          'description': [
             'This animal is very friendly and loves to play with toys. He enjoys long walks and is very good with children. He has a calm temperament and is very affectionate.',
             'This animal is energetic and loves to run around. She is very playful and enjoys playing fetch. She is very loyal and protective of her family.',
             'This animal is very independent and likes to explore his surroundings. He is curious and intelligent, and enjoys solving puzzles and playing with interactive toys.',
             'This animal is very gentle and loves to cuddle. She is very affectionate and enjoys being around people. She has a calm demeanor and is very good with other animals.',
             'This animal is very playful and loves to be the center of attention. He enjoys playing with other animals and is very social. He has a lot of energy and loves to run and play.'
-            ].randomElement(),
+          ].randomElement(),
         };
 
         // Upload the document to Firestore
