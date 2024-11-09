@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -23,16 +24,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   void initState() {
-    super.initState();  
-    _getSubscriptionStatus(ref); 
+    super.initState();
+    _getSubscriptionStatus(ref);
   }
 
-
   Future<void> _getSubscriptionStatus(WidgetRef ref) async {
-  final entitlements = await Qonversion.getSharedInstance().checkEntitlements();
-  final isActive = entitlements.entries.isNotEmpty;
-  ref.read(subscriptionStatusProvider.notifier).state = isActive ? "Active" : "Inactive";
-}
+    final entitlements =
+        await Qonversion.getSharedInstance().checkEntitlements();
+    print("Number of entitlement entries: ${entitlements.entries.length}");
+    final isActive = entitlements.entries.any((entry) =>
+        entry.value.isActive &&
+        entry.value.expirationDate?.isAfter(DateTime.now()) == true);
+    ref.read(subscriptionStatusProvider.notifier).state =
+        isActive ? "Active" : "Inactive";
+  }
 
   @override
   void dispose() {
@@ -44,7 +49,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final shelterAsyncValue = ref.watch(shelterDetailsViewModelProvider);
     final appUser = ref.watch(appUserProvider);
     final subscriptionStatus = ref.watch(subscriptionStatusProvider);
-
 
     return shelterAsyncValue.when(
       loading: () => const Scaffold(
@@ -72,7 +76,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   Card.outlined(
                     child: ListView(
                       shrinkWrap: true,
-                      
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
                         if (appUser?.type == 'admin') ...[
@@ -254,60 +257,61 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
-                        ListTile(title: Text("Subscription Status: $subscriptionStatus"),),
-                        ListTile(title: const Text("Restore Subscription"), onTap: () async {
-                          try {
-                            await Qonversion.getSharedInstance().restore();
-                            await _getSubscriptionStatus(ref);
-                          } catch (e) {
-                            print('Error restoring subscription: $e');
-                          }
-                        },),
-                        if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android) 
+                        // if (!kIsWeb && !Platform.isWindows) ...[
+                        //   ListTile(
+                        //     title: Text(
+                        //         "Subscription Status: $subscriptionStatus"),
+                        //   ),
+                        //   ListTile(
+                        //     title: const Text("Restore Subscription"),
+                        //     onTap: () async {
+                        //       try {
+                        //         await Qonversion.getSharedInstance().restore();
+                        //         await _getSubscriptionStatus(ref);
+                        //       } catch (e) {
+                        //         print('Error restoring subscription: $e');
+                        //       }
+                        //     },
+                        //   ),
+                        // ],
+
+                        if (defaultTargetPlatform == TargetPlatform.iOS ||
+                            defaultTargetPlatform == TargetPlatform.android)
                           ListTile(
-                          leading: const Icon(Icons.favorite_border),
-                          title: const Text("Support Us And Remove Ads"),
-                          // subtitle: FutureBuilder<String>(
-                          //   future: _getSubscriptionStatus(),
-                          //   builder: (context, snapshot) {
-                          //     if (snapshot.connectionState == ConnectionState.waiting) {
-                          //       return const Text("Checking status...");
-                          //     } else if (snapshot.hasError) {
-                          //       return Text('Error: ${snapshot.error}');
-                          //     } else {
-                          //       return Text('Subscription Status: ${snapshot.data}');
-                          //     }
-                          //   },
-                          // ),
-                          onTap: () async {
-                            _showSupportUsModal(context, ref);
-                          },
+                            leading: const Icon(Icons.favorite_border),
+                            title: Text(subscriptionStatus == "Active"
+                                ? "Thank You For Supporting Us!"
+                                : "Support Us And Remove Ads"),
+                            onTap: subscriptionStatus == "Active"
+                                ? null
+                                : () async {
+                                    _showSupportUsModal(context, ref);
+                                  },
                           ),
 
-                          // FutureBuilder<QOfferings>(
-                          //   future: Qonversion.getSharedInstance().offerings(),
-                          //   builder: (context, snapshot) {
-                          //     if (snapshot.connectionState == ConnectionState.waiting) {
-                          //       return const CircularProgressIndicator();
-                          //     } else if (snapshot.hasError) {
-                          //       return Text('Error: ${snapshot.error}');
-                          //     } else if (snapshot.hasData) {
-                          //       final products = snapshot.data!.main?.products;
-                          //       if (products!.isNotEmpty) {
-                          //         return Column(
-                          //           children: products.map((product) {
-                          //             return ListTile(title: Text(product.qonversionId));
-                          //           }).toList(),
-                          //         );
-                          //       } else {
-                          //         return const Text('No products available');
-                          //       }
-                          //     } else {
-                          //       return const Text('No data');
-                          //     }
-                          //   },
-                          // ),
-
+                        // FutureBuilder<QOfferings>(
+                        //   future: Qonversion.getSharedInstance().offerings(),
+                        //   builder: (context, snapshot) {
+                        //     if (snapshot.connectionState == ConnectionState.waiting) {
+                        //       return const CircularProgressIndicator();
+                        //     } else if (snapshot.hasError) {
+                        //       return Text('Error: ${snapshot.error}');
+                        //     } else if (snapshot.hasData) {
+                        //       final products = snapshot.data!.main?.products;
+                        //       if (products!.isNotEmpty) {
+                        //         return Column(
+                        //           children: products.map((product) {
+                        //             return ListTile(title: Text(product.qonversionId));
+                        //           }).toList(),
+                        //         );
+                        //       } else {
+                        //         return const Text('No products available');
+                        //       }
+                        //     } else {
+                        //       return const Text('No data');
+                        //     }
+                        //   },
+                        // ),
 
                         // ListTile(
                         //   leading: const Icon(Icons.restore),
@@ -327,7 +331,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
                             launchUrl(
-                                Uri.parse('https://shelterpartner.org/wiki'));
+                                Uri.parse('https://wiki.shelterpartner.org'));
                           },
                         ),
                         Divider(
@@ -375,17 +379,23 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 }
+
 Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
   final offerings = await Qonversion.getSharedInstance().offerings();
   final removeAdsOffering = offerings.availableOfferings.firstWhere(
     (offering) => offering.id == 'remove_ads',
   );
 
-  Future<void> _getSubscriptionStatus(WidgetRef ref) async {
-  final entitlements = await Qonversion.getSharedInstance().checkEntitlements();
-  final isActive = entitlements.entries.isNotEmpty;
-  ref.read(subscriptionStatusProvider.notifier).state = isActive ? "Active" : "Inactive";
-}
+  Future<void> getSubscriptionStatus(WidgetRef ref) async {
+    final entitlements =
+        await Qonversion.getSharedInstance().checkEntitlements();
+    print("Number of entitlement entries: ${entitlements.entries.length}");
+    final isActive = entitlements.entries.any((entry) =>
+        entry.value.isActive &&
+        entry.value.expirationDate?.isAfter(DateTime.now()) == true);
+    ref.read(subscriptionStatusProvider.notifier).state =
+        isActive ? "Active" : "Inactive";
+  }
 
   if (removeAdsOffering != null) {
     showModalBottomSheet(
@@ -425,13 +435,17 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
                           description = "Remove ads and support the developer";
                           break;
                         case 'support2':
-                          description = "Remove ads and support the developer...but MORE";
+                          description =
+                              "Remove ads and support the developer...but MORE";
                           break;
                         case 'support3':
-                          description = "Remove ads and support the developer...a lot...like holy crap...thanks!";
+                          description =
+                              "Remove ads and support the developer...a lot...like holy cow...thanks!";
                           break;
                         default:
-                          description = product.skProduct?.localizedDescription ?? 'No Description';
+                          description =
+                              product.skProduct?.localizedDescription ??
+                                  'No Description';
                       }
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -445,15 +459,16 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
                             onTap: () async {
                               try {
                                 // Perform purchase
-                                final entitlements = await Qonversion.getSharedInstance().purchaseProduct(product);
+                                final entitlements =
+                                    await Qonversion.getSharedInstance()
+                                        .purchaseProduct(product);
                                 print(entitlements);
 
                                 // Close the modal
                                 // Navigator.of(context).pop();
 
                                 // Refresh the subscription status
-                                await _getSubscriptionStatus(ref);
-
+                                await getSubscriptionStatus(ref);
                               } on QPurchaseException catch (e) {
                                 if (e.isUserCancelled) {
                                   print('User cancelled');
@@ -463,7 +478,8 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
                               }
                             },
                             child: Container(
-                              width: 225, // Adjusted width to fit multiple cards in view
+                              width:
+                                  225, // Adjusted width to fit multiple cards in view
                               padding: const EdgeInsets.all(16.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -471,7 +487,8 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
                                   // Placeholder for app icon, replace with actual icon asset or network image
                                   Center(
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10), // Rounded square
+                                      borderRadius: BorderRadius.circular(
+                                          10), // Rounded square
                                       child: Image.asset(
                                         'assets/images/square_logo.png', // Update with actual icon path
                                         width: 60,
@@ -482,7 +499,11 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    product.skProduct?.localizedTitle ?? 'No Title',
+                                    defaultTargetPlatform ==
+                                            TargetPlatform.android
+                                        ? "Remove Ads" // product.storeDetails?.title. ?? 'No Title'
+                                        : product.skProduct?.localizedTitle ??
+                                            'No Title',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
