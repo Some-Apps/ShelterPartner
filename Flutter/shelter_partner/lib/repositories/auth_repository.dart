@@ -196,6 +196,7 @@ class AuthRepository {
         earlyPutBackReasons: ['Sick', 'Behavioral'],
         letOutTypes: ['Playtime', 'Exercise'],
         apiKeys: [],
+        apiKey: '',
         requestCount: 0,
         requestLimit: 1000,
         automaticallyPutBackAnimals: false,

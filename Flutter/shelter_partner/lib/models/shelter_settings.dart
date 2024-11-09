@@ -8,6 +8,7 @@ class ShelterSettings {
   final List<String> earlyPutBackReasons;
   final List<String> letOutTypes;
   final List<APIKey> apiKeys;
+  final String apiKey;
   final int requestCount;
   final int requestLimit;
   final bool automaticallyPutBackAnimals;
@@ -21,6 +22,7 @@ class ShelterSettings {
     required this.earlyPutBackReasons,
     required this.letOutTypes,
     required this.apiKeys,
+    required this.apiKey,
     required this.requestCount,
     required this.requestLimit,
     this.automaticallyPutBackAnimals = false,
@@ -61,6 +63,7 @@ class ShelterSettings {
       'apiKeys': apiKeys
           .map((apiKey) => apiKey.toMap())
           .toList(), // Convert each APIKey to a Map
+      'apiKey': apiKey,
       'requestCount': requestCount,
       'requestLimit': requestLimit,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
@@ -100,6 +103,7 @@ class ShelterSettings {
                   : throw Exception("Invalid APIKey data"))
               .toList() ??
           [],
+      apiKey: data['apiKey'] ?? '',
       requestCount: data['requestCount'] ?? 0,
       requestLimit: data['requestLimit'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
