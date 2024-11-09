@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub file which will import correct platform-specific file.
   if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart' 
   if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
+import 'package:shelter_partner/views/pages/main_page.dart';
 
 
 class VisitorPage extends ConsumerStatefulWidget {
@@ -157,6 +158,18 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
     _hasPreloadedImages = true;
     _preloadImages();
   }
+
+      ref.listen<bool>(scrollToTopProviderVisitors, (previous, next) {
+      if (next == true) {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+        // Reset the provider value to false
+        ref.read(scrollToTopProviderVisitors.notifier).state = false;
+      }
+    });
 
   double screenWidth = MediaQuery.of(context).size.width;
   int crossAxisCount = (screenWidth / maxItemExtent).ceil();
