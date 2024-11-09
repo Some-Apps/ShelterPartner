@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/view_models/add_note_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
+import 'package:shelter_partner/views/pages/animals_page.dart';
 import 'package:uuid/uuid.dart';
 
 class AddNoteView extends ConsumerStatefulWidget {
@@ -27,27 +27,24 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
   XFile? _selectedImage; // Use XFile instead of File
   final ImagePicker _picker = ImagePicker();
 
- Future<void> _pickImage() async {
-  try {
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-    if (image != null) {
-      setState(() {
-        _selectedImage = image;
-      });
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+      if (image != null) {
+        setState(() {
+          _selectedImage = image;
+        });
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to pick image: $e')),
+      );
     }
-  } catch (e) {
-    print('Error picking image: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to pick image: $e')),
-    );
   }
-}
-
-
-
 
   @override
   void dispose() {
@@ -79,29 +76,28 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             child: const Text('Add Photo from Gallery'),
           ),
           if (_selectedImage != null)
-  Padding(
-    padding: const EdgeInsets.only(top: 16.0),
-    child: FutureBuilder<Uint8List>(
-      future: _selectedImage!.readAsBytes(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            return Image.memory(
-              snapshot.data!,
-              height: 100,
-              width: 100,
-              fit: BoxFit.cover,
-            );
-          } else {
-            return const Text('Failed to load image');
-          }
-        } else {
-          return const CircularProgressIndicator();
-        }
-      },
-    ),
-  ),
-
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: FutureBuilder<Uint8List>(
+                future: _selectedImage!.readAsBytes(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      return Image.memory(
+                        snapshot.data!,
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      );
+                    } else {
+                      return const Text('Failed to load image');
+                    }
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
+              ),
+            ),
           const SizedBox(height: 16),
           Consumer(
             builder: (context, watch, child) {
@@ -150,11 +146,13 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
               // You may need to add a way to store _selectedImage if you plan to save it
             );
             if (note.note.isNotEmpty) {
+              print("adding a note");
               ref
                   .read(addNoteViewModelProvider(widget.animal).notifier)
                   .addNoteToAnimal(widget.animal, note);
             }
             if (_selectedTags.isNotEmpty) {
+              print(_selectedTags);
               ref
                   .read(addNoteViewModelProvider(widget.animal).notifier)
                   .updateAnimalTags(widget.animal, _selectedTags.toList());
@@ -167,6 +165,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             }
 
             Navigator.of(context).pop(note);
+            ref.read(noteAddedProvider.notifier).state = true;
           },
           child: const Text('Save'),
         ),

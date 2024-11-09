@@ -3,6 +3,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/add_log_repository.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
+import 'package:shelter_partner/views/pages/animals_page.dart';
 
 class AddLogViewModel extends StateNotifier<Animal> {
   final AddLogRepository _repository;
@@ -18,6 +19,8 @@ class AddLogViewModel extends StateNotifier<Animal> {
     try {
       await _repository.addLogToAnimal(animal, shelterDetailsAsync.value!.id, log);
       // Optionally, update the state if needed
+          ref.read(logAddedProvider.notifier).state = true;
+
     } catch (e) {
       // Handle error
       print('Failed to add note: $e');

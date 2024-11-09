@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart'; // Import kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:qonversion_flutter/qonversion_flutter.dart';
 
@@ -73,7 +74,6 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-
 
     if (!kIsWeb && !Platform.isWindows) {
       _getSubscriptionStatus(ref);
@@ -334,6 +334,41 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     if (appUser == null) {
       return const Center(child: CircularProgressIndicator());
     }
+
+    ref.listen<Map<String, List<Animal>>>(animalsViewModelProvider,
+        (previous, next) {
+      // Refresh the paging controllers when the data changes
+      _dogsPagingController.refresh();
+      _catsPagingController.refresh();
+    });
+
+    // Listen for note additions
+    ref.listen<bool>(noteAddedProvider, (previous, next) {
+      if (next == true) {
+        Fluttertoast.showToast(
+          msg: 'Note added',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.green
+        );
+        // Reset the provider
+        ref.read(noteAddedProvider.notifier).state = false;
+      }
+    });
+
+    // Listen for log additions
+    ref.listen<bool>(logAddedProvider, (previous, next) {
+      if (next == true) {
+        Fluttertoast.showToast(
+          msg: 'Log added',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.green
+        );
+        // Reset the provider
+        ref.read(logAddedProvider.notifier).state = false;
+      }
+    });
 
     // Extract values with null safety
     ref.listen<bool>(scrollToTopProvider, (previous, next) {
@@ -675,3 +710,6 @@ final adsProvider = StreamProvider<List<Ad>>((ref) {
       (snapshot) =>
           snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
 });
+
+final noteAddedProvider = StateProvider<bool>((ref) => false);
+final logAddedProvider = StateProvider<bool>((ref) => false);

@@ -6,6 +6,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/repositories/add_note_repository.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
+import 'package:shelter_partner/views/pages/animals_page.dart';
 
 class AddNoteViewModel extends StateNotifier<Animal> {
   final AddNoteRepository _repository;
@@ -20,6 +21,7 @@ class AddNoteViewModel extends StateNotifier<Animal> {
       for (var tag in tags) {
         await _repository.updateAnimalTags(animal, ref.read(shelterDetailsViewModelProvider).value!.id, tag);
       }
+
       // Optionally, update the state if needed
     } catch (e) {
       // Handle error
@@ -35,6 +37,7 @@ class AddNoteViewModel extends StateNotifier<Animal> {
     try {
       await _repository.addNoteToAnimal(animal, shelterDetailsAsync.value!.id, note);
       // Optionally, update the state if needed
+
     } catch (e) {
       // Handle error
       print('Failed to add note: $e');
@@ -46,6 +49,7 @@ class AddNoteViewModel extends StateNotifier<Animal> {
   final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
   try {
     await _repository.uploadImageToAnimal(animal, shelterDetailsAsync.value!.id, image);
+
     // Optionally, update the state if needed
   } catch (e) {
     // Handle error
