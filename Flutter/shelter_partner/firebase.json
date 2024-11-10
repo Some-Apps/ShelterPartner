@@ -40,6 +40,7 @@
   },
   
     "hosting": {
+      "site": "development-e5282",
     "public": "build/web",
     "ignore": [
       "firebase.json",

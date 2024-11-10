@@ -46,12 +46,12 @@ class VisitorAnimalDetailPage extends StatelessWidget {
         // Photos in a horizontal scrollable slideshow view
         SizedBox(
           height: 200.0, // Adjust the height as needed
-          child: animal.photos.isNotEmpty
+          child: animal.photos?.isNotEmpty ?? false
           ? ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: animal.photos.length,
+            itemCount: animal.photos?.length ?? 0,
             itemBuilder: (context, index) {
-            final photo = animal.photos[index];
+            final photo = animal.photos![index];
             final scaledUrl = photo.url.replaceFirst('.jpeg', '_250x250.jpeg'); // Assuming the image format is always .jpeg
             return Padding(
             padding: const EdgeInsets.all(8.0),

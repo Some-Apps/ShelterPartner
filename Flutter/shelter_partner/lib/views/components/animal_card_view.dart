@@ -20,7 +20,6 @@ import 'package:shelter_partner/views/components/put_back_confirmation_view.dart
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:uuid/uuid.dart';
 
-
 class AnimalCardView extends ConsumerStatefulWidget {
   final Animal animal;
 
@@ -135,13 +134,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     super.dispose();
   }
 
-  String getScaledDownUrl(String url) {
-    final parts = url.split('.');
-    if (parts.length > 1) {
-      parts[parts.length - 2] += '_100x100';
-    }
-    return parts.join('.');
-  }
 
   Future<void> _showTakeOutConfirmationDialog() async {
     // Show the custom confirmation widget using the ref object
@@ -273,14 +265,12 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 return SizedBox(
                 width: 115,
                 height: 115,
-                child: CircularProgressIndicator(
-                  value: _curvedAnimation.value,
-                  strokeWidth: 15,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                  animal.inKennel
+                child: Icon(
+                  Icons.pets,
+                  size: 50,
+                  color: animal.inKennel
                     ? Colors.orange.shade100
                     : Colors.lightBlue.shade100,
-                  ),
                 ),
                 );
               },
@@ -307,26 +297,18 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 ],
                 ),
                 child: ClipOval(
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.mode(
-                  isPressed
-                    ? Colors.black.withOpacity(0.03)
-                    : Colors.transparent,
-                  BlendMode.darken,
-                  ),
-                  child: 
-                  CachedNetworkImage(
-                  imageUrl: getScaledDownUrl(
-                    animal.photos.first.url),
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
-                  ),
-                ),
+                child: animal.photos?.isNotEmpty ?? false
+                  ? CachedNetworkImage(
+                      imageUrl: animal.photos?.first.url ?? '',
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                        Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
+                      errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    )
+                  : Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
                 ),
               ),
               ),
@@ -560,11 +542,30 @@ Icon _buildIcon(String symbol, String symbolColor) {
 }
 
 Color _parseColor(String colorString) {
-  colorString = colorString.replaceAll('#', '');
-
-  if (colorString.length == 6) {
-    colorString = 'FF$colorString';
+  switch (colorString.toLowerCase()) {
+    case 'red':
+      return Colors.red;
+    case 'blue':
+      return Colors.blue;
+    case 'green':
+      return Colors.green;
+    case 'yellow':
+      return Colors.yellow;
+    case 'orange':
+      return Colors.orange;
+    case 'purple':
+      return Colors.purple;
+    case 'pink':
+      return Colors.pink;
+    case 'brown':
+      return Colors.brown;
+    case 'grey':
+      return Colors.grey;
+    case 'black':
+      return Colors.black;
+    case 'white':
+      return Colors.white;
+    default:
+      return Colors.transparent; // Default case if color is not recognized
   }
-
-  return Color(int.parse(colorString, radix: 16));
 }

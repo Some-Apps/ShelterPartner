@@ -6,7 +6,6 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/repositories/add_note_repository.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
-import 'package:shelter_partner/views/pages/animals_page.dart';
 
 class AddNoteViewModel extends StateNotifier<Animal> {
   final AddNoteRepository _repository;

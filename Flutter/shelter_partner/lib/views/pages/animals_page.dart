@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart'; // Import kIsWeb
 import 'package:flutter/material.dart';
@@ -66,29 +67,41 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   final PagingController<int, dynamic> _catsPagingController =
       PagingController(firstPageKey: 0);
 
-  static const int _pageSize = 15;
+  static const int _pageSize = 50;
 
   late ScrollController _scrollController;
 
   @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
+void initState() {
+  super.initState();
 
-    if (!kIsWeb && !Platform.isWindows) {
-      _getSubscriptionStatus(ref);
-    }
+  PaintingBinding.instance.imageCache.maximumSize = 1000;
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 100 * 1024 * 1024;
 
-    _tabController = TabController(length: 2, vsync: this);
+  _scrollController = ScrollController();
 
-    _dogsPagingController.addPageRequestListener((pageKey) {
-      _fetchPage(animalType: 'dogs', pageKey: pageKey);
-    });
-
-    _catsPagingController.addPageRequestListener((pageKey) {
-      _fetchPage(animalType: 'cats', pageKey: pageKey);
-    });
+  if (!kIsWeb && !Platform.isWindows) {
+    _getSubscriptionStatus(ref);
   }
+
+  _tabController = TabController(length: 2, vsync: this);
+
+  _dogsPagingController.addPageRequestListener((pageKey) {
+    _fetchPage(animalType: 'dogs', pageKey: pageKey);
+  });
+
+  _catsPagingController.addPageRequestListener((pageKey) {
+    _fetchPage(animalType: 'cats', pageKey: pageKey);
+  });
+
+  // Preload images after the first frame
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final animalsMap = ref.read(animalsViewModelProvider);
+    _preloadImages(animalsMap['dogs'] ?? []);
+    _preloadImages(animalsMap['cats'] ?? []);
+  });
+}
+
 
   @override
   void dispose() {
@@ -124,7 +137,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
             fieldValue = animal.notes.map((note) => note.note).join(' ');
             break;
           case 'tags':
-            fieldValue = animal.tags.map((tag) => tag.title).join(' ');
+            fieldValue = animal.tags.map((tag) => tag.title).join(' ') ?? '';
             break;
           case 'breed':
             fieldValue = animal.breed;
@@ -181,21 +194,46 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
         isActive ? "Active" : "Inactive";
   }
 
-  Future<void> _fetchPage(
-      {required String animalType, required int pageKey}) async {
-    try {
-      final animalsMapAsync = ref.watch(animalsViewModelProvider);
-      final animalsMap = animalsMapAsync[animalType];
-      if (animalsMap == null || animalsMap.isEmpty) {
-        // Data is still loading, retry after a short delay
-        Future.delayed(const Duration(milliseconds: 500), () {
-          _fetchPage(animalType: animalType, pageKey: pageKey);
-        });
-        return;
-      }
+  void _preloadImages(List<Animal> animals) {
+  final int preloadImageCount = 150; // Limit the number of images to preload
+  final int endIndex = min(preloadImageCount, animals.length);
 
-      final animals = animalsMap;
-      final filteredAnimals = _filterAnimals(animals);
+  for (int i = 0; i < endIndex; i++) {
+    final animal = animals[i];
+    final imageUrl = (animal.photos != null && animal.photos!.isNotEmpty)
+        ? animal.photos?.first.url ?? ''
+        : '';
+
+    if (imageUrl.isNotEmpty) {
+      precacheImage(
+        CachedNetworkImageProvider(imageUrl),
+        context,
+      );
+    }
+  }
+}
+
+
+Future<void> _fetchPage({
+  required String animalType,
+  required int pageKey,
+}) async {
+  try {
+    final animalsMapAsync = ref.watch(animalsViewModelProvider);
+    final animalsMap = animalsMapAsync[animalType];
+    if (animalsMap == null || animalsMap.isEmpty) {
+      // Data is still loading, retry after a short delay
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _fetchPage(animalType: animalType, pageKey: pageKey);
+      });
+      return;
+    }
+
+    final animals = animalsMap;
+    final filteredAnimals = _filterAnimals(animals);
+
+    // Preload images for the filtered animals
+    _preloadImages(filteredAnimals);
 
       // Determine whether to show ads
       const isWeb = kIsWeb;
@@ -346,11 +384,10 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     ref.listen<bool>(noteAddedProvider, (previous, next) {
       if (next == true) {
         Fluttertoast.showToast(
-          msg: 'Note added',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          backgroundColor: Colors.green
-        );
+            msg: 'Note added',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+            backgroundColor: Colors.green);
         // Reset the provider
         ref.read(noteAddedProvider.notifier).state = false;
       }
@@ -360,11 +397,10 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
     ref.listen<bool>(logAddedProvider, (previous, next) {
       if (next == true) {
         Fluttertoast.showToast(
-          msg: 'Log added',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          backgroundColor: Colors.green
-        );
+            msg: 'Log added',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+            backgroundColor: Colors.green);
         // Reset the provider
         ref.read(logAddedProvider.notifier).state = false;
       }

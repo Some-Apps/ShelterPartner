@@ -30,15 +30,15 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
         state = state.copyWith(notes: updatedNotes);
       }
     } else if (field == 'photos') {
-      itemToDelete = state.photos.firstWhereOrNull((photo) => photo.id == itemId);
+      itemToDelete = state.photos?.firstWhereOrNull((photo) => photo.id == itemId);
       if (itemToDelete != null) {
-        List<Photo> updatedPhotos = List.from(state.photos)..remove(itemToDelete);
+        List<Photo> updatedPhotos = List.from(state.photos ?? [])..remove(itemToDelete);
         state = state.copyWith(photos: updatedPhotos);
       }
     } else if (field == 'tags') {
       itemToDelete = state.tags.firstWhereOrNull((tag) => tag.id == itemId);
       if (itemToDelete != null) {
-        List<Tag> updatedTags = List.from(state.tags)..remove(itemToDelete);
+        List<Tag> updatedTags = List.from(state.tags ?? [])..remove(itemToDelete);
         state = state.copyWith(tags: updatedTags);
       }
     } else {
@@ -58,7 +58,7 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
       if (field == 'photos') {
         final photo = itemToDelete as Photo;
         await _repository.deletePhotoFromStorage(shelterId, animalId, photo.id);
-      }
+            }
     } catch (e) {
       // Rollback if deletion fails
       // Re-add the item to state
@@ -69,10 +69,10 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
         List<Note> updatedNotes = List.from(state.notes)..add(itemToDelete);
         state = state.copyWith(notes: updatedNotes);
       } else if (field == 'photos') {
-        List<Photo> updatedPhotos = List.from(state.photos)..add(itemToDelete);
+        List<Photo> updatedPhotos = List.from(state.photos ?? [])..add(itemToDelete);
         state = state.copyWith(photos: updatedPhotos);
       } else if (field == 'tags') {
-        List<Tag> updatedTags = List.from(state.tags)..add(itemToDelete);
+        List<Tag> updatedTags = List.from(state.tags ?? [])..add(itemToDelete);
         state = state.copyWith(tags: updatedTags);
       }
     }

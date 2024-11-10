@@ -12,6 +12,7 @@ class Animal {
   final String species;
   final String breed;
   final String location;
+  final String fullLocation;
   final String description;
   final String symbol;
   final String symbolColor;
@@ -28,7 +29,7 @@ class Animal {
 
   final Timestamp? intakeDate;
 
-  final List<Photo> photos;
+  final List<Photo>? photos;
   final List<Note> notes;
   final List<Log> logs;
   final List<Tag> tags;
@@ -41,6 +42,7 @@ class Animal {
     required this.species,
     required this.breed,
     required this.location,
+    required this.fullLocation,
     required this.description,
     required this.symbol,
     required this.symbolColor,
@@ -60,34 +62,34 @@ class Animal {
   });
 
   factory Animal.fromFirestore(Map<String, dynamic> data, String documentId) {
-    return Animal(
-      id: documentId,
-      name: data['name'] ?? 'Unknown',
-      sex: data['sex'] ?? 'Unknown',
-      monthsOld: data['monthsOld'] ?? 0,
-      species: data['species'] ?? 'Unknown',
-      breed: data['breed'] ?? 'Unknown',
-      location: data['location'] ?? 'Unknown',
-      description: data['description'] ?? 'No description available.',
-      symbol: data['symbol'] ?? 'tag',
-      symbolColor: data['symbolColor'] ?? 'red',
-      takeOutAlert: data['takeOutAlert'] ?? 'Unknown',
-      putBackAlert: data['putBackAlert'] ?? 'Unknown',
-      adoptionCategory: data['adoptionCategory'] ?? 'Unknown',
-      behaviorCategory: data['behaviorCategory'] ?? 'Unknown',
-      locationCategory: data['locationCategory'] ?? 'Unknown',
-      medicalCategory: data['medicalCategory'] ?? 'Unknown',
-      volunteerCategory: data['volunteerCategory'] ?? 'Unknown',
-      inKennel: data['inKennel'] ?? true,
-      intakeDate: data['intakeDate'],
-      photos: (data['photos'] as List)
-          .map((photo) => Photo.fromMap(photo))
-          .toList(),
-      notes: (data['notes'] as List).map((note) => Note.fromMap(note)).toList(),
-      logs: (data['logs'] as List).map((log) => Log.fromMap(log)).toList(),
-      tags: (data['tags'] as List).map((tag) => Tag.fromMap(tag)).toList(),
-    );
-  }
+  return Animal(
+    id: documentId,
+    name: data['name'] ?? 'Unknown',
+    sex: data['sex'] ?? 'Unknown',
+    monthsOld: data['monthsOld'] ?? 0,
+    species: data['species'] ?? 'Unknown',
+    breed: data['breed'] ?? 'Unknown',
+    location: data['location'] ?? 'Unknown',
+    fullLocation: data['fullLocation'] ?? 'Unknown',
+    description: data['description'] ?? 'No description available.',
+    symbol: data['symbol'] ?? 'tag',
+    symbolColor: data['symbolColor'] ?? 'red',
+    takeOutAlert: data['takeOutAlert'] ?? 'Unknown',
+    putBackAlert: data['putBackAlert'] ?? 'Unknown',
+    adoptionCategory: data['adoptionCategory'] ?? 'Unknown',
+    behaviorCategory: data['behaviorCategory'] ?? 'Unknown',
+    locationCategory: data['locationCategory'] ?? 'Unknown',
+    medicalCategory: data['medicalCategory'] ?? 'Unknown',
+    volunteerCategory: data['volunteerCategory'] ?? 'Unknown',
+    inKennel: data['inKennel'] ?? true,
+    intakeDate: data['intakeDate'],
+    photos: (data['photos'] as List?)?.map((photo) => Photo.fromMap(photo)).toList() ?? [],
+    notes: (data['notes'] as List?)?.map((note) => Note.fromMap(note)).toList() ?? [],
+    logs: (data['logs'] as List?)?.map((log) => Log.fromMap(log)).toList() ?? [],
+    tags: (data['tags'] as List?)?.map((tag) => Tag.fromMap(tag)).toList() ?? [],
+  );
+}
+
 
   // Add copyWith method
   Animal copyWith({
@@ -98,6 +100,7 @@ class Animal {
     String? species,
     String? breed,
     String? location,
+    String? fullLocation,
     String? description,
     String? symbol,
     String? symbolColor,
@@ -123,6 +126,7 @@ class Animal {
       species: species ?? this.species,
       breed: breed ?? this.breed,
       location: location ?? this.location,
+      fullLocation: fullLocation ?? this.fullLocation,
       description: description ?? this.description,
       symbol: symbol ?? this.symbol,
       symbolColor: symbolColor ?? this.symbolColor,
@@ -152,6 +156,7 @@ class Animal {
       'species': species,
       'breed': breed,
       'location': location,
+      'fullLocation': fullLocation,
       'description': description,
       'symbol': symbol,
       'symbolColor': symbolColor,
@@ -164,7 +169,7 @@ class Animal {
       'volunteerCategory': volunteerCategory,
       'inKennel': inKennel,
       'intakeDate': intakeDate,
-      'photos': photos.map((photo) => photo.toMap()).toList(),
+      'photos': photos?.map((photo) => photo.toMap()).toList(),
       'notes': notes.map((note) => note.toMap()).toList(),
       'logs': logs.map((log) => log.toMap()).toList(),
       'tags': tags.map((tag) => tag.toMap()).toList(),

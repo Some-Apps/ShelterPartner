@@ -120,6 +120,16 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
+  Future<void> modifyShelterSettingString(
+      String userID, String field, String newValue) async {
+    try {
+      await _repository.modifyShelterSettingString(userID, field, newValue);
+    } catch (error) {
+      print("Error modifying: $error");
+      state = AsyncValue.error("Error modifying: $error", StackTrace.current);
+    }
+  }
+
 // Reorder items in array within shelterSettings attribute
   Future<void> reorderShelterSettingsArray(
       String shelterID, String field, List<String> newOrder) async {

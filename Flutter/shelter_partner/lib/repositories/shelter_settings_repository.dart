@@ -56,6 +56,7 @@ class ShelterSettingsRepository {
     });
   }
 
+
   // Method to reorder items in an array of maps within shelterSettings attribute
   Future<void> reorderMapArrayInShelterSettings(String shelterID, String field,
       List<Map<String, dynamic>> newOrder) async {

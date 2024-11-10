@@ -20,17 +20,14 @@ class VisitorPage extends ConsumerStatefulWidget {
 }
 
 class _VisitorPageState extends ConsumerState<VisitorPage>
-  with SingleTickerProviderStateMixin {
-  final int preloadImageCount = 50;
+    with SingleTickerProviderStateMixin {
+  final int preloadImageCount = 150; // Reduced preload count
   late ScrollController _scrollController;
 
   Timer? _throttleTimer;
   final Duration throttleDuration = const Duration(milliseconds: 200);
 
   final double maxItemExtent = 250;
-
-  // Available resized image sizes
-  final List<int> availableSizes = [100, 250, 500, 750];
 
   // TabController for the TabBar
   late TabController _tabController;
@@ -42,124 +39,90 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
   @override
   void initState() {
-  super.initState();
-  PaintingBinding.instance.imageCache.maximumSize = 100;
-  PaintingBinding.instance.imageCache.maximumSizeBytes =
-    500 * 1024 * 1024; // 500 MB
+    super.initState();
+    PaintingBinding.instance.imageCache.maximumSize = 1000; // Increased cache size
+    PaintingBinding.instance.imageCache.maximumSizeBytes =
+        100 * 1024 * 1024; // 100 MB
 
-  _scrollController = ScrollController();
-  _scrollController.addListener(_onScroll);
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
 
-  _tabController = TabController(length: 2, vsync: this);
-  _tabController.addListener(_onTabChanged);
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
+
+    // Preload images for both 'cats' and 'dogs'
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _preloadImages('cats');
+      _preloadImages('dogs');
+      setState(() {
+        _hasPreloadedImages = true;
+      });
+    });
   }
 
   void _onTabChanged() {
-  if (_tabController.indexIsChanging) {
-    setState(() {
-    selectedAnimalType = _tabController.index == 0 ? 'cats' : 'dogs';
-    _hasPreloadedImages = false; // Reset the flag for the new selection
-    // Reset scroll position
-    _scrollController.jumpTo(0);
-    });
-  }
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        selectedAnimalType = _tabController.index == 0 ? 'cats' : 'dogs';
+        // No need to reset _hasPreloadedImages if both tabs are preloaded
+        // Optionally, you can preload again if needed
+        // _preloadImages(selectedAnimalType);
+        // Reset scroll position
+        _scrollController.jumpTo(0);
+      });
+    }
   }
 
   void _onScroll() {
-  if (_throttleTimer?.isActive ?? false) return;
-  _throttleTimer = Timer(throttleDuration, () {
-    _preloadImages();
-  });
+    if (_throttleTimer?.isActive ?? false) return;
+    _throttleTimer = Timer(throttleDuration, () {
+      _preloadImages(selectedAnimalType);
+    });
   }
 
-  void _preloadImages() {
-  if (!mounted) return;
+  void _preloadImages(String animalType) {
+    if (!mounted) return;
 
-  final animalsMap = ref.read(visitorsViewModelProvider);
-  final animals = animalsMap[selectedAnimalType] ?? [];
+    final animalsMap = ref.read(visitorsViewModelProvider);
+    final animals = animalsMap[animalType] ?? [];
 
-  if (animals.isEmpty) return;
+    if (animals.isEmpty) return;
 
-  // Add this check
-  if (!_scrollController.hasClients) return;
+    // Preload a subset of images to avoid excessive memory usage
+    final start = 0;
+    final end = (preloadImageCount < animals.length) ? preloadImageCount : animals.length;
 
-  double scrollOffset = _scrollController.position.pixels;
+    for (int i = start; i < end; i++) {
+      final animal = animals[i];
+      final imageUrl = (animal.photos != null && animal.photos!.isNotEmpty)
+          ? animal.photos!.first.url ?? ''
+          : '';
 
-  double screenWidth = MediaQuery.of(context).size.width;
-  int crossAxisCount = (screenWidth / maxItemExtent).ceil();
-
-  double itemWidth = screenWidth / crossAxisCount;
-  double itemHeight = itemWidth;
-  double itemSizeWithPadding = itemHeight + 16.0;
-
-  int currentRow = (scrollOffset / itemSizeWithPadding).floor();
-  int currentIndex = currentRow * crossAxisCount;
-
-  int startIndex = currentIndex - preloadImageCount;
-  int endIndex = currentIndex + preloadImageCount;
-
-  startIndex = startIndex.clamp(0, animals.length - 1);
-  endIndex = endIndex.clamp(0, animals.length - 1);
-
-  if (startIndex > endIndex) return;
-
-  for (int i = startIndex; i <= endIndex; i++) {
-    final animal = animals[i];
-    final imageUrl = getResizedImageUrl(animal, itemWidth.toInt());
-
-    if (imageUrl.isNotEmpty) {
-    precacheImage(CachedNetworkImageProvider(imageUrl), context);
+      if (imageUrl.isNotEmpty) {
+        precacheImage(
+          CachedNetworkImageProvider(imageUrl),
+          context,
+        );
+      }
     }
-  }
-  }
-
-  String getResizedImageUrl(Animal animal, int targetWidth) {
-  if (animal.photos.isEmpty) return '';
-
-  String originalUrl = animal.photos.first.url;
-  Uri uri = Uri.parse(originalUrl);
-  String fileName = uri.pathSegments.last;
-
-  // Determine the closest available size
-  int closestSize = availableSizes.reduce(
-    (a, b) => (a - targetWidth).abs() < (b - targetWidth).abs() ? a : b);
-
-  // Modify the filename to include the size suffix
-  String resizedFileName = fileName.replaceFirstMapped(
-    RegExp(r'(.+)(\.\w+)$'),
-    (match) =>
-      '${match.group(1)}_${closestSize}x$closestSize${match.group(2)}',
-  );
-
-  // Construct the new path segments
-  List<String> newPathSegments = List.from(uri.pathSegments);
-  newPathSegments[newPathSegments.length - 1] = resizedFileName;
-
-  // Build the new URI
-  Uri resizedUri = uri.replace(pathSegments: newPathSegments);
-
-  return resizedUri.toString();
   }
 
   @override
   void dispose() {
-  _scrollController.dispose();
-  _throttleTimer?.cancel();
-  _tabController.dispose();
-  super.dispose();
+    _scrollController.dispose();
+    _throttleTimer?.cancel();
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-  final animalsMap = ref.watch(visitorsViewModelProvider);
-  final animals = animalsMap[selectedAnimalType] ?? [];
+    final animalsMap = ref.watch(visitorsViewModelProvider);
+    final animals = animalsMap[selectedAnimalType] ?? [];
 
-  if (!_hasPreloadedImages && animals.isNotEmpty) {
-    _hasPreloadedImages = true;
-    _preloadImages();
-  }
+    // Removed on-demand preloading since we're preloading both tabs initially
 
-      ref.listen<bool>(scrollToTopProviderVisitors, (previous, next) {
+    ref.listen<bool>(scrollToTopProviderVisitors, (previous, next) {
       if (next == true) {
         _scrollController.animateTo(
           0.0,
@@ -171,155 +134,164 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
       }
     });
 
-  double screenWidth = MediaQuery.of(context).size.width;
-  int crossAxisCount = (screenWidth / maxItemExtent).ceil();
-
-  return DefaultTabController(
-    length: 2,
-    child: Scaffold(
-    body: SafeArea(
-      child: Column(
-      children: [
-        TabBar(
-        controller: _tabController,
-        tabs: const [
-          Tab(text: 'Cats'),
-          Tab(text: 'Dogs'),
-        ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Cats'),
+                  Tab(text: 'Dogs'),
+                ],
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildAnimalGrid(animalsMap['cats'] ?? []),
+                    _buildAnimalGrid(animalsMap['dogs'] ?? []),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        Expanded(
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-          _buildAnimalGrid(animalsMap['cats'] ?? []),
-          _buildAnimalGrid(animalsMap['dogs'] ?? []),
-          ],
-        ),
-        ),
-      ],
       ),
-    ),
-    ),
-  );
+    );
   }
 
   Widget _buildAnimalGrid(List<Animal> animals) {
-  if (animals.isEmpty) {
-    return const Center(child: CircularProgressIndicator());
-  }
+    if (animals.isEmpty) {
+      return const Center(
+          child: Icon(Icons.pets, size: 50, color: Colors.grey));
+    }
 
-  double screenWidth = MediaQuery.of(context).size.width;
-  int crossAxisCount = (screenWidth / maxItemExtent).ceil();
+    double screenWidth = MediaQuery.of(context).size.width;
+    int crossAxisCount = (screenWidth / maxItemExtent).ceil();
 
-  return CustomScrollView(
-    controller: _scrollController,
-    slivers: [
-    SliverGrid(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-      maxCrossAxisExtent: maxItemExtent,
-      childAspectRatio: 1.0,
-      ),
-      delegate: SliverChildBuilderDelegate(
-      (context, index) {
-        final animal = animals[index];
-        final imageUrl =
-          getResizedImageUrl(animal, maxItemExtent.toInt());
+    return CustomScrollView(
+      controller: _scrollController,
+      slivers: [
+        SliverGrid(
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: maxItemExtent,
+            childAspectRatio: 1.0,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final animal = animals[index];
+              final imageUrl =
+                  (animal.photos != null && animal.photos!.isNotEmpty)
+                      ? animal.photos!.first.url ?? ''
+                      : '';
 
-        return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: InkWell(
-          onTap: () {},
-          child: AspectRatio(
-          aspectRatio: 1.0,
-          child: Card(
-            shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25.0),
-            ),
-            child: ClipRRect(
-            borderRadius: BorderRadius.circular(25.0),
-            child: GestureDetector(
-              onTap: () {
-              context.push('/visitors/details', extra: animal);
-              },
-              child: Container(
-              color: Colors.grey[300],
-              child: Stack(
-                children: [
-                CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                    const Center(
-                  child: CircularProgressIndicator(),
-                  ),
-                  errorWidget: (context, url, error) =>
-                    const Center(
-                  child: Icon(Icons.error, color: Colors.red),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.7),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  onTap: () {},
+                  child: AspectRatio(
+                    aspectRatio: 1.0,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            context.push('/visitors/details', extra: animal);
+                          },
+                          child: Container(
+                            color: Colors.grey[300],
+                            child: Stack(
+                              children: [
+                                imageUrl.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: imageUrl,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                          child: Icon(Icons.pets,
+                                              size: 50, color: Colors.grey),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            const Center(
+                                          child: Icon(Icons.error,
+                                              color: Colors.red),
+                                        ),
+                                      )
+                                    : const Center(
+                                        child: Icon(Icons.pets,
+                                            size: 50, color: Colors.grey),
+                                      ),
+                                Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.transparent,
+                                          Colors.black.withOpacity(0.7),
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      animal.name,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    animal.name,
-                    style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  ),
                 ),
-                ],
-              ),
-              ),
-            ),
-            ),
-          ),
+              );
+            },
+            childCount: animals.length,
           ),
         ),
-        );
-      },
-      childCount: animals.length,
-      ),
-    ),
-    // "Start Slideshow" button at the end of the scroll view
-    SliverToBoxAdapter(
-      child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Center(
-        child: ElevatedButton(
-        onPressed: animals.isNotEmpty
-          ? () {
-            Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(
-              builder: (context) =>
-                SlideshowScreen(animals: animals),
+        // "Start Slideshow" button at the end of the scroll view
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: ElevatedButton(
+                onPressed: animals.isNotEmpty
+                    ? () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SlideshowScreen(animals: animals),
+                          ),
+                        );
+                      }
+                    : null,
+                child: const Text('Start Slideshow'),
               ),
-            );
-            }
-          : null,
-        child: const Text('Start Slideshow'),
+            ),
+          ),
         ),
-      ),
-      ),
-    ),
-    ],
-  );
+      ],
+    );
   }
 }
 
@@ -341,110 +313,113 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
   @override
   void initState() {
-  super.initState();
+    super.initState();
 
-  // Shuffle the list of animals
-  _shuffledAnimals = List.from(widget.animals)..shuffle();
+    // Shuffle the list of animals
+    _shuffledAnimals = List.from(widget.animals)..shuffle();
 
-  // Set the initial image URL and animal
-  _setCurrentImage();
+    // Set the initial image URL and animal
+    _setCurrentImage();
 
-  // Start the slideshow
-  _startSlideshow();
+    // Start the slideshow
+    _startSlideshow();
 
-  // Enter full-screen mode if appropriate
-  enterFullScreen();
+    // Enter full-screen mode if appropriate
+    enterFullScreen();
   }
 
   void _setCurrentImage() {
-  final animal = _shuffledAnimals[_currentIndex];
-  _currentAnimal = animal; // Set the current animal
-  if (animal.photos.isNotEmpty) {
-    _currentImageUrl = animal.photos.first.url; // Use full-res image
-  } else {
-    _currentImageUrl = '';
-  }
+    final animal = _shuffledAnimals[_currentIndex];
+    _currentAnimal = animal; // Set the current animal
+    if (animal.photos != null && animal.photos!.isNotEmpty) {
+      _currentImageUrl = animal.photos!.first.url ?? '';
+    } else {
+      _currentImageUrl = '';
+    }
   }
 
   void _startSlideshow() {
-  // Start the timer to change images every 10 seconds
-  _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-    setState(() {
-    _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
-    _setCurrentImage();
+    // Start the timer to change images every 10 seconds
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      setState(() {
+        _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
+        _setCurrentImage();
+      });
     });
-  });
   }
 
   @override
   void dispose() {
-  _timer.cancel();
-  exitFullScreen(); // Exit full-screen mode when the slideshow is dismissed
-  super.dispose();
+    _timer.cancel();
+    exitFullScreen(); // Exit full-screen mode when the slideshow is dismissed
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-  // Handle the case where there is no image
-  Widget imageWidget;
-  if (_currentImageUrl.isNotEmpty) {
-    imageWidget = CachedNetworkImage(
-    key: ValueKey<String>(_currentImageUrl),
-    imageUrl: _currentImageUrl,
-    fit: BoxFit.cover,
-    width: double.infinity,
-    height: double.infinity,
-    );
-  } else {
-    imageWidget = const Center(
-    child: Text(
-      'No Image Available',
-      style: TextStyle(color: Colors.white, fontSize: 24),
-    ),
-    );
-  }
-
-  // Wrap imageWidget in a Stack to overlay the name
-  Widget content = Stack(
-    key: ValueKey<String>(_currentImageUrl),
-    children: [
-    imageWidget,
-    Positioned(
-      top: 50.0,
-      right: 50.0,
-      child: Text(
-      _currentAnimal?.name ?? '',
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 24,
-        shadows: [
-        Shadow(
-          offset: Offset(1.0, 1.0),
-          blurRadius: 3.0,
-          color: Colors.black,
+    // Handle the case where there is no image
+    Widget imageWidget;
+    if (_currentImageUrl.isNotEmpty) {
+      imageWidget = CachedNetworkImage(
+        key: ValueKey<String>(_currentImageUrl),
+        imageUrl: _currentImageUrl,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(),
         ),
-        ],
-      ),
-      ),
-    ),
-    ],
-  );
+        errorWidget: (context, url, error) => const Center(
+          child: Icon(Icons.error, color: Colors.red),
+        ),
+      );
+    } else {
+      imageWidget = const Center(
+        child: Icon(Icons.pets, size: 50, color: Colors.grey),
+      );
+    }
 
-  return GestureDetector(
-    onTap: () {
-    Navigator.pop(context); // Dismiss the slideshow
-    },
-    child: Scaffold(
-    backgroundColor: Colors.black,
-    body: AnimatedSwitcher(
-      duration:
-        const Duration(seconds: 2), // Duration of the fade transition
-      transitionBuilder: (Widget child, Animation<double> animation) {
-      return FadeTransition(opacity: animation, child: child);
+    // Wrap imageWidget in a Stack to overlay the name
+    Widget content = Stack(
+      key: ValueKey<String>(_currentImageUrl),
+      children: [
+        imageWidget,
+        Positioned(
+          top: 50.0,
+          right: 50.0,
+          child: Text(
+            _currentAnimal?.name ?? '',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              shadows: [
+                Shadow(
+                  offset: Offset(1.0, 1.0),
+                  blurRadius: 3.0,
+                  color: Colors.black,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context); // Dismiss the slideshow
       },
-      child: content,
-    ),
-    ),
-  );
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: AnimatedSwitcher(
+          duration:
+              const Duration(seconds: 2), // Duration of the fade transition
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: content,
+        ),
+      ),
+    );
   }
 }
