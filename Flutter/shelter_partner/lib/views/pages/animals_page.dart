@@ -124,7 +124,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
             fieldValue = animal.notes.map((note) => note.note).join(' ');
             break;
           case 'tags':
-            fieldValue = animal.tags?.map((tag) => tag.title).join(' ') ?? '';
+            fieldValue = animal.tags.map((tag) => tag.title).join(' ') ?? '';
             break;
           case 'breed':
             fieldValue = animal.breed;

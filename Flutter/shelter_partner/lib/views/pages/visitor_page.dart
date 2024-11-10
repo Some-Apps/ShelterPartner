@@ -11,6 +11,7 @@ import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub 
   if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
 
+
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
 
@@ -20,16 +21,13 @@ class VisitorPage extends ConsumerStatefulWidget {
 
 class _VisitorPageState extends ConsumerState<VisitorPage>
     with SingleTickerProviderStateMixin {
-  final int preloadImageCount = 50;
+  final int preloadImageCount = 100; // Reduced preload count
   late ScrollController _scrollController;
 
   Timer? _throttleTimer;
   final Duration throttleDuration = const Duration(milliseconds: 200);
 
   final double maxItemExtent = 250;
-
-  // Available resized image sizes
-  // final List<int> availableSizes = [100, 250, 500, 750];
 
   // TabController for the TabBar
   late TabController _tabController;
@@ -42,22 +40,33 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   @override
   void initState() {
     super.initState();
-    PaintingBinding.instance.imageCache.maximumSize = 100;
+    PaintingBinding.instance.imageCache.maximumSize = 500; // Increased cache size
     PaintingBinding.instance.imageCache.maximumSizeBytes =
-        500 * 1024 * 1024; // 500 MB
+        300 * 1024 * 1024; // 100 MB
 
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
 
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_onTabChanged);
+
+    // Preload images for both 'cats' and 'dogs'
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _preloadImages('cats');
+      _preloadImages('dogs');
+      setState(() {
+        _hasPreloadedImages = true;
+      });
+    });
   }
 
   void _onTabChanged() {
     if (_tabController.indexIsChanging) {
       setState(() {
         selectedAnimalType = _tabController.index == 0 ? 'cats' : 'dogs';
-        _hasPreloadedImages = false; // Reset the flag for the new selection
+        // No need to reset _hasPreloadedImages if both tabs are preloaded
+        // Optionally, you can preload again if needed
+        // _preloadImages(selectedAnimalType);
         // Reset scroll position
         _scrollController.jumpTo(0);
       });
@@ -67,41 +76,23 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   void _onScroll() {
     if (_throttleTimer?.isActive ?? false) return;
     _throttleTimer = Timer(throttleDuration, () {
-      _preloadImages();
+      _preloadImages(selectedAnimalType);
     });
   }
 
-  void _preloadImages() {
+  void _preloadImages(String animalType) {
     if (!mounted) return;
 
     final animalsMap = ref.read(visitorsViewModelProvider);
-    final animals = animalsMap[selectedAnimalType] ?? [];
+    final animals = animalsMap[animalType] ?? [];
 
     if (animals.isEmpty) return;
 
-    if (!_scrollController.hasClients) return;
+    // Preload a subset of images to avoid excessive memory usage
+    final start = 0;
+    final end = (preloadImageCount < animals.length) ? preloadImageCount : animals.length;
 
-    double scrollOffset = _scrollController.position.pixels;
-
-    double screenWidth = MediaQuery.of(context).size.width;
-    int crossAxisCount = (screenWidth / maxItemExtent).ceil();
-
-    double itemWidth = screenWidth / crossAxisCount;
-    double itemHeight = itemWidth;
-    double itemSizeWithPadding = itemHeight + 16.0;
-
-    int currentRow = (scrollOffset / itemSizeWithPadding).floor();
-    int currentIndex = currentRow * crossAxisCount;
-
-    int startIndex = currentIndex - preloadImageCount;
-    int endIndex = currentIndex + preloadImageCount;
-
-    startIndex = startIndex.clamp(0, animals.length - 1);
-    endIndex = endIndex.clamp(0, animals.length - 1);
-
-    if (startIndex > endIndex) return;
-
-    for (int i = startIndex; i <= endIndex; i++) {
+    for (int i = start; i < end; i++) {
       final animal = animals[i];
       final imageUrl = (animal.photos != null && animal.photos!.isNotEmpty)
           ? animal.photos!.first.url ?? ''
@@ -109,7 +100,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
       if (imageUrl.isNotEmpty) {
         precacheImage(
-          CachedNetworkImageProvider(imageUrl, maxHeight: 100, maxWidth: 100),
+          CachedNetworkImageProvider(imageUrl),
           context,
         );
       }
@@ -129,10 +120,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
     final animalsMap = ref.watch(visitorsViewModelProvider);
     final animals = animalsMap[selectedAnimalType] ?? [];
 
-    if (!_hasPreloadedImages && animals.isNotEmpty) {
-      _hasPreloadedImages = true;
-      _preloadImages();
-    }
+    // Removed on-demand preloading since we're preloading both tabs initially
 
     ref.listen<bool>(scrollToTopProviderVisitors, (previous, next) {
       if (next == true) {
@@ -378,6 +366,12 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        errorWidget: (context, url, error) => const Center(
+          child: Icon(Icons.error, color: Colors.red),
+        ),
       );
     } else {
       imageWidget = const Center(

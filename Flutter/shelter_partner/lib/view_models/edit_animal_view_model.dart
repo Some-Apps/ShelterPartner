@@ -36,7 +36,7 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
         state = state.copyWith(photos: updatedPhotos);
       }
     } else if (field == 'tags') {
-      itemToDelete = state.tags?.firstWhereOrNull((tag) => tag.id == itemId);
+      itemToDelete = state.tags.firstWhereOrNull((tag) => tag.id == itemId);
       if (itemToDelete != null) {
         List<Tag> updatedTags = List.from(state.tags ?? [])..remove(itemToDelete);
         state = state.copyWith(tags: updatedTags);

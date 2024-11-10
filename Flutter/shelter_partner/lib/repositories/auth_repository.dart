@@ -274,7 +274,10 @@ class AuthRepository {
         print('Loaded ${csvData.length} rows from $filename');
       }
 
-      // Iterate over the loaded CSV data and upload each row to Firestore
+      // Create a batch to perform multiple writes as a single atomic operation
+      WriteBatch batch = _firestore.batch();
+
+      // Iterate over the loaded CSV data and add each row to the batch
       for (final row in csvData) {
         final animalId = row['id'].toString();
 
@@ -403,15 +406,16 @@ class AuthRepository {
           ].randomElement(),
         };
 
-        // Upload the document to Firestore
-        print(
-            'Uploading document for $collectionName: ${row['name']} (ID: $animalId)');
-        await _firestore
+        // Add the document to the batch
+        final docRef = _firestore
             .collection('shelters/$shelterId/$collectionName')
-            .doc(animalId)
-            .set(data);
-        print('Successfully uploaded $collectionName document for $animalId');
+            .doc(animalId);
+        batch.set(docRef, data);
       }
+
+      // Commit the batch
+      await batch.commit();
+      print('Successfully uploaded all documents for $collectionName');
     } catch (e) {
       print('Error uploading data from $filename: $e');
     }
