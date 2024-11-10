@@ -21,7 +21,7 @@ class VisitorPage extends ConsumerStatefulWidget {
 
 class _VisitorPageState extends ConsumerState<VisitorPage>
     with SingleTickerProviderStateMixin {
-  final int preloadImageCount = 100; // Reduced preload count
+  final int preloadImageCount = 150; // Reduced preload count
   late ScrollController _scrollController;
 
   Timer? _throttleTimer;
@@ -40,9 +40,9 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   @override
   void initState() {
     super.initState();
-    PaintingBinding.instance.imageCache.maximumSize = 500; // Increased cache size
+    PaintingBinding.instance.imageCache.maximumSize = 1000; // Increased cache size
     PaintingBinding.instance.imageCache.maximumSizeBytes =
-        300 * 1024 * 1024; // 100 MB
+        100 * 1024 * 1024; // 100 MB
 
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
