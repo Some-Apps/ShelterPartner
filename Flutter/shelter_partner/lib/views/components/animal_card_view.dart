@@ -1,4 +1,4 @@
-
+// Import statements
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +79,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
         _automaticPutBackHandled = true;
       }
     });
-
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2), // 2 seconds duration
@@ -127,17 +126,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
         }
       }
     });
-
-    // Preload images
-    _preloadImages();
-  }
-
-  void _preloadImages() {
-    if (widget.animal.photos?.isNotEmpty ?? false) {
-      for (var photo in widget.animal.photos!) {
-        precacheImage(NetworkImage(photo.url), context);
-      }
-    }
   }
 
   @override
@@ -146,13 +134,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     super.dispose();
   }
 
-  String getScaledDownUrl(String url) {
-    final parts = url.split('.');
-    if (parts.length > 1) {
-      parts[parts.length - 2] += '_100x100';
-    }
-    return parts.join('.');
-  }
 
   Future<void> _showTakeOutConfirmationDialog() async {
     // Show the custom confirmation widget using the ref object
@@ -284,14 +265,12 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 return SizedBox(
                 width: 115,
                 height: 115,
-                child: CircularProgressIndicator(
-                  value: _curvedAnimation.value,
-                  strokeWidth: 15,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                  animal.inKennel
+                child: Icon(
+                  Icons.pets,
+                  size: 50,
+                  color: animal.inKennel
                     ? Colors.orange.shade100
                     : Colors.lightBlue.shade100,
-                  ),
                 ),
                 );
               },
@@ -318,28 +297,18 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 ],
                 ),
                 child: ClipOval(
-                child: (animal.photos?.isNotEmpty ?? false)
+                child: animal.photos?.isNotEmpty ?? false
                   ? CachedNetworkImage(
-                    imageUrl: animal.photos?.first.url ?? '',
-                      // imageUrl: getScaledDownUrl(
-                      //   animal.photos?.first.url ?? ''),
+                      imageUrl: animal.photos?.first.url ?? '',
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
                       placeholder: (context, url) =>
-                        Icon(
-                          Icons.pets,
-                          size: 50,
-                          color: Colors.grey.shade400,
-                        ),
-                      errorWidget: (context, url, error) =>
                         Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
+                      errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                     )
-                  : Icon(
-                      Icons.pets,
-                      size: 50,
-                      color: Colors.grey.shade400,
-                    ),
+                  : Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
                 ),
               ),
               ),
@@ -455,10 +424,10 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                   label: animal.volunteerCategory,
                 ),
                 // Add the top 3 tags as info chips
-                for (int i = 0; i < min(3, animal.tags?.length ?? 0); i++)
+                for (int i = 0; i < min(3, animal.tags.length); i++)
                 _buildInfoChip(
                   icon: Icons.label,
-                  label: animal.tags?[i].title ?? '',
+                  label: animal.tags[i].title,
                 ),
               ],
               ),
@@ -541,6 +510,7 @@ Widget _buildInfoChip({
   );
 }
 
+
 Icon _buildIcon(String symbol, String symbolColor) {
   IconData iconData;
 
@@ -571,15 +541,6 @@ Icon _buildIcon(String symbol, String symbolColor) {
   );
 }
 
-// Color _parseColor(String colorString) {
-//   colorString = colorString.replaceAll('#', '');
-
-//   if (colorString.length == 6) {
-//     colorString = 'FF$colorString';
-//   }
-
-//   return Color(int.parse(colorString, radix: 16));
-// }
 Color _parseColor(String colorString) {
   switch (colorString.toLowerCase()) {
     case 'red':

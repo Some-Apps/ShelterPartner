@@ -32,7 +32,7 @@ class Animal {
   final List<Photo>? photos;
   final List<Note> notes;
   final List<Log> logs;
-  final List<Tag>? tags;
+  final List<Tag> tags;
 
   Animal({
     required this.id,
@@ -172,7 +172,7 @@ class Animal {
       'photos': photos?.map((photo) => photo.toMap()).toList(),
       'notes': notes.map((note) => note.toMap()).toList(),
       'logs': logs.map((log) => log.toMap()).toList(),
-      'tags': tags?.map((tag) => tag.toMap()).toList(),
+      'tags': tags.map((tag) => tag.toMap()).toList(),
     };
   }
 }
