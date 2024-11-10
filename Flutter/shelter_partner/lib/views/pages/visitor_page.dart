@@ -7,10 +7,9 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 // Conditional import for platform-specific full-screen functionality
 import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub file which will import correct platform-specific file.
-  if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart' 
+  if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart'
   if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
-
 
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
@@ -103,42 +102,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
   if (startIndex > endIndex) return;
 
-  for (int i = startIndex; i <= endIndex; i++) {
-    final animal = animals[i];
-    final imageUrl = getResizedImageUrl(animal, itemWidth.toInt());
-
-    if (imageUrl.isNotEmpty) {
-    precacheImage(CachedNetworkImageProvider(imageUrl), context);
-    }
-  }
-  }
-
-  String getResizedImageUrl(Animal animal, int targetWidth) {
-  if (animal.photos.isEmpty) return '';
-
-  String originalUrl = animal.photos.first.url;
-  Uri uri = Uri.parse(originalUrl);
-  String fileName = uri.pathSegments.last;
-
-  // Determine the closest available size
-  int closestSize = availableSizes.reduce(
-    (a, b) => (a - targetWidth).abs() < (b - targetWidth).abs() ? a : b);
-
-  // Modify the filename to include the size suffix
-  String resizedFileName = fileName.replaceFirstMapped(
-    RegExp(r'(.+)(\.\w+)$'),
-    (match) =>
-      '${match.group(1)}_${closestSize}x$closestSize${match.group(2)}',
-  );
-
-  // Construct the new path segments
-  List<String> newPathSegments = List.from(uri.pathSegments);
-  newPathSegments[newPathSegments.length - 1] = resizedFileName;
-
-  // Build the new URI
-  Uri resizedUri = uri.replace(pathSegments: newPathSegments);
-
-  return resizedUri.toString();
+  // Remove the precacheImage calls
   }
 
   @override
@@ -159,17 +123,17 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
     _preloadImages();
   }
 
-      ref.listen<bool>(scrollToTopProviderVisitors, (previous, next) {
-      if (next == true) {
-        _scrollController.animateTo(
-          0.0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-        // Reset the provider value to false
-        ref.read(scrollToTopProviderVisitors.notifier).state = false;
-      }
-    });
+  ref.listen<bool>(scrollToTopProviderVisitors, (previous, next) {
+    if (next == true) {
+    _scrollController.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+    // Reset the provider value to false
+    ref.read(scrollToTopProviderVisitors.notifier).state = false;
+    }
+  });
 
   double screenWidth = MediaQuery.of(context).size.width;
   int crossAxisCount = (screenWidth / maxItemExtent).ceil();
@@ -214,114 +178,116 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   return CustomScrollView(
     controller: _scrollController,
     slivers: [
-    SliverGrid(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-      maxCrossAxisExtent: maxItemExtent,
-      childAspectRatio: 1.0,
-      ),
-      delegate: SliverChildBuilderDelegate(
-      (context, index) {
-        final animal = animals[index];
-        final imageUrl =
-          getResizedImageUrl(animal, maxItemExtent.toInt());
-
-        return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: InkWell(
-          onTap: () {},
-          child: AspectRatio(
-          aspectRatio: 1.0,
-          child: Card(
-            shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25.0),
-            ),
-            child: ClipRRect(
-            borderRadius: BorderRadius.circular(25.0),
-            child: GestureDetector(
-              onTap: () {
-              context.push('/visitors/details', extra: animal);
-              },
-              child: Container(
-              color: Colors.grey[300],
-              child: Stack(
-                children: [
-                CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                    const Center(
-                  child: CircularProgressIndicator(),
-                  ),
-                  errorWidget: (context, url, error) =>
-                    const Center(
-                  child: Icon(Icons.error, color: Colors.red),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.7),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    animal.name,
-                    style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  ),
-                ),
-                ],
-              ),
-              ),
-            ),
-            ),
-          ),
-          ),
+      SliverGrid(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: maxItemExtent,
+          childAspectRatio: 1.0,
         ),
-        );
-      },
-      childCount: animals.length,
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final animal = animals[index];
+            final imageUrl = animal.photos?.isNotEmpty == true ? animal.photos!.first.url : '';
+
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {},
+                child: AspectRatio(
+                  aspectRatio: 1.0,
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          context.push('/visitors/details', extra: animal);
+                        },
+                        child: Container(
+                          color: Colors.grey[300],
+                          child: Stack(
+                            children: [
+                              imageUrl.isNotEmpty
+    ? CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        errorWidget: (context, url, error) => const Center(
+          child: Icon(Icons.error, color: Colors.red),
+        ),
+        // cacheManager: null, // Remove or comment out this line
+      )
+    : const Center(
+        child: Icon(Icons.pets, size: 50, color: Colors.grey),
       ),
-    ),
-    // "Start Slideshow" button at the end of the scroll view
-    SliverToBoxAdapter(
-      child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Center(
-        child: ElevatedButton(
-        onPressed: animals.isNotEmpty
-          ? () {
-            Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(
-              builder: (context) =>
-                SlideshowScreen(animals: animals),
+
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.black.withOpacity(0.7),
+                                      ],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    animal.name,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             );
-            }
-          : null,
-        child: const Text('Start Slideshow'),
+          },
+          childCount: animals.length,
         ),
       ),
+      // "Start Slideshow" button at the end of the scroll view
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: ElevatedButton(
+              onPressed: animals.isNotEmpty
+                  ? () {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder: (context) => SlideshowScreen(animals: animals),
+                        ),
+                      );
+                    }
+                  : null,
+              child: const Text('Start Slideshow'),
+            ),
+          ),
+        ),
       ),
-    ),
     ],
   );
   }
-}
+  }
 
 class SlideshowScreen extends StatefulWidget {
   final List<Animal> animals;
@@ -359,8 +325,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   void _setCurrentImage() {
   final animal = _shuffledAnimals[_currentIndex];
   _currentAnimal = animal; // Set the current animal
-  if (animal.photos.isNotEmpty) {
-    _currentImageUrl = animal.photos.first.url; // Use full-res image
+  if (animal.photos?.isNotEmpty ?? false) {
+    _currentImageUrl = animal.photos?.first.url ?? ''; // Use full-res image
   } else {
     _currentImageUrl = '';
   }
@@ -394,6 +360,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     fit: BoxFit.cover,
     width: double.infinity,
     height: double.infinity,
+    cacheManager: null, // Disable caching
     );
   } else {
     imageWidget = const Center(

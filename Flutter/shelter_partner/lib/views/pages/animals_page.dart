@@ -66,7 +66,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
   final PagingController<int, dynamic> _catsPagingController =
       PagingController(firstPageKey: 0);
 
-  static const int _pageSize = 15;
+  static const int _pageSize = 50;
 
   late ScrollController _scrollController;
 
@@ -124,7 +124,7 @@ class _AnimalsPageState extends ConsumerState<AnimalsPage>
             fieldValue = animal.notes.map((note) => note.note).join(' ');
             break;
           case 'tags':
-            fieldValue = animal.tags.map((tag) => tag.title).join(' ');
+            fieldValue = animal.tags?.map((tag) => tag.title).join(' ') ?? '';
             break;
           case 'breed':
             fieldValue = animal.breed;

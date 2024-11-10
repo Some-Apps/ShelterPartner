@@ -90,12 +90,12 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                 children: [
                   // Inside your AnimalsAnimalDetailPage widget
 
-// Photos in a horizontal scrollable slideshow view
+                  // Photos in a horizontal scrollable slideshow view
                   SizedBox(
                     height: 220.0,
-                    child: animal.photos.isNotEmpty
+                    child: (animal.photos?.isNotEmpty ?? false)
                         ? PhotoList(
-                            photos: animal.photos,
+                            photos: animal.photos ?? [],
                             isAdmin: isAdmin(),
                             onDelete: (photoId) {
                               ref
@@ -111,7 +111,7 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                             onPhotoTap: (index) {
                               showFullScreenGallery(
                                 context,
-                                animal.photos
+                                (animal.photos ?? [])
                                     .map((photo) => photo.url)
                                     .toList(),
                                 index,
@@ -121,7 +121,11 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
                         : const Center(
                             child: Padding(
                               padding: EdgeInsets.all(16.0),
-                              child: Text('No photos available'),
+                              child: Icon(
+                                Icons.photo,
+                                size: 100,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
                   ),

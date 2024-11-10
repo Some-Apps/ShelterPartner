@@ -290,12 +290,12 @@ class AuthRepository {
                   ? 'cat'
                   : 'Unknown',
           'symbolColor': [
-            'FF0800',
-            'FF7F00',
-            'FFFF00',
-            '00FD00',
-            '0000FF',
-            '8F00FF'
+            'red',
+            'green',
+            'blue',
+            'yellow',
+            'orange',
+            'purple'
           ].randomElement(),
           'symbol': 'pets', // Example static value, adjust as needed
           'volunteerCategory': ['Red', 'Green', 'Blue'].randomElement(),
