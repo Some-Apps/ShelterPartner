@@ -57,10 +57,8 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
       // If the item being deleted is a photo, delete it from Firebase Storage
       if (field == 'photos') {
         final photo = itemToDelete as Photo;
-        if (photo != null) {
-          await _repository.deletePhotoFromStorage(shelterId, animalId, photo.id);
-        }
-      }
+        await _repository.deletePhotoFromStorage(shelterId, animalId, photo.id);
+            }
     } catch (e) {
       // Rollback if deletion fails
       // Re-add the item to state
