@@ -134,7 +134,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     super.dispose();
   }
 
-
   Future<void> _showTakeOutConfirmationDialog() async {
     // Show the custom confirmation widget using the ref object
     await showDialog<bool>(
@@ -202,279 +201,302 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     );
 
     return Card(
-      color: animal.inKennel
-        ? Colors.lightBlue.shade100
-        : Colors.orange.shade100,
+      color:
+          animal.inKennel ? Colors.lightBlue.shade100 : Colors.orange.shade100,
       elevation: 1,
       shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(25),
-      // side: BorderSide(color: Colors.white, width: 0.25),
+        borderRadius: BorderRadius.circular(25),
+        // side: BorderSide(color: Colors.white, width: 0.25),
       ),
       shadowColor: Colors.black, // Customize shadow color
       child: Container(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-        // Top Row: Image and details
-        Row(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          // Animal image and interaction
-          GestureDetector(
-            onTapDown: canInteract
-              ? (_) {
-                setState(() {
-                isPressed = true;
-                });
-                _controller.forward();
-                HapticFeedback.mediumImpact();
-              }
-              : null,
-            onTapUp: canInteract
-              ? (_) {
-                setState(() {
-                isPressed = false;
-                });
-                _controller.reverse();
-                HapticFeedback.lightImpact();
-              }
-              : null,
-            onTapCancel: canInteract
-              ? () {
-                setState(() {
-                isPressed = false;
-                });
-                _controller.reverse();
-                HapticFeedback.lightImpact();
-              }
-              : null,
-            child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Background stroke (semi-transparent)
-              CircleAvatar(
-              radius: 65,
-              backgroundColor: Colors.black.withOpacity(0.2),
-              ),
-
-              // Circular progress animation
-              AnimatedBuilder(
-              animation: _curvedAnimation,
-              builder: (context, child) {
-                return SizedBox(
-                width: 115,
-                height: 115,
-                child: Icon(
-                  Icons.pets,
-                  size: 50,
-                  color: animal.inKennel
-                    ? Colors.orange.shade100
-                    : Colors.lightBlue.shade100,
-                ),
-                );
-              },
-              ),
-
-              // Image with shadow and scale effect
-              AnimatedScale(
-              scale: isPressed ? 1.0 : 1.025,
-              duration: const Duration(milliseconds: 0),
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                  color: Colors.black.withOpacity(0.6),
-                  blurRadius: 0.9,
-                  spreadRadius: 0,
-                  offset: isPressed
-                    ? const Offset(0, 0)
-                    : const Offset(1, 1.5),
-                  ),
-                ],
-                ),
-                child: ClipOval(
-                child: animal.photos?.isNotEmpty ?? false
-                  ? CachedNetworkImage(
-                      imageUrl: animal.photos?.first.url ?? '',
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                        Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
-                      errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    )
-                  : Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
-                ),
-              ),
-              ),
-            ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          // Animal details
-          Expanded(
-            child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Name, symbol, and menu
-              Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // Top Row: Image and details
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                children: [
-                  Text(
-                  animal.name,
-                  style: const TextStyle(
-                    fontSize: 25.0,
-                    // fontWeight: FontWeight.bold,
+                // Animal image and interaction
+                GestureDetector(
+                  onTapDown: canInteract
+                      ? (_) {
+                          setState(() {
+                            isPressed = true;
+                          });
+                          _controller.forward();
+                          HapticFeedback.mediumImpact();
+                        }
+                      : null,
+                  onTapUp: canInteract
+                      ? (_) {
+                          setState(() {
+                            isPressed = false;
+                          });
+                          _controller.reverse();
+                          HapticFeedback.lightImpact();
+                        }
+                      : null,
+                  onTapCancel: canInteract
+                      ? () {
+                          setState(() {
+                            isPressed = false;
+                          });
+                          _controller.reverse();
+                          HapticFeedback.lightImpact();
+                        }
+                      : null,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Background stroke (semi-transparent)
+                      CircleAvatar(
+                        radius: 65,
+                        backgroundColor: Colors.black.withOpacity(0.2),
+                      ),
+
+                      AnimatedBuilder(
+                        animation: _curvedAnimation,
+                        builder: (context, child) {
+                          return SizedBox(
+                            width: 115,
+                            height: 115,
+                            child: CircularProgressIndicator(
+                              value: _curvedAnimation.value,
+                              strokeWidth: 15,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                animal.inKennel
+                                    ? Colors.orange.shade100
+                                    : Colors.lightBlue.shade100,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      // Circular progress animation
+                      // AnimatedBuilder(
+                      // animation: _curvedAnimation,
+                      // builder: (context, child) {
+                      //   return SizedBox(
+                      //   width: 115,
+                      //   height: 115,
+                      //   child: Icon(
+                      //     Icons.pets,
+                      //     size: 50,
+                      //     color: animal.inKennel
+                      //       ? Colors.orange.shade100
+                      //       : Colors.lightBlue.shade100,
+                      //   ),
+                      //   );
+                      // },
+                      // ),
+
+                      // Image with shadow and scale effect
+                      AnimatedScale(
+                        scale: isPressed ? 1.0 : 1.025,
+                        duration: const Duration(milliseconds: 0),
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.6),
+                                blurRadius: 0.9,
+                                spreadRadius: 0,
+                                offset: isPressed
+                                    ? const Offset(0, 0)
+                                    : const Offset(1, 1.5),
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: animal.photos?.isNotEmpty ?? false
+                                ? CachedNetworkImage(
+                                    imageUrl: animal.photos?.first.url ?? '',
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Icon(
+                                        Icons.pets,
+                                        size: 50,
+                                        color: Colors.grey.shade400),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  )
+                                : Icon(Icons.pets,
+                                    size: 50, color: Colors.grey.shade400),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  ),
-                  const SizedBox(width: 5),
-                  if (animal.symbol.isNotEmpty)
-                  _buildIcon(animal.symbol, animal.symbolColor),
-                ],
                 ),
-                PopupMenuButton<String>(
-                offset: const Offset(0, 40),
-                onSelected: (value) {
-                  // Handle menu item selection
-                  switch (value) {
-                  case 'Details':
-                    context.push('/animals/details',
-                      extra: animal);
-                    break;
-                  case 'Add Note':
-                    showDialog(
-                    context: context,
-                    builder: (context) =>
-                      AddNoteView(animal: animal),
-                    );
-                    break;
-                  case 'Add Log':
-                    showDialog(
-                      context: context,
-                      builder: (context) =>
-                        AddLogView(animal: animal));
-                    break;
-                  }
-                },
-                itemBuilder: (BuildContext context) {
-                  final appUser = ref.read(appUserProvider);
-                  final deviceSettings = ref
-                    .read(deviceSettingsViewModelProvider)
-                    .value;
+                const SizedBox(width: 10),
+                // Animal details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Name, symbol, and menu
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                animal.name,
+                                style: const TextStyle(
+                                  fontSize: 25.0,
+                                  // fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              if (animal.symbol.isNotEmpty)
+                                _buildIcon(animal.symbol, animal.symbolColor),
+                            ],
+                          ),
+                          PopupMenuButton<String>(
+                            offset: const Offset(0, 40),
+                            onSelected: (value) {
+                              // Handle menu item selection
+                              switch (value) {
+                                case 'Details':
+                                  context.push('/animals/details',
+                                      extra: animal);
+                                  break;
+                                case 'Add Note':
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        AddNoteView(animal: animal),
+                                  );
+                                  break;
+                                case 'Add Log':
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          AddLogView(animal: animal));
+                                  break;
+                              }
+                            },
+                            itemBuilder: (BuildContext context) {
+                              final appUser = ref.read(appUserProvider);
+                              final deviceSettings = ref
+                                  .read(deviceSettingsViewModelProvider)
+                                  .value;
 
-                  final menuItems = {'Details', 'Add Note'};
-                  if (appUser?.type == "admin" &&
-                    deviceSettings!.deviceSettings?.mode ==
-                      "Admin" && animal.inKennel) {
-                  menuItems.add('Add Log');
-                  }
+                              final menuItems = {'Details', 'Add Note'};
+                              if (appUser?.type == "admin" &&
+                                  deviceSettings!.deviceSettings?.mode ==
+                                      "Admin" &&
+                                  animal.inKennel) {
+                                menuItems.add('Add Log');
+                              }
 
-                  return menuItems.map((String choice) {
-                  return PopupMenuItem<String>(
-                    value: choice,
-                    child: Text(choice),
-                  );
-                  }).toList();
-                },
-                icon: const Icon(Icons.more_vert),
+                              return menuItems.map((String choice) {
+                                return PopupMenuItem<String>(
+                                  value: choice,
+                                  child: Text(choice),
+                                );
+                              }).toList();
+                            },
+                            icon: const Icon(Icons.more_vert),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      // Info chips
+                      Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: [
+                          if (animal.location.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.location_on,
+                              label: animal.location,
+                            ),
+                          if (animal.adoptionCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.shopping_bag,
+                              label: animal.adoptionCategory,
+                            ),
+                          if (animal.behaviorCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.face,
+                              label: animal.behaviorCategory,
+                            ),
+                          if (animal.locationCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.location_city,
+                              label: animal.locationCategory,
+                            ),
+                          if (animal.medicalCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.health_and_safety,
+                              label: animal.medicalCategory,
+                            ),
+                          if (animal.volunteerCategory.isNotEmpty)
+                            _buildInfoChip(
+                              icon: Icons.volunteer_activism,
+                              label: animal.volunteerCategory,
+                            ),
+                          // Add the top 3 tags as info chips
+                          for (int i = 0; i < min(3, animal.tags.length); i++)
+                            _buildInfoChip(
+                              icon: Icons.label,
+                              label: animal.tags[i].title,
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
-              ),
-              const SizedBox(height: 5),
-              // Info chips
-              Wrap(
-              spacing: 4,
-              runSpacing: 4,
-              children: [
-                if (animal.location.isNotEmpty)
-                _buildInfoChip(
-                  icon: Icons.location_on,
-                  label: animal.location,
-                ),
-                if (animal.adoptionCategory.isNotEmpty)
-                _buildInfoChip(
-                  icon: Icons.shopping_bag,
-                  label: animal.adoptionCategory,
-                ),
-                if (animal.behaviorCategory.isNotEmpty)
-                _buildInfoChip(
-                  icon: Icons.face,
-                  label: animal.behaviorCategory,
-                ),
-                if (animal.locationCategory.isNotEmpty)
-                _buildInfoChip(
-                  icon: Icons.location_city,
-                  label: animal.locationCategory,
-                ),
-                if (animal.medicalCategory.isNotEmpty)
-                _buildInfoChip(
-                  icon: Icons.health_and_safety,
-                  label: animal.medicalCategory,
-                ),
-                if (animal.volunteerCategory.isNotEmpty)
-                _buildInfoChip(
-                  icon: Icons.volunteer_activism,
-                  label: animal.volunteerCategory,
-                ),
-                // Add the top 3 tags as info chips
-                for (int i = 0; i < min(3, animal.tags.length); i++)
-                _buildInfoChip(
-                  icon: Icons.label,
-                  label: animal.tags[i].title,
-                ),
-              ],
-              ),
-            ],
             ),
-          ),
+            const Spacer(),
+            // Spacer(),
+            // Author and timeago at the bottom center
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    if (animal.logs.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(Icons.access_time,
+                              size: 16, color: Colors.grey.shade600),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                        ],
+                      ),
+                    if (animal.logs.isNotEmpty &&
+                        animal.logs.last.author.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(Icons.person_2_outlined,
+                              size: 16, color: Colors.grey.shade600),
+                          const SizedBox(width: 4),
+                          Text(
+                            animal.logs.last.author,
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
-        const Spacer(),
-        // Spacer(),
-        // Author and timeago at the bottom center
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-            if (animal.logs.isNotEmpty)
-              Row(
-              children: [
-          Icon(Icons.access_time, size: 16, color: Colors.grey.shade600),
-          const SizedBox(width: 4),
-          Text(
-          "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
-          style: TextStyle(color: Colors.grey.shade600),
-          ),
-              ],
-              ),
-            if (animal.logs.isNotEmpty &&
-              animal.logs.last.author.isNotEmpty)
-              Row(
-              children: [
-          Icon(Icons.person_2_outlined, size: 16, color: Colors.grey.shade600),
-          const SizedBox(width: 4),
-          Text(
-            animal.logs.last.author,
-            style: TextStyle(color: Colors.grey.shade600),
-          ),
-              ],
-              ),
-            ],
-          ),
-          ),
-        ),
-        ],
-      ),
       ),
     );
   }
@@ -509,7 +531,6 @@ Widget _buildInfoChip({
     ),
   );
 }
-
 
 Icon _buildIcon(String symbol, String symbolColor) {
   IconData iconData;
