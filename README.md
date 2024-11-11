@@ -12,6 +12,8 @@ The plan is to switch everything to Flutter by the end of the year and scrap the
 
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
+I'm also organizing the issue in a github project which you can view [here](https://github.com/orgs/Some-Apps/projects/3). It's just read only though until I figure out if I can add custom permissions that would work for an open source project. 
+
 ### File Organization
 Follow MVVM repository architecture. For example:
 
