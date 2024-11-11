@@ -207,8 +207,8 @@ Widget build(BuildContext context) {
                       ),
                     ),
                     const SizedBox(height: 25.0),
-          
-                    Card.outlined(
+                    if (shelter?.managementSoftware == "ShelterLuv") ...[
+                      Card.outlined(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextField(
@@ -226,6 +226,28 @@ Widget build(BuildContext context) {
                         ),
                       ),
                     ),
+                    ] 
+                    // else if (shelter?.managementSoftware == "ASM") ...[
+                    //   Card.outlined(
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.all(8.0),
+                    //     child: TextField(
+                    //       decoration: const InputDecoration(
+                    //         labelText: "ASM Username",
+                    //         hintText: "ASM Username",
+                    //       ),
+                    //       controller: _apiKeyController,
+                    //       focusNode: _focusNode,
+                    //       onChanged: (String value) {
+                    //         ref
+                    //             .read(shelterSettingsViewModelProvider.notifier)
+                    //             .modifyShelterSettingString(shelter!.id, "apiKey", value);
+                    //       },
+                    //     ),
+                    //   ),
+                    // ),
+                    // ],
+                    
                   ],
                 ),
               ),
