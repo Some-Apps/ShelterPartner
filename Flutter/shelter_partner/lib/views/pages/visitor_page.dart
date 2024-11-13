@@ -89,7 +89,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
     if (animals.isEmpty) return;
 
     // Preload a subset of images to avoid excessive memory usage
-    final start = 0;
+    const start = 0;
     final end = (preloadImageCount < animals.length) ? preloadImageCount : animals.length;
 
     for (int i = start; i < end; i++) {

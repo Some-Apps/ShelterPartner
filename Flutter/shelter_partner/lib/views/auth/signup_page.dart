@@ -30,11 +30,11 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final List<String> managementSoftwareOptions = [
     'ShelterLuv',
     'ShelterManager',
-    'Rescue Groups',
-    'ShelterBuddy',
-    'PetPoint',
-    'Chameleon',
-    'Other'
+    // 'Rescue Groups',
+    // 'ShelterBuddy',
+    // 'PetPoint',
+    // 'Chameleon',
+    // 'Other'
   ];
   String selectedManagementSoftware = 'ShelterLuv';
 

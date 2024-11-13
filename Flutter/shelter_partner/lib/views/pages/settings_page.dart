@@ -273,18 +273,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         //   ),
                         // ],
 
-                        if (defaultTargetPlatform == TargetPlatform.iOS ||
-                            defaultTargetPlatform == TargetPlatform.android)
+                        if (!kIsWeb &&
+                          (defaultTargetPlatform == TargetPlatform.iOS ||
+                            defaultTargetPlatform == TargetPlatform.android))
                           ListTile(
-                            leading: const Icon(Icons.favorite_border),
-                            title: Text(subscriptionStatus == "Active"
-                                ? "Thank You For Supporting Us!"
-                                : "Support Us And Remove Ads"),
-                            onTap: subscriptionStatus == "Active"
-                                ? null
-                                : () async {
-                                    _showSupportUsModal(context, ref);
-                                  },
+                          leading: const Icon(Icons.favorite_border),
+                          title: Text(subscriptionStatus == "Active"
+                            ? "Thank You For Supporting Us!"
+                            : "Support Us And Remove Ads"),
+                          onTap: subscriptionStatus == "Active"
+                            ? null
+                            : () async {
+                              _showSupportUsModal(context, ref);
+                              },
                           ),
 
 

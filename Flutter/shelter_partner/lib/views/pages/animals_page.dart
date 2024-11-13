@@ -195,7 +195,7 @@ void initState() {
   }
 
   void _preloadImages(List<Animal> animals) {
-  final int preloadImageCount = 150; // Limit the number of images to preload
+  const int preloadImageCount = 150; // Limit the number of images to preload
   final int endIndex = min(preloadImageCount, animals.length);
 
   for (int i = 0; i < endIndex; i++) {
