@@ -73,7 +73,7 @@ Contributors who make 60 approved pull requests or more per year will be given a
       </td>
       <td><a href="https://github.com/rhjones777"><strong>rhjones777</strong></a></td>
       <td><strong>11 contributions</strong></td>
-      <td>Gather Account</td>
+      <td>None</td>
     </tr>
         <tr>
       <td>
