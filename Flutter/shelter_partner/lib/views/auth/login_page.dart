@@ -40,7 +40,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     FutureBuilder(
-                      future: precacheImage(AssetImage("assets/images/square_logo.png"), context),
+                      future: precacheImage(const AssetImage("assets/images/square_logo.png"), context),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return Image.asset("assets/images/square_logo.png", width: 250);
@@ -72,7 +72,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       onSubmitted: (_) => login(),
                     ),
                     const SizedBox(height: 25),
-                    ElevatedButton(onPressed: login, child: Text("Log In")),
+                    ElevatedButton(onPressed: login, child: const Text("Log In")),
                     // MyButton(
                     //   title: "Log In",
                     //   onTap: login,

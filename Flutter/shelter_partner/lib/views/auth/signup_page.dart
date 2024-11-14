@@ -177,14 +177,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     ),
                     const SizedBox(height: 50),
                     ElevatedButton(
-                        onPressed: signup, child: Text("Create Shelter")),
+                        onPressed: signup, child: const Text("Create Shelter")),
 
                     if (widget.debugHelper.isDebugMode())
                       const SizedBox(height: 25),
 
                     ElevatedButton(
                         onPressed: createAndLoginTestAccount,
-                        child: Text("Create Test Account")),
+                        child: const Text("Create Test Account")),
 
                     const SizedBox(height: 50),
                     Row(
