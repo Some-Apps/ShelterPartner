@@ -58,7 +58,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
 
     return AlertDialog(
-      title: Text('Add Note for ${widget.animal.name}'),
+      title: Text(widget.animal.name),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -71,10 +71,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             ),
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _pickImage,
-            child: const Text('Add Photo from Gallery'),
-          ),
+          
           if (_selectedImage != null)
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
@@ -98,7 +95,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
                 },
               ),
             ),
-          const SizedBox(height: 16),
+          
           Consumer(
             builder: (context, watch, child) {
               final tags = widget.animal.species == 'dog'
@@ -107,25 +104,31 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
               if (tags == null || tags.isEmpty) {
                 return Container(); // Empty container if no tags
               }
-              return Wrap(
+                return Wrap(
                 spacing: 8.0,
+                runSpacing: 8.0, // Add vertical spacing
                 children: tags.map((tag) {
                   return FilterChip(
-                    label: Text(tag),
-                    selected: _selectedTags.contains(tag),
-                    onSelected: (isSelected) {
-                      setState(() {
-                        if (isSelected) {
-                          _selectedTags.add(tag);
-                        } else {
-                          _selectedTags.remove(tag);
-                        }
-                      });
-                    },
+                  label: Text(tag),
+                  selected: _selectedTags.contains(tag),
+                  onSelected: (isSelected) {
+                    setState(() {
+                    if (isSelected) {
+                      _selectedTags.add(tag);
+                    } else {
+                      _selectedTags.remove(tag);
+                    }
+                    });
+                  },
                   );
                 }).toList(),
-              );
+                );
             },
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _pickImage,
+            child: const Text('Add Photo from Gallery'),
           ),
         ],
       ),
