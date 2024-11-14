@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shelter_partner/views/auth/my_button.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,68 +34,88 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 50),
-                  Image.asset("assets/images/logo.png", height: 100),
-                  const SizedBox(height: 50),
-                  MyTextField(
-                    controller: emailController,
-                    hintText: 'Email',
-                    obscureText: false,
-                    onSubmitted: (_) => login(),
-                  ),
-                  const SizedBox(height: 10),
-                  MyTextField(
-                    controller: passwordController,
-                    hintText: 'Password',
-                    obscureText: true,
-                    onSubmitted: (_) => login(),
-                  ),
-                  const SizedBox(height: 25),
-                  MyButton(
-                    title: "Log In",
-                    onTap: login,
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FutureBuilder(
+                      future: precacheImage(AssetImage("assets/images/square_logo.png"), context),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return Image.asset("assets/images/square_logo.png", width: 250);
+                        } else {
+                            return const SizedBox(
+                            width: 250,
+                            height: 250,
+                            child: Center(child: CircularProgressIndicator()),
+                            );
+                        }
+                      },
+                    ),
+                    const Text("Welcome Back!",
+                        style: TextStyle(
+                            fontSize: 50, fontWeight: FontWeight.normal)),
+                    const SizedBox(height: 25),
+
+                    MyTextField(
+                      controller: emailController,
+                      hintText: 'Email',
+                      obscureText: false,
+                      onSubmitted: (_) => login(),
+                    ),
+                    const SizedBox(height: 10),
+                    MyTextField(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      obscureText: true,
+                      onSubmitted: (_) => login(),
+                    ),
+                    const SizedBox(height: 25),
+                    ElevatedButton(onPressed: login, child: Text("Log In")),
+                    // MyButton(
+                    //   title: "Log In",
+                    //   onTap: login,
+                    // ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: widget.onTapForgotPassword,
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text(
+                          'New to ShelterPartner?',
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                        const SizedBox(width: 4),
                         GestureDetector(
-                          onTap: widget.onTapForgotPassword,
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(color: Colors.grey[600]),
+                          onTap: widget.onTapSignup,
+                          child: const Text(
+                            'Create Shelter',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 50),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'New to ShelterPartner?',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: widget.onTapSignup,
-                        child: const Text(
-                          'Create Shelter',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
