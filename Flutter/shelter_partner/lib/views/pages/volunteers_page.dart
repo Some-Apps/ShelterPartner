@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -163,8 +164,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                             controller: _firstNameController,
                                             decoration: const InputDecoration(
                                               border: UnderlineInputBorder(),
-                                              labelText:
-                                                  'Volunteer first name',
+                                              labelText: 'Volunteer first name',
                                               contentPadding:
                                                   EdgeInsets.all(16),
                                             ),
@@ -302,8 +302,23 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                               (volunteer) => Column(
                                                 children: [
                                                   ListTile(
+                                                    leading: volunteer
+                                                                    .lastActivity !=
+                                                                null &&
+                                                            DateTime.now()
+                                                                    .difference(volunteer
+                                                                        .lastActivity
+                                                                        .toDate())
+                                                                    .inHours <
+                                                                1
+                                                        ? const Icon(
+                                                            Icons.circle,
+                                                            color: Colors.green)
+                                                        : const Icon(
+                                                            Icons.circle,
+                                                            color: Colors.grey),
                                                     title: Text(
-                                                        volunteer.firstName),
+                                                        '${volunteer.firstName} ${volunteer.lastName}'),
                                                     trailing: IconButton(
                                                       icon: Icon(Icons.delete,
                                                           color: Colors.red

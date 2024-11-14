@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -116,6 +117,9 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
                 firstName: user['first_name'],
                 lastName: user['last_name'],
                 email: user['email_address'],
+                lastActivity: Timestamp.now(),
+                averageLogDuration: 0,
+                totalTimeLoggedWithAnimals: 0,
               );
             }).toList();
 
@@ -124,7 +128,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               await ref
                   .read(volunteersViewModelProvider.notifier)
                   .sendVolunteerInvite(volunteer.firstName, volunteer.lastName,
-                      volunteer.email, shelterID);
+                      volunteer.email, shelterID); 
             }
 
             // Remove volunteers

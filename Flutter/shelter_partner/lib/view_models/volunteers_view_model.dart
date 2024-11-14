@@ -13,13 +13,21 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     _initialize();
   }
 
+  void fetchVolunteers(String shelterID) {
+    _repository.fetchVolunteers(shelterID).listen((volunteers) {
+      // Handle the fetched volunteers data
+    }, onError: (error) {
+      state = AsyncValue.error(error, StackTrace.current);
+    });
+  }
+
   void _initialize() {
     final authState = ref.watch(authViewModelProvider);
-
     if (authState.status == AuthStatus.authenticated) {
       final shelterID = authState.user?.shelterId;
       if (shelterID != null) {
         fetchShelterDetails(shelterID: shelterID);
+        fetchVolunteers(shelterID);
       } else {
         state = AsyncValue.error('Shelter ID is null', StackTrace.current);
       }
