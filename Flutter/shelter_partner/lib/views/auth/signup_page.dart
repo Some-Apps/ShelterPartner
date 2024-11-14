@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shelter_partner/views/auth/my_button.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shelter_partner/helper/debug.dart';
@@ -88,105 +87,129 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 50),
-                  Image.asset("assets/images/logo.png", height: 100),
-                  const SizedBox(height: 50),
-                  MyTextField(
-                    controller: firstNameController,
-                    hintText: 'First Name',
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 10),
-                  MyTextField(
-                    controller: lastNameController,
-                    hintText: 'Last Name',
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 10),
-                  MyTextField(
-                    controller: emailController,
-                    hintText: 'Email',
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 10),
-                  MyTextField(
-                    controller: passwordController,
-                    hintText: 'Password',
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 10),
-                  MyTextField(
-                    controller: confirmPasswordController,
-                    hintText: 'Confirm Password',
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 10),
-                  MyTextField(
-                    controller: shelterNameController,
-                    hintText: 'Shelter Name',
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 10),
-                  MyTextField(
-                    controller: shelterAddressController,
-                    hintText: 'Shelter Address',
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      labelText: 'Management Software',
-                      border: OutlineInputBorder(),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // FutureBuilder(
+                    //   future: precacheImage(
+                    //       AssetImage("assets/images/square_logo.png"), context),
+                    //   builder: (context, snapshot) {
+                    //     if (snapshot.connectionState == ConnectionState.done) {
+                    //       return Image.asset("assets/images/square_logo.png",
+                    //           width: 250);
+                    //     } else {
+                    //       return const SizedBox(
+                    //         width: 250,
+                    //         height: 250,
+                    //         child: Center(child: CircularProgressIndicator()),
+                    //       );
+                    //     }
+                    //   },
+                    // ),
+                    const Text("Create Shelter Account",
+                        style: TextStyle(
+                            fontSize: 35, fontWeight: FontWeight.normal)),
+                    const SizedBox(height: 35),
+                    MyTextField(
+                      controller: firstNameController,
+                      hintText: 'First Name',
+                      obscureText: false,
                     ),
-                    value: selectedManagementSoftware,
-                    items: managementSoftwareOptions.map((String software) {
-                      return DropdownMenuItem<String>(
-                        value: software,
-                        child: Text(software),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedManagementSoftware = newValue!;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 25),
-                  MyButton(
-                    title: "Create Shelter",
-                    onTap: signup,
-                  ),
-                  if (widget.debugHelper.isDebugMode())
-                    MyButton(
-                      title: "Create Test Account",
-                      onTap: createAndLoginTestAccount,
+                    const SizedBox(height: 10),
+                    MyTextField(
+                      controller: lastNameController,
+                      hintText: 'Last Name',
+                      obscureText: false,
                     ),
-                  const SizedBox(height: 50),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Already have an account?',
-                        style: TextStyle(color: Colors.grey[700]),
+                    const SizedBox(height: 35),
+                    MyTextField(
+                      controller: emailController,
+                      hintText: 'Email',
+                      obscureText: false,
+                    ),
+                    const SizedBox(height: 10),
+                    MyTextField(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 10),
+                    MyTextField(
+                      controller: confirmPasswordController,
+                      hintText: 'Confirm Password',
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 35),
+                    MyTextField(
+                      controller: shelterNameController,
+                      hintText: 'Shelter Name',
+                      obscureText: false,
+                    ),
+                    const SizedBox(height: 10),
+                    MyTextField(
+                      controller: shelterAddressController,
+                      hintText: 'Shelter Address',
+                      obscureText: false,
+                    ),
+                    const SizedBox(height: 35),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      child: DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Management Software',
+                          border: OutlineInputBorder(),
+                        ),
+                        value: selectedManagementSoftware,
+                        items: managementSoftwareOptions.map((String software) {
+                          return DropdownMenuItem<String>(
+                            value: software,
+                            child: Text(software),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedManagementSoftware = newValue!;
+                          });
+                        },
                       ),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: widget.onTapLogin,
-                        child: const Text(
-                          'Login Here',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 50),
+                    ElevatedButton(
+                        onPressed: signup, child: const Text("Create Shelter")),
+
+                    if (widget.debugHelper.isDebugMode())
+                      const SizedBox(height: 25),
+
+                    ElevatedButton(
+                        onPressed: createAndLoginTestAccount,
+                        child: const Text("Create Test Account")),
+
+                    const SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Already have an account?',
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: widget.onTapLogin,
+                          child: const Text(
+                            'Login Here',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
