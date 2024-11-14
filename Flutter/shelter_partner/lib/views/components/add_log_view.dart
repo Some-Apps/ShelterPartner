@@ -49,7 +49,7 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
 
     return AlertDialog(
-      title: Text('Add Log for ${widget.animal.name}'),
+      title: Text('${widget.animal.name}'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -140,7 +140,10 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: (_selectedType != null &&
+                _startTimeController.text.isNotEmpty &&
+                _endTimeController.text.isNotEmpty)
+              ? () {
             Log log = Log(
               id: const Uuid().v4().toString(),
               type: _selectedType!,
@@ -150,14 +153,16 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
               earlyReason: _selectedEarlyReason,
             );
 
-              ref
-                  .read(addLogViewModelProvider(widget.animal).notifier)
-                  .addLogToAnimal(widget.animal, log);
+            ref
+                .read(addLogViewModelProvider(widget.animal).notifier)
+                .addLogToAnimal(widget.animal, log);
 
             Navigator.of(context).pop(log);
-          },
+          }
+              : null,
           child: const Text('Save'),
         ),
+      
       ],
     );
   }

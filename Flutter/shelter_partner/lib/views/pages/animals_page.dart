@@ -428,7 +428,7 @@ Future<void> _fetchPage({
 
     return SafeArea(
       child: Scaffold(
-              backgroundColor: Colors.grey[200],
+              // backgroundColor: Colors.grey[200],
 
         body: GestureDetector(
           onTap: () {
