@@ -45,7 +45,7 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 16),
               Text(
-                'ShelterPartner is a free and open source volunteer facing shelter management app that allows volunteers to have their own accounts and records visits. It’s highly customizable and connects directly to management software like ShelterLuv for animals and Better Impact to sync with your volunteers. If you are interested in using ShelterPartner, I would recommend waiting until January 1, 2025 to sign up. This is when version 2 will be released. Version 2 is a rework of the app built from scratch. If you have any questions, feel free to email me at jared@shelterpartner.org.',
+                'ShelterPartner is a free and open source volunteer facing shelter management app that allows volunteers to have their own accounts and records visits. It’s highly customizable and connects directly to your ShelterLuv or ShelterManager account. It can also connect to Better Impact to sync your volunteers.',
                 style: TextStyle(fontSize: 15),
               ),
               SizedBox(height: 36),
@@ -65,7 +65,7 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 16),
               Text(
-                'More details on version 2 and a demo experience will be available soon.',
+                'Version 2 is a complete rewrite of the app. It will be available on all platforms including web, iOS, Android, Windows, and Mac and will be released on January 1, 2025. A demo version of the app will be available on December 1, 2024. This will allow you to test the full functionality of the new version while helping me refine it and work out any bugs before the full release. If you have any questions, feel free to email me at jared@shelterpartner.org',
                 style: TextStyle(fontSize: 15),
               ),
             ],

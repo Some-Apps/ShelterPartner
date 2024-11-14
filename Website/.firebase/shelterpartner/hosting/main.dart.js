@@ -345,7 +345,7 @@ anr(){var s,r=A.cM().b
 if(r==null)s=null
 else{r=r.canvasKitVariant
 if(r==null)r=null
-s=r}r=A.apy(A.aiC(B.zB,s==null?"auto":s))
+s=r}r=A.apy(A.aiC(B.zC,s==null?"auto":s))
 return new A.ar(r,new A.a3r(),A.a1(r).h("ar<1,p>"))},
 aoP(a,b){return b+a},
 KI(){var s=0,r=A.S(t.e),q,p,o,n,m
@@ -16093,7 +16093,7 @@ q=b.as
 if(a.as!==q)return q?-1:1
 return 0},
 aiu(a,b){var s=A.a1(b).h("ar<1,ch>")
-return A.ahW(!0,A.a2(new A.ar(b,new A.NR(),s),!0,s.h("ax.E")),a,B.zu,!0,B.wW,null)},
+return A.ahW(!0,A.a2(new A.ar(b,new A.NR(),s),!0,s.h("ax.E")),a,B.zv,!0,B.wW,null)},
 ais(a){a.bv()
 a.aU(A.adu())},
 a5D(a){var s=a.a,r=s instanceof A.ku?s:null
@@ -20728,7 +20728,7 @@ Ga(){var s=this.Q
 s===$&&A.c()
 return s},
 wT(a,b,c,d){var s,r,q,p
-if(a<0||b<0)return B.zt
+if(a<0||b<0)return B.zu
 s=this.a
 s===$&&A.c()
 s=s.a
@@ -23811,7 +23811,7 @@ if(r.f!==B.ix){r.f=B.ix
 r.AF()}}return r.d.a.GX(a)},
 AF(){var s,r
 for(s=this.w,r=0;r<s.length;++r)s[r].$1(this.f)},
-GW(a){if(B.b.t(B.zf,a))return this.f===B.bw
+GW(a){if(B.b.t(B.zg,a))return this.f===B.bw
 return!1}}
 A.Oo.prototype={
 $0(){return new A.e9(Date.now(),0,!1)},
@@ -29002,7 +29002,7 @@ if(o>0)return s
 return null}}
 A.a_1.prototype={
 B(a,b){this.yZ(0,b,0,b.length,!1)},
-aP(a){this.yZ(0,B.zp,0,0,!0)}}
+aP(a){this.yZ(0,B.zq,0,0,!0)}}
 A.a33.prototype={
 yZ(a,b,c,d,e){var s=this.b.TZ(b,c,d,e)
 if(s!=null)this.a.iA(s,0,s.length,e)}}
@@ -34314,7 +34314,7 @@ r=n.r
 n=n.cx
 q=p.gON()
 p.a.toString
-return new A.u9(o,o,o,new A.a1i(),o,o,o,o,o,o,m,o,o,r,B.zx,p.gOT(),n,o,B.Hy,s,o,q,o,o,B.iI,!1,!1,o,o,o,new A.kB(p,t.By))},
+return new A.u9(o,o,o,new A.a1i(),o,o,o,o,o,o,m,o,o,r,B.zy,p.gOT(),n,o,B.Hy,s,o,q,o,o,B.iI,!1,!1,o,o,o,new A.kB(p,t.By))},
 O(a){var s,r=null,q=A.qm(!1,!1,this.KJ(a),r,r,r,r,!0,r,r,r,new A.a1j(),r,r)
 this.a.toString
 s=this.d
@@ -34600,7 +34600,7 @@ A.nR.prototype={
 D(){return"_CornerId."+this.b}}
 A.ip.prototype={}
 A.mY.prototype={
-fS(){var s,r,q=this,p=A.aog(B.zA,new A.TT(q,q.b.gba().a0(0,q.a.gba()))),o=q.a
+fS(){var s,r,q=this,p=A.aog(B.zB,new A.TT(q,q.b.gba().a0(0,q.a.gba()))),o=q.a
 o.toString
 s=p.a
 o=q.jK(o,s)
@@ -36822,7 +36822,7 @@ A.yd.prototype={
 uh(a,b,c,d,e,f){return A.ahJ(a,b,c,d,e,f)}}
 A.rt.prototype={
 r9(a){var s=t.dM
-return A.a2(new A.ar(B.zD,new A.V5(a),s),!0,s.h("ax.E"))},
+return A.a2(new A.ar(B.zE,new A.V5(a),s),!0,s.h("ax.E"))},
 i(a,b){var s,r=this
 if(b==null)return!1
 if(r===b)return!0
@@ -40060,7 +40060,7 @@ Gd(a){var s=this.b,r=s.a.c.Ge(a.a0(0,s.ge_()))
 if(r==null||s.ge_().i(0,B.h))return r
 return new A.kC(r.a.cK(s.ge_()),r.b,r.c)},
 un(){var s,r,q=this.b,p=q.ge_()
-if(!isFinite(p.a)||!isFinite(p.b))return B.zv
+if(!isFinite(p.a)||!isFinite(p.b))return B.zw
 s=q.f
 if(s==null){s=q.a.c.un()
 q.f=s}if(p.i(0,B.h))r=s
@@ -45533,7 +45533,7 @@ break
 case 1:return A.Q(q,r)}})
 return A.R($async$t_,r)},
 Mk(a,b){var s,r,q,p
-if(a===b)return B.zs
+if(a===b)return B.zt
 s=A.a([],t.EQ)
 if(a==null)s.push(b)
 else{r=B.b.iW(B.cg,a)
@@ -49884,7 +49884,7 @@ A.mL.prototype={
 i(a,b){if(b==null)return!1
 if(J.K(b)!==A.u(this))return!1
 return b instanceof A.mL&&b.a===this.a&&b.d===this.d&&A.cW(null,null)},
-gu(a){return A.I(this.a,"MaterialIcons",null,this.d,A.bN(B.zw),B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
+gu(a){return A.I(this.a,"MaterialIcons",null,this.d,A.bN(B.zx),B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
 j(a){return"IconData(U+"+B.d.kQ(B.f.fI(this.a,16).toUpperCase(),5,"0")+")"}}
 A.kI.prototype={
 bj(a){return!this.w.i(0,a.w)}}
@@ -50440,7 +50440,7 @@ g=s&&d
 b=s?d:b.ch
 if(b==null)b=B.fu
 s=s&&d
-f=new A.r5(a1,a,q,p,l,o,n,a0,g===!0,m,k,h,c,j,i,b,new A.yx(d),B.zq,s===!0)
+f=new A.r5(a1,a,q,p,l,o,n,a0,g===!0,m,k,h,c,j,i,b,new A.yx(d),B.zr,s===!0)
 if(!f.i(0,e.e))e.aO(new A.a1p(e,f))},
 DI(){this.lK()},
 DK(){if(this.d==null)this.lK()},
@@ -50769,7 +50769,7 @@ r.J(0,s.FG(null,l))
 l.a.toString
 q=r.a
 p=0
-for(;!1;++p){o=B.zy[p]
+for(;!1;++p){o=B.zz[p]
 n=l.c
 n.toString
 m=new A.es(o.uz(n),null,!0,B.hn,B.aD,new A.lZ(new ($.KX())(B.aD)),B.aD)
@@ -51118,7 +51118,7 @@ O(a){var s,r,q=this,p=null,o=q.gNW(),n=A.mE(a),m=q.b5$,l=q.d
 l===$&&A.c()
 s=q.a.ax
 if(l.gbb()==null){r=q.gyl()
-r=J.kM(r.slice(0),A.a1(r).c)}else r=B.zz
+r=J.kM(r.slice(0),A.a1(r).c)}else r=B.zA
 return new A.kE(p,new A.ek(new A.UK(q,a),A.Rj(B.cb,new A.x6(!1,A.a5G(A.qm(!0,p,A.Ze(m,new A.n2(r,s,l)),p,p,p,q.y,!1,p,p,p,p,p,!0),n),p),o,q.gP8(),p,o),p,t.go),p)}}
 A.UJ.prototype={
 $1(a){var s=this.a.c
@@ -52991,7 +52991,7 @@ p.tU()
 return s.b8()},
 l(){var s,r,q,p,o=this
 for(s=o.b,r=s.length,q=o.gt2(),p=0;p<s.length;s.length===r||(0,A.D)(s),++p)J.agK(s[p],q)
-o.b=B.zr
+o.b=B.zs
 o.y=!1
 o.fa()},
 c0(a,b){return a.km(b)},
@@ -55321,7 +55321,7 @@ $S:367}
 A.Aw.prototype={
 uh(a,b,c,d,e){return e}}
 A.mK.prototype={
-O(a){return A.ab4(A.a8s(A.a5R(null,A.a9R("assets/logo.png"),new A.PT(a),null,null),A.ab1(A.a([A.abv(B.tH,new A.PU())],t.m),B.aY,B.fj,B.dx)),B.Cb)}}
+O(a){return A.ab4(A.a8s(A.a5R(null,A.a9R("assets/logo.png"),new A.PT(a),null,null),A.ab1(A.a([A.abv(B.tH,new A.PU())],t.m),B.aY,B.fj,B.dx)),B.Cc)}}
 A.PT.prototype={
 $0(){A.a6f(this.a,"/",t.X)},
 $S:0}
@@ -57261,7 +57261,7 @@ B.vs=new A.Zj()
 B.F=new A.Zm()
 B.aX=new A.Zo()
 B.bP=new A.Dd(0,0,0,0)
-B.zq=A.a(s([]),A.af("v<aqX>"))
+B.zr=A.a(s([]),A.af("v<aqX>"))
 B.La=new A.Zq()
 B.aw={}
 B.nK=new A.bq(B.aw,[],t.hD)
@@ -57575,8 +57575,8 @@ B.yS=A.a(s([B.hp,B.u7]),A.af("v<vA>"))
 B.yW=A.a(s([B.ee,B.ef]),A.af("v<p_>"))
 B.iH=A.a(s([0,0,26624,1023,65534,2047,65534,2047]),t.t)
 B.cg=A.a(s([B.bo,B.aI,B.cQ,B.cR,B.ed]),t.EQ)
-B.zc=A.a(s([137,80,78,71,13,10,26,10]),t.Z)
-B.xH=new A.hR(B.zc,"image/png")
+B.zd=A.a(s([137,80,78,71,13,10,26,10]),t.Z)
+B.xH=new A.hR(B.zd,"image/png")
 B.z8=A.a(s([71,73,70,56,55,97]),t.Z)
 B.xL=new A.hR(B.z8,"image/gif")
 B.z9=A.a(s([71,73,70,56,57,97]),t.Z)
@@ -57612,25 +57612,25 @@ B.eW=new A.eB(6)
 B.xy=new A.eB(7)
 B.iv=new A.eB(8)
 B.iL=A.a(s([B.xu,B.xv,B.xw,B.x,B.T,B.xx,B.eW,B.xy,B.iv]),A.af("v<eB>"))
-B.zf=A.a(s(["click","scroll"]),t.s)
-B.zs=A.a(s([]),t.EQ)
+B.zg=A.a(s(["click","scroll"]),t.s)
+B.zt=A.a(s([]),t.EQ)
 B.iO=A.a(s([]),A.af("v<aqI>"))
-B.zu=A.a(s([]),t.p)
-B.zv=A.a(s([]),t.gw)
-B.zx=A.a(s([]),t.yx)
+B.zv=A.a(s([]),t.p)
+B.zw=A.a(s([]),t.gw)
+B.zy=A.a(s([]),t.yx)
 B.dl=A.a(s([]),t.l)
-B.zz=A.a(s([]),t.tD)
-B.zy=A.a(s([]),A.af("v<a6i<@>>"))
+B.zA=A.a(s([]),t.tD)
+B.zz=A.a(s([]),A.af("v<a6i<@>>"))
 B.f2=A.a(s([]),t.f8)
-B.zr=A.a(s([]),t.xx)
+B.zs=A.a(s([]),t.xx)
 B.f1=A.a(s([]),t.Y)
 B.iM=A.a(s([]),t.s)
 B.a2=A.a(s([]),t.ve)
-B.zt=A.a(s([]),t.px)
+B.zu=A.a(s([]),t.px)
 B.Lh=A.a(s([]),t.m)
-B.zp=A.a(s([]),t.t)
+B.zq=A.a(s([]),t.t)
 B.iN=A.a(s([]),t.zz)
-B.zw=A.a(s([]),t.yH)
+B.zx=A.a(s([]),t.yH)
 B.tU=new A.nR(0,"topLeft")
 B.tX=new A.nR(3,"bottomRight")
 B.Kc=new A.ip(B.tU,B.tX)
@@ -57639,7 +57639,7 @@ B.tV=new A.nR(1,"topRight")
 B.tW=new A.nR(2,"bottomLeft")
 B.Kd=new A.ip(B.tV,B.tW)
 B.Ke=new A.ip(B.tW,B.tV)
-B.zA=A.a(s([B.Kc,B.Kf,B.Kd,B.Ke]),A.af("v<ip>"))
+B.zB=A.a(s([B.Kc,B.Kf,B.Kd,B.Ke]),A.af("v<ip>"))
 B.bz=new A.ei(0,"controlModifier")
 B.bA=new A.ei(1,"shiftModifier")
 B.bB=new A.ei(2,"altModifier")
@@ -57653,16 +57653,16 @@ B.iP=A.a(s([B.bz,B.bA,B.bB,B.bC,B.fo,B.fp,B.fq,B.fr,B.nS]),A.af("v<ei>"))
 B.vD=new A.mk(0,"auto")
 B.vE=new A.mk(1,"full")
 B.vF=new A.mk(2,"chromium")
-B.zB=A.a(s([B.vD,B.vE,B.vF]),A.af("v<mk>"))
+B.zC=A.a(s([B.vD,B.vE,B.vF]),A.af("v<mk>"))
 B.dm=A.a(s([0,0,24576,1023,65534,34815,65534,18431]),t.t)
-B.zC=A.a(s([-1,0,0,1,0,0,-1,0,1,0,0,0,-1,1,0,1,1,1,1,0]),t.n)
+B.zD=A.a(s([-1,0,0,1,0,0,-1,0,1,0,0,0,-1,1,0,1,1,1,1,0]),t.n)
 B.aa=new A.dS(0,"android")
 B.aO=new A.dS(1,"fuchsia")
 B.af=new A.dS(2,"iOS")
 B.ay=new A.dS(3,"linux")
 B.aq=new A.dS(4,"macOS")
 B.az=new A.dS(5,"windows")
-B.zD=A.a(s([B.aa,B.aO,B.af,B.ay,B.aq,B.az]),A.af("v<dS>"))
+B.zE=A.a(s([B.aa,B.aO,B.af,B.ay,B.aq,B.az]),A.af("v<dS>"))
 B.f3=A.a(s([!0,!1]),t.sj)
 B.f4=A.a(s([0,0,65498,45055,65535,34815,65534,18431]),t.t)
 B.i=new A.qY(0,"ignored")
@@ -57708,37 +57708,37 @@ B.nF=new A.e(8589935151)
 B.z1=A.a(s([B.nr,null,null,B.nF]),t.L)
 B.ns=new A.e(48)
 B.ff=new A.e(8589935152)
-B.zh=A.a(s([B.ns,null,null,B.ff]),t.L)
+B.zi=A.a(s([B.ns,null,null,B.ff]),t.L)
 B.nt=new A.e(49)
 B.cq=new A.e(8589935153)
-B.zi=A.a(s([B.nt,null,null,B.cq]),t.L)
+B.zj=A.a(s([B.nt,null,null,B.cq]),t.L)
 B.nu=new A.e(50)
 B.b7=new A.e(8589935154)
-B.zj=A.a(s([B.nu,null,null,B.b7]),t.L)
+B.zk=A.a(s([B.nu,null,null,B.b7]),t.L)
 B.nv=new A.e(51)
 B.cr=new A.e(8589935155)
-B.zk=A.a(s([B.nv,null,null,B.cr]),t.L)
+B.zl=A.a(s([B.nv,null,null,B.cr]),t.L)
 B.nw=new A.e(52)
 B.b8=new A.e(8589935156)
-B.zl=A.a(s([B.nw,null,null,B.b8]),t.L)
+B.zm=A.a(s([B.nw,null,null,B.b8]),t.L)
 B.nx=new A.e(53)
 B.fg=new A.e(8589935157)
-B.zm=A.a(s([B.nx,null,null,B.fg]),t.L)
+B.zn=A.a(s([B.nx,null,null,B.fg]),t.L)
 B.ny=new A.e(54)
 B.b9=new A.e(8589935158)
-B.zn=A.a(s([B.ny,null,null,B.b9]),t.L)
+B.zo=A.a(s([B.ny,null,null,B.b9]),t.L)
 B.nz=new A.e(55)
 B.cs=new A.e(8589935159)
-B.zo=A.a(s([B.nz,null,null,B.cs]),t.L)
+B.zp=A.a(s([B.nz,null,null,B.cs]),t.L)
 B.nA=new A.e(56)
 B.ba=new A.e(8589935160)
-B.zd=A.a(s([B.nA,null,null,B.ba]),t.L)
+B.ze=A.a(s([B.nA,null,null,B.ba]),t.L)
 B.nB=new A.e(57)
 B.ct=new A.e(8589935161)
-B.ze=A.a(s([B.nB,null,null,B.ct]),t.L)
-B.zE=A.a(s([B.co,B.co,B.dv,null]),t.L)
+B.zf=A.a(s([B.nB,null,null,B.ct]),t.L)
+B.zF=A.a(s([B.co,B.co,B.dv,null]),t.L)
 B.dq=new A.e(4294967555)
-B.zg=A.a(s([B.dq,null,B.dq,null]),t.L)
+B.zh=A.a(s([B.dq,null,B.dq,null]),t.L)
 B.at=new A.e(4294968065)
 B.yK=A.a(s([B.at,null,null,B.b7]),t.L)
 B.ao=new A.e(4294968066)
@@ -57749,7 +57749,7 @@ B.au=new A.e(4294968068)
 B.yy=A.a(s([B.au,null,null,B.ba]),t.L)
 B.f8=new A.e(4294968321)
 B.yT=A.a(s([B.f8,null,null,B.fg]),t.L)
-B.zF=A.a(s([B.cm,B.cm,B.dt,null]),t.L)
+B.zG=A.a(s([B.cm,B.cm,B.dt,null]),t.L)
 B.yR=A.a(s([B.P,null,null,B.b6]),t.L)
 B.b4=new A.e(4294968069)
 B.yN=A.a(s([B.b4,null,null,B.cq]),t.L)
@@ -57760,13 +57760,13 @@ B.b5=new A.e(4294968070)
 B.yO=A.a(s([B.b5,null,null,B.cs]),t.L)
 B.f9=new A.e(4294968327)
 B.yU=A.a(s([B.f9,null,null,B.ff]),t.L)
-B.zG=A.a(s([B.cp,B.cp,B.dw,null]),t.L)
+B.zH=A.a(s([B.cp,B.cp,B.dw,null]),t.L)
 B.ck=new A.e(4294968071)
 B.yP=A.a(s([B.ck,null,null,B.cr]),t.L)
 B.cl=new A.e(4294968072)
 B.yb=A.a(s([B.cl,null,null,B.ct]),t.L)
-B.zH=A.a(s([B.cn,B.cn,B.du,null]),t.L)
-B.Bf=new A.ck(["*",B.yY,"+",B.yZ,"-",B.z_,".",B.z0,"/",B.z1,"0",B.zh,"1",B.zi,"2",B.zj,"3",B.zk,"4",B.zl,"5",B.zm,"6",B.zn,"7",B.zo,"8",B.zd,"9",B.ze,"Alt",B.zE,"AltGraph",B.zg,"ArrowDown",B.yK,"ArrowLeft",B.yL,"ArrowRight",B.yM,"ArrowUp",B.yy,"Clear",B.yT,"Control",B.zF,"Delete",B.yR,"End",B.yN,"Enter",B.yI,"Home",B.yO,"Insert",B.yU,"Meta",B.zG,"PageDown",B.yP,"PageUp",B.yb,"Shift",B.zH],A.af("ck<p,A<e?>>"))
+B.zI=A.a(s([B.cn,B.cn,B.du,null]),t.L)
+B.Bf=new A.ck(["*",B.yY,"+",B.yZ,"-",B.z_,".",B.z0,"/",B.z1,"0",B.zi,"1",B.zj,"2",B.zk,"3",B.zl,"4",B.zm,"5",B.zn,"6",B.zo,"7",B.zp,"8",B.ze,"9",B.zf,"Alt",B.zF,"AltGraph",B.zh,"ArrowDown",B.yK,"ArrowLeft",B.yL,"ArrowRight",B.yM,"ArrowUp",B.yy,"Clear",B.yT,"Control",B.zG,"Delete",B.yR,"End",B.yN,"Enter",B.yI,"Home",B.yO,"Insert",B.yU,"Meta",B.zH,"PageDown",B.yP,"PageUp",B.yb,"Shift",B.zI],A.af("ck<p,A<e?>>"))
 B.yp=A.a(s([42,null,null,8589935146]),t.Z)
 B.yq=A.a(s([43,null,null,8589935147]),t.Z)
 B.ys=A.a(s([45,null,null,8589935149]),t.Z)
@@ -58598,16 +58598,16 @@ B.hc=new A.o(!0,null,null,null,null,null,28,B.eW,null,null,null,null,null,null,n
 B.J9=new A.fw("Welcome to ShelterPartner",null,B.hc,null,null)
 B.h6=new A.jt(null,16,null,null)
 B.hd=new A.o(!0,null,null,null,null,null,15,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.J7=new A.fw("ShelterPartner is a free and open source volunteer facing shelter management app that allows volunteers to have their own accounts and records visits. It\u2019s highly customizable and connects directly to management software like ShelterLuv for animals and Better Impact to sync with your volunteers. If you are interested in using ShelterPartner, I would recommend waiting until January 1, 2025 to sign up. This is when version 2 will be released. Version 2 is a rework of the app built from scratch. If you have any questions, feel free to email me at jared@shelterpartner.org.",null,B.hd,null,null)
+B.J6=new A.fw("ShelterPartner is a free and open source volunteer facing shelter management app that allows volunteers to have their own accounts and records visits. It\u2019s highly customizable and connects directly to your ShelterLuv or ShelterManager account. It can also connect to Better Impact to sync your volunteers.",null,B.hd,null,null)
 B.tu=new A.jt(null,36,null,null)
 B.J8=new A.fw("Create Account",null,B.hc,null,null)
 B.Ja=new A.fw("As I transition to Version 2, I have disabled the ability to create an account. If you would like to create an account, Version 2 will be released on January 1, 2025. If you have any questions, feel free to email me at jared@shelterpartner.org",null,B.hd,null,null)
 B.J5=new A.fw("Version 2",null,B.hc,null,null)
-B.J6=new A.fw("More details on version 2 and a demo experience will be available soon.",null,B.hd,null,null)
-B.zI=A.a(s([B.J9,B.h6,B.J7,B.tu,B.J8,B.h6,B.Ja,B.tu,B.J5,B.h6,B.J6]),t.m)
-B.wC=new A.y1(B.hy,B.cu,B.dx,B.aY,null,B.tR,null,B.zI,null)
-B.Cc=new A.i4(B.xe,B.wC,null)
-B.Cb=new A.i4(B.xc,B.Cc,null)
+B.J7=new A.fw("Version 2 is a complete rewrite of the app. It will be available on all platforms including web, iOS, Android, Windows, and Mac and will be released on January 1, 2025. A demo version of the app will be available on December 1, 2024. This will allow you to test the full functionality of the new version while helping me refine it and work out any bugs before the full release. If you have any questions, feel free to email me at jared@shelterpartner.org",null,B.hd,null,null)
+B.zc=A.a(s([B.J9,B.h6,B.J6,B.tu,B.J8,B.h6,B.Ja,B.tu,B.J5,B.h6,B.J7]),t.m)
+B.wC=new A.y1(B.hy,B.cu,B.dx,B.aY,null,B.tR,null,B.zc,null)
+B.Cb=new A.i4(B.xe,B.wC,null)
+B.Cc=new A.i4(B.xc,B.Cb,null)
 B.c0=new A.Aw()
 B.Bm=new A.ck([B.aa,B.c0,B.af,B.c0,B.ay,B.c0,B.aq,B.c0,B.az,B.c0],t.re)
 B.Cd=new A.rt(B.Bm)
@@ -59448,7 +59448,7 @@ r($,"anW","afC",()=>A.anw())
 r($,"aua","ag_",()=>A.cM().gvf()+"roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf")
 r($,"atC","a84",()=>A.anm(A.m0(A.m0(A.a7N(),"window"),"FinalizationRegistry"),A.bc(new A.a3F())))
 r($,"auJ","a8h",()=>new A.UG())
-s($,"atI","afE",()=>A.ajS(B.zC))
+s($,"atI","afE",()=>A.ajS(B.zD))
 s($,"atH","a4U",()=>A.Rp(A.ahq($.afE())))
 s($,"atx","afz",()=>A.abh(A.w(A.a4(),"ParagraphBuilder")))
 s($,"aqA","ae2",()=>A.acK(A.m0(A.m0(A.m0(A.a7N(),"window"),"flutterCanvasKit"),"Paint")))
