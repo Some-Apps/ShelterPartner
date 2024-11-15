@@ -297,62 +297,58 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           const SizedBox(height: 10),
-                                          if (shelter.volunteers.isNotEmpty)
-                                            ...shelter.volunteers.map(
-                                              (volunteer) => Column(
-                                                children: [
-                                                  ListTile(
-                                                    leading: volunteer
-                                                                    .lastActivity !=
-                                                                null &&
-                                                            DateTime.now()
-                                                                    .difference(volunteer
-                                                                        .lastActivity
-                                                                        .toDate())
-                                                                    .inHours <
-                                                                1
-                                                        ? const Icon(
-                                                            Icons.circle,
-                                                            color: Colors.green)
-                                                        : const Icon(
-                                                            Icons.circle,
-                                                            color: Colors.grey),
-                                                    title: Text(
-                                                        '${volunteer.firstName} ${volunteer.lastName}'),
-                                                    trailing: IconButton(
-                                                      icon: Icon(Icons.delete,
-                                                          color: Colors.red
-                                                              .withOpacity(
-                                                                  0.5)),
-                                                      onPressed: () {
-                                                        _confirmDeleteVolunteer(
-                                                          context,
-                                                          volunteer.id,
-                                                          shelter.id,
-                                                          volunteer.firstName,
-                                                        );
-                                                      },
-                                                    ),
-                                                    onTap: () {
-                                                      context.push(
-                                                        '/volunteers/details',
-                                                        extra: volunteer,
-                                                      );
-                                                    },
-                                                  ),
-                                                  Divider(
-                                                    color: Colors.black
-                                                        .withOpacity(0.1),
-                                                    height: 0,
-                                                    thickness: 1,
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          else
-                                            const Text(
-                                                'No volunteers available at the moment'),
-                                        ],
+                                          
+                                          // Use the volunteersAsyncValue here
+                                         if (shelter.volunteers.isNotEmpty)
+                          Column(
+                            children: shelter.volunteers.map((volunteer) {
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    leading: DateTime.now()
+                                                .difference(volunteer
+                                                    .lastActivity
+                                                    .toDate())
+                                                .inHours <
+                                            1
+                                        ? const Icon(Icons.circle,
+                                            color: Colors.green)
+                                        : const Icon(Icons.circle,
+                                            color: Colors.grey),
+                                    title: Text(
+                                        '${volunteer.firstName} ${volunteer.lastName}'),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete,
+                                          color: Colors.red.withOpacity(0.5)),
+                                      onPressed: () {
+                                        _confirmDeleteVolunteer(
+                                          context,
+                                          volunteer.id,
+                                          shelter.id,
+                                          volunteer.firstName,
+                                        );
+                                      },
+                                    ),
+                                    onTap: () {
+                                      context.push(
+                                        '/volunteers/details',
+                                        extra: volunteer,
+                                      );
+                                    },
+                                  ),
+                                  Divider(
+                                    color: Colors.black.withOpacity(0.1),
+                                    height: 0,
+                                    thickness: 1,
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          )
+                        else
+                          const Text(
+                              'No volunteers available at the moment'),
+                      ],
                                       ),
                                     ),
                                   ),

@@ -238,6 +238,7 @@ class AuthRepository {
       'managementSoftware': shelterData.managementSoftware,
       'shelterSettings': shelterData.shelterSettings.toMap(),
       'volunteerSettings': shelterData.volunteerSettings.toMap(),
+      'volunteers': [],
     });
 
     print('Shelter data uploaded for: $shelterName');

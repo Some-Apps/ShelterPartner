@@ -49,7 +49,7 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
 
     return AlertDialog(
-      title: Text('${widget.animal.name}'),
+      title: Text(widget.animal.name),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,

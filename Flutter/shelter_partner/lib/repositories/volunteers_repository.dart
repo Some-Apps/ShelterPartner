@@ -5,41 +5,45 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
+import 'package:shelter_partner/models/shelter.dart';
+import 'package:shelter_partner/models/volunteer.dart';
 
 class VolunteersRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Method to fetch account details for a specific shelter ID
-  Stream<DocumentSnapshot> fetchShelterDetails(String shelterID) {
-    return _firestore.collection('shelters').doc(shelterID).snapshots();
-  }
+ Stream<Shelter> fetchShelterWithVolunteers(String shelterID) {
+    final shelterDocRef = _firestore.collection('shelters').doc(shelterID);
+    final shelterStream = shelterDocRef.snapshots();
 
-  Stream<List<DocumentSnapshot>> fetchVolunteers(String shelterID) {
-    return _firestore
-        .collection('shelters')
-        .doc(shelterID)
-        .snapshots()
-        .switchMap((shelterSnapshot) {
+    return shelterStream.switchMap((shelterSnapshot) {
       if (!shelterSnapshot.exists) {
-        return Stream.value([]);
+        return Stream.error('No shelter found');
       }
 
-      final volunteersRefs =
-          List<DocumentReference>.from(shelterSnapshot.get('volunteers') ?? []);
+      final volunteerRefs = List<DocumentReference>.from(
+          shelterSnapshot.get('volunteers') ?? []);
+      Shelter shelter = Shelter.fromDocument(shelterSnapshot);
 
-      if (volunteersRefs.isEmpty) {
-        return Stream.value([]);
+      if (volunteerRefs.isEmpty) {
+        shelter.volunteers = [];
+        return Stream.value(shelter);
       }
 
-      // Create a list of streams for each volunteer document
-      final volunteerStreams = volunteersRefs.map((volunteerRef) {
-        return volunteerRef.snapshots();
+      // Create streams for each volunteer
+      final volunteerStreams = volunteerRefs.map((ref) =>
+          ref.snapshots().map((doc) => Volunteer.fromDocument(doc)));
+
+      // Combine the volunteer streams into one stream that emits a list of volunteers
+      final combinedVolunteerStream = CombineLatestStream.list(volunteerStreams);
+
+      // Combine the shelter stream with the volunteers stream
+      return combinedVolunteerStream.map((volunteers) {
+        shelter.volunteers = volunteers;
+        return shelter;
       });
-
-      // Combine the streams into one stream that emits a list of snapshots
-      return CombineLatestStream.list(volunteerStreams);
     });
   }
+
 
   // Method to toggle a specific field within volunteerSettings attribute
   Future<void> toggleVolunteerSetting(String shelterID, String field) async {

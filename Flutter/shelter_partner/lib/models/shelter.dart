@@ -1,7 +1,8 @@
+// shelter.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
-import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/models/volunteer_settings.dart';
+import 'volunteer.dart';
 
 class Shelter {
   final String id;
@@ -9,10 +10,9 @@ class Shelter {
   final String address;
   final Timestamp createdAt;
   final String managementSoftware;
-
   final ShelterSettings shelterSettings;
   final VolunteerSettings volunteerSettings;
-  final List<Volunteer> volunteers;
+  List<Volunteer> volunteers; // Make this mutable
 
   Shelter({
     required this.id,
@@ -29,23 +29,15 @@ class Shelter {
   factory Shelter.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
-    // Safely handle the `createdAt` field to ensure it's a valid `Timestamp`.
     return Shelter(
       id: doc.id,
-      name: data['name'] ?? 'Unknown Shelter', // Default value for name
-      address:
-          data['address'] ?? 'Unknown Address', // Default value for address
-      createdAt: data['createdAt'] != null
-          ? data['createdAt'] as Timestamp
-          : Timestamp.now(), // Default value if createdAt is null
+      name: data['name'] ?? 'Unknown Shelter',
+      address: data['address'] ?? 'Unknown Address',
+      createdAt: data['createdAt'] ?? Timestamp.now(),
       managementSoftware: data['managementSoftware'] ?? 'Unknown Software',
       shelterSettings: ShelterSettings.fromMap(data['shelterSettings'] ?? {}),
-      volunteerSettings:
-          VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
-      volunteers: (data['volunteers'] as List<dynamic>? ?? [])
-          .map((volunteer) =>
-              Volunteer.fromMap(volunteer as Map<String, dynamic>))
-          .toList(),
+      volunteerSettings: VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
+      volunteers: [], // Initialize with an empty list
     );
   }
 }

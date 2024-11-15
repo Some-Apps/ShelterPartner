@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/volunteer.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 
 // Providers
 final usersWithEmailProvider = StateProvider<List<Map<String, dynamic>>>((ref) => []);
@@ -28,22 +32,71 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
   bool isLoading = false; // Local loading state
 
   @override
-  Widget build(BuildContext context) {
-    Future<void> sync() async {
-      final String username = usernameController.text;
-      final String password = passwordController.text;
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
-      final String basicAuth =
-          'Basic ${base64Encode(utf8.encode('$username:$password'))}';
+  // Move the sync function outside of the build method
+  Future<void> sync() async {
+    setState(() {
+      isLoading = true;
+    });
 
-      final response = await http.get(
-        Uri.parse('https://api.betterimpact.com/v1/organization/users/'),
-        headers: <String, String>{'authorization': basicAuth},
+    try {
+      final String username = usernameController.text.trim();
+      final String password = passwordController.text.trim();
+
+      // Validate inputs
+      if (username.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter username and password.')),
+        );
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+
+      // Endpoint of your Cloud Function - replace with your actual URL
+      const String functionUrl =
+          'https://sync-better-impact-222422545919.us-central1.run.app';
+
+      // Replace 'your-project-id' with your actual Firebase project ID
+      // Example: 'https://us-central1-my-firebase-project-id.cloudfunctions.net/syncBetterImpact';
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        // Handle unauthenticated user
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not authenticated.')),
+        );
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+      // final idToken = await user.getIdToken();
+
+      final response = await http.post(
+        Uri.parse(functionUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> users = json.decode(response.body)['users'];
+        // Parse the response from the Cloud Function
+        final data = json.decode(response.body);
+        final List<dynamic> users = data['users'];
 
+        // Proceed with your existing logic
         final usersWithEmail = users
             .where((user) =>
                 user['email_address'] != null && user['email_address'].isNotEmpty)
@@ -56,145 +109,185 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
 
         ref.read(usersWithEmailProvider.notifier).state = usersWithEmail;
 
-        // Access volunteerSettings safely
-        final volunteerSettings = ref.read(volunteersViewModelProvider);
-        if (volunteerSettings.value == null) {
-          // Handle the case where volunteerSettings is not yet loaded
+        // Get shelterID from authViewModelProvider
+        final authState = ref.read(authViewModelProvider);
+        if (authState.status != AuthStatus.authenticated) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Volunteer settings not loaded yet. Please try again.')),
+            const SnackBar(content: Text('User not authenticated.')),
           );
+          setState(() {
+            isLoading = false;
+          });
+          return;
+        }
+        final shelterID = authState.user?.shelterId;
+        if (shelterID == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Shelter ID not found.')),
+          );
+          setState(() {
+            isLoading = false;
+          });
           return;
         }
 
-        final shelterID = volunteerSettings.value!.id;
-
-        // Get emails from API response and existing volunteers
-        final Set<String> apiEmails = usersWithEmail
-            .map((user) => user['email_address'] as String)
-            .toSet();
-
-        final Set<String> volunteerEmails = volunteerSettings.value!.volunteers
-            .map((volunteer) => volunteer.email)
-            .toSet();
-
-        // Determine emails to add and remove
-        final Set<String> emailsToAdd = apiEmails.difference(volunteerEmails);
-        final Set<String> emailsToRemove = volunteerEmails.difference(apiEmails);
-
-        // Get users to add
-        final List<Map<String, dynamic>> usersToAdd = usersWithEmail
-            .where((user) => emailsToAdd.contains(user['email_address']))
-            .toList();
-
-        final List<Volunteer> usersToRemove = volunteerSettings
-            .value!.volunteers
-            .where((volunteer) => emailsToRemove.contains(volunteer.email))
-            .toList();
-
-        // Update state providers
-        ref.read(usersToAddProvider.notifier).state = usersToAdd;
-        ref.read(usersToRemoveProvider.notifier).state = usersToRemove;
-
-        // Show the dialog and wait for the result
-        final shouldSync = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return SyncDialog(shelterID: shelterID);
-          },
-        );
-
-        if (shouldSync == true) {
+        // Get existing volunteers from volunteersViewModelProvider
+        final volunteersState = ref.read(volunteersViewModelProvider);
+        if (volunteersState is AsyncLoading) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Volunteer data is loading. Please try again.')),
+          );
           setState(() {
-            isLoading = true; // Show loading indicator
+            isLoading = false;
           });
+          return;
+        } else if (volunteersState is AsyncError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Error loading volunteer data: ${volunteersState.error}')),
+          );
+          setState(() {
+            isLoading = false;
+          });
+          return;
+        } else if (volunteersState is AsyncData<Shelter?>) {
+          final shelter = volunteersState.value;
+          if (shelter == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No shelter data available.')),
+            );
+            setState(() {
+              isLoading = false;
+            });
+            return;
+          }
 
-          try {
-            // Convert usersToAdd to List<Volunteer>
-            final volunteersToAdd = usersToAdd.map((user) {
-              return Volunteer(
-                id: '', // Assign an appropriate ID if necessary
-                firstName: user['first_name'],
-                lastName: user['last_name'],
-                email: user['email_address'],
-                lastActivity: Timestamp.now(),
-                averageLogDuration: 0,
-                totalTimeLoggedWithAnimals: 0,
-              );
-            }).toList();
+          final existingVolunteers = shelter.volunteers;
 
-            // Add new volunteers
-            for (var volunteer in volunteersToAdd) {
-              await ref
-                  .read(volunteersViewModelProvider.notifier)
-                  .sendVolunteerInvite(volunteer.firstName, volunteer.lastName,
-                      volunteer.email, shelterID); 
-            }
+          // Get emails from API response and existing volunteers
+          final Set<String> apiEmails = usersWithEmail
+              .map((user) => user['email_address'] as String)
+              .toSet();
 
-            // Remove volunteers
-            for (var volunteer in usersToRemove) {
-              try {
+          final Set<String> volunteerEmails = existingVolunteers
+              .map((volunteer) => volunteer.email)
+              .toSet();
+
+          // Determine emails to add and remove
+          final Set<String> emailsToAdd = apiEmails.difference(volunteerEmails);
+          final Set<String> emailsToRemove = volunteerEmails.difference(apiEmails);
+
+          // Get users to add
+          final List<Map<String, dynamic>> usersToAdd = usersWithEmail
+              .where((user) => emailsToAdd.contains(user['email_address']))
+              .toList();
+
+          final List<Volunteer> usersToRemove = existingVolunteers
+              .where((volunteer) => emailsToRemove.contains(volunteer.email))
+              .toList();
+
+          // Update state providers
+          ref.read(usersToAddProvider.notifier).state = usersToAdd;
+          ref.read(usersToRemoveProvider.notifier).state = usersToRemove;
+
+          // Show the dialog and wait for the result
+          final shouldSync = await showDialog<bool>(
+            context: context,
+            builder: (BuildContext context) {
+              return SyncDialog(shelterID: shelterID);
+            },
+          );
+
+          if (shouldSync == true) {
+            // Proceed with adding and removing volunteers
+            try {
+              // Convert usersToAdd to List<Volunteer>
+              final volunteersToAdd = usersToAdd.map((user) {
+                return Volunteer(
+                  id: Uuid().v4(), // Assign an appropriate ID if necessary
+                  firstName: user['first_name'],
+                  lastName: user['last_name'],
+                  email: user['email_address'],
+                  lastActivity: Timestamp.now(),
+                  averageLogDuration: 0,
+                  totalTimeLoggedWithAnimals: 0,
+                );
+              }).toList();
+
+              // Add new volunteers
+              for (var volunteer in volunteersToAdd) {
                 await ref
                     .read(volunteersViewModelProvider.notifier)
-                    .deleteVolunteer(volunteer.id, shelterID);
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Failed to delete volunteer: $e')),
-                );
+                    .sendVolunteerInvite(volunteer.firstName, volunteer.lastName,
+                        volunteer.email, shelterID);
               }
+
+              // Remove volunteers
+              for (var volunteer in usersToRemove) {
+                try {
+                  await ref
+                      .read(volunteersViewModelProvider.notifier)
+                      .deleteVolunteer(volunteer.id, shelterID);
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to delete volunteer: $e')),
+                  );
+                }
+              }
+
+              // Show success toast
+              Fluttertoast.showToast(
+                msg:
+                    "${usersToAdd.length} volunteers added, ${usersToRemove.length} volunteers removed",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.TOP,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16.0,
+              );
+
+              // Navigate back to /volunteers
+              context.go('/volunteers');
+            } catch (e) {
+              // Handle any errors
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error during sync: $e')),
+              );
             }
-
-            // Refresh the volunteer settings
-            ref
-                .read(volunteersViewModelProvider.notifier)
-                .fetchShelterDetails(shelterID: shelterID);
-
-            // Show success toast
-            Fluttertoast.showToast(
-              msg:
-                  "${usersToAdd.length} volunteers added, ${usersToRemove.length} volunteers removed",
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.TOP,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.green,
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
-
-            // Navigate back to /volunteers
-            context.go('/volunteers');
-          } catch (e) {
-            // Handle any errors
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error during sync: $e')),
-            );
-          } finally {
-            setState(() {
-              isLoading = false; // Hide loading indicator
-            });
           }
+        } else {
+          // Should not reach here
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Unexpected error occurred.')),
+          );
+          setState(() {
+            isLoading = false;
+          });
+          return;
         }
       } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: const Text('Failed to sync users.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
+        // Handle error response from Cloud Function
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to sync users: ${response.body}')),
         );
       }
+    } catch (e) {
+      // Handle exceptions
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error during sync: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false; // Hide loading indicator
+      });
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Better Impact Sync'),
@@ -267,14 +360,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
           ),
           if (isLoading)
             const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading...'),
-                ],
-              ),
+              child: CircularProgressIndicator(),
             ),
         ],
       ),
@@ -369,3 +455,5 @@ class SyncDialog extends ConsumerWidget {
     );
   }
 }
+
+
