@@ -11,7 +11,7 @@ import 'package:shelter_partner/models/volunteer.dart';
 class VolunteersRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
- Stream<Shelter> fetchShelterWithVolunteers(String shelterID) {
+  Stream<Shelter> fetchShelterWithVolunteers(String shelterID) {
     final shelterDocRef = _firestore.collection('shelters').doc(shelterID);
     final shelterStream = shelterDocRef.snapshots();
 
@@ -20,30 +20,27 @@ class VolunteersRepository {
         return Stream.error('No shelter found');
       }
 
-      final volunteerRefs = List<DocumentReference>.from(
-          shelterSnapshot.get('volunteers') ?? []);
       Shelter shelter = Shelter.fromDocument(shelterSnapshot);
 
-      if (volunteerRefs.isEmpty) {
-        shelter.volunteers = [];
-        return Stream.value(shelter);
-      }
+      // Fetch volunteers using shelterId
+      final volunteersStream = _firestore
+          .collection('users')
+          .where('shelterID', isEqualTo: shelterID)
+          .snapshots()
+          .map((querySnapshot) {
+            print('Volunteers: ${querySnapshot.docs.length}');
+        return querySnapshot.docs
+            .map((doc) => Volunteer.fromDocument(doc))
+            .toList();
+      });
 
-      // Create streams for each volunteer
-      final volunteerStreams = volunteerRefs.map((ref) =>
-          ref.snapshots().map((doc) => Volunteer.fromDocument(doc)));
-
-      // Combine the volunteer streams into one stream that emits a list of volunteers
-      final combinedVolunteerStream = CombineLatestStream.list(volunteerStreams);
-
-      // Combine the shelter stream with the volunteers stream
-      return combinedVolunteerStream.map((volunteers) {
+      // Combine the shelter and volunteers
+      return volunteersStream.map((volunteers) {
         shelter.volunteers = volunteers;
         return shelter;
       });
     });
   }
-
 
   // Method to toggle a specific field within volunteerSettings attribute
   Future<void> toggleVolunteerSetting(String shelterID, String field) async {

@@ -24,13 +24,13 @@ class VolunteerDetailPage extends StatelessWidget {
               subtitle: Text(volunteer.email),
             ),
             const SizedBox(height: 10),
-            const ListTile(
-              title: Text("Average Log Duration"),
-              subtitle: Text("24 minutes"),
+            ListTile(
+              title: const Text("Average Log Duration"),
+              subtitle: Text("${volunteer.averageLogDuration} minutes"),
             ),
-            const ListTile(
+            ListTile(
               title: Text("Total Time Logged With Animals"),
-              subtitle: Text("319 hours"),
+              subtitle: Text("${volunteer.totalTimeLoggedWithAnimals} minutes"),
             ),
             ListTile(
               title: const Text("Last Time At Shelter"),

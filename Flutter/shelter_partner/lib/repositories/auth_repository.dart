@@ -161,6 +161,11 @@ class AuthRepository {
       'email': email.trim(),
       'firstName': firstName.trim(),
       'lastName': lastName.trim(),
+
+      'lastActivity': Timestamp.now(),
+      'averageLogDuration': 0,
+      'totalTimeLoggedWithAnimals': 0,
+
       'shelterID': shelterId,
       'type': 'admin',
       'deviceSettings': defaultDeviceSettings.toMap(),
