@@ -43,11 +43,11 @@ class AddNoteViewModel extends StateNotifier<Animal> {
     }
   }
 
- Future<void> uploadImageToAnimal(Animal animal, XFile image) async {
+ Future<void> uploadImageToAnimal(Animal animal, XFile image, WidgetRef ref) async {
   // Get shelter ID from shelterDetailsViewModelProvider
   final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
   try {
-    await _repository.uploadImageToAnimal(animal, shelterDetailsAsync.value!.id, image);
+    await _repository.uploadImageToAnimal(animal, shelterDetailsAsync.value!.id, image, ref);
 
     // Optionally, update the state if needed
   } catch (e) {

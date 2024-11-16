@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/repositories/volunteers_repository.dart';
@@ -7,6 +9,7 @@ import 'auth_view_model.dart';
 class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   final VolunteersRepository _repository;
   final Ref ref;
+  StreamSubscription<Shelter>? _shelterSubscription;
 
   VolunteersViewModel(this._repository, this.ref)
       : super(const AsyncValue.loading()) {
@@ -15,11 +18,18 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 
   void _initialize() {
     final authState = ref.watch(authViewModelProvider);
-
     if (authState.status == AuthStatus.authenticated) {
       final shelterID = authState.user?.shelterId;
       if (shelterID != null) {
-        fetchShelterDetails(shelterID: shelterID);
+        _shelterSubscription =
+            _repository.fetchShelterWithVolunteers(shelterID).listen(
+          (shelter) {
+            state = AsyncValue.data(shelter);
+          },
+          onError: (error) {
+            state = AsyncValue.error(error, StackTrace.current);
+          },
+        );
       } else {
         state = AsyncValue.error('Shelter ID is null', StackTrace.current);
       }
@@ -28,16 +38,10 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-  void fetchShelterDetails({required String shelterID}) {
-    _repository.fetchShelterDetails(shelterID).listen((accountDetails) {
-      if (accountDetails.exists) {
-        state = AsyncValue.data(Shelter.fromDocument(accountDetails));
-      } else {
-        state = AsyncValue.error('No shelter found', StackTrace.current);
-      }
-    }, onError: (error) {
-      state = AsyncValue.error(error, StackTrace.current);
-    });
+  @override
+  void dispose() {
+    _shelterSubscription?.cancel();
+    super.dispose();
   }
 
   // Method to change geofence settings in Firestore document within volunteerSettings
@@ -127,3 +131,4 @@ final volunteersViewModelProvider =
       ref.watch(volunteersRepositoryProvider); // Access the repository
   return VolunteersViewModel(repository, ref); // Pass the repository and ref
 });
+

@@ -5,11 +5,15 @@ class Photo {
   final String id;
   final String url;
   final Timestamp timestamp;
+  final String author;
+  final String authorID;
 
   Photo({
     required this.id,
     required this.url,
     required this.timestamp,
+    required this.author,
+    required this.authorID,
   });
 
   factory Photo.fromMap(Map<String, dynamic> data) {
@@ -17,6 +21,8 @@ class Photo {
       id: data['id'] ?? const Uuid().v4(),
       url: data['url'] ?? "Unknown",
       timestamp: data['timestamp'] ?? Timestamp.now(),
+      author: data['author'] ?? "Unknown",
+      authorID: data['authorID'] ?? "Unknown",
     );
   }
 
@@ -25,6 +31,8 @@ class Photo {
       'id': id,
       'url': url,
       'timestamp': timestamp,
+      'author': author,
+      'authorID': authorID,
     };
   }
 
@@ -32,11 +40,15 @@ class Photo {
     String? id,
     String? url,
     Timestamp? timestamp,
+    String? author,
+    String? authorID,
   }) {
     return Photo(
       id: id ?? this.id,
       url: url ?? this.url,
       timestamp: timestamp ?? this.timestamp,
+      author: author ?? this.author,
+      authorID: authorID ?? this.authorID,
     );
   }
 }

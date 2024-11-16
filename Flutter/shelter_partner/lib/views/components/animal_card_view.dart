@@ -116,6 +116,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                       id: const Uuid().v4().toString(),
                       type: '',
                       author: '',
+                      authorID: '',
                       earlyReason: '',
                       startTime: Timestamp.now(),
                       endTime: widget.animal.logs.last.endTime,

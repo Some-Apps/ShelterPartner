@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/models/photo.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -18,6 +19,7 @@ class AddNoteRepository {
   Future<void> updateAnimalTags(Animal animal, String shelterID, String tagName) async {
     final collection = animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
     final docRef = _firestore.collection('shelters/$shelterID/$collection').doc(animal.id);
+    final appUser = appUserProvider.read;
 
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(docRef);
@@ -58,7 +60,7 @@ class AddNoteRepository {
         });
   }
 
-  Future<void> uploadImageToAnimal(Animal animal, String shelterID, XFile image) async {
+  Future<void> uploadImageToAnimal(Animal animal, String shelterID, XFile image, WidgetRef ref) async {
   final photoId = const Uuid().v4().toString(); // Generate UUID once
   final storageRef = FirebaseStorage.instance.ref().child('$shelterID/${animal.id}/$photoId');
 
@@ -82,6 +84,8 @@ class AddNoteRepository {
     id: photoId, // Use the same ID as storage path
     url: downloadUrl,
     timestamp: Timestamp.now(),
+    author: ref.read(appUserProvider)?.firstName ?? 'Unknown',
+    authorID: ref.read(appUserProvider)?.id ?? 'Unknown',
   );
 
   // Determine the correct collection for the animal and update Firestore

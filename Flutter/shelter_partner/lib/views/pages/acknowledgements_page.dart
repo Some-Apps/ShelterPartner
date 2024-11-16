@@ -72,12 +72,17 @@ class AcknowledgementsPage extends StatelessWidget {
                     ListTile(
                       title: Text("The Humane Society of Marathon County"),
                       subtitle: Text(
-                          "First shelter to use the app. Was willing to try something new. Helped spread the word."),
+                          "First shelter to use the app. Was willing to try something new. Helped spread the word. Several volunteers helped shoot a commercial."),
                     ),
                     ListTile(
                       title: Text("Lisa Leittermann"),
                       subtitle: Text(
                           "Encouraged me to make the app available for other shelters."),
+                    ),
+                    ListTile(
+                      title: Text("John Russell Seal"),
+                      subtitle: Text(
+                          "Shot a commercial for the app and provided b-roll footage."),
                     ),
                     ListTile(
                       title: Text("Early Adopters"),

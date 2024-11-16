@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
+import 'package:shelter_partner/repositories/update_volunteer_repository.dart';
 import 'package:shelter_partner/view_models/add_note_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
@@ -145,6 +146,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
               id: const Uuid().v4().toString(),
               note: _noteController.text,
               author: userDetails!.firstName,
+              authorID: userDetails.id,
               timestamp: Timestamp.now(),
               // You may need to add a way to store _selectedImage if you plan to save it
             );
@@ -164,8 +166,10 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             if (_selectedImage != null) {
               ref
                   .read(addNoteViewModelProvider(widget.animal).notifier)
-                  .uploadImageToAnimal(widget.animal, _selectedImage!);
+                  .uploadImageToAnimal(widget.animal, _selectedImage!, ref);
             }
+
+            ref.read(updateVolunteerRepositoryProvider).modifyVolunteerLastActivity(userDetails.id, Timestamp.now());
 
             Navigator.of(context).pop(note);
             ref.read(noteAddedProvider.notifier).state = true;

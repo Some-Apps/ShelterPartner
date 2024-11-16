@@ -8,6 +8,11 @@ class AppUser {
   final String firstName;
   final String lastName;
   final String email;
+
+  final Timestamp lastActivity;
+  final int averageLogDuration;
+  final int totalTimeLoggedWithAnimals;
+
   final String type;
   final String shelterId;
   final DeviceSettings? deviceSettings;
@@ -19,6 +24,11 @@ class AppUser {
     required this.firstName,
     required this.lastName,
     required this.email,
+
+    required this.lastActivity,
+    required this.averageLogDuration,
+    required this.totalTimeLoggedWithAnimals,
+
     required this.type,
     required this.shelterId,
     required this.deviceSettings,
@@ -63,6 +73,9 @@ class AppUser {
       firstName: data['firstName'],
       lastName: data['lastName'],
       email: data['email'],
+      lastActivity: data['lastActivity'],
+      averageLogDuration: data['averageLogDuration'],
+      totalTimeLoggedWithAnimals: data['totalTimeLoggedWithAnimals'],
       type: data['type'],
       shelterId: data['shelterID'],
       deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
@@ -77,6 +90,9 @@ class AppUser {
     String? firstName,
     String? lastName,
     String? email,
+    Timestamp? lastActivity,
+    int? averageLogDuration,
+    int? totalTimeLoggedWithAnimals,
     String? type,
     String? shelterId,
     DeviceSettings? deviceSettings,
@@ -88,6 +104,9 @@ class AppUser {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
+      lastActivity: this.lastActivity,
+      averageLogDuration: this.averageLogDuration,
+      totalTimeLoggedWithAnimals: this.totalTimeLoggedWithAnimals,
       type: type ?? this.type,
       shelterId: shelterId ?? this.shelterId,
       deviceSettings: deviceSettings ?? this.deviceSettings,

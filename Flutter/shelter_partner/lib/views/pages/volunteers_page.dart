@@ -1,8 +1,9 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
-import 'package:email_validator/email_validator.dart';
 
 class VolunteersPage extends ConsumerStatefulWidget {
   const VolunteersPage({super.key});
@@ -31,11 +32,14 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
     FocusScope.of(context).unfocus();
   }
 
-  void _confirmDeleteVolunteer(BuildContext context, String volunteerId,
-      String shelterId, String volunteerName) {
+  void _confirmDeleteVolunteer(
+      BuildContext context, String volunteerId, String volunteerName) {
     showDialog(
       context: context,
+
       builder: (BuildContext context) {
+            final shelterID = ref.read(authViewModelProvider).user?.shelterId ?? '';
+
         return AlertDialog(
           title: const Text('Confirm Deletion'),
           content: Text('Are you sure you want to delete $volunteerName?'),
@@ -56,7 +60,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                 try {
                   await ref
                       .read(volunteersViewModelProvider.notifier)
-                      .deleteVolunteer(volunteerId, shelterId);
+                      .deleteVolunteer(volunteerId, shelterID);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('$volunteerName deleted')),
                   );
@@ -80,6 +84,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
   @override
   Widget build(BuildContext context) {
     final shelterAsyncValue = ref.watch(volunteersViewModelProvider);
+    final shelterID = ref.read(authViewModelProvider).user?.shelterId ?? '';
 
     return SafeArea(
       child: Stack(
@@ -163,8 +168,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                             controller: _firstNameController,
                                             decoration: const InputDecoration(
                                               border: UnderlineInputBorder(),
-                                              labelText:
-                                                  'Volunteer first name',
+                                              labelText: 'Volunteer first name',
                                               contentPadding:
                                                   EdgeInsets.all(16),
                                             ),
@@ -244,7 +248,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                                 firstName,
                                                                 lastName,
                                                                 email,
-                                                                shelter.id);
+                                                                shelterID);
 
                                                         ScaffoldMessenger.of(
                                                                 context)
@@ -298,41 +302,57 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                           ),
                                           const SizedBox(height: 10),
                                           if (shelter.volunteers.isNotEmpty)
-                                            ...shelter.volunteers.map(
-                                              (volunteer) => Column(
-                                                children: [
-                                                  ListTile(
-                                                    title: Text(
-                                                        volunteer.firstName),
-                                                    trailing: IconButton(
-                                                      icon: Icon(Icons.delete,
-                                                          color: Colors.red
-                                                              .withOpacity(
-                                                                  0.5)),
-                                                      onPressed: () {
-                                                        _confirmDeleteVolunteer(
-                                                          context,
-                                                          volunteer.id,
-                                                          shelter.id,
-                                                          volunteer.firstName,
+                                            Column(
+                                              children: shelter.volunteers
+                                                  .map((volunteer) {
+                                                return Column(
+                                                  children: [
+                                                    ListTile(
+                                                      leading: DateTime.now()
+                                                                  .difference(volunteer
+                                                                      .lastActivity
+                                                                      .toDate())
+                                                                  .inHours <
+                                                              1
+                                                          ? const Icon(
+                                                              Icons.circle,
+                                                              color:
+                                                                  Colors.green)
+                                                          : const Icon(
+                                                              Icons.circle,
+                                                              color:
+                                                                  Colors.grey),
+                                                      title: Text(
+                                                          '${volunteer.firstName} ${volunteer.lastName}'),
+                                                      trailing: IconButton(
+                                                        icon: Icon(Icons.delete,
+                                                            color: Colors.red
+                                                                .withOpacity(
+                                                                    0.5)),
+                                                        onPressed: () {
+                                                          _confirmDeleteVolunteer(
+                                                            context,
+                                                            volunteer.id,
+                                                            volunteer.firstName,
+                                                          );
+                                                        },
+                                                      ),
+                                                      onTap: () {
+                                                        context.push(
+                                                          '/volunteers/details',
+                                                          extra: volunteer,
                                                         );
                                                       },
                                                     ),
-                                                    onTap: () {
-                                                      context.push(
-                                                        '/volunteers/details',
-                                                        extra: volunteer,
-                                                      );
-                                                    },
-                                                  ),
-                                                  Divider(
-                                                    color: Colors.black
-                                                        .withOpacity(0.1),
-                                                    height: 0,
-                                                    thickness: 1,
-                                                  ),
-                                                ],
-                                              ),
+                                                    Divider(
+                                                      color: Colors.black
+                                                          .withOpacity(0.1),
+                                                      height: 0,
+                                                      thickness: 1,
+                                                    ),
+                                                  ],
+                                                );
+                                              }).toList(),
                                             )
                                           else
                                             const Text(
@@ -348,9 +368,10 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                           ),
                         ),
                       ),
+                ),
               ),
             ),
-          ),
+          
           if (isLoading)
             Center(
               child: Container(
