@@ -6,6 +6,7 @@ class Volunteer {
   final String firstName;
   final String lastName;
   final String email;
+  final String shelterID;
   final Timestamp lastActivity;
   final int averageLogDuration;
   final int totalTimeLoggedWithAnimals;
@@ -15,6 +16,7 @@ class Volunteer {
     required this.firstName,
     required this.lastName,
     required this.email,
+    required this.shelterID,
     required this.lastActivity,
     required this.averageLogDuration,
     required this.totalTimeLoggedWithAnimals,
@@ -29,6 +31,7 @@ class Volunteer {
       firstName: data['firstName'] ?? '',
       lastName: data['lastName'] ?? '',
       email: data['email'] ?? '',
+      shelterID: data['shelterID'] ?? '',
       lastActivity: data['lastActivity'] ?? Timestamp.now(),
       averageLogDuration: data['averageLogDuration'] ?? 0,
       totalTimeLoggedWithAnimals: data['totalTimeLoggedWithAnimals'] ?? 0,

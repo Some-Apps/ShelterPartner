@@ -146,6 +146,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
               id: const Uuid().v4().toString(),
               note: _noteController.text,
               author: userDetails!.firstName,
+              authorID: userDetails.id,
               timestamp: Timestamp.now(),
               // You may need to add a way to store _selectedImage if you plan to save it
             );
@@ -165,10 +166,10 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             if (_selectedImage != null) {
               ref
                   .read(addNoteViewModelProvider(widget.animal).notifier)
-                  .uploadImageToAnimal(widget.animal, _selectedImage!);
+                  .uploadImageToAnimal(widget.animal, _selectedImage!, ref);
             }
 
-            ref.read(updateVolunteerRepositoryProvider).modifyVolunteerLastActivity(userDetails.shelterId, userDetails.id, "lastActivity", Timestamp.now());
+            ref.read(updateVolunteerRepositoryProvider).modifyVolunteerLastActivity(userDetails.id, Timestamp.now());
 
             Navigator.of(context).pop(note);
             ref.read(noteAddedProvider.notifier).state = true;

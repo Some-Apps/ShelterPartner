@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/repositories/volunteers_repository.dart';
 import '../models/shelter.dart';
 import 'auth_view_model.dart';

@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/volunteer.dart';
+import 'package:shelter_partner/view_models/volunteer_details_view_model.dart';
+// volunteer_detail_page.dart
 
-class VolunteerDetailPage extends StatelessWidget {
+
+class VolunteerDetailPage extends ConsumerWidget {
   final Volunteer volunteer;
-  const VolunteerDetailPage({super.key, required this.volunteer});
+
+  const VolunteerDetailPage({Key? key, required this.volunteer})
+      : super(key: key);
+
+  // timeSince function
+  String _timeSince(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+    if (difference.inDays > 0) {
+      int days = difference.inDays;
+      String unitText = days == 1 ? 'day' : 'days';
+      return "$days $unitText ago";
+    } else if (difference.inHours > 0) {
+      int hours = difference.inHours;
+      String unitText = hours == 1 ? 'hour' : 'hours';
+      return "$hours $unitText ago";
+    } else if (difference.inMinutes > 0) {
+      int minutes = difference.inMinutes;
+      String unitText = minutes == 1 ? 'minute' : 'minutes';
+      return "$minutes $unitText ago";
+    } else {
+      return "Just now";
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the ViewModel's state
+    final viewModelState = ref.watch(
+      volunteerDetailViewModelProvider(volunteer),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Volunteer Details"),
@@ -26,35 +58,19 @@ class VolunteerDetailPage extends StatelessWidget {
             const SizedBox(height: 10),
             ListTile(
               title: const Text("Average Log Duration"),
-              subtitle: Text("${volunteer.averageLogDuration} minutes"),
+              subtitle: Text(viewModelState.averageLogDurationText),
             ),
             ListTile(
-              title: Text("Total Time Logged With Animals"),
-              subtitle: Text("${volunteer.totalTimeLoggedWithAnimals} minutes"),
+              title: const Text("Total Time Logged With Animals"),
+              subtitle: Text(viewModelState.totalTimeLoggedWithAnimalsText),
             ),
             ListTile(
               title: const Text("Last Time At Shelter"),
-                subtitle: Text(_timeSince(volunteer.lastActivity.toDate())),
+              subtitle: Text(_timeSince(volunteer.lastActivity.toDate())),
             ),
           ],
         ),
       ),
-      
     );
-  }
-
-  // timeSince function
-  String _timeSince(DateTime time) {
-    final now = DateTime.now();
-    final difference = now.difference(time);
-    if (difference.inDays > 0) {
-      return "${difference.inDays} days ago";
-    } else if (difference.inHours > 0) {
-      return "${difference.inHours} hours ago";
-    } else if (difference.inMinutes > 0) {
-      return "${difference.inMinutes} minutes ago";
-    } else {
-      return "Just now";
-    }
   }
 }

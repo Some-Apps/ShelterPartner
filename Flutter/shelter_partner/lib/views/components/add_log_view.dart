@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/repositories/update_volunteer_repository.dart';
 import 'package:shelter_partner/view_models/add_log_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
@@ -24,14 +25,16 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
   String? _selectedType;
   String? _selectedEarlyReason;
 
-  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectTime(
+      BuildContext context, TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
       final now = DateTime.now();
-      final selectedTime = DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+      final selectedTime =
+          DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
       controller.text = selectedTime.toIso8601String();
     }
   }
@@ -59,12 +62,12 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
               items: [
                 if (_selectedType != null) ...[
                   const DropdownMenuItem<String>(
-                  value: null,
-                  child: Text('None'),
+                    value: null,
+                    child: Text('None'),
                   ),
                 ],
-                
-                ...?shelterSettings.value?.shelterSettings.letOutTypes.map((String type) {
+                ...?shelterSettings.value?.shelterSettings.letOutTypes
+                    .map((String type) {
                   return DropdownMenuItem<String>(
                     value: type,
                     child: Text(type),
@@ -87,11 +90,12 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
               items: [
                 if (_selectedEarlyReason != null) ...[
                   const DropdownMenuItem<String>(
-                  value: null,
-                  child: Text('None'),
+                    value: null,
+                    child: Text('None'),
                   ),
                 ],
-                ...?shelterSettings.value?.shelterSettings.earlyPutBackReasons.map((String reason) {
+                ...?shelterSettings.value?.shelterSettings.earlyPutBackReasons
+                    .map((String reason) {
                   return DropdownMenuItem<String>(
                     value: reason,
                     child: Text(reason),
@@ -141,28 +145,35 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
         ),
         ElevatedButton(
           onPressed: (_selectedType != null &&
-                _startTimeController.text.isNotEmpty &&
-                _endTimeController.text.isNotEmpty)
+                  _startTimeController.text.isNotEmpty &&
+                  _endTimeController.text.isNotEmpty)
               ? () {
-            Log log = Log(
-              id: const Uuid().v4().toString(),
-              type: _selectedType!,
-              author: userDetails!.firstName,
-              startTime: Timestamp.fromDate(DateTime.parse(_startTimeController.text)),
-              endTime: Timestamp.fromDate(DateTime.parse(_endTimeController.text)),
-              earlyReason: _selectedEarlyReason,
-            );
+                  Log log = Log(
+                    id: const Uuid().v4().toString(),
+                    type: _selectedType!,
+                    author: userDetails!.firstName,
+                    authorID: userDetails.id,
+                    startTime: Timestamp.fromDate(
+                        DateTime.parse(_startTimeController.text)),
+                    endTime: Timestamp.fromDate(
+                        DateTime.parse(_endTimeController.text)),
+                    earlyReason: _selectedEarlyReason,
+                  );
 
-            ref
-                .read(addLogViewModelProvider(widget.animal).notifier)
-                .addLogToAnimal(widget.animal, log);
+                  ref
+                      .read(addLogViewModelProvider(widget.animal).notifier)
+                      .addLogToAnimal(widget.animal, log);
 
-            Navigator.of(context).pop(log);
-          }
+                  ref
+                      .read(updateVolunteerRepositoryProvider)
+                      .modifyVolunteerLastActivity(
+                          userDetails.id, Timestamp.now());
+
+                  Navigator.of(context).pop(log);
+                }
               : null,
           child: const Text('Save'),
         ),
-      
       ],
     );
   }

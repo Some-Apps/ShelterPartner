@@ -206,10 +206,11 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               // Convert usersToAdd to List<Volunteer>
               final volunteersToAdd = usersToAdd.map((user) {
                 return Volunteer(
-                  id: Uuid().v4(), // Assign an appropriate ID if necessary
+                  id: const Uuid().v4(), // Assign an appropriate ID if necessary
                   firstName: user['first_name'],
                   lastName: user['last_name'],
                   email: user['email_address'],
+                  shelterID: shelterID,
                   lastActivity: Timestamp.now(),
                   averageLogDuration: 0,
                   totalTimeLoggedWithAnimals: 0,

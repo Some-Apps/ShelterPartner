@@ -4,16 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class UpdateVolunteerRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
-
-  Stream<DocumentSnapshot> fetchShelterDetails(String shelterID) {
-    return _firestore.collection('shelters').doc(shelterID).snapshots();
-  }
-  // Method to modify a specific string attribute within shelterSettings
+  // Method to modify a specific string attribute within the volunteer document
   Future<void> modifyVolunteerLastActivity(
-      String shelterID, String volunteerId, String field, Timestamp newValue) async {
-    final docRef = _firestore.collection('shelters').doc(shelterID);
+      String volunteerId, Timestamp newValue) async {
+    final docRef = _firestore.collection('users').doc(volunteerId);
     return docRef.update({
-      'volunteers.$volunteerId.$field': newValue,
+      'lastActivity': newValue,
     }).catchError((error) {
       throw Exception("Failed to modify: $error");
     });

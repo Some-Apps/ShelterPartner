@@ -162,6 +162,7 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
                     id: const Uuid().v4().toString(),
                     type: _selectedLetOutType ?? '',
                     author: _nameController.text,
+                    authorID: userDetails!.id,
                     earlyReason: '',
                     startTime: Timestamp.now(),
                     endTime: animal.logs.last.endTime,
