@@ -445,10 +445,10 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               label: animal.volunteerCategory,
                             ),
                           // Add the top 3 tags as info chips
-                          for (int i = 0; i < min(3, animal.tags.length); i++)
+                            for (var tag in (animal.tags..sort((a, b) => b.count.compareTo(a.count))).take(3))
                             _buildInfoChip(
                               icon: Icons.label,
-                              label: animal.tags[i].title,
+                              label: tag.title,
                             ),
                         ],
                       ),
