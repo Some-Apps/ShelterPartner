@@ -140,6 +140,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             }
                           },
                         ),
+                         Divider(
+                          color: Colors.black.withOpacity(0.1),
+                          height: 0,
+                          thickness: 1,
+                        ),
+                        ListTile(
+                            leading: const Icon(Icons.lock_outline),
+                            title: const Text("Change Password"),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () {
+                              context.push('/settings/change-password');
+                            },
+                          ),
                         Divider(
                           color: Colors.black.withOpacity(0.1),
                           height: 0,
