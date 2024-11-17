@@ -1,7 +1,6 @@
 // volunteer_detail_view_model.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/widgets.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/repositories/volunteer_details_repository.dart';
 
