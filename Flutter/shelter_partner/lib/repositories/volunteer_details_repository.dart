@@ -80,7 +80,7 @@ class VolunteerDetailsRepository {
     } catch (e) {
       // Handle errors
       print('Error fetching logs: $e');
-      throw e;
+      rethrow;
     }
   }
 }

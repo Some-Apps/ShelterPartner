@@ -214,6 +214,8 @@ Widget build(BuildContext context) {
                           ListTile(title: NumberStepperView(
                             title: "Automatic Put Back",
                             label: "hours",
+                            minValue: 1,
+                            maxValue: 96,
                             value: shelter?.shelterSettings.automaticPutBackHours ?? 0,
                             increment: () {
                               ref

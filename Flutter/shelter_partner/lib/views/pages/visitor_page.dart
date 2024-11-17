@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/view_models/device_settings_view_model.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,8 +11,6 @@ import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub 
   if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart' 
   if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
-
-
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
 
@@ -280,7 +279,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                         Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
                             builder: (context) =>
-                                SlideshowScreen(animals: animals),
+                                SlideshowScreen(animals: animals, ref: ref),
                           ),
                         );
                       }
@@ -297,8 +296,8 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
 class SlideshowScreen extends StatefulWidget {
   final List<Animal> animals;
-
-  const SlideshowScreen({super.key, required this.animals});
+  final WidgetRef ref;
+  const SlideshowScreen({super.key, required this.animals, required this.ref});
 
   @override
   _SlideshowScreenState createState() => _SlideshowScreenState();
@@ -339,8 +338,12 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   }
 
   void _startSlideshow() {
-    // Start the timer to change images every 10 seconds
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+    // Get the slideshow timer setting from device settings
+    final deviceSettings = widget.ref.read(deviceSettingsViewModelProvider).value?.deviceSettings;
+    final slideshowTimer = deviceSettings?.slideshowTimer ?? 10; // Default to 10 seconds if not set
+
+    // Start the timer to change images based on the slideshow timer setting
+    _timer = Timer.periodic(Duration(seconds: slideshowTimer), (timer) {
       setState(() {
         _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
         _setCurrentImage();
@@ -357,13 +360,32 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the slideshow size setting from device settings
+    final deviceSettings = widget.ref.watch(deviceSettingsViewModelProvider).value?.deviceSettings;
+
+    // Determine the BoxFit based on the slideshow size setting
+    BoxFit boxFit;
+    switch (deviceSettings?.slideshowSize) {
+      case 'Scaled to Fit':
+        boxFit = BoxFit.contain;
+        break;
+      case 'Scaled to Fill':
+        boxFit = BoxFit.cover;
+        break;
+      case 'Cropped to Square':
+        boxFit = BoxFit.cover;
+        break;
+      default:
+        boxFit = BoxFit.cover;
+    }
+
     // Handle the case where there is no image
     Widget imageWidget;
     if (_currentImageUrl.isNotEmpty) {
       imageWidget = CachedNetworkImage(
         key: ValueKey<String>(_currentImageUrl),
         imageUrl: _currentImageUrl,
-        fit: BoxFit.cover,
+        fit: boxFit,
         width: double.infinity,
         height: double.infinity,
         placeholder: (context, url) => const Center(
@@ -383,15 +405,35 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     Widget content = Stack(
       key: ValueKey<String>(_currentImageUrl),
       children: [
-        imageWidget,
+        if (deviceSettings?.slideshowSize == 'Cropped to Square')
+          Container(
+            color: Colors.black,
+            child: Center(
+              child: ClipRect(
+                child: Align(
+                  alignment: Alignment.center,
+                  widthFactor: 1.0,
+                  heightFactor: 1.0,
+                  child: AspectRatio(
+                    aspectRatio: 1.0,
+                    child: imageWidget,
+                  ),
+                ),
+              ),
+            ),
+          )
+        else
+          imageWidget,
         Positioned(
-          top: 50.0,
-          right: 50.0,
+          bottom: 50.0,
+          left: 0,
+          right: 0,
           child: Text(
             _currentAnimal?.name ?? '',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 50,
+              fontWeight: FontWeight.bold,
               shadows: [
                 Shadow(
                   offset: Offset(1.0, 1.0),
@@ -400,6 +442,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                 ),
               ],
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       ],

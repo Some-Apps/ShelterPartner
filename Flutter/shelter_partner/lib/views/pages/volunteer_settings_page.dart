@@ -123,6 +123,8 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                       ListTile(title: NumberStepperView(
                         title: "Minimum Duration",
                         label: "minutes",
+                        minValue: 1,
+                        maxValue: 600,
                         value: shelter?.volunteerSettings.minimumLogMinutes ?? 0,
                         increment: () {
                           ref

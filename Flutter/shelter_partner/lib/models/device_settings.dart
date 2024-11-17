@@ -10,8 +10,10 @@ class DeviceSettings {
   final FilterElement? mainFilter;
   final FilterElement? visitorFilter;
   final String visitorSort;
+  final String slideshowSize;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
+  final int slideshowTimer;
   final bool requireLetOutType;
   final bool requireEarlyPutBackReason;
   final bool requireName;
@@ -28,8 +30,10 @@ class DeviceSettings {
     required this.mainFilter,
     required this.visitorFilter,
     required this.visitorSort,
+    required this.slideshowSize,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
+    required this.slideshowTimer,
     required this.requireLetOutType,
     required this.requireEarlyPutBackReason,
     required this.requireName,
@@ -47,8 +51,10 @@ class DeviceSettings {
   FilterElement? mainFilter,
   FilterElement? visitorFilter,
   String? visitorSort,
+  String? slideshowSize,
   bool? allowBulkTakeOut,
   int? minimumLogMinutes,
+  int? slideshowTimer,
   bool? requireLetOutType,
   bool? requireEarlyPutBackReason,
   bool? requireName,
@@ -67,8 +73,10 @@ class DeviceSettings {
     mainFilter: mainFilter ?? this.mainFilter,
     visitorFilter: visitorFilter ?? this.visitorFilter,
     visitorSort: visitorSort ?? this.visitorSort,
+    slideshowSize: slideshowSize ?? this.slideshowSize,
     allowBulkTakeOut: allowBulkTakeOut ?? this.allowBulkTakeOut,
     minimumLogMinutes: minimumLogMinutes ?? this.minimumLogMinutes,
+    slideshowTimer: slideshowTimer ?? this.slideshowTimer,
     requireLetOutType: requireLetOutType ?? this.requireLetOutType,
     requireEarlyPutBackReason:
         requireEarlyPutBackReason ?? this.requireEarlyPutBackReason,
@@ -92,8 +100,10 @@ class DeviceSettings {
       if (mainFilter != null) 'mainFilter': mainFilter!.toJson(),
       if (visitorFilter != null) 'visitorFilter': visitorFilter!.toJson(),
       'visitorSort': visitorSort,
+      'slideshowSize': slideshowSize,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
+      'slideshowTimer': slideshowTimer,
       'requireLetOutType': requireLetOutType,
       'requireEarlyPutBackReason': requireEarlyPutBackReason,
       'requireName': requireName,
@@ -151,8 +161,10 @@ class DeviceSettings {
       mainFilter: mainFilter,
       visitorFilter: visitorFilter,
       visitorSort: data['visitorSort'] ?? "Alphabetical",
+      slideshowSize: data['slideshowSize'] ?? "Scaled to Fit",
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
+      slideshowTimer: data['slideshowTimer'] ?? 0,
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,
