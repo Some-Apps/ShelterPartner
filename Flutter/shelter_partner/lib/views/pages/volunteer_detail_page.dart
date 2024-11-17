@@ -8,8 +8,7 @@ import 'package:shelter_partner/view_models/volunteer_details_view_model.dart';
 class VolunteerDetailPage extends ConsumerWidget {
   final Volunteer volunteer;
 
-  const VolunteerDetailPage({Key? key, required this.volunteer})
-      : super(key: key);
+  const VolunteerDetailPage({super.key, required this.volunteer});
 
   // timeSince function
   String _timeSince(DateTime time) {

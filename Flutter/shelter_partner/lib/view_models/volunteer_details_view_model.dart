@@ -56,7 +56,7 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
     //   _fetchLogsAndComputeStats();
     // });
 
-       Future.delayed(Duration(milliseconds: 500), () {
+       Future.delayed(const Duration(milliseconds: 500), () {
       _fetchLogsAndComputeStats();
     });
   }
