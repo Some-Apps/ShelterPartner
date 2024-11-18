@@ -491,7 +491,7 @@ Future<void> _fetchPage({
                         const SizedBox(height: 8),
                         // Navigation button for user filter
                         NavigationButton(
-                          title: "User Filter",
+                          title: "User Enrichment Filter",
                           route: '/enrichment/main-filter',
                           extra: FilterParameters(
                             title: "User Enrichment Filter",
