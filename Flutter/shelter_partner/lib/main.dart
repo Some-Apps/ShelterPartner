@@ -240,7 +240,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: "change-password",
-                    builder: (context, state) => ChangePasswordPage(),
+                    builder: (context, state) => const ChangePasswordPage(),
                   ),
                   GoRoute(
                     path: 'shelter-settings',
