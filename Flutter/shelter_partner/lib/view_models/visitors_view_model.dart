@@ -8,7 +8,7 @@ import 'package:shelter_partner/models/filter_condition.dart';
 import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/repositories/visitors_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -48,7 +48,7 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   }
 
   // Add a field to store the main filter
-  FilterElement? _mainFilter;
+  FilterElement? _enrichmentFilter;
 
   // Modify fetchAnimals to apply the filter
   void fetchAnimals({required String shelterID}) {
@@ -57,9 +57,9 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   // Fetch animals stream
   final animalsStream = _repository.fetchAnimals(shelterID);
 
-  // Fetch device settings stream (filter)
-  final deviceSettingsStream = ref
-    .watch(deviceSettingsViewModelProvider.notifier)
+  // Fetch account settings stream (filter)
+  final accountSettingsStream = ref
+    .watch(accountSettingsViewModelProvider.notifier)
     .stream
     .map((asyncValue) {
       return asyncValue.asData?.value;
@@ -69,14 +69,14 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   // Combine both streams
   _animalsSubscription = CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
     animalsStream,
-    deviceSettingsStream,
+    accountSettingsStream,
     (animals, appUser) {
-      _mainFilter = appUser?.deviceSettings?.visitorFilter;
+      _enrichmentFilter = appUser?.accountSettings?.visitorFilter;
 
       // Apply the filter
       final filteredAnimals = animals.where((animal) {
-        if (_mainFilter != null) {
-          return evaluateFilter(_mainFilter!, animal);
+        if (_enrichmentFilter != null) {
+          return evaluateFilter(_enrichmentFilter!, animal);
         } else {
           return true; // No filter applied
         }
@@ -96,10 +96,10 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   }
 
   void _sortAnimals() {
-    final deviceSettings =
-        ref.read(deviceSettingsViewModelProvider).asData?.value;
+    final accountSettings =
+        ref.read(accountSettingsViewModelProvider).asData?.value;
 
-    final visitorSort = deviceSettings?.deviceSettings?.visitorSort ?? 'Alphabetical';
+    final visitorSort = accountSettings?.accountSettings?.visitorSort ?? 'Alphabetical';
 
     final sortedState = <String, List<Animal>>{};
 

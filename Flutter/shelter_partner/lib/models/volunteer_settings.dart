@@ -3,8 +3,8 @@ import 'package:shelter_partner/models/geofence.dart';
 
 class VolunteerSettings {
   final bool photoUploadsAllowed;
-  final String mainSort;
-  final FilterElement? mainFilter;
+  final String enrichmentSort;
+  final FilterElement? enrichmentFilter;
   final bool allowBulkTakeOut;
   final int minimumLogMinutes;
   final bool requireLetOutType;
@@ -18,8 +18,8 @@ class VolunteerSettings {
 
   VolunteerSettings({
     required this.photoUploadsAllowed,
-    required this.mainSort,
-    required this.mainFilter,
+    required this.enrichmentSort,
+    required this.enrichmentFilter,
     required this.allowBulkTakeOut,
     required this.minimumLogMinutes,
     required this.requireLetOutType,
@@ -36,8 +36,8 @@ class VolunteerSettings {
   Map<String, dynamic> toMap() {
     return {
       'photoUploadsAllowed': photoUploadsAllowed,
-      'mainSort': mainSort,
-      'mainFilter': mainFilter,
+      'enrichmentSort;': enrichmentSort,
+      'enrichmentFilter': enrichmentFilter,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
       'requireLetOutType': requireLetOutType,
@@ -53,24 +53,24 @@ class VolunteerSettings {
 
   // Factory constructor to create VolunteerSettings from Firestore Map
   factory VolunteerSettings.fromMap(Map<String, dynamic> data) {
-FilterElement? mainFilter;
-    if (data.containsKey('mainFilter') && data['mainFilter'] != null) {
-      final mainFilterData = data['mainFilter'];
-      if (mainFilterData is Map<String, dynamic> &&
-          mainFilterData['type'] != null) {
-        mainFilter =
-            FilterElement.fromJson(Map<String, dynamic>.from(mainFilterData));
+FilterElement? enrichmentFilter;
+    if (data.containsKey('enrichmentFilter') && data['enrichmentFilter'] != null) {
+      final enrichmentFilterData = data['enrichmentFilter'];
+      if (enrichmentFilterData is Map<String, dynamic> &&
+          enrichmentFilterData['type'] != null) {
+        enrichmentFilter =
+            FilterElement.fromJson(Map<String, dynamic>.from(enrichmentFilterData));
       } else {
-        mainFilter = null;
+        enrichmentFilter = null;
       }
     } else {
-      mainFilter = null;
+      enrichmentFilter = null;
     }
 
     return VolunteerSettings(
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
-      mainSort: data['mainSort'] ?? "None",
-      mainFilter: mainFilter,
+      enrichmentSort: data['enrichmentSort;'] ?? "None",
+      enrichmentFilter: enrichmentFilter,
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,
       requireLetOutType: data['requireLetOutType'] ?? false,

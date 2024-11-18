@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
 import 'package:uuid/uuid.dart';
@@ -40,9 +40,9 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
 
   void _updateConfirmButtonState() {
     setState(() {
-      final deviceSettings = ref.read(deviceSettingsViewModelProvider);
-      final requireLetOutType = deviceSettings.value?.deviceSettings?.requireLetOutType ?? false;
-      final requireName = deviceSettings.value?.deviceSettings?.requireName ?? false;
+      final accountSettings = ref.read(accountSettingsViewModelProvider);
+      final requireLetOutType = accountSettings.value?.accountSettings?.requireLetOutType ?? false;
+      final requireName = accountSettings.value?.accountSettings?.requireName ?? false;
 
       _isConfirmEnabled = (!requireLetOutType || (_selectedLetOutType != null && _selectedLetOutType!.isNotEmpty)) &&
               (!requireName || _nameController.text.isNotEmpty);
@@ -51,7 +51,7 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
 
   @override
   Widget build(BuildContext context) {
-    final deviceSettings = ref.read(deviceSettingsViewModelProvider);
+    final accountSettings = ref.read(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final userDetails = ref.read(appUserProvider);
 
@@ -94,7 +94,7 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
                       ))
                   .toList(),
             ),
-          if (deviceSettings.value?.deviceSettings?.requireLetOutType == true &&
+          if (accountSettings.value?.accountSettings?.requireLetOutType == true &&
               shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -120,8 +120,8 @@ class _TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationVie
                 ),
               ],
             ),
-          if (deviceSettings.value?.deviceSettings?.requireName == true &&
-              (userDetails?.firstName != null || deviceSettings.value?.deviceSettings?.mode != "Admin"))
+          if (accountSettings.value?.accountSettings?.requireName == true &&
+              (userDetails?.firstName != null || accountSettings.value?.accountSettings?.mode != "Admin"))
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(

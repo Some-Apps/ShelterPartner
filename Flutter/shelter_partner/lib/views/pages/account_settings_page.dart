@@ -3,20 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 
-class DeviceSettingsPage extends ConsumerStatefulWidget {
-  const DeviceSettingsPage({super.key});
+class AccountSettingsPage extends ConsumerStatefulWidget {
+  const AccountSettingsPage({super.key});
 
   @override
-  _DeviceSettingsPageState createState() => _DeviceSettingsPageState();
+  _AccountSettingsPageState createState() => _AccountSettingsPageState();
 }
 
-class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
+class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   final FocusNode _focusNode = FocusNode();
 
   late TextEditingController _customFormURLController;
@@ -35,7 +35,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final shelterAsyncValue = ref.watch(deviceSettingsViewModelProvider);
+    final shelterAsyncValue = ref.watch(accountSettingsViewModelProvider);
 
     return GestureDetector(
       onTap: () {
@@ -44,7 +44,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
       child: shelterAsyncValue.when(
         loading: () => Scaffold(
           appBar: AppBar(
-            title: const Text("Device Settings"),
+            title: const Text("Account Settings"),
           ),
           body: const Center(
             child: CircularProgressIndicator(),
@@ -52,7 +52,7 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
         ),
         error: (error, stack) => Scaffold(
           appBar: AppBar(
-            title: const Text("Device Settings"),
+            title: const Text("Account Settings"),
           ),
           body: Center(
             child: Text('Error: $error'),
@@ -60,10 +60,10 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
         ),
         data: (user) {
           _customFormURLController.text =
-              user?.deviceSettings?.customFormURL ?? "";
+              user?.accountSettings?.customFormURL ?? "";
           return Scaffold(
             appBar: AppBar(
-              title: const Text("Device Settings"),
+              title: const Text("Account Settings"),
             ),
             body: SingleChildScrollView(
               child: Padding(
@@ -75,17 +75,17 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                     Card.outlined(
                       child: Column(children: [
                         PickerView(
-                          title: "Main Sort",
+                          title: "Enrichment Sort",
                           options: const ["Last Let Out", "Alphabetical"],
                           value:
-                              user?.deviceSettings?.mainSort ?? "Last Let Out",
+                              user?.accountSettings?.enrichmentSort ?? "Last Let Out",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
-                                      user!.id, "mainSort", newValue);
+                                      accountSettingsViewModelProvider.notifier)
+                                  .modifyAccountSettingString(
+                                      user!.id, "enrichmentSort", newValue);
                             }
                           },
                         ),
@@ -97,14 +97,14 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         PickerView(
                           title: "Visitor Sort",
                           options: const ["Intake Date", "Alphabetical"],
-                          value: user?.deviceSettings?.visitorSort ??
+                          value: user?.accountSettings?.visitorSort ??
                               "Alphabetical",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
+                                      accountSettingsViewModelProvider.notifier)
+                                  .modifyAccountSettingString(
                                       user!.id, "visitorSort", newValue);
                             }
                           },
@@ -118,28 +118,28 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                           title: "Mode",
                           options: const [
                             "Admin",
-                            "Volunteer",
+                            "Enrichment",
                             "Visitor",
-                            "Volunteer & Visitor"
+                            "Enrichment & Visitor"
                           ],
-                          value: user?.deviceSettings?.mode ?? "Admin",
+                          value: user?.accountSettings?.mode ?? "Admin",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
+                                      accountSettingsViewModelProvider.notifier)
+                                  .modifyAccountSettingString(
                                       user!.id, "mode", newValue);
 
                               final appUser =
                                   ref.read(appUserProvider.notifier).state;
                               final updatedAppUser = appUser!.copyWith(
-                                deviceSettings: appUser.deviceSettings
+                                accountSettings: appUser.accountSettings
                                     ?.copyWith(mode: newValue),
                               );
 
                               if (context.mounted && newValue != 'Visitor') {
-                                context.go('/animals');
+                                context.go('/enrichment');
                               } else {
                                 context.go('/visitors');
                               }
@@ -162,20 +162,20 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                             "Scaled to Fill",
                             "Cropped to Square"
                           ],
-                          value: user?.deviceSettings?.slideshowSize ??
+                          value: user?.accountSettings?.slideshowSize ??
                               "Scaled to Fit",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
-                                  .modifyDeviceSettingString(
+                                      accountSettingsViewModelProvider.notifier)
+                                  .modifyAccountSettingString(
                                       user!.id, "slideshowSize", newValue);
 
                               final appUser =
                                   ref.read(appUserProvider.notifier).state;
                               final updatedAppUser = appUser!.copyWith(
-                                deviceSettings: appUser.deviceSettings
+                                accountSettings: appUser.accountSettings
                                     ?.copyWith(slideshowSize: newValue),
                               );
 
@@ -191,13 +191,13 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
 
                     Card.outlined(
                       child: NavigationButton(
-                        title: "Main Filter",
-                        route: '/settings/device-settings/main-filter',
+                        title: "Enrichment Filter",
+                        route: '/settings/account-settings/main-filter',
                         extra: FilterParameters(
-                          title: "Device Animals Filter",
+                          title: "Account Enrichment Filter",
                           collection: 'users',
                           documentID: shelterAsyncValue.value!.id,
-                          filterFieldPath: 'deviceSettings.mainFilter',
+                          filterFieldPath: 'accountSettings.enrichmentFilter',
                         ),
                       ),
                     ),
@@ -206,12 +206,12 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                     Card.outlined(
                       child: NavigationButton(
                         title: "Visitor Filter",
-                        route: '/settings/device-settings/visitor-filter',
+                        route: '/settings/account-settings/visitor-filter',
                         extra: FilterParameters(
-                          title: "Device Visitor Filter",
+                          title: "Account Visitor Filter",
                           collection: 'users',
                           documentID: shelterAsyncValue.value!.id,
-                          filterFieldPath: 'deviceSettings.visitorFilter',
+                          filterFieldPath: 'accountSettings.visitorFilter',
                         ),
                       ),
                     ),
@@ -229,8 +229,8 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                           focusNode: _focusNode,
                           onChanged: (String value) {
                             ref
-                                .read(deviceSettingsViewModelProvider.notifier)
-                                .modifyDeviceSettingString(
+                                .read(accountSettingsViewModelProvider.notifier)
+                                .modifyAccountSettingString(
                                     user!.id, "customFormURL", value);
                           },
                         ),
@@ -248,17 +248,17 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                               minValue: 1,
                               maxValue: 600,
                               value:
-                                  user?.deviceSettings?.minimumLogMinutes ?? 0,
+                                  user?.accountSettings?.minimumLogMinutes ?? 0,
                               increment: () {
                                 ref
-                                    .read(deviceSettingsViewModelProvider
+                                    .read(accountSettingsViewModelProvider
                                         .notifier)
                                     .incrementAttribute(
                                         user!.id, "minimumLogMinutes");
                               },
                               decrement: () {
                                 ref
-                                    .read(deviceSettingsViewModelProvider
+                                    .read(accountSettingsViewModelProvider
                                         .notifier)
                                     .decrementAttribute(
                                         user!.id, "minimumLogMinutes");
@@ -277,17 +277,17 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                               minValue: 5,
                               maxValue: 600,
                               value:
-                                  user?.deviceSettings?.slideshowTimer ?? 15,
+                                  user?.accountSettings?.slideshowTimer ?? 15,
                               increment: () {
                                 ref
-                                    .read(deviceSettingsViewModelProvider
+                                    .read(accountSettingsViewModelProvider
                                         .notifier)
                                     .incrementAttribute(
                                         user!.id, "slideshowTimer");
                               },
                               decrement: () {
                                 ref
-                                    .read(deviceSettingsViewModelProvider
+                                    .read(accountSettingsViewModelProvider
                                         .notifier)
                                     .decrementAttribute(
                                         user!.id, "slideshowTimer");
@@ -304,12 +304,12 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ListTile(
                           title: SwitchToggleView(
                             title: "Photo Uploads Allowed",
-                            value: user?.deviceSettings?.photoUploadsAllowed ??
+                            value: user?.accountSettings?.photoUploadsAllowed ??
                                 false,
                             onChanged: (bool newValue) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
+                                      accountSettingsViewModelProvider.notifier)
                                   .toggleAttribute(
                                       user!.id, "photoUploadsAllowed");
                             },
@@ -324,11 +324,11 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                           title: SwitchToggleView(
                             title: "Allow Bulk Take Out",
                             value:
-                                user?.deviceSettings?.allowBulkTakeOut ?? false,
+                                user?.accountSettings?.allowBulkTakeOut ?? false,
                             onChanged: (bool newValue) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
+                                      accountSettingsViewModelProvider.notifier)
                                   .toggleAttribute(
                                       user!.id, "allowBulkTakeOut");
                             },
@@ -342,12 +342,12 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ListTile(
                           title: SwitchToggleView(
                             title: "Require Let Out Type",
-                            value: user?.deviceSettings?.requireLetOutType ??
+                            value: user?.accountSettings?.requireLetOutType ??
                                 false,
                             onChanged: (bool newValue) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
+                                      accountSettingsViewModelProvider.notifier)
                                   .toggleAttribute(
                                       user!.id, "requireLetOutType");
                             },
@@ -361,13 +361,13 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ListTile(
                           title: SwitchToggleView(
                             title: "Require Early Put Back Reason",
-                            value: user?.deviceSettings
+                            value: user?.accountSettings
                                     ?.requireEarlyPutBackReason ??
                                 false,
                             onChanged: (bool newValue) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
+                                      accountSettingsViewModelProvider.notifier)
                                   .toggleAttribute(
                                       user!.id, "requireEarlyPutBackReason");
                             },
@@ -381,11 +381,11 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ListTile(
                           title: SwitchToggleView(
                             title: "Require Name",
-                            value: user?.deviceSettings?.requireName ?? false,
+                            value: user?.accountSettings?.requireName ?? false,
                             onChanged: (bool newValue) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
+                                      accountSettingsViewModelProvider.notifier)
                                   .toggleAttribute(user!.id, "requireName");
                             },
                           ),
@@ -398,13 +398,13 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                         ListTile(
                           title: SwitchToggleView(
                             title: "Create Logs When Under Minimum Duration",
-                            value: user?.deviceSettings
+                            value: user?.accountSettings
                                     ?.createLogsWhenUnderMinimumDuration ??
                                 false,
                             onChanged: (bool newValue) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
+                                      accountSettingsViewModelProvider.notifier)
                                   .toggleAttribute(user!.id,
                                       "createLogsWhenUnderMinimumDuration");
                             },
@@ -419,11 +419,11 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                           title: SwitchToggleView(
                             title: "Show Custom Form",
                             value:
-                                user?.deviceSettings?.showCustomForm ?? false,
+                                user?.accountSettings?.showCustomForm ?? false,
                             onChanged: (bool newValue) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
+                                      accountSettingsViewModelProvider.notifier)
                                   .toggleAttribute(user!.id, "showCustomForm");
                             },
                           ),
@@ -437,12 +437,12 @@ class _DeviceSettingsPageState extends ConsumerState<DeviceSettingsPage> {
                           title: SwitchToggleView(
                             title: "Append Animal Data To URL",
                             value:
-                                user?.deviceSettings?.appendAnimalDataToURL ??
+                                user?.accountSettings?.appendAnimalDataToURL ??
                                     false,
                             onChanged: (bool newValue) {
                               ref
                                   .read(
-                                      deviceSettingsViewModelProvider.notifier)
+                                      accountSettingsViewModelProvider.notifier)
                                   .toggleAttribute(
                                       user!.id, "appendAnimalDataToURL");
                             },

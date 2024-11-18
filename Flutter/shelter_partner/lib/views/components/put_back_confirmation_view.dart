@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/put_back_confirmation_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/views/components/add_note_view.dart';
@@ -51,23 +51,23 @@ class _PutBackConfirmationViewState
   }
 
   void _updateConfirmButtonState() {
-    final deviceSettings = ref.read(deviceSettingsViewModelProvider);
+    final accountSettings = ref.read(accountSettingsViewModelProvider);
     setState(() {
       _isConfirmEnabled =
           ((_selectedEarlyReason != null && _selectedEarlyReason!.isNotEmpty) ||
-              deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason ==
+              accountSettings.value?.accountSettings?.requireEarlyPutBackReason ==
                   false ||
               widget.animals.every((animal) =>
                   Timestamp.now()
                       .toDate()
                       .difference(animal.logs.last.startTime.toDate())
                       .inMinutes >=
-                  deviceSettings.value!.deviceSettings!.minimumLogMinutes));
+                  accountSettings.value!.accountSettings!.minimumLogMinutes));
     });
   }
 
   void _showThankYouDialog(BuildContext context) {
-    final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
+    final accountSettings = ref.watch(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final putBackViewModel = ref.read(
         putBackConfirmationViewModelProvider(widget.animals.first).notifier);
@@ -112,7 +112,7 @@ class _PutBackConfirmationViewState
               child: const Text('Add Note'),
             ),
             if ((appUser?.type == 'admin' &&
-                    deviceSettings.value?.deviceSettings?.showCustomForm ==
+                    accountSettings.value?.accountSettings?.showCustomForm ==
                         true) ||
                 (appUser?.type == 'volunteer' &&
                     shelterSettings.value?.volunteerSettings.showCustomForm ==
@@ -121,9 +121,9 @@ class _PutBackConfirmationViewState
                 onPressed: () async {
                   // Custom Form button pressed
                   String url =
-                      deviceSettings.value?.deviceSettings?.customFormURL ?? '';
-                  if (deviceSettings
-                          .value?.deviceSettings?.appendAnimalDataToURL ==
+                      accountSettings.value?.accountSettings?.customFormURL ?? '';
+                  if (accountSettings
+                          .value?.accountSettings?.appendAnimalDataToURL ==
                       true) {
                     final animalData = widget.animals
                         .map((animal) => 'id=${animal.id}&name=${animal.name}')
@@ -161,13 +161,13 @@ class _PutBackConfirmationViewState
 
   @override
   Widget build(BuildContext context) {
-    final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
+    final accountSettings = ref.watch(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final putBackViewModel = ref.read(
         putBackConfirmationViewModelProvider(widget.animals.first).notifier);
     final appUser = ref.watch(appUserProvider);
 
-    if (deviceSettings.value?.deviceSettings?.requireEarlyPutBackReason ==
+    if (accountSettings.value?.accountSettings?.requireEarlyPutBackReason ==
         false) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         for (var animal in widget.animals) {
@@ -236,8 +236,8 @@ class _PutBackConfirmationViewState
                   ],
                 ),
               ),
-          if (deviceSettings
-                      .value?.deviceSettings?.requireEarlyPutBackReason ==
+          if (accountSettings
+                      .value?.accountSettings?.requireEarlyPutBackReason ==
                   true &&
               shelterSettings
                       .value?.shelterSettings.earlyPutBackReasons.isNotEmpty ==
@@ -247,7 +247,7 @@ class _PutBackConfirmationViewState
                       .toDate()
                       .difference(animal.logs.last.startTime.toDate())
                       .inMinutes <
-                  deviceSettings.value!.deviceSettings!.minimumLogMinutes))
+                  accountSettings.value!.accountSettings!.minimumLogMinutes))
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -296,15 +296,15 @@ class _PutBackConfirmationViewState
                   );
 
                   for (var animal in widget.animals) {
-                    if ((!deviceSettings.value!.deviceSettings!
+                    if ((!accountSettings.value!.accountSettings!
                                 .createLogsWhenUnderMinimumDuration &&
                             Timestamp.now()
                                     .toDate()
                                     .difference(
                                         animal.logs.last.startTime.toDate())
                                     .inMinutes <
-                                deviceSettings
-                                    .value!.deviceSettings!.minimumLogMinutes &&
+                                accountSettings
+                                    .value!.accountSettings!.minimumLogMinutes &&
                             appUser?.type == 'admin') ||
                         (!shelterSettings.value!.volunteerSettings
                                 .createLogsWhenUnderMinimumDuration &&

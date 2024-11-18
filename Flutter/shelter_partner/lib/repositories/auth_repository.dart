@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qonversion_flutter/qonversion_flutter.dart';
-import 'package:shelter_partner/models/device_settings.dart';
+import 'package:shelter_partner/models/account_settings.dart';
 import 'package:shelter_partner/models/geofence.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
@@ -136,11 +136,11 @@ class AuthRepository {
     required String shelterName,
     required String shelterAddress,
   }) async {
-    // Create default device settings for the user
-    final defaultDeviceSettings = DeviceSettings(
+    // Create default account settings for the user
+    final defaultAccountSettings = AccountSettings(
       photoUploadsAllowed: true,
-      mainSort: 'Last Let Out',
-      mainFilter: null,
+      enrichmentSort: 'Last Let Out',
+      enrichmentFilter: null,
       visitorFilter: null,
       visitorSort: 'Alphabetical',
       slideshowSize: "Scaled to Fit",
@@ -158,7 +158,7 @@ class AuthRepository {
       appendAnimalDataToURL: false,
     );
 
-    // Create user document with device settings
+    // Create user document with account settings
     await _firestore.collection('users').doc(uid).set({
       'email': email.trim(),
       'firstName': firstName.trim(),
@@ -170,11 +170,11 @@ class AuthRepository {
 
       'shelterID': shelterId,
       'type': 'admin',
-      'deviceSettings': defaultDeviceSettings.toMap(),
+      'accountSettings': defaultAccountSettings.toMap(),
       'removeAds': true
     });
 
-    // Create the shelter without deviceSettings
+    // Create the shelter without accountSettings
     await createShelterWithPlaceholder(
       shelterId: shelterId,
       shelterName: shelterName.trim(),
@@ -215,8 +215,8 @@ class AuthRepository {
       ),
       volunteerSettings: VolunteerSettings(
         photoUploadsAllowed: true,
-        mainSort: 'Last Let Out',
-        mainFilter: null,
+        enrichmentSort: 'Last Let Out',
+        enrichmentFilter: null,
         allowBulkTakeOut: false,
         minimumLogMinutes: 5,
         requireLetOutType: true,
@@ -237,7 +237,7 @@ class AuthRepository {
       volunteers: List<Volunteer>.empty(),
     );
 
-    // Upload the shelter data to Firestore without deviceSettings
+    // Upload the shelter data to Firestore without accountSettings
     await _firestore.collection('shelters').doc(shelterId).set({
       'name': shelterData.name,
       'address': shelterData.address,

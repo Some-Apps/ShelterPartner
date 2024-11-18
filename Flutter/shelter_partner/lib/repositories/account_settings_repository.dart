@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DeviceSettingsRepository {
+class AccountSettingsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Method to fetch account details for a specific user ID
@@ -9,7 +9,7 @@ class DeviceSettingsRepository {
     return _firestore.collection('users').doc(userID).snapshots();
   }
 
-  Future<void> toggleDeviceSetting(String userID, String field) async {
+  Future<void> toggleAccountSetting(String userID, String field) async {
     final docRef = _firestore.collection('users').doc(userID);
     final snapshot = await docRef.get();
 
@@ -18,8 +18,8 @@ class DeviceSettingsRepository {
       throw Exception("Document does not exist");
     }
 
-    // Start at the 'deviceSettings' part of the document
-    dynamic currentValue = snapshot.data()?['deviceSettings'];
+    // Start at the 'accountSettings' part of the document
+    dynamic currentValue = snapshot.data()?['accountSettings'];
 
     // Split the field into parts (e.g., "geofence.isEnabled" becomes ["geofence", "isEnabled"])
     final fieldParts = field.split('.');
@@ -35,7 +35,7 @@ class DeviceSettingsRepository {
     // Ensure the currentValue exists and is a boolean before toggling
     if (currentValue != null && currentValue[lastField] is bool) {
       return docRef.update({
-        'deviceSettings.${fieldParts.join('.')}':
+        'accountSettings.${fieldParts.join('.')}':
             !currentValue[lastField], // Toggle the boolean value
       }).catchError((error) {
         throw Exception("Failed to toggle: $error");
@@ -46,29 +46,29 @@ class DeviceSettingsRepository {
   }
 
   // Method to modify a specific string attribute within volunteerSettings
-  Future<void> modifyDeviceSettingString(
+  Future<void> modifyAccountSettingString(
       String userID, String field, String newValue) async {
     final docRef = _firestore.collection('users').doc(userID);
     return docRef.update({
-      'deviceSettings.$field': newValue, // Update the string value
+      'accountSettings.$field': newValue, // Update the string value
     }).catchError((error) {
       throw Exception("Failed to modify: $error");
     });
   }
 
-  Future<void> incrementDeviceSetting(String userID, String field) async {
+  Future<void> incrementAccountSetting(String userID, String field) async {
     final docRef = _firestore.collection('users').doc(userID);
     return docRef.update({
-      'deviceSettings.$field': FieldValue.increment(1),
+      'accountSettings.$field': FieldValue.increment(1),
     }).catchError((error) {
       throw Exception("Failed to increment: $error");
     });
   }
 
-  Future<void> decrementDeviceSetting(String userID, String field) async {
+  Future<void> decrementAccountSetting(String userID, String field) async {
     final docRef = _firestore.collection('users').doc(userID);
     return docRef.update({
-      'deviceSettings.$field': FieldValue.increment(-1),
+      'accountSettings.$field': FieldValue.increment(-1),
     }).catchError((error) {
       throw Exception("Failed to decrement: $error");
     });
@@ -78,7 +78,7 @@ class DeviceSettingsRepository {
  Future<void> saveFilterExpression(String userID, Map<String, dynamic> filterExpression) async {
   final docRef = _firestore.collection('users').doc(userID);
   return docRef.update({
-    'deviceSettings.mainFilter': filterExpression,
+    'accountSettings.enrichmentFilter': filterExpression,
   }).catchError((error) {
     throw Exception("Failed to save filter expression: $error");
   });
@@ -92,8 +92,8 @@ Future<Map<String, dynamic>?> loadFilterExpression(String userID) async {
   final snapshot = await docRef.get();
   if (snapshot.exists) {
     final data = snapshot.data();
-    if (data != null && data['deviceSettings'] != null && data['deviceSettings']['mainFilter'] != null) {
-      return Map<String, dynamic>.from(data['deviceSettings']['mainFilter']);
+    if (data != null && data['accountSettings'] != null && data['accountSettings']['enrichmentFilter'] != null) {
+      return Map<String, dynamic>.from(data['accountSettings']['enrichmentFilter']);
     }
   }
   return null;
@@ -102,7 +102,7 @@ Future<Map<String, dynamic>?> loadFilterExpression(String userID) async {
 
 }
 
-final deviceSettingsRepositoryProvider =
-    Provider<DeviceSettingsRepository>((ref) {
-  return DeviceSettingsRepository();
+final accountSettingsRepositoryProvider =
+    Provider<AccountSettingsRepository>((ref) {
+  return AccountSettingsRepository();
 });

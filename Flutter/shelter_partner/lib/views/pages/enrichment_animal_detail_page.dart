@@ -7,17 +7,17 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/photo.dart';
 import 'package:shelter_partner/repositories/edit_animal_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/edit_animal_view_model.dart';
 import 'package:shelter_partner/views/components/logs_view.dart';
 import 'package:shelter_partner/views/components/notes_view.dart';
 import 'package:photo_view/photo_view.dart';
 
-class AnimalsAnimalDetailPage extends StatelessWidget {
+class EnrichmentAnimalDetailPage extends StatelessWidget {
   final Animal initialAnimal;
   final bool visitorPage;
 
-  const AnimalsAnimalDetailPage({super.key, required this.initialAnimal, required this.visitorPage});
+  const EnrichmentAnimalDetailPage({super.key, required this.initialAnimal, required this.visitorPage});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
     return Consumer(
       builder: (context, ref, child) {
         final appUser = ref.read(appUserProvider);
-        final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
+        final accountSettings = ref.watch(accountSettingsViewModelProvider);
         final animal = ref.watch(animalProvider(initialAnimal));
 
         // Helper method to format the intake date
@@ -62,7 +62,7 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
         bool isAdmin() {
           // Replace with actual logic to check if the user is an admin
           return appUser?.type == "admin" &&
-              deviceSettings.value!.deviceSettings?.mode == "Admin";
+              accountSettings.value!.accountSettings?.mode == "Admin";
         }
 
         void showFullScreenGallery(
@@ -88,7 +88,7 @@ class AnimalsAnimalDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Inside your AnimalsAnimalDetailPage widget
+                  // Inside your EnrichmentAnimalDetailPage widget
 
                   // Photos in a horizontal scrollable slideshow view
                   SizedBox(

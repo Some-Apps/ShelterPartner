@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
+
   @override
   _ChangePasswordPageState createState() => _ChangePasswordPageState();
 }
@@ -41,7 +43,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Change Password'),
+        title: const Text('Change Password'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -51,7 +53,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             children: <Widget>[
               TextFormField(
                 controller: _oldPasswordController,
-                decoration: InputDecoration(labelText: 'Old Password'),
+                decoration: const InputDecoration(labelText: 'Old Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -62,7 +64,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'New Password'),
+                decoration: const InputDecoration(labelText: 'New Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -73,7 +75,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               ),
               TextFormField(
                 controller: _confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Confirm Password'),
+                decoration: const InputDecoration(labelText: 'Confirm Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -85,10 +87,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _changePassword,
-                child: Text('Change Password'),
+                child: const Text('Change Password'),
               ),
             ],
           ),

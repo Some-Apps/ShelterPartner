@@ -16,7 +16,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/animals_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
@@ -26,14 +26,14 @@ import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AnimalsPage extends ConsumerStatefulWidget {
-  const AnimalsPage({super.key});
+class EnrichmentPage extends ConsumerStatefulWidget {
+  const EnrichmentPage({super.key});
 
   @override
-  ConsumerState<AnimalsPage> createState() => _AnimalsPageState();
+  ConsumerState<EnrichmentPage> createState() => _EnrichmentPageState();
 }
 
-class _AnimalsPageState extends ConsumerState<AnimalsPage>
+class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -96,7 +96,7 @@ void initState() {
 
   // Preload images after the first frame
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    final animalsMap = ref.read(animalsViewModelProvider);
+    final animalsMap = ref.read(enrichmentViewModelProvider);
     _preloadImages(animalsMap['dogs'] ?? []);
     _preloadImages(animalsMap['cats'] ?? []);
   });
@@ -219,7 +219,7 @@ Future<void> _fetchPage({
   required int pageKey,
 }) async {
   try {
-    final animalsMapAsync = ref.watch(animalsViewModelProvider);
+    final animalsMapAsync = ref.watch(enrichmentViewModelProvider);
     final animalsMap = animalsMapAsync[animalType];
     if (animalsMap == null || animalsMap.isEmpty) {
       // Data is still loading, retry after a short delay
@@ -294,7 +294,7 @@ Future<void> _fetchPage({
     final pagingController =
         animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
 
-    final animalsMap = ref.watch(animalsViewModelProvider);
+    final animalsMap = ref.watch(enrichmentViewModelProvider);
 
     if (animalsMap[animalType] == null || animalsMap[animalType]!.isEmpty) {
       return const Center(child: CircularProgressIndicator());
@@ -366,14 +366,14 @@ Future<void> _fetchPage({
     final adsAsyncValue = ref.watch(adsProvider);
     final appUser = ref.watch(appUserProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
-    final deviceSettings = ref.watch(deviceSettingsViewModelProvider);
+    final accountSettings = ref.watch(accountSettingsViewModelProvider);
 
     // Handle loading and error states
     if (appUser == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    ref.listen<Map<String, List<Animal>>>(animalsViewModelProvider,
+    ref.listen<Map<String, List<Animal>>>(enrichmentViewModelProvider,
         (previous, next) {
       // Refresh the paging controllers when the data changes
       _dogsPagingController.refresh();
@@ -421,8 +421,8 @@ Future<void> _fetchPage({
 
     final isAdmin = appUser.type == 'admin';
     final isVolunteer = appUser.type == 'volunteer';
-    final deviceAllowsBulkTakeOut =
-        deviceSettings.value?.deviceSettings?.allowBulkTakeOut ?? false;
+    final accountAllowsBulkTakeOut =
+        accountSettings.value?.accountSettings?.allowBulkTakeOut ?? false;
     final shelterAllowsBulkTakeOut =
         shelterSettings.value?.volunteerSettings.allowBulkTakeOut ?? false;
 
@@ -492,9 +492,9 @@ Future<void> _fetchPage({
                         // Navigation button for user filter
                         NavigationButton(
                           title: "User Filter",
-                          route: '/animals/main-filter',
+                          route: '/enrichment/main-filter',
                           extra: FilterParameters(
-                            title: "User Filter",
+                            title: "User Enrichment Filter",
                             collection: 'users',
                             documentID: appUser.id,
                             filterFieldPath: 'userFilter',
@@ -502,7 +502,7 @@ Future<void> _fetchPage({
                         ),
                         const SizedBox(height: 8),
                         // Conditionally show the bulk take out button
-                        if ((deviceAllowsBulkTakeOut && isAdmin) ||
+                        if ((accountAllowsBulkTakeOut && isAdmin) ||
                             (isVolunteer && shelterAllowsBulkTakeOut))
                           ElevatedButton(
                             onPressed: () {
@@ -510,7 +510,7 @@ Future<void> _fetchPage({
                               final animalType =
                                   _tabController.index == 0 ? 'dogs' : 'cats';
                               final animalsMap =
-                                  ref.read(animalsViewModelProvider);
+                                  ref.read(enrichmentViewModelProvider);
                               final animals =
                                   _filterAnimals(animalsMap[animalType] ?? []);
 
@@ -543,24 +543,24 @@ Future<void> _fetchPage({
                             },
                             child: Text(
                               _tabController.index == 0
-                                  ? (_filterAnimals(ref.watch(animalsViewModelProvider)['dogs'] ?? [])
+                                  ? (_filterAnimals(ref.watch(enrichmentViewModelProvider)['dogs'] ?? [])
                                               .where(
                                                   (animal) => animal.inKennel)
                                               .length >
                                           (_filterAnimals(ref.watch(
-                                                              animalsViewModelProvider)[
+                                                              enrichmentViewModelProvider)[
                                                           'dogs'] ??
                                                       [])
                                                   .length /
                                               2)
                                       ? "Take Out All Visible Dogs"
                                       : "Put Back All Visible Dogs")
-                                  : (_filterAnimals(ref.watch(animalsViewModelProvider)['cats'] ?? [])
+                                  : (_filterAnimals(ref.watch(enrichmentViewModelProvider)['cats'] ?? [])
                                               .where(
                                                   (animal) => animal.inKennel)
                                               .length >
                                           (_filterAnimals(
-                                                      ref.watch(animalsViewModelProvider)['cats'] ?? [])
+                                                      ref.watch(enrichmentViewModelProvider)['cats'] ?? [])
                                                   .length /
                                               2)
                                       ? "Take Out All Visible Cats"

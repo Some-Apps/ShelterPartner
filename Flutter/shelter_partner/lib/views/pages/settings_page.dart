@@ -92,10 +92,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ),
                           ListTile(
                             leading: const Icon(Icons.devices),
-                            title: const Text("Device Settings"),
+                            title: const Text("Account Settings"),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () {
-                              context.push('/settings/device-settings');
+                              context.push('/settings/account-settings');
                             },
                           ),
                           Divider(
