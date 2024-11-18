@@ -1,13 +1,13 @@
 import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
-class DeviceSettings {
+class AccountSettings {
   final String mode;
 
 
   final bool photoUploadsAllowed;
-  final String mainSort;
-  final FilterElement? mainFilter;
+  final String enrichmentSort;
+  final FilterElement? enrichmentFilter;
   final FilterElement? visitorFilter;
   final String visitorSort;
   final String slideshowSize;
@@ -23,11 +23,11 @@ class DeviceSettings {
   final String buttonType;
   final bool appendAnimalDataToURL;
 
-  DeviceSettings({
+  AccountSettings({
     required this.mode,
     required this.photoUploadsAllowed,
-    required this.mainSort,
-    required this.mainFilter,
+    required this.enrichmentSort,
+    required this.enrichmentFilter,
     required this.visitorFilter,
     required this.visitorSort,
     required this.slideshowSize,
@@ -44,11 +44,11 @@ class DeviceSettings {
     required this.appendAnimalDataToURL,
   });
 
-  DeviceSettings copyWith({
+  AccountSettings copyWith({
   String? mode,
   bool? photoUploadsAllowed,
-  String? mainSort,
-  FilterElement? mainFilter,
+  String? enrichmentSort,
+  FilterElement? enrichmentFilter,
   FilterElement? visitorFilter,
   String? visitorSort,
   String? slideshowSize,
@@ -66,11 +66,11 @@ class DeviceSettings {
   String? buttonType,
   bool? appendAnimalDataToURL,
 }) {
-  return DeviceSettings(
+  return AccountSettings(
     mode: mode ?? this.mode,
     photoUploadsAllowed: photoUploadsAllowed ?? this.photoUploadsAllowed,
-    mainSort: mainSort ?? this.mainSort,
-    mainFilter: mainFilter ?? this.mainFilter,
+    enrichmentSort: enrichmentSort ?? this.enrichmentSort,
+    enrichmentFilter: enrichmentFilter ?? this.enrichmentFilter,
     visitorFilter: visitorFilter ?? this.visitorFilter,
     visitorSort: visitorSort ?? this.visitorSort,
     slideshowSize: slideshowSize ?? this.slideshowSize,
@@ -91,13 +91,13 @@ class DeviceSettings {
 }
 
 
-  // Convert DeviceSettings to Map<String, dynamic> for Firestore
+  // Convert AccountSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
     return {
       'mode': mode,
       'photoUploadsAllowed': photoUploadsAllowed,
-      'mainSort': mainSort,
-      if (mainFilter != null) 'mainFilter': mainFilter!.toJson(),
+      'enrichmentSort': enrichmentSort,
+      if (enrichmentFilter != null) 'enrichmentFilter': enrichmentFilter!.toJson(),
       if (visitorFilter != null) 'visitorFilter': visitorFilter!.toJson(),
       'visitorSort': visitorSort,
       'slideshowSize': slideshowSize,
@@ -115,8 +115,8 @@ class DeviceSettings {
     };
   }
 
-  // Factory constructor to create DeviceSettings from Firestore Map
-  factory DeviceSettings.fromMap(Map<String, dynamic> data) {
+  // Factory constructor to create AccountSettings from Firestore Map
+  factory AccountSettings.fromMap(Map<String, dynamic> data) {
     FilterGroup reconstructFilterGroup(Map<String, dynamic> json) {
       List<FilterElement> elements = [];
       if (json.containsKey('filterElements')) {
@@ -138,12 +138,12 @@ class DeviceSettings {
       );
     }
 
-    FilterElement? mainFilter;
-    if (data.containsKey('mainFilter') && data['mainFilter'] != null) {
-      final mainFilterData = data['mainFilter'] as Map<String, dynamic>;
-      mainFilter = reconstructFilterGroup(mainFilterData);
+    FilterElement? enrichmentFilter;
+    if (data.containsKey('enrichmentFilter') && data['enrichmentFilter'] != null) {
+      final enrichmentFilterData = data['enrichmentFilter'] as Map<String, dynamic>;
+      enrichmentFilter = reconstructFilterGroup(enrichmentFilterData);
     } else {
-      mainFilter = null;
+      enrichmentFilter = null;
     }
 
     FilterElement? visitorFilter;
@@ -154,11 +154,11 @@ class DeviceSettings {
       visitorFilter = null;
     }
 
-    return DeviceSettings(
+    return AccountSettings(
       mode: data['mode'] ?? "Admin",
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
-      mainSort: data['mainSort'] ?? "Last Let Out",
-      mainFilter: mainFilter,
+      enrichmentSort: data['enrichmentSort'] ?? "Last Let Out",
+      enrichmentFilter: enrichmentFilter,
       visitorFilter: visitorFilter,
       visitorSort: data['visitorSort'] ?? "Alphabetical",
       slideshowSize: data['slideshowSize'] ?? "Scaled to Fit",

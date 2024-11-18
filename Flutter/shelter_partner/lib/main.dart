@@ -10,13 +10,13 @@ import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:shelter_partner/views/pages/acknowledgements_page.dart';
-import 'package:shelter_partner/views/pages/animals_animal_detail_page.dart';
-import 'package:shelter_partner/views/pages/animals_page.dart';
+import 'package:shelter_partner/views/pages/enrichment_animal_detail_page.dart';
+import 'package:shelter_partner/views/pages/enrichment_page.dart';
 import 'package:shelter_partner/views/pages/api_keys_page.dart';
 import 'package:shelter_partner/views/pages/array_modifier_page.dart';
 import 'package:shelter_partner/views/pages/better_impact_page.dart';
 import 'package:shelter_partner/views/pages/change-password-page.dart';
-import 'package:shelter_partner/views/pages/device_settings_page.dart';
+import 'package:shelter_partner/views/pages/account_settings_page.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/scheduled_reports_page.dart';
@@ -112,7 +112,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       } else {
         // If the user is logged in and tries to access the login page, prevent it.
         if (isLoggingIn) {
-          return '/animals'; // Redirect to the main page or your desired route
+          return '/enrichment'; // Redirect to the main page or your desired route
         }
       }
 
@@ -131,18 +131,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           );
         },
         branches: [
-          // Branch for the 'Animals' tab
+          // Branch for the 'Enrichment' tab
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/animals',
-                builder: (context, state) => const AnimalsPage(),
+                path: '/enrichment',
+                builder: (context, state) => const EnrichmentPage(),
                 routes: [
                   GoRoute(
                     path: 'details',
                     builder: (context, state) {
                       final animal = state.extra as Animal;
-                      return AnimalsAnimalDetailPage(
+                      return EnrichmentAnimalDetailPage(
                           initialAnimal: animal, visitorPage: false);
                     },
                   ),
@@ -176,7 +176,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'details',
                     builder: (context, state) {
                       final animal = state.extra as Animal;
-                      return AnimalsAnimalDetailPage(
+                      return EnrichmentAnimalDetailPage(
                           initialAnimal: animal, visitorPage: true);
                     },
                   ),
@@ -240,7 +240,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: "change-password",
-                    builder: (context, state) => ChangePasswordPage(),
+                    builder: (context, state) => const ChangePasswordPage(),
                   ),
                   GoRoute(
                     path: 'shelter-settings',
@@ -289,8 +289,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     ],
                   ),
                   GoRoute(
-                    path: 'device-settings',
-                    builder: (context, state) => const DeviceSettingsPage(),
+                    path: 'account-settings',
+                    builder: (context, state) => const AccountSettingsPage(),
                     routes: [
                       GoRoute(
                         path: 'main-filter',

@@ -71,15 +71,15 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                     Card.outlined(
                       child: Column(children: [
                         PickerView(
-                          title: "Main Sort",
+                          title: "Enrichment Sort",
                           options: const ["Last Let Out", "Alphabetical"],
-                          value: shelter?.volunteerSettings.mainSort ?? "Last Let Out",
+                          value: shelter?.volunteerSettings.enrichmentSort ?? "Last Let Out",
                           onChanged: (String? newValue) {
                             if (newValue != null && newValue.isNotEmpty) {
                               ref
                                   .read(volunteersViewModelProvider.notifier)
                                   .modifyVolunteerSettingString(
-                                      shelter!.id, "mainSort", newValue);
+                                      shelter!.id, "enrichmentSort", newValue);
                             }
                           },
                         ),
@@ -88,13 +88,13 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                     const SizedBox(height: 25),
                     Card.outlined(
                       child: NavigationButton(
-                        title: "Main Filter",
+                        title: "Enrichment Filter",
                         route: '/volunteers/volunteer-settings/main-filter',
                         extra: FilterParameters(
-                          title: "Volunteers Filter",
+                          title: "Volunteers Enrichment Filter",
                           collection: 'shelters',
                           documentID: shelterAsyncValue.value!.id,
-                          filterFieldPath: 'volunteerSettings.mainFilter',
+                          filterFieldPath: 'volunteerSettings.enrichmentFilter',
                         ),
                       ),
                     ),

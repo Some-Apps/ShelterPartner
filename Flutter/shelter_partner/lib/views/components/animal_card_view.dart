@@ -1,5 +1,4 @@
 // Import statements
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +10,7 @@ import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/animal_card_repository.dart';
 import 'package:shelter_partner/view_models/animal_card_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
 import 'package:shelter_partner/views/components/add_log_view.dart';
@@ -101,10 +100,10 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
 
         // Animation completed, show confirmation dialog
         if (currentAnimal.inKennel) {
-          final deviceDetails = ref.read(deviceSettingsViewModelProvider).value;
-          if (deviceDetails != null &&
-              (deviceDetails.deviceSettings!.requireName ||
-                  deviceDetails.deviceSettings!.requireLetOutType)) {
+          final accountDetails = ref.read(accountSettingsViewModelProvider).value;
+          if (accountDetails != null &&
+              (accountDetails.accountSettings!.requireName ||
+                  accountDetails.accountSettings!.requireLetOutType)) {
             _showTakeOutConfirmationDialog();
           } else {
             ref
@@ -365,7 +364,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               // Handle menu item selection
                               switch (value) {
                                 case 'Details':
-                                  context.push('/animals/details',
+                                  context.push('/enrichment/details',
                                       extra: animal);
                                   break;
                                 case 'Add Note':
@@ -385,13 +384,13 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                             },
                             itemBuilder: (BuildContext context) {
                               final appUser = ref.read(appUserProvider);
-                              final deviceSettings = ref
-                                  .read(deviceSettingsViewModelProvider)
+                              final accountSettings = ref
+                                  .read(accountSettingsViewModelProvider)
                                   .value;
 
                               final menuItems = {'Details', 'Add Note'};
                               if (appUser?.type == "admin" &&
-                                  deviceSettings!.deviceSettings?.mode ==
+                                  accountSettings!.accountSettings?.mode ==
                                       "Admin" &&
                                   animal.inKennel) {
                                 menuItems.add('Add Log');

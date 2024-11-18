@@ -56,7 +56,7 @@ class AuthPage extends ConsumerWidget {
         Future.microtask(() {
           ref.read(appUserProvider.notifier).state =
               appUser; // Store appUser globally
-          context.go('/animals'); // No need to pass appUser here
+          context.go('/enrichment'); // No need to pass appUser here
         });
       } else {
         Future.microtask(() {

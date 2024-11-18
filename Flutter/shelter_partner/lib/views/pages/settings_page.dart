@@ -69,8 +69,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 25),
-                  // Text("Settings",
-                  //     style: Theme.of(context).textTheme.titleLarge),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      "General",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
                   Card.outlined(
                     child: ListView(
                       shrinkWrap: true,
@@ -92,10 +97,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ),
                           ListTile(
                             leading: const Icon(Icons.devices),
-                            title: const Text("Device Settings"),
+                            title: const Text("Account Settings"),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () {
-                              context.push('/settings/device-settings');
+                              context.push('/settings/account-settings');
                             },
                           ),
                           Divider(
@@ -140,19 +145,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             }
                           },
                         ),
-                         Divider(
+                        Divider(
                           color: Colors.black.withOpacity(0.1),
                           height: 0,
                           thickness: 1,
                         ),
                         ListTile(
-                            leading: const Icon(Icons.lock_outline),
-                            title: const Text("Change Password"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/settings/change-password');
-                            },
-                          ),
+                          leading: const Icon(Icons.lock_outline),
+                          title: const Text("Change Password"),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            context.push('/settings/change-password');
+                          },
+                        ),
                         Divider(
                           color: Colors.black.withOpacity(0.1),
                           height: 0,
@@ -262,77 +267,34 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                   ),
                   const SizedBox(height: 25),
-                  // Text("About", style: Theme.of(context).textTheme.titleLarge),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      "About",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
                   Card.outlined(
                     child: ListView(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
-                        // if (!kIsWeb && !Platform.isWindows) ...[
-                        //   ListTile(
-                        //     title: Text(
-                        //         "Subscription Status: $subscriptionStatus"),
-                        //   ),
-                        //   ListTile(
-                        //     title: const Text("Restore Subscription"),
-                        //     onTap: () async {
-                        //       try {
-                        //         await Qonversion.getSharedInstance().restore();
-                        //         await _getSubscriptionStatus(ref);
-                        //       } catch (e) {
-                        //         print('Error restoring subscription: $e');
-                        //       }
-                        //     },
-                        //   ),
-                        // ],
-
+                        
                         if (!kIsWeb &&
-                          (defaultTargetPlatform == TargetPlatform.iOS ||
-                            defaultTargetPlatform == TargetPlatform.android))
+                            (defaultTargetPlatform == TargetPlatform.iOS ||
+                                defaultTargetPlatform ==
+                                    TargetPlatform.android))
                           ListTile(
-                          leading: const Icon(Icons.favorite_border),
-                          title: Text(subscriptionStatus == "Active"
-                            ? "Thank You For Supporting Us!"
-                            : "Support Us And Remove Ads"),
-                          onTap: subscriptionStatus == "Active"
-                            ? null
-                            : () async {
-                              _showSupportUsModal(context, ref);
-                              },
+                            leading: const Icon(Icons.favorite_border),
+                            title: Text(subscriptionStatus == "Active"
+                                ? "Thank You For Supporting Us!"
+                                : "Support Us And Remove Ads"),
+                            onTap: subscriptionStatus == "Active"
+                                ? null
+                                : () async {
+                                    _showSupportUsModal(context, ref);
+                                  },
                           ),
-
-
-                        // FutureBuilder<QOfferings>(
-                        //   future: Qonversion.getSharedInstance().offerings(),
-                        //   builder: (context, snapshot) {
-                        //     if (snapshot.connectionState == ConnectionState.waiting) {
-                        //       return const CircularProgressIndicator();
-                        //     } else if (snapshot.hasError) {
-                        //       return Text('Error: ${snapshot.error}');
-                        //     } else if (snapshot.hasData) {
-                        //       final products = snapshot.data!.main?.products;
-                        //       if (products!.isNotEmpty) {
-                        //         return Column(
-                        //           children: products.map((product) {
-                        //             return ListTile(title: Text(product.qonversionId));
-                        //           }).toList(),
-                        //         );
-                        //       } else {
-                        //         return const Text('No products available');
-                        //       }
-                        //     } else {
-                        //       return const Text('No data');
-                        //     }
-                        //   },
-                        // ),
-
-                        // ListTile(
-                        //   leading: const Icon(Icons.restore),
-                        //   title: const Text("Restore Purchases"),
-                        //   onTap: () {
-                        //     _inAppPurchase.restorePurchases();
-                        //   },
-                        // ),
                         Divider(
                           color: Colors.black.withOpacity(0.1),
                           height: 0,
@@ -455,9 +417,8 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
                             "Remove ads and support the developer...a lot...like holy cow...thanks!";
                         break;
                       default:
-                        description =
-                            product.skProduct?.localizedDescription ??
-                                'No Description';
+                        description = product.skProduct?.localizedDescription ??
+                            'No Description';
                     }
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),

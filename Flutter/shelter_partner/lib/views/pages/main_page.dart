@@ -52,9 +52,9 @@ class MainPage extends ConsumerWidget {
 
       // Modes that act like Volunteer
       Set<String> volunteerModes = {
-        'Volunteer',
+        'Enrichment',
         'Visitor',
-        'Volunteer & Visitor'
+        'Enrichment & Visitor'
       };
 
       // Define the navigation items and visible indexes
@@ -62,10 +62,10 @@ class MainPage extends ConsumerWidget {
       List<int> visibleIndexes = [];
 
       if (appUser.type == 'admin') {
-        if (appUser.deviceSettings?.mode == 'Admin') {
+        if (appUser.accountSettings?.mode == 'Admin') {
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.pets), label: 'Animals'),
+                icon: Icon(Icons.pets), label: 'Enrichment'),
             const BottomNavigationBarItem(
                 icon: Icon(Icons.people), label: 'Visitors'),
             const BottomNavigationBarItem(
@@ -74,16 +74,16 @@ class MainPage extends ConsumerWidget {
                 icon: Icon(Icons.settings), label: 'Settings'),
           ];
           visibleIndexes = [0, 1, 2, 3];
-        } else if (appUser.deviceSettings?.mode == 'Volunteer') {
+        } else if (appUser.accountSettings?.mode == 'Enrichment') {
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.pets), label: 'Animals'),
+                icon: Icon(Icons.pets), label: 'Enrichment'),
             const BottomNavigationBarItem(
                 icon: Icon(Icons.door_front_door_outlined),
                 label: 'Switch To Admin'),
           ];
           visibleIndexes = [0, 4]; // Indexes corresponding to the branches
-        } else if (appUser.deviceSettings?.mode == 'Visitor') {
+        } else if (appUser.accountSettings?.mode == 'Visitor') {
           items = [
             const BottomNavigationBarItem(
                 icon: Icon(Icons.people), label: 'Visitors'),
@@ -92,10 +92,10 @@ class MainPage extends ConsumerWidget {
                 label: 'Switch To Admin'),
           ];
           visibleIndexes = [1, 4];
-        } else if (appUser.deviceSettings?.mode == 'Volunteer & Visitor') {
+        } else if (appUser.accountSettings?.mode == 'Enrichment & Visitor') {
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.pets), label: 'Animals'),
+                icon: Icon(Icons.pets), label: 'Enrichment'),
             const BottomNavigationBarItem(
                 icon: Icon(Icons.people), label: 'Visitors'),
             const BottomNavigationBarItem(
@@ -107,7 +107,7 @@ class MainPage extends ConsumerWidget {
           // Default to volunteer items
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.pets), label: 'Animals'),
+                icon: Icon(Icons.pets), label: 'Enrichment'),
             const BottomNavigationBarItem(
                 icon: Icon(Icons.settings), label: 'Settings'),
           ];
@@ -117,7 +117,7 @@ class MainPage extends ConsumerWidget {
         // Non-admin users (e.g., volunteers) can access 'Animals' and 'Settings'
         items = [
           const BottomNavigationBarItem(
-              icon: Icon(Icons.pets), label: 'Animals'),
+              icon: Icon(Icons.pets), label: 'Enrichment'),
           const BottomNavigationBarItem(
               icon: Icon(Icons.settings), label: 'Settings'),
         ];
@@ -146,16 +146,16 @@ class MainPage extends ConsumerWidget {
             // Check if the user is a volunteer and geofencing is enabled
             if (isVolunteerUser && isGeofenceEnabled) {
               // Determine the index for the 'Animals' tab
-              int animalsBranchIndex =
+              int enrichmentBranchIndex =
                   0; // Assuming 'Animals' branch index is 0
-              int animalsTabIndex = visibleIndexes.indexOf(animalsBranchIndex);
+              int enrichmentTabIndex = visibleIndexes.indexOf(enrichmentBranchIndex);
 
-              if (currentIndex == animalsTabIndex) {
+              if (currentIndex == enrichmentTabIndex) {
                 // Use the geofence status to determine what to display
                 return geofenceStatusAsyncValue.when(
                   data: (isWithinGeofence) {
                     if (isWithinGeofence) {
-                      // User is within geofence, show the AnimalsPage
+                      // User is within geofence, show the EnrichmentPage
                       return navigationShell;
                     } else {
                       // User is outside geofence, show the restriction message
@@ -199,9 +199,9 @@ class MainPage extends ConsumerWidget {
                 initialLocation: true,
               );
 
-              // If the Animals tab is tapped again
+              // If the Enrichment tab is tapped again
               if (branchIndex == 0) {
-                // Assuming AnimalsPage is at index 0
+                // Assuming EnrichmentPage is at index 0
                 // Set scrollToTopProvider to true
                 ref.read(scrollToTopProvider.notifier).state = true;
               }

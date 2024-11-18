@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shelter_partner/models/device_settings.dart';
+import 'package:shelter_partner/models/account_settings.dart';
 import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
@@ -15,7 +15,7 @@ class AppUser {
 
   final String type;
   final String shelterId;
-  final DeviceSettings? deviceSettings;
+  final AccountSettings? accountSettings;
   final FilterElement? userFilter;
   final bool removeAds;
 
@@ -31,7 +31,7 @@ class AppUser {
 
     required this.type,
     required this.shelterId,
-    required this.deviceSettings,
+    required this.accountSettings,
     this.userFilter,
     required this.removeAds
   });
@@ -40,7 +40,7 @@ class AppUser {
   factory AppUser.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
-    // Reconstruct filter group (similar to how it's done in DeviceSettings)
+    // Reconstruct filter group (similar to how it's done in AccountSettings)
     FilterGroup reconstructFilterGroup(Map<String, dynamic> json) {
       List<FilterElement> elements = [];
       if (json.containsKey('filterElements')) {
@@ -78,7 +78,7 @@ class AppUser {
       totalTimeLoggedWithAnimals: data['totalTimeLoggedWithAnimals'],
       type: data['type'],
       shelterId: data['shelterID'],
-      deviceSettings: DeviceSettings.fromMap(data['deviceSettings'] ?? {}),
+      accountSettings: AccountSettings.fromMap(data['accountSettings'] ?? {}),
       userFilter: userFilter, // Assign the deserialized userFilter here
       removeAds: data['removeAds']
     );
@@ -95,7 +95,7 @@ class AppUser {
     int? totalTimeLoggedWithAnimals,
     String? type,
     String? shelterId,
-    DeviceSettings? deviceSettings,
+    AccountSettings? accountSettings,
     FilterElement? userFilter,
     bool? removeAds
   }) {
@@ -109,7 +109,7 @@ class AppUser {
       totalTimeLoggedWithAnimals: this.totalTimeLoggedWithAnimals,
       type: type ?? this.type,
       shelterId: shelterId ?? this.shelterId,
-      deviceSettings: deviceSettings ?? this.deviceSettings,
+      accountSettings: accountSettings ?? this.accountSettings,
       userFilter: userFilter ?? this.userFilter,
       removeAds: removeAds ?? this.removeAds
     );

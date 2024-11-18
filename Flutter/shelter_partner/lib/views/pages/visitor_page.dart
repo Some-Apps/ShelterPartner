@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -338,9 +338,9 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   }
 
   void _startSlideshow() {
-    // Get the slideshow timer setting from device settings
-    final deviceSettings = widget.ref.read(deviceSettingsViewModelProvider).value?.deviceSettings;
-    final slideshowTimer = deviceSettings?.slideshowTimer ?? 10; // Default to 10 seconds if not set
+    // Get the slideshow timer setting from account settings
+    final accountSettings = widget.ref.read(accountSettingsViewModelProvider).value?.accountSettings;
+    final slideshowTimer = accountSettings?.slideshowTimer ?? 10; // Default to 10 seconds if not set
 
     // Start the timer to change images based on the slideshow timer setting
     _timer = Timer.periodic(Duration(seconds: slideshowTimer), (timer) {
@@ -360,12 +360,12 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the slideshow size setting from device settings
-    final deviceSettings = widget.ref.watch(deviceSettingsViewModelProvider).value?.deviceSettings;
+    // Get the slideshow size setting from account settings
+    final accountSettings = widget.ref.watch(accountSettingsViewModelProvider).value?.accountSettings;
 
     // Determine the BoxFit based on the slideshow size setting
     BoxFit boxFit;
-    switch (deviceSettings?.slideshowSize) {
+    switch (accountSettings?.slideshowSize) {
       case 'Scaled to Fit':
         boxFit = BoxFit.contain;
         break;
@@ -405,7 +405,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     Widget content = Stack(
       key: ValueKey<String>(_currentImageUrl),
       children: [
-        if (deviceSettings?.slideshowSize == 'Cropped to Square')
+        if (accountSettings?.slideshowSize == 'Cropped to Square')
           Container(
             color: Colors.black,
             child: Center(

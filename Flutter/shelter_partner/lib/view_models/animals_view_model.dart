@@ -7,18 +7,18 @@ import 'package:shelter_partner/models/filter_condition.dart';
 import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/repositories/animals_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
-import 'package:shelter_partner/view_models/device_settings_view_model.dart';
+import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';
 
-class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
-  final AnimalsRepository _repository;
+class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
+  final EnrichmentRepository _repository;
   final Ref ref;
 
   StreamSubscription<void>? _animalsSubscription;
 
-  AnimalsViewModel(this._repository, this.ref)
+  EnrichmentViewModel(this._repository, this.ref)
       : super({'cats': [], 'dogs': []}) {
 
     ref.listen<AuthState>(
@@ -47,7 +47,7 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   }
 
   // Add fields to store the main filter and secondary filter
-  FilterElement? _mainFilter;
+  FilterElement? _enrichmentFilter;
   FilterElement? _secondaryFilter;
 
   // Modify fetchAnimals to apply the filters
@@ -57,9 +57,9 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     // Fetch animals stream
     final animalsStream = _repository.fetchAnimals(shelterID);
 
-    // Fetch device settings stream (filter)
-    final deviceSettingsStream = ref
-        .watch(deviceSettingsViewModelProvider.notifier)
+    // Fetch account settings stream (filter)
+    final accountSettingsStream = ref
+        .watch(accountSettingsViewModelProvider.notifier)
         .stream
         .map((asyncValue) {
           return asyncValue.asData?.value;
@@ -68,20 +68,20 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     // Combine both streams
     _animalsSubscription = CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
       animalsStream,
-      deviceSettingsStream,
+      accountSettingsStream,
       (animals, appUser) {
-        _mainFilter = appUser?.type == 'admin' 
-            ? appUser?.deviceSettings?.mainFilter 
-            : ref.read(volunteersViewModelProvider).value?.volunteerSettings.mainFilter;
+        _enrichmentFilter = appUser?.type == 'admin' 
+            ? appUser?.accountSettings?.enrichmentFilter 
+            : ref.read(volunteersViewModelProvider).value?.volunteerSettings.enrichmentFilter;
 
         _secondaryFilter = appUser?.userFilter;
         print(_secondaryFilter.toString());
 
         // Apply the filters
         final filteredAnimals = animals.where((animal) {
-          final mainFilterResult = _mainFilter != null ? evaluateFilter(_mainFilter!, animal) : true;
+          final enrichmentFilterResult = _enrichmentFilter != null ? evaluateFilter(_enrichmentFilter!, animal) : true;
           final secondaryFilterResult = _secondaryFilter != null ? evaluateFilter(_secondaryFilter!, animal) : true;
-          return mainFilterResult && secondaryFilterResult;
+          return enrichmentFilterResult && secondaryFilterResult;
         }).toList();
 
         final cats =
@@ -98,12 +98,12 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   }
 
   void _sortAnimals() {
-    final deviceSettings =
-        ref.read(deviceSettingsViewModelProvider).asData?.value;
+    final accountSettings =
+        ref.read(accountSettingsViewModelProvider).asData?.value;
 
-    final mainSort = (ref.read(appUserProvider)?.type == 'admin')
-      ? deviceSettings?.deviceSettings?.mainSort ?? 'Alphabetical'
-      : ref.read(volunteersViewModelProvider).value?.volunteerSettings.mainSort ?? 'Alphabetical';
+    final enrichmentSort = (ref.read(appUserProvider)?.type == 'admin')
+      ? accountSettings?.accountSettings?.enrichmentSort ?? 'Alphabetical'
+      : ref.read(volunteersViewModelProvider).value?.volunteerSettings.enrichmentSort ?? 'Alphabetical';
     
 
     final sortedState = <String, List<Animal>>{};
@@ -111,9 +111,9 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     state.forEach((species, animalsList) {
       final sortedList = List<Animal>.from(animalsList);
 
-      if (mainSort == 'Alphabetical') {
+      if (enrichmentSort == 'Alphabetical') {
         sortedList.sort((a, b) => a.name.compareTo(b.name));
-      } else if (mainSort == 'Last Let Out') {
+      } else if (enrichmentSort == 'Last Let Out') {
         sortedList
             .sort((a, b) => a.logs.last.endTime.compareTo(b.logs.last.endTime));
       }
@@ -238,9 +238,9 @@ class AnimalsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
 }
 
-final animalsViewModelProvider =
-    StateNotifierProvider<AnimalsViewModel, Map<String, List<Animal>>>((ref) {
+final enrichmentViewModelProvider =
+    StateNotifierProvider<EnrichmentViewModel, Map<String, List<Animal>>>((ref) {
   final repository =
-      ref.watch(animalsRepositoryProvider); // Access the repository
-  return AnimalsViewModel(repository, ref); // Pass the repository and ref
+      ref.watch(enrichmentRepositoryProvider); // Access the repository
+  return EnrichmentViewModel(repository, ref); // Pass the repository and ref
 });

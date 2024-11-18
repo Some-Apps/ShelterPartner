@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/app_user.dart';
-import 'package:shelter_partner/repositories/device_settings_repository.dart';
+import 'package:shelter_partner/repositories/account_settings_repository.dart';
 import 'auth_view_model.dart';
 
-class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
-  final DeviceSettingsRepository _repository;
+class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
+  final AccountSettingsRepository _repository;
   final Ref ref;
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
-  DeviceSettingsViewModel(this._repository, this.ref)
+  AccountSettingsViewModel(this._repository, this.ref)
       : super(const AsyncValue.loading()) {
     // Listen to authentication state changes
     ref.listen<AuthState>(
@@ -71,10 +71,10 @@ class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   
 
 // Modify attribute in Firestore document within volunteerSettings
-  Future<void> modifyDeviceSettingString(
+  Future<void> modifyAccountSettingString(
       String userID, String field, String newValue) async {
     try {
-      await _repository.modifyDeviceSettingString(userID, field, newValue);
+      await _repository.modifyAccountSettingString(userID, field, newValue);
     } catch (error) {
       print("Error modifying: $error");
       state = AsyncValue.error("Error modifying: $error", StackTrace.current);
@@ -83,7 +83,7 @@ class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 
   Future<void> toggleAttribute(String userID, String field) async {
     try {
-      await _repository.toggleDeviceSetting(userID, field);
+      await _repository.toggleAccountSetting(userID, field);
     } catch (error) {
       print("Error toggling: $error");
       state = AsyncValue.error("Error toggling: $error", StackTrace.current);
@@ -93,7 +93,7 @@ class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   // Increment attribute in Firestore document within volunteerSettings
   Future<void> incrementAttribute(String userID, String field) async {
     try {
-      await _repository.incrementDeviceSetting(userID, field);
+      await _repository.incrementAccountSetting(userID, field);
     } catch (error) {
       print("Error incrementing: $error");
       state =
@@ -103,7 +103,7 @@ class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 
   Future<void> decrementAttribute(String userID, String field) async {
     try {
-      await _repository.decrementDeviceSetting(userID, field);
+      await _repository.decrementAccountSetting(userID, field);
     } catch (error) {
       print("Error decrementing: $error");
       state =
@@ -143,10 +143,10 @@ class DeviceSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 }
 
 // Provider to access the VolunteersViewModel
-final deviceSettingsViewModelProvider =
-    StateNotifierProvider<DeviceSettingsViewModel, AsyncValue<AppUser?>>((ref) {
+final accountSettingsViewModelProvider =
+    StateNotifierProvider<AccountSettingsViewModel, AsyncValue<AppUser?>>((ref) {
   final repository =
-      ref.watch(deviceSettingsRepositoryProvider); // Access the repository
-  return DeviceSettingsViewModel(
+      ref.watch(accountSettingsRepositoryProvider); // Access the repository
+  return AccountSettingsViewModel(
       repository, ref); // Pass the repository and ref
 });

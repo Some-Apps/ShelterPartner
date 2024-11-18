@@ -9,7 +9,7 @@ import 'package:shelter_partner/repositories/update_volunteer_repository.dart';
 import 'package:shelter_partner/view_models/add_note_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
-import 'package:shelter_partner/views/pages/animals_page.dart';
+import 'package:shelter_partner/views/pages/enrichment_page.dart';
 import 'package:uuid/uuid.dart';
 
 class AddNoteView extends ConsumerStatefulWidget {
