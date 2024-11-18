@@ -92,224 +92,229 @@ Widget build(BuildContext context) {
         _asmAccountNumberFocusNode.unfocus();
           },
           child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Card.outlined(
-                      child: ListView(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          ListTile(
-                            title: const Text("Scheduled Reports"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/settings/shelter-settings/scheduled-reports');
-                            },
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 750),
+                child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Card.outlined(
+                          child: ListView(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              ListTile(
+                                title: const Text("Scheduled Reports"),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  context.push('/settings/shelter-settings/scheduled-reports');
+                                },
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: const Text("Cat Tags"),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  context.push('/settings/shelter-settings/cat-tags');
+                                },
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: const Text("Dog Tags"),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  context.push('/settings/shelter-settings/dog-tags');
+                                },
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: const Text("Early Put Back Reasons"),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  context.push('/settings/shelter-settings/early-put-back-reasons');
+                                },
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: const Text("Let Out Types"),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  context.push('/settings/shelter-settings/let-out-types');
+                                },
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: const Text("API Keys"),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  context.push('/settings/shelter-settings/api-keys');
+                                },
+                              ),
+                            ],
                           ),
-                          Divider(
-                            color: Colors.black.withOpacity(0.1),
-                            height: 0,
-                            thickness: 1,
+                        ),
+                        const SizedBox(height: 25),
+                        Card.outlined(
+                          child: ListView(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              ListTile(
+                                title: SwitchToggleView(
+                                title: "Automatically Put Back Animals",
+                                value: shelter?.shelterSettings.automaticallyPutBackAnimals ?? false,
+                                onChanged: (bool newValue) {
+                                  ref
+                                      .read(shelterSettingsViewModelProvider.notifier)
+                                      .toggleAttribute(shelter!.id, "automaticallyPutBackAnimals");
+                                },
+                              ),
+                              ),
+                              
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(title: SwitchToggleView(
+                                title: "Ignore Visit When Automatically Put Back",
+                                value: shelter?.shelterSettings.ignoreVisitWhenAutomaticallyPutBack ?? false,
+                                onChanged: (bool newValue) {
+                                  ref
+                                      .read(shelterSettingsViewModelProvider.notifier)
+                                      .toggleAttribute(shelter!.id, "ignoreVisitWhenAutomaticallyPutBack");
+                                },
+                              ),),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(title: NumberStepperView(
+                                title: "Automatic Put Back",
+                                label: "hours",
+                                minValue: 1,
+                                maxValue: 96,
+                                value: shelter?.shelterSettings.automaticPutBackHours ?? 0,
+                                increment: () {
+                                  ref
+                                      .read(shelterSettingsViewModelProvider.notifier)
+                                      .incrementAttribute(shelter!.id, "automaticPutBackHours");
+                                },
+                                decrement: () {
+                                  ref
+                                      .read(shelterSettingsViewModelProvider.notifier)
+                                      .decrementAttribute(shelter!.id, "automaticPutBackHours");
+                                },
+                              ),)
+                              
+                            ],
                           ),
-                          ListTile(
-                            title: const Text("Cat Tags"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/settings/shelter-settings/cat-tags');
-                            },
+                        ),
+                        const SizedBox(height: 25.0),
+                        if (shelter?.managementSoftware == "ShelterLuv") ...[
+                          Card.outlined(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              decoration: InputDecoration(
+                                labelText: "${shelter?.managementSoftware} API Key",
+                                hintText: "${shelter?.managementSoftware} API Key",
+                              ),
+                              controller: _apiKeyController,
+                              focusNode: _focusNode,
+                              onChanged: (String value) {
+                                ref
+                                    .read(shelterSettingsViewModelProvider.notifier)
+                                    .modifyShelterSettingString(shelter!.id, "apiKey", value);
+                              },
+                            ),
                           ),
-                          Divider(
-                            color: Colors.black.withOpacity(0.1),
-                            height: 0,
-                            thickness: 1,
+                        ),
+                        ] 
+                        else if (shelter?.managementSoftware == "ShelterManager") ...[
+                          Card.outlined(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              decoration: const InputDecoration(
+                                labelText: "ASM Account #",
+                                hintText: "ASM Account #",
+                              ),
+                              controller: _asmAccountNumberController,
+                              focusNode: _asmAccountNumberFocusNode,
+                              onChanged: (String value) {
+                                ref
+                                    .read(shelterSettingsViewModelProvider.notifier)
+                                    .modifyShelterSettingString(shelter!.id, "asmAccountNumber", value);
+                              },
+                            ),
                           ),
-                          ListTile(
-                            title: const Text("Dog Tags"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/settings/shelter-settings/dog-tags');
-                            },
+                        ),
+                          Card.outlined(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              decoration: const InputDecoration(
+                                labelText: "ASM Username",
+                                hintText: "ASM Username",
+                              ),
+                              controller: _asmUsernameController,
+                              focusNode: _asmUsernameFocusNode,
+                              onChanged: (String value) {
+                                ref
+                                    .read(shelterSettingsViewModelProvider.notifier)
+                                    .modifyShelterSettingString(shelter!.id, "asmUsername", value);
+                              },
+                            ),
                           ),
-                          Divider(
-                            color: Colors.black.withOpacity(0.1),
-                            height: 0,
-                            thickness: 1,
+                        ),
+                        Card.outlined(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              decoration: const InputDecoration(
+                                labelText: "ASM Password",
+                                hintText: "ASM Password",
+                              ),
+                              controller: _asmPasswordController,
+                              focusNode: _asmPasswordFocusNode,
+                              onChanged: (String value) {
+                                ref
+                                    .read(shelterSettingsViewModelProvider.notifier)
+                                    .modifyShelterSettingString(shelter!.id, "asmPassword", value);
+                              },
+                            ),
                           ),
-                          ListTile(
-                            title: const Text("Early Put Back Reasons"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/settings/shelter-settings/early-put-back-reasons');
-                            },
-                          ),
-                          Divider(
-                            color: Colors.black.withOpacity(0.1),
-                            height: 0,
-                            thickness: 1,
-                          ),
-                          ListTile(
-                            title: const Text("Let Out Types"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/settings/shelter-settings/let-out-types');
-                            },
-                          ),
-                          Divider(
-                            color: Colors.black.withOpacity(0.1),
-                            height: 0,
-                            thickness: 1,
-                          ),
-                          ListTile(
-                            title: const Text("API Keys"),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              context.push('/settings/shelter-settings/api-keys');
-                            },
-                          ),
+                        ),
                         ],
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 25),
-                    Card.outlined(
-                      child: ListView(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          ListTile(
-                            title: SwitchToggleView(
-                            title: "Automatically Put Back Animals",
-                            value: shelter?.shelterSettings.automaticallyPutBackAnimals ?? false,
-                            onChanged: (bool newValue) {
-                              ref
-                                  .read(shelterSettingsViewModelProvider.notifier)
-                                  .toggleAttribute(shelter!.id, "automaticallyPutBackAnimals");
-                            },
-                          ),
-                          ),
-                          
-                          Divider(
-                            color: Colors.black.withOpacity(0.1),
-                            height: 0,
-                            thickness: 1,
-                          ),
-                          ListTile(title: SwitchToggleView(
-                            title: "Ignore Visit When Automatically Put Back",
-                            value: shelter?.shelterSettings.ignoreVisitWhenAutomaticallyPutBack ?? false,
-                            onChanged: (bool newValue) {
-                              ref
-                                  .read(shelterSettingsViewModelProvider.notifier)
-                                  .toggleAttribute(shelter!.id, "ignoreVisitWhenAutomaticallyPutBack");
-                            },
-                          ),),
-                          Divider(
-                            color: Colors.black.withOpacity(0.1),
-                            height: 0,
-                            thickness: 1,
-                          ),
-                          ListTile(title: NumberStepperView(
-                            title: "Automatic Put Back",
-                            label: "hours",
-                            minValue: 1,
-                            maxValue: 96,
-                            value: shelter?.shelterSettings.automaticPutBackHours ?? 0,
-                            increment: () {
-                              ref
-                                  .read(shelterSettingsViewModelProvider.notifier)
-                                  .incrementAttribute(shelter!.id, "automaticPutBackHours");
-                            },
-                            decrement: () {
-                              ref
-                                  .read(shelterSettingsViewModelProvider.notifier)
-                                  .decrementAttribute(shelter!.id, "automaticPutBackHours");
-                            },
-                          ),)
-                          
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 25.0),
-                    if (shelter?.managementSoftware == "ShelterLuv") ...[
-                      Card.outlined(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: "${shelter?.managementSoftware} API Key",
-                            hintText: "${shelter?.managementSoftware} API Key",
-                          ),
-                          controller: _apiKeyController,
-                          focusNode: _focusNode,
-                          onChanged: (String value) {
-                            ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .modifyShelterSettingString(shelter!.id, "apiKey", value);
-                          },
-                        ),
-                      ),
-                    ),
-                    ] 
-                    else if (shelter?.managementSoftware == "ShelterManager") ...[
-                      Card.outlined(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            labelText: "ASM Account #",
-                            hintText: "ASM Account #",
-                          ),
-                          controller: _asmAccountNumberController,
-                          focusNode: _asmAccountNumberFocusNode,
-                          onChanged: (String value) {
-                            ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .modifyShelterSettingString(shelter!.id, "asmAccountNumber", value);
-                          },
-                        ),
-                      ),
-                    ),
-                      Card.outlined(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            labelText: "ASM Username",
-                            hintText: "ASM Username",
-                          ),
-                          controller: _asmUsernameController,
-                          focusNode: _asmUsernameFocusNode,
-                          onChanged: (String value) {
-                            ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .modifyShelterSettingString(shelter!.id, "asmUsername", value);
-                          },
-                        ),
-                      ),
-                    ),
-                    Card.outlined(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            labelText: "ASM Password",
-                            hintText: "ASM Password",
-                          ),
-                          controller: _asmPasswordController,
-                          focusNode: _asmPasswordFocusNode,
-                          onChanged: (String value) {
-                            ref
-                                .read(shelterSettingsViewModelProvider.notifier)
-                                .modifyShelterSettingString(shelter!.id, "asmPassword", value);
-                          },
-                        ),
-                      ),
-                    ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
             ),

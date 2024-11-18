@@ -42,32 +42,37 @@ class VolunteerDetailPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text("Volunteer Details"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: [
-            ListTile(
-              title: const Text("Name"),
-              subtitle: Text("${volunteer.firstName} ${volunteer.lastName}"),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 750),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(
+              children: [
+                ListTile(
+                  title: const Text("Name"),
+                  subtitle: Text("${volunteer.firstName} ${volunteer.lastName}"),
+                ),
+                ListTile(
+                  title: const Text("Email"),
+                  subtitle: Text(volunteer.email),
+                ),
+                const SizedBox(height: 10),
+                ListTile(
+                  title: const Text("Average Log Duration"),
+                  subtitle: Text(viewModelState.averageLogDurationText),
+                ),
+                ListTile(
+                  title: const Text("Total Time Logged With Animals"),
+                  subtitle: Text(viewModelState.totalTimeLoggedWithAnimalsText),
+                ),
+                ListTile(
+                  title: const Text("Last Time At Shelter"),
+                  subtitle: Text(_timeSince(volunteer.lastActivity.toDate())),
+                ),
+              ],
             ),
-            ListTile(
-              title: const Text("Email"),
-              subtitle: Text(volunteer.email),
-            ),
-            const SizedBox(height: 10),
-            ListTile(
-              title: const Text("Average Log Duration"),
-              subtitle: Text(viewModelState.averageLogDurationText),
-            ),
-            ListTile(
-              title: const Text("Total Time Logged With Animals"),
-              subtitle: Text(viewModelState.totalTimeLoggedWithAnimalsText),
-            ),
-            ListTile(
-              title: const Text("Last Time At Shelter"),
-              subtitle: Text(_timeSince(volunteer.lastActivity.toDate())),
-            ),
-          ],
+          ),
         ),
       ),
     );

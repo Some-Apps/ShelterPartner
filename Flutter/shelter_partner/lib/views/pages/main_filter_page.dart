@@ -132,83 +132,88 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
               }),
         ],
       ),
-      body: Column(
-        children: [
-          // Display the expression string at the top
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: RichText(
-              text: buildExpressionSpan(filterElements),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ListView.builder(
-                itemCount: filterElements.length,
-                itemBuilder: (context, index) {
-                  final element = filterElements[index];
-                  LogicalOperator? logicalOperatorBetween =
-                      index > 0 ? getOperatorBetween(index - 1) : null;
-                  return _buildFilterElementUI(element, index,
-                      indentLevel: 0,
-                      logicalOperatorBetween: logicalOperatorBetween);
-                },
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 750),
+          child: Column(
+            children: [
+              // Display the expression string at the top
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: RichText(
+                  text: buildExpressionSpan(filterElements),
+                ),
               ),
-            ),
-          ),
-          // Conditional buttons and Group with Previous checkbox
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                if (filterElements.isEmpty)
-                  ElevatedButton(
-                    onPressed: () {
-                      _showAddConditionDialog();
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ListView.builder(
+                    itemCount: filterElements.length,
+                    itemBuilder: (context, index) {
+                      final element = filterElements[index];
+                      LogicalOperator? logicalOperatorBetween =
+                          index > 0 ? getOperatorBetween(index - 1) : null;
+                      return _buildFilterElementUI(element, index,
+                          indentLevel: 0,
+                          logicalOperatorBetween: logicalOperatorBetween);
                     },
-                    child: const Text('Add Condition'),
-                  )
-                else
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                  ),
+                ),
+              ),
+              // Conditional buttons and Group with Previous checkbox
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    if (filterElements.isEmpty)
                       ElevatedButton(
                         onPressed: () {
-                          _showAddConditionDialog(
-                              logicalOperator: LogicalOperator.and);
+                          _showAddConditionDialog();
                         },
-                        child: const Text('And'),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          _showAddConditionDialog(
-                              logicalOperator: LogicalOperator.or);
-                        },
-                        child: const Text('Or'),
-                      ),
-                      const SizedBox(width: 10),
-                      // "Group with Previous" checkbox
+                        child: const Text('Add Condition'),
+                      )
+                    else
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Checkbox(
-                            value: groupWithPrevious,
-                            onChanged: (value) {
-                              setState(() {
-                                groupWithPrevious = value ?? false;
-                              });
+                          ElevatedButton(
+                            onPressed: () {
+                              _showAddConditionDialog(
+                                  logicalOperator: LogicalOperator.and);
                             },
+                            child: const Text('And'),
                           ),
-                          const Text('Group with Previous'),
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              _showAddConditionDialog(
+                                  logicalOperator: LogicalOperator.or);
+                            },
+                            child: const Text('Or'),
+                          ),
+                          const SizedBox(width: 10),
+                          // "Group with Previous" checkbox
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: groupWithPrevious,
+                                onChanged: (value) {
+                                  setState(() {
+                                    groupWithPrevious = value ?? false;
+                                  });
+                                },
+                              ),
+                              const Text('Group with Previous'),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-              ],
-            ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
