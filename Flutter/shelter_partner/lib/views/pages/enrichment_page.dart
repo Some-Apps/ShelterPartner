@@ -72,36 +72,35 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   late ScrollController _scrollController;
 
   @override
-void initState() {
-  super.initState();
+  void initState() {
+    super.initState();
 
-  PaintingBinding.instance.imageCache.maximumSize = 1000;
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 100 * 1024 * 1024;
+    PaintingBinding.instance.imageCache.maximumSize = 1000;
+    PaintingBinding.instance.imageCache.maximumSizeBytes = 100 * 1024 * 1024;
 
-  _scrollController = ScrollController();
+    _scrollController = ScrollController();
 
-  if (!kIsWeb && !Platform.isWindows) {
-    _getSubscriptionStatus(ref);
+    if (!kIsWeb && !Platform.isWindows) {
+      _getSubscriptionStatus(ref);
+    }
+
+    _tabController = TabController(length: 2, vsync: this);
+
+    _dogsPagingController.addPageRequestListener((pageKey) {
+      _fetchPage(animalType: 'dogs', pageKey: pageKey);
+    });
+
+    _catsPagingController.addPageRequestListener((pageKey) {
+      _fetchPage(animalType: 'cats', pageKey: pageKey);
+    });
+
+    // Preload images after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final animalsMap = ref.read(enrichmentViewModelProvider);
+      _preloadImages(animalsMap['dogs'] ?? []);
+      _preloadImages(animalsMap['cats'] ?? []);
+    });
   }
-
-  _tabController = TabController(length: 2, vsync: this);
-
-  _dogsPagingController.addPageRequestListener((pageKey) {
-    _fetchPage(animalType: 'dogs', pageKey: pageKey);
-  });
-
-  _catsPagingController.addPageRequestListener((pageKey) {
-    _fetchPage(animalType: 'cats', pageKey: pageKey);
-  });
-
-  // Preload images after the first frame
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    final animalsMap = ref.read(enrichmentViewModelProvider);
-    _preloadImages(animalsMap['dogs'] ?? []);
-    _preloadImages(animalsMap['cats'] ?? []);
-  });
-}
-
 
   @override
   void dispose() {
@@ -195,70 +194,69 @@ void initState() {
   }
 
   void _preloadImages(List<Animal> animals) {
-  const int preloadImageCount = 150; // Limit the number of images to preload
-  final int endIndex = min(preloadImageCount, animals.length);
+    const int preloadImageCount = 150; // Limit the number of images to preload
+    final int endIndex = min(preloadImageCount, animals.length);
 
-  for (int i = 0; i < endIndex; i++) {
-    final animal = animals[i];
-    final imageUrl = (animal.photos != null && animal.photos!.isNotEmpty)
-        ? animal.photos?.first.url ?? ''
-        : '';
+    for (int i = 0; i < endIndex; i++) {
+      final animal = animals[i];
+      final imageUrl = (animal.photos != null && animal.photos!.isNotEmpty)
+          ? animal.photos?.first.url ?? ''
+          : '';
 
-    if (imageUrl.isNotEmpty) {
-      precacheImage(
-        CachedNetworkImageProvider(imageUrl),
-        context,
-      );
+      if (imageUrl.isNotEmpty) {
+        precacheImage(
+          CachedNetworkImageProvider(imageUrl),
+          context,
+        );
+      }
     }
   }
-}
 
+  Future<void> _fetchPage({
+    required String animalType,
+    required int pageKey,
+  }) async {
+    try {
+      final animalsMapAsync = ref.watch(enrichmentViewModelProvider);
+      final animalsMap = animalsMapAsync[animalType];
+      if (animalsMap == null || animalsMap.isEmpty) {
+        // Data is still loading, retry after a short delay
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _fetchPage(animalType: animalType, pageKey: pageKey);
+        });
+        return;
+      }
 
-Future<void> _fetchPage({
-  required String animalType,
-  required int pageKey,
-}) async {
-  try {
-    final animalsMapAsync = ref.watch(enrichmentViewModelProvider);
-    final animalsMap = animalsMapAsync[animalType];
-    if (animalsMap == null || animalsMap.isEmpty) {
-      // Data is still loading, retry after a short delay
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _fetchPage(animalType: animalType, pageKey: pageKey);
-      });
-      return;
-    }
+      final animals = animalsMap;
+      final filteredAnimals = _filterAnimals(animals);
 
-    final animals = animalsMap;
-    final filteredAnimals = _filterAnimals(animals);
-
-    // Preload images for the filtered animals
-    _preloadImages(filteredAnimals);
+      // Preload images for the filtered animals
+      _preloadImages(filteredAnimals);
 
       // Determine whether to show ads
-      const isWeb = kIsWeb;
+      // const isWeb = kIsWeb;
 
       List<dynamic> itemsWithAds = [];
-      if (!isWeb && !Platform.isWindows) {
-        // Use subscription status on mobile platforms
-        final subscriptionStatus = ref.read(subscriptionStatusProvider);
-        bool shouldShowAds = subscriptionStatus != 'Active';
+      // if (!isWeb && !Platform.isWindows) {
+      // Use subscription status on mobile platforms
+      final subscriptionStatus = ref.read(subscriptionStatusProvider);
+      bool shouldShowAds = subscriptionStatus != 'Active';
 
-        if (shouldShowAds) {
-          int adCounter = 0;
-          for (int i = 0; i < filteredAnimals.length; i++) {
-            if (i > 0 && i % 10 == 0) {
-              itemsWithAds.add('ad_${adCounter++}'); // Placeholder for ad
-            }
-            itemsWithAds.add(filteredAnimals[i]);
+      if (shouldShowAds) {
+        int adCounter = 0;
+        for (int i = 0; i < filteredAnimals.length; i++) {
+          if (i > 0 && i % 10 == 0) {
+            itemsWithAds.add('ad_${adCounter++}'); // Placeholder for ad
           }
-        } else {
-          itemsWithAds = filteredAnimals;
+          itemsWithAds.add(filteredAnimals[i]);
         }
       } else {
-        // Never show ads on web
         itemsWithAds = filteredAnimals;
       }
+      // } else {
+      //   // Never show ads on web
+      //   itemsWithAds = filteredAnimals;
+      // }
 
       final int totalItemCount = itemsWithAds.length;
 
@@ -428,7 +426,7 @@ Future<void> _fetchPage({
 
     return SafeArea(
       child: Scaffold(
-              // backgroundColor: Colors.grey[200],
+        // backgroundColor: Colors.grey[200],
 
         body: GestureDetector(
           onTap: () {
@@ -612,47 +610,64 @@ class CustomAffiliateAd extends StatefulWidget {
   final Ad ad;
 
   const CustomAffiliateAd({
-    super.key,
+    Key? key,
     required this.ad,
-  });
+  }) : super(key: key);
 
   @override
   _CustomAffiliateAdState createState() => _CustomAffiliateAdState();
 }
 
-class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
+class _CustomAffiliateAdState extends State<CustomAffiliateAd>
+    with SingleTickerProviderStateMixin {
   late final ScrollController _scrollController;
-  late final Timer _timer;
+  late final AnimationController _animationController;
+  late final List<String> _imageUrls;
+  final double _scrollSpeed = 0.25;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
 
-    // Set up a timer to auto-scroll continuously
-    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (_scrollController.hasClients) {
-        double maxScrollExtent = _scrollController.position.maxScrollExtent;
-        double currentScroll = _scrollController.position.pixels;
-        double delta = 1; // Adjust scroll speed here
+    // Duplicate the images to create a seamless loop
+    _imageUrls = [...widget.ad.imageUrls, ...widget.ad.imageUrls, ...widget.ad.imageUrls];
 
-        if (currentScroll + delta >= maxScrollExtent) {
-          _scrollController.jumpTo(0);
-        } else {
-          _scrollController.animateTo(
-            currentScroll + delta,
-            duration: const Duration(milliseconds: 50),
-            curve: Curves.linear,
-          );
-        }
+    // Set the initial scroll position to the start of the second set of images
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        final initialPosition = _scrollController.position.maxScrollExtent / 3;
+        _scrollController.jumpTo(initialPosition);
       }
     });
+
+    // Set up the AnimationController
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10), // Adjust the duration as needed
+    )..addListener(() {
+        if (_scrollController.hasClients) {
+          double maxScrollExtent = _scrollController.position.maxScrollExtent;
+          double currentScroll = _scrollController.position.pixels;
+          double delta = _scrollSpeed; // Adjust scroll speed here
+
+          if (currentScroll + delta >= maxScrollExtent) {
+            double resetPosition = maxScrollExtent / 3;
+            _scrollController.jumpTo(resetPosition);
+          } else {
+            _scrollController.jumpTo(currentScroll + delta);
+          }
+        }
+      });
+
+    // Repeat the animation indefinitely
+    _animationController.repeat();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _timer.cancel();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -667,6 +682,22 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
 
   @override
   Widget build(BuildContext context) {
+    // Resize images to reduce memory usage
+    final resizedImages = _imageUrls.map((url) {
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        width: 100, // Adjust the width and height as needed
+        height: 100,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[300],
+            child: Icon(Icons.image, size: 50, color: Colors.grey[700]),
+          );
+        },
+      );
+    }).toList();
+
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Card(
@@ -688,26 +719,15 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
                   child: ListView.builder(
                     controller: _scrollController,
                     scrollDirection: Axis.horizontal,
+                    itemCount: resizedImages.length,
                     itemBuilder: (context, index) {
-                      final imageUrl = widget
-                          .ad.imageUrls[index % widget.ad.imageUrls.length];
                       return AspectRatio(
                         aspectRatio: 1, // Square aspect ratio
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              imageUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey[300],
-                                  child: Icon(Icons.image,
-                                      size: 50, color: Colors.grey[700]),
-                                );
-                              },
-                            ),
+                            child: resizedImages[index],
                           ),
                         ),
                       );
@@ -742,6 +762,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd> {
     );
   }
 }
+
 
 final adsProvider = StreamProvider<List<Ad>>((ref) {
   return FirebaseFirestore.instance.collection('ads').snapshots().map(
