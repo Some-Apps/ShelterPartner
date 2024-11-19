@@ -116,15 +116,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               ],
                               ListTile(
                                 leading: const Icon(Icons.swap_horiz),
-                                title: Text("Toggle Account Type: ${appUser?.type}"),
+                                title: Text(
+                                    "Toggle Account Type: ${appUser?.type}"),
                                 onTap: () async {
                                   final currentType = appUser?.type;
-                                  final newType =
-                                      currentType == 'admin' ? 'volunteer' : 'admin';
+                                  final newType = currentType == 'admin'
+                                      ? 'volunteer'
+                                      : 'admin';
                                   try {
-                                    final firestore = FirebaseFirestore.instance;
+                                    final firestore =
+                                        FirebaseFirestore.instance;
                                     final userId = appUser?.id;
-                  
+
                                     if (userId != null) {
                                       await firestore
                                           .collection('users')
@@ -132,8 +135,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                           .update({'type': newType});
                                       ref.read(appUserProvider.notifier).state =
                                           appUser?.copyWith(type: newType);
-                  
-                                      ScaffoldMessenger.of(context).showSnackBar(
+
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
                                             content: Text(
                                                 'Account type changed to $newType')),
@@ -204,16 +208,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                           onPressed: () =>
                                               Navigator.of(context).pop(true),
                                           child: const Text("Delete",
-                                              style: TextStyle(color: Colors.red)),
+                                              style:
+                                                  TextStyle(color: Colors.red)),
                                         ),
                                       ],
                                     ),
                                   );
                                   if (confirm == true) {
-                                    final emailController = TextEditingController();
+                                    final emailController =
+                                        TextEditingController();
                                     final passwordController =
                                         TextEditingController();
-                  
+
                                     final credentialsConfirmed =
                                         await showDialog<bool>(
                                       context: context,
@@ -238,7 +244,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                         actions: [
                                           TextButton(
                                             onPressed: () =>
-                                                Navigator.of(context).pop(false),
+                                                Navigator.of(context)
+                                                    .pop(false),
                                             child: const Text("Cancel"),
                                           ),
                                           TextButton(
@@ -249,16 +256,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                         ],
                                       ),
                                     );
-                  
+
                                     if (credentialsConfirmed == true) {
                                       final email = emailController.text;
                                       final password = passwordController.text;
                                       try {
                                         await ref
-                                            .read(authViewModelProvider.notifier)
-                                            .deleteAccount(context, email, password);
+                                            .read(
+                                                authViewModelProvider.notifier)
+                                            .deleteAccount(
+                                                context, email, password);
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
                                           SnackBar(
                                               content: Text(
                                                   'Error reauthenticating user: $e')),
@@ -284,9 +294,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             children: [
-                              
                               if (!kIsWeb &&
-                                  (defaultTargetPlatform == TargetPlatform.iOS ||
+                                  (defaultTargetPlatform ==
+                                          TargetPlatform.iOS ||
                                       defaultTargetPlatform ==
                                           TargetPlatform.android))
                                 ListTile(
@@ -299,6 +309,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                       : () async {
                                           _showSupportUsModal(context, ref);
                                         },
+                                )
+                              else
+                                ListTile(
+                                  leading: const Icon(Icons.favorite_border),
+                                  title: Text(
+                                    subscriptionStatus == "Active"
+                                        ? "Thank you for supporting us!"
+                                        : "Support us and remove ads",
+                                  ),
+                                  subtitle: Text(
+                                    subscriptionStatus == "Active"
+                                        ? "You can manage your subscription on the mobile app"
+                                        : "Remove ads and support the developer by subscribing on the mobile app",
+                                  ),
                                 ),
                               Divider(
                                 color: Colors.black.withOpacity(0.1),
@@ -310,8 +334,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 title: const Text("Wiki"),
                                 trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
-                                  launchUrl(
-                                      Uri.parse('https://wiki.shelterpartner.org'));
+                                  launchUrl(Uri.parse(
+                                      'https://wiki.shelterpartner.org'));
                                 },
                               ),
                               Divider(
@@ -333,7 +357,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               const ListTile(
-                                leading: Icon(Icons.numbers, color: Colors.grey),
+                                leading:
+                                    Icon(Icons.numbers, color: Colors.grey),
                                 title: Text("Version 2.0.0",
                                     style: TextStyle(color: Colors.grey)),
                               ),
