@@ -617,9 +617,9 @@ class CustomAffiliateAd extends StatefulWidget {
   final Ad ad;
 
   const CustomAffiliateAd({
-    Key? key,
+    super.key,
     required this.ad,
-  }) : super(key: key);
+  });
 
   @override
   _CustomAffiliateAdState createState() => _CustomAffiliateAdState();
