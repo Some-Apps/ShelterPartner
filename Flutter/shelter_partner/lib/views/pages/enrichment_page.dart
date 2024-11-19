@@ -37,6 +37,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+
+
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
@@ -100,6 +102,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       _preloadImages(animalsMap['dogs'] ?? []);
       _preloadImages(animalsMap['cats'] ?? []);
     });
+
+
   }
 
   @override
@@ -213,158 +217,161 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   }
 
   Future<void> _fetchPage({
-    required String animalType,
-    required int pageKey,
-  }) async {
-    try {
-      final animalsMapAsync = ref.watch(enrichmentViewModelProvider);
-      final animalsMap = animalsMapAsync[animalType];
-      if (animalsMap == null || animalsMap.isEmpty) {
-        // Data is still loading, retry after a short delay
-        Future.delayed(const Duration(milliseconds: 500), () {
-          _fetchPage(animalType: animalType, pageKey: pageKey);
-        });
-        return;
-      }
+  required String animalType,
+  required int pageKey,
+}) async {
+  try {
+    final ads = ref.read(adsStateProvider);
 
-      final animals = animalsMap;
-      final filteredAnimals = _filterAnimals(animals);
-
-      // Preload images for the filtered animals
-      _preloadImages(filteredAnimals);
-
-      // Determine whether to show ads
-      // const isWeb = kIsWeb;
-
-      List<dynamic> itemsWithAds = [];
-      // if (!isWeb && !Platform.isWindows) {
-      // Use subscription status on mobile platforms
-      final subscriptionStatus = ref.read(subscriptionStatusProvider);
-      bool shouldShowAds = subscriptionStatus != 'Active';
-
-      if (shouldShowAds) {
-        int adCounter = 0;
-        for (int i = 0; i < filteredAnimals.length; i++) {
-          if (i > 0 && i % 10 == 0) {
-            itemsWithAds.add('ad_${adCounter++}'); // Placeholder for ad
-          }
-          itemsWithAds.add(filteredAnimals[i]);
-        }
-      } else {
-        itemsWithAds = filteredAnimals;
-      }
-      // } else {
-      //   // Never show ads on web
-      //   itemsWithAds = filteredAnimals;
-      // }
-
-      final int totalItemCount = itemsWithAds.length;
-
-      final bool isLastPage = pageKey + _pageSize >= totalItemCount;
-      final newItems = itemsWithAds.skip(pageKey).take(_pageSize).toList();
-
-      if (animalType == 'dogs') {
-        if (isLastPage) {
-          _dogsPagingController.appendLastPage(newItems);
-        } else {
-          final nextPageKey = pageKey + newItems.length;
-          _dogsPagingController.appendPage(newItems, nextPageKey);
-        }
-      } else {
-        if (isLastPage) {
-          _catsPagingController.appendLastPage(newItems);
-        } else {
-          final nextPageKey = pageKey + newItems.length;
-          _catsPagingController.appendPage(newItems, nextPageKey);
-        }
-      }
-    } catch (error) {
-      if (animalType == 'dogs') {
-        _dogsPagingController.error = error;
-      } else {
-        _catsPagingController.error = error;
-      }
+    // Wait until ads are available
+    if (ads == null || ads.isEmpty) {
+      // Data is still loading, retry after a short delay
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _fetchPage(animalType: animalType, pageKey: pageKey);
+      });
+      return;
     }
-  }
 
-  Widget _buildAnimalGridView(
-      String animalType, AsyncValue<List<Ad>> adsAsyncValue) {
-    final pagingController =
-        animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
+    final animalsMapAsync = ref.watch(enrichmentViewModelProvider);
+    final animalsMap = animalsMapAsync[animalType];
+    if (animalsMap == null || animalsMap.isEmpty) {
+      // Data is still loading, retry after a short delay
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _fetchPage(animalType: animalType, pageKey: pageKey);
+      });
+      return;
+    }
 
-    final animalsMap = ref.watch(enrichmentViewModelProvider);
+    final animals = animalsMap;
+    final filteredAnimals = _filterAnimals(animals);
 
-    if (animalsMap[animalType] == null || animalsMap[animalType]!.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+    // Preload images for the filtered animals
+    _preloadImages(filteredAnimals);
+
+    // Determine whether to show ads
+    final subscriptionStatus = ref.read(subscriptionStatusProvider);
+    bool shouldShowAds = subscriptionStatus != 'Active';
+
+    List<dynamic> itemsWithAds = [];
+    if (shouldShowAds) {
+      final shuffledAds = List<Ad>.from(ads);
+      shuffledAds.shuffle();
+      int adIndex = 0;
+      int adFrequency = 10; // Show ad after every 10 animals
+      for (int i = 0; i < filteredAnimals.length; i++) {
+        if (i > 0 && i % adFrequency == 0) {
+          itemsWithAds.add(shuffledAds[adIndex % shuffledAds.length]); // Add an Ad object
+          adIndex++;
+        }
+        itemsWithAds.add(filteredAnimals[i]);
+      }
     } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final int columns = (constraints.maxWidth / 390).floor();
-            final double aspectRatio = constraints.maxWidth / (columns * 215);
+      itemsWithAds = filteredAnimals;
+    }
 
-            return PagedGridView<int, dynamic>(
-              pagingController: pagingController,
-              scrollController: _scrollController, // Add this line
-              physics: const AlwaysScrollableScrollPhysics(),
-              builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                itemBuilder: (context, item, index) {
-                  if (item is Animal) {
-                    return AnimalCardView(animal: item);
-                  } else if (item is String && item.startsWith('ad_')) {
-                    return _buildAdCard(adsAsyncValue);
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-                firstPageProgressIndicatorBuilder: (_) =>
-                    const Center(child: CircularProgressIndicator()),
-                newPageProgressIndicatorBuilder: (_) =>
-                    const Center(child: CircularProgressIndicator()),
-                noItemsFoundIndicatorBuilder: (_) =>
-                    const Center(child: Text('No animals found')),
-              ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columns,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: aspectRatio,
-              ),
-            );
-          },
-        ),
-      );
+    final int totalItemCount = itemsWithAds.length;
+
+    final bool isLastPage = pageKey + _pageSize >= totalItemCount;
+    final newItems = itemsWithAds.skip(pageKey).take(_pageSize).toList();
+
+    if (animalType == 'dogs') {
+      if (isLastPage) {
+        _dogsPagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _dogsPagingController.appendPage(newItems, nextPageKey);
+      }
+    } else {
+      if (isLastPage) {
+        _catsPagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _catsPagingController.appendPage(newItems, nextPageKey);
+      }
+    }
+  } catch (error) {
+    if (animalType == 'dogs') {
+      _dogsPagingController.error = error;
+    } else {
+      _catsPagingController.error = error;
     }
   }
+}
 
-  Widget _buildAdCard(AsyncValue<List<Ad>> adsAsyncValue) {
-    return adsAsyncValue.when(
-      data: (ads) {
-        if (ads.isEmpty) {
-          return const Text('No ads available');
-        }
-        final randomAd = ads[Random().nextInt(ads.length)];
-        return CustomAffiliateAd(
-          ad: Ad(
-            id: randomAd.id,
-            imageUrls: randomAd.imageUrls,
-            productName: randomAd.productName,
-            productUrl: randomAd.productUrl,
-          ),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => const Text('Error loading ads'),
+
+ Widget _buildAnimalGridView(String animalType) {
+  final pagingController =
+      animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
+
+  final animalsMap = ref.watch(enrichmentViewModelProvider);
+
+  if (animalsMap[animalType] == null || animalsMap[animalType]!.isEmpty) {
+    return const Center(child: CircularProgressIndicator());
+  } else {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final int columns = (constraints.maxWidth / 390).floor();
+          final double aspectRatio = constraints.maxWidth / (columns * 215);
+
+          return PagedGridView<int, dynamic>(
+            pagingController: pagingController,
+            scrollController: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            builderDelegate: PagedChildBuilderDelegate<dynamic>(
+              itemBuilder: (context, item, index) {
+                if (item is Animal) {
+                  return AnimalCardView(animal: item);
+                } else if (item is Ad) {
+                  return CustomAffiliateAd(ad: item);
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+              firstPageProgressIndicatorBuilder: (_) =>
+                  const Center(child: CircularProgressIndicator()),
+              newPageProgressIndicatorBuilder: (_) =>
+                  const Center(child: CircularProgressIndicator()),
+              noItemsFoundIndicatorBuilder: (_) =>
+                  const Center(child: Text('No animals found')),
+            ),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0,
+              childAspectRatio: aspectRatio,
+            ),
+          );
+        },
+      ),
     );
   }
+}
+
+
+
+  Widget _buildAdCard(Ad ad) {
+  return CustomAffiliateAd(ad: ad);
+}
+
 
   @override
   Widget build(BuildContext context) {
-    final adsAsyncValue = ref.watch(adsProvider);
     final appUser = ref.watch(appUserProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
+
+      ref.listen<AsyncValue<List<Ad>>>(adsProvider, (previous, next) {
+    next.when(
+      data: (ads) {
+        // Update the adsStateProvider
+        ref.read(adsStateProvider.notifier).state = ads;
+      },
+      loading: () {},
+      error: (error, stackTrace) {},
+    );
+  });
 
     // Handle loading and error states
     if (appUser == null) {
@@ -592,9 +599,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                   controller: _tabController,
                   children: [
                     // Dogs
-                    _buildAnimalGridView('dogs', adsAsyncValue),
+                    _buildAnimalGridView('dogs'),
                     // Cats
-                    _buildAnimalGridView('cats', adsAsyncValue),
+                    _buildAnimalGridView('cats'),
                   ],
                 ),
               ),
@@ -772,3 +779,5 @@ final adsProvider = StreamProvider<List<Ad>>((ref) {
 
 final noteAddedProvider = StateProvider<bool>((ref) => false);
 final logAddedProvider = StateProvider<bool>((ref) => false);
+
+final adsStateProvider = StateProvider<List<Ad>?>((ref) => null);
