@@ -1,4 +1,4 @@
-# Welcome To [ShelterPartner](https://shelterpartner.org)!
+# Welcome To [Shelter Partner](https://shelterpartner.org)!
 
 The plan is to switch everything to Flutter by the end of the year and scrap the swift and kotlin versions as soon as that's done.
 
