@@ -5,41 +5,44 @@ import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/repositories/volunteer_details_repository.dart';
 
 
-// Define the state class
 class VolunteerDetailState {
   final String averageLogDurationText;
   final String totalTimeLoggedWithAnimalsText;
   final bool isLoading;
+  final Volunteer volunteer;
 
   VolunteerDetailState({
     required this.averageLogDurationText,
     required this.totalTimeLoggedWithAnimalsText,
     required this.isLoading,
+    required this.volunteer,
   });
 
-  // Create an initial state
-  factory VolunteerDetailState.initial() {
+  factory VolunteerDetailState.initial(Volunteer volunteer) {
     return VolunteerDetailState(
       averageLogDurationText: "Loading...",
       totalTimeLoggedWithAnimalsText: "Loading...",
       isLoading: true,
+      volunteer: volunteer,
     );
   }
 
-  // Create a copyWith method for updating the state
   VolunteerDetailState copyWith({
     String? averageLogDurationText,
     String? totalTimeLoggedWithAnimalsText,
     bool? isLoading,
+    Volunteer? volunteer,
   }) {
     return VolunteerDetailState(
       averageLogDurationText: averageLogDurationText ?? this.averageLogDurationText,
       totalTimeLoggedWithAnimalsText:
           totalTimeLoggedWithAnimalsText ?? this.totalTimeLoggedWithAnimalsText,
       isLoading: isLoading ?? this.isLoading,
+      volunteer: volunteer ?? this.volunteer,
     );
   }
 }
+
 
 // Define the ViewModel using StateNotifier
 class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
@@ -49,7 +52,7 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
   VolunteerDetailViewModel({
     required this.volunteer,
     required this.repository,
-  }) : super(VolunteerDetailState.initial()) {
+  }) : super(VolunteerDetailState.initial(volunteer)) {
     // Delay the data fetching until after the first frame
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   _fetchLogsAndComputeStats();
@@ -58,6 +61,25 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
        Future.delayed(const Duration(milliseconds: 500), () {
       _fetchLogsAndComputeStats();
     });
+  }
+
+  Future<void> updateVolunteerName(String firstName, String lastName) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      await repository.updateVolunteerName(volunteer.shelterID, volunteer.id, firstName, lastName);
+
+      Volunteer updatedVolunteer = volunteer.copyWith(
+        firstName: firstName,
+        lastName: lastName,
+      );
+
+      state = state.copyWith(
+        isLoading: false,
+        volunteer: updatedVolunteer,
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<void> _fetchLogsAndComputeStats() async {
