@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:html' as html;
+import 'dart:ui' as ui;
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -8,30 +10,48 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Image.asset('assets/logo.png'),
-          onPressed: () {
-            Navigator.pushNamed(context, '/');
-          },
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton(
-              onPressed: () {
-                launchUrl(Uri(
-                  scheme: 'https',
-                  host: 'wiki.shelterpartner.org',
-                ));
-              },
-              child: const Text(
-                'Wiki',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
+  leading: IconButton(
+    icon: Image.asset('assets/logo.png'),
+    onPressed: () {
+      Navigator.pushNamed(context, '/');
+    },
+  ),
+  title: Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      TextButton(
+        onPressed: () {
+          launchUrl(Uri(
+            scheme: 'https',
+            host: 'wiki.shelterpartner.org',
+          ));
+        },
+        child: const Text(
+          'Wiki',
+          style: TextStyle(color: Colors.black),
         ),
       ),
+      TextButton(
+        onPressed: () {
+          launchUrl(Uri(
+            scheme: 'https',
+            host: 'github.com',
+            path: '/ShelterPartner/ShelterPartner',
+          ));
+        },
+        child: const Text(
+          'GitHub',
+          style: TextStyle(color: Colors.black),
+        ),
+      ),
+      const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        child: SponsorButton(),
+      ), // Use the custom SponsorButton here
+    ],
+  ),
+),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -80,3 +100,33 @@ class HomePage extends StatelessWidget {
         );
       }
     }
+
+
+
+class SponsorButton extends StatelessWidget {
+  const SponsorButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+      // Register the iframe element
+      // ignore: undefined_prefixed_name
+      ui.platformViewRegistry.registerViewFactory(
+        'iframeElement',
+        (int viewId) => html.IFrameElement()
+          ..src = 'https://github.com/sponsors/ShelterPartner/button'
+          ..style.border = '0'
+          ..style.borderRadius = '6px'
+          ..width = '114'
+          ..height = '32',
+      );
+
+      return const SizedBox(
+        width: 114,
+        height: 32,
+        child: HtmlElementView(
+          viewType: 'iframeElement',
+        ),
+      );
+
+}
+}

@@ -103,7 +103,7 @@ void _showEditNameDialog(BuildContext context, WidgetRef ref, Volunteer voluntee
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text('Edit Name'),
+        title: const Text('Edit Name'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -112,26 +112,26 @@ void _showEditNameDialog(BuildContext context, WidgetRef ref, Volunteer voluntee
               onChanged: (value) {
                 newFirstName = value;
               },
-              decoration: InputDecoration(labelText: 'First Name'),
+              decoration: const InputDecoration(labelText: 'First Name'),
             ),
             TextFormField(
               initialValue: newLastName,
               onChanged: (value) {
                 newLastName = value;
               },
-              decoration: InputDecoration(labelText: 'Last Name'),
+              decoration: const InputDecoration(labelText: 'Last Name'),
             ),
           ],
         ),
         actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
           ElevatedButton(
-            child: Text('Save'),
+            child: const Text('Save'),
             onPressed: () async {
               await ref
                   .read(volunteerDetailViewModelProvider(volunteer).notifier)

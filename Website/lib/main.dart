@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'ShelterPartner',
+      title: 'Shelter Partner',
       theme: ThemeData(
         primarySwatch: Colors.blue, // Default primary color
         brightness: Brightness.light, // Light theme
