@@ -4,7 +4,6 @@ import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/view_models/volunteer_details_view_model.dart';
 // volunteer_detail_page.dart
 
-
 class VolunteerDetailPage extends ConsumerWidget {
   final Volunteer volunteer;
 
@@ -51,7 +50,24 @@ class VolunteerDetailPage extends ConsumerWidget {
               children: [
                 ListTile(
                   title: const Text("Name"),
-                  subtitle: Text("${volunteer.firstName} ${volunteer.lastName}"),
+                  subtitle: Row(
+                    children: [
+                      Text(
+                        "${viewModelState.volunteer.firstName} ${viewModelState.volunteer.lastName}",
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () {
+                          _showEditNameDialog(context, ref, viewModelState.volunteer);
+                        },
+                        child: Icon(
+                          Icons.edit,
+                          size: 16,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 ListTile(
                   title: const Text("Email"),
@@ -77,4 +93,54 @@ class VolunteerDetailPage extends ConsumerWidget {
       ),
     );
   }
+}
+
+void _showEditNameDialog(BuildContext context, WidgetRef ref, Volunteer volunteer) {
+  String newFirstName = volunteer.firstName;
+  String newLastName = volunteer.lastName;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('Edit Name'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              initialValue: newFirstName,
+              onChanged: (value) {
+                newFirstName = value;
+              },
+              decoration: InputDecoration(labelText: 'First Name'),
+            ),
+            TextFormField(
+              initialValue: newLastName,
+              onChanged: (value) {
+                newLastName = value;
+              },
+              decoration: InputDecoration(labelText: 'Last Name'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          ElevatedButton(
+            child: Text('Save'),
+            onPressed: () async {
+              await ref
+                  .read(volunteerDetailViewModelProvider(volunteer).notifier)
+                  .updateVolunteerName(newFirstName, newLastName);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

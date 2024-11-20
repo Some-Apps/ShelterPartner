@@ -37,4 +37,27 @@ class Volunteer {
       totalTimeLoggedWithAnimals: data['totalTimeLoggedWithAnimals'] ?? 0,
     );
   }
+
+  // CopyWith method to create a new Volunteer object with updated properties
+  Volunteer copyWith({
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? shelterID,
+    Timestamp? lastActivity,
+    int? averageLogDuration,
+    int? totalTimeLoggedWithAnimals,
+  }) {
+    return Volunteer(
+      id: id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      shelterID: shelterID ?? this.shelterID,
+      lastActivity: lastActivity ?? this.lastActivity,
+      averageLogDuration: averageLogDuration ?? this.averageLogDuration,
+      totalTimeLoggedWithAnimals:
+          totalTimeLoggedWithAnimals ?? this.totalTimeLoggedWithAnimals,
+    );
+  }
 }

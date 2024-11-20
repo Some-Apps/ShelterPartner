@@ -8,6 +8,22 @@ import 'package:shelter_partner/models/volunteer.dart';
 
 
 class VolunteerDetailsRepository {
+
+  Future<void> updateVolunteerName(String shelterID, String volunteerID, String firstName, String lastName) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(volunteerID)
+          .update({
+        'firstName': firstName,
+        'lastName': lastName,
+      });
+    } catch (e) {
+      print('Error updating volunteer name: $e');
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> fetchLogsAndComputeStats(Volunteer volunteer) async {
     try {
       // Get the shelterID from the volunteer model
