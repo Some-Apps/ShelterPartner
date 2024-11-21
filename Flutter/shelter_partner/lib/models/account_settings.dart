@@ -22,6 +22,7 @@ class AccountSettings {
   final String customFormURL;
   final String buttonType;
   final bool appendAnimalDataToURL;
+  final bool removeAds;
 
   AccountSettings({
     required this.mode,
@@ -42,6 +43,7 @@ class AccountSettings {
     required this.customFormURL,
     required this.buttonType,
     required this.appendAnimalDataToURL,
+    required this.removeAds,
   });
 
   AccountSettings copyWith({
@@ -65,6 +67,7 @@ class AccountSettings {
   String? customFormURL,
   String? buttonType,
   bool? appendAnimalDataToURL,
+  bool? removeAds,
 }) {
   return AccountSettings(
     mode: mode ?? this.mode,
@@ -87,6 +90,7 @@ class AccountSettings {
     customFormURL: customFormURL ?? this.customFormURL,
     buttonType: buttonType ?? this.buttonType,
     appendAnimalDataToURL: appendAnimalDataToURL ?? this.appendAnimalDataToURL,
+    removeAds: removeAds ?? this.removeAds,
   );
 }
 
@@ -112,6 +116,7 @@ class AccountSettings {
       'customFormURL': customFormURL,
       'buttonType': buttonType,
       'appendAnimalDataToURL': appendAnimalDataToURL,
+      'removeAds': removeAds,
     };
   }
 
@@ -174,6 +179,7 @@ class AccountSettings {
       customFormURL: data['customFormURL'] ?? "",
       buttonType: data['buttonType'] ?? "Unknown",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
+      removeAds: data['removeAds'] ?? false,
     );
   }
 }

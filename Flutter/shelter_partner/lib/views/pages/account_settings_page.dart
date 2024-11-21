@@ -121,6 +121,24 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                 }
                               },
                             ),
+                            Divider(
+                              color: Colors.black.withOpacity(0.1),
+                              height: 0,
+                              thickness: 1,
+                            ),
+
+                            ListTile(
+                              title: SwitchToggleView(
+                                title: "Remove Ads",
+                                value: user?.accountSettings?.removeAds ?? false,
+                                onChanged: (bool newValue) {
+                                  ref
+                                      .read(
+                                          accountSettingsViewModelProvider.notifier)
+                                      .toggleAttribute(user!.id, "removeAds");
+                                },
+                              ),
+                            ),
                           ],
                         )),
                         const SizedBox(height: 25.0),

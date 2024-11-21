@@ -156,6 +156,7 @@ class AuthRepository {
       customFormURL: "https://example.com",
       buttonType: 'In App',
       appendAnimalDataToURL: false,
+      removeAds: true,
     );
 
     // Create user document with account settings
