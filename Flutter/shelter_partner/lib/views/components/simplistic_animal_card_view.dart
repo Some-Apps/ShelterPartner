@@ -19,13 +19,14 @@ import 'package:shelter_partner/views/components/put_back_confirmation_view.dart
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:uuid/uuid.dart';
 
-class AnimalCardView extends ConsumerStatefulWidget {
+class SimplisticAnimalCardView extends ConsumerStatefulWidget {
   final Animal animal;
 
-  const AnimalCardView({super.key, required this.animal});
+  const SimplisticAnimalCardView({super.key, required this.animal});
 
   @override
-  _AnimalCardViewState createState() => _AnimalCardViewState();
+  _SimplisticAnimalCardViewState createState() =>
+      _SimplisticAnimalCardViewState();
 }
 
 /// Helper method to calculate time ago from a given DateTime
@@ -45,7 +46,8 @@ String _timeAgo(DateTime dateTime, bool inKennel) {
   }
 }
 
-class _AnimalCardViewState extends ConsumerState<AnimalCardView>
+class _SimplisticAnimalCardViewState
+    extends ConsumerState<SimplisticAnimalCardView>
     with TickerProviderStateMixin {
   bool _automaticPutBackHandled = false;
 
@@ -100,7 +102,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
 
         // Animation completed, show confirmation dialog
         if (currentAnimal.inKennel) {
-          final accountDetails = ref.read(accountSettingsViewModelProvider).value;
+          final accountDetails =
+              ref.read(accountSettingsViewModelProvider).value;
           if (accountDetails != null &&
               (accountDetails.accountSettings!.requireName ||
                   accountDetails.accountSettings!.requireLetOutType)) {
@@ -212,7 +215,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       child: Container(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Top Row: Image and details
             Row(
@@ -275,7 +279,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                         },
                       ),
 
-
                       // Image with shadow and scale effect
                       AnimatedScale(
                         scale: isPressed ? 1.0 : 1.025,
@@ -323,6 +326,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Name, symbol, and menu
                       Row(
@@ -333,8 +337,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               Text(
                                 animal.name,
                                 style: const TextStyle(
-                                  fontSize: 25.0,
-                                  // fontWeight: FontWeight.bold,
+                                  fontSize: 35.0,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
                               const SizedBox(width: 5),
@@ -391,94 +395,28 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5),
-                      // Info chips
-                      Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
+                      // Location
+
+                      Row(
                         children: [
-                          if (animal.location.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.location_on,
-                              label: animal.location,
-                            ),
-                          if (animal.adoptionCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.shopping_bag,
-                              label: animal.adoptionCategory,
-                            ),
-                          if (animal.behaviorCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.face,
-                              label: animal.behaviorCategory,
-                            ),
-                          if (animal.locationCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.location_city,
-                              label: animal.locationCategory,
-                            ),
-                          if (animal.medicalCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.health_and_safety,
-                              label: animal.medicalCategory,
-                            ),
-                          if (animal.volunteerCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.volunteer_activism,
-                              label: animal.volunteerCategory,
-                            ),
-                          // Add the top 3 tags as info chips
-                            for (var tag in (animal.tags..sort((a, b) => b.count.compareTo(a.count))).take(3))
-                            _buildInfoChip(
-                              icon: Icons.label,
-                              label: tag.title,
-                            ),
+                          Text(animal.location,
+                              style: TextStyle(
+                                  fontSize: 25, color: Colors.grey.shade800)),
                         ],
+                      ),
+
+
+                      // Last Let out
+                      Text(
+                        "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}",
+                        style: TextStyle(color: Colors.grey.shade600),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const Spacer(),
-            // Spacer(),
-            // Author and timeago at the bottom center
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    if (animal.logs.isNotEmpty)
-                      Row(
-                        children: [
-                          Icon(Icons.access_time,
-                              size: 16, color: Colors.grey.shade600),
-                          const SizedBox(width: 4),
-                          Text(
-                            "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                        ],
-                      ),
-                    if (animal.logs.isNotEmpty &&
-                        animal.logs.last.author.isNotEmpty)
-                      Row(
-                        children: [
-                          Icon(Icons.person_2_outlined,
-                              size: 16, color: Colors.grey.shade600),
-                          const SizedBox(width: 4),
-                          Text(
-                            animal.logs.last.author,
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
-            ),
+            
           ],
         ),
       ),

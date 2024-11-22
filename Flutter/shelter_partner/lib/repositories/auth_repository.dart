@@ -157,6 +157,8 @@ class AuthRepository {
       buttonType: 'In App',
       appendAnimalDataToURL: false,
       removeAds: true,
+
+      simplisticMode: true,
     );
 
     // Create user document with account settings

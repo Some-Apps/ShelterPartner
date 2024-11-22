@@ -21,6 +21,8 @@ import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
+import 'package:shelter_partner/views/components/simplistic_animal_card_view.dart';
+import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
@@ -36,8 +38,6 @@ class EnrichmentPage extends ConsumerStatefulWidget {
 class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-
 
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
@@ -102,8 +102,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       _preloadImages(animalsMap['dogs'] ?? []);
       _preloadImages(animalsMap['cats'] ?? []);
     });
-
-
   }
 
   @override
@@ -217,145 +215,151 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   }
 
   Future<void> _fetchPage({
-  required String animalType,
-  required int pageKey,
-}) async {
-  try {
-    final ads = ref.read(adsStateProvider);
+    required String animalType,
+    required int pageKey,
+  }) async {
+    try {
+      final ads = ref.read(adsStateProvider);
 
-    // Wait until ads are available
-    if (ads == null || ads.isEmpty) {
-      // Data is still loading, retry after a short delay
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _fetchPage(animalType: animalType, pageKey: pageKey);
-      });
-      return;
-    }
+      // Wait until ads are available
+      if (ads == null || ads.isEmpty) {
+        // Data is still loading, retry after a short delay
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _fetchPage(animalType: animalType, pageKey: pageKey);
+        });
+        return;
+      }
 
-    final animalsMapAsync = ref.watch(enrichmentViewModelProvider);
-    final animalsMap = animalsMapAsync[animalType];
-    if (animalsMap == null || animalsMap.isEmpty) {
-      // Data is still loading, retry after a short delay
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _fetchPage(animalType: animalType, pageKey: pageKey);
-      });
-      return;
-    }
+      final animalsMapAsync = ref.watch(enrichmentViewModelProvider);
+      final animalsMap = animalsMapAsync[animalType];
+      if (animalsMap == null || animalsMap.isEmpty) {
+        // Data is still loading, retry after a short delay
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _fetchPage(animalType: animalType, pageKey: pageKey);
+        });
+        return;
+      }
 
-    final animals = animalsMap;
-    final filteredAnimals = _filterAnimals(animals);
+      final animals = animalsMap;
+      final filteredAnimals = _filterAnimals(animals);
 
-    // Preload images for the filtered animals
-    _preloadImages(filteredAnimals);
+      // Preload images for the filtered animals
+      _preloadImages(filteredAnimals);
 
-    // Determine whether to show ads
-    final subscriptionStatus = ref.read(subscriptionStatusProvider);
-    final accountSettings = ref.read(accountSettingsViewModelProvider);
-    bool shouldShowAds = subscriptionStatus != 'Active' && accountSettings.value?.accountSettings?.removeAds == false;
+      // Determine whether to show ads
+      final subscriptionStatus = ref.read(subscriptionStatusProvider);
+      final accountSettings = ref.read(accountSettingsViewModelProvider);
+      bool shouldShowAds = subscriptionStatus != 'Active' &&
+          accountSettings.value?.accountSettings?.removeAds == false;
 
-    List<dynamic> itemsWithAds = [];
-    if (shouldShowAds) {
-      final shuffledAds = List<Ad>.from(ads);
-      shuffledAds.shuffle();
-      int adIndex = 0;
-      int adFrequency = 10; // Show ad after every 10 animals
-      for (int i = 0; i < filteredAnimals.length; i++) {
-        if (i > 0 && i % adFrequency == 0) {
-          itemsWithAds.add(shuffledAds[adIndex % shuffledAds.length]); // Add an Ad object
-          adIndex++;
+      List<dynamic> itemsWithAds = [];
+      if (shouldShowAds) {
+        final shuffledAds = List<Ad>.from(ads);
+        shuffledAds.shuffle();
+        int adIndex = 0;
+        int adFrequency = 10; // Show ad after every 10 animals
+        for (int i = 0; i < filteredAnimals.length; i++) {
+          if (i > 0 && i % adFrequency == 0) {
+            itemsWithAds.add(
+                shuffledAds[adIndex % shuffledAds.length]); // Add an Ad object
+            adIndex++;
+          }
+          itemsWithAds.add(filteredAnimals[i]);
         }
-        itemsWithAds.add(filteredAnimals[i]);
-      }
-    } else {
-      itemsWithAds = filteredAnimals;
-    }
-
-    final int totalItemCount = itemsWithAds.length;
-
-    final bool isLastPage = pageKey + _pageSize >= totalItemCount;
-    final newItems = itemsWithAds.skip(pageKey).take(_pageSize).toList();
-
-    if (animalType == 'dogs') {
-      if (isLastPage) {
-        _dogsPagingController.appendLastPage(newItems);
       } else {
-        final nextPageKey = pageKey + newItems.length;
-        _dogsPagingController.appendPage(newItems, nextPageKey);
+        itemsWithAds = filteredAnimals;
       }
-    } else {
-      if (isLastPage) {
-        _catsPagingController.appendLastPage(newItems);
+
+      final int totalItemCount = itemsWithAds.length;
+
+      final bool isLastPage = pageKey + _pageSize >= totalItemCount;
+      final newItems = itemsWithAds.skip(pageKey).take(_pageSize).toList();
+
+      if (animalType == 'dogs') {
+        if (isLastPage) {
+          _dogsPagingController.appendLastPage(newItems);
+        } else {
+          final nextPageKey = pageKey + newItems.length;
+          _dogsPagingController.appendPage(newItems, nextPageKey);
+        }
       } else {
-        final nextPageKey = pageKey + newItems.length;
-        _catsPagingController.appendPage(newItems, nextPageKey);
+        if (isLastPage) {
+          _catsPagingController.appendLastPage(newItems);
+        } else {
+          final nextPageKey = pageKey + newItems.length;
+          _catsPagingController.appendPage(newItems, nextPageKey);
+        }
       }
-    }
-  } catch (error) {
-    if (animalType == 'dogs') {
-      _dogsPagingController.error = error;
-    } else {
-      _catsPagingController.error = error;
+    } catch (error) {
+      if (animalType == 'dogs') {
+        _dogsPagingController.error = error;
+      } else {
+        _catsPagingController.error = error;
+      }
     }
   }
-}
 
+  Widget _buildAnimalGridView(String animalType) {
+    final pagingController =
+        animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
 
- Widget _buildAnimalGridView(String animalType) {
-  final pagingController =
-      animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
+    final animalsMap = ref.watch(enrichmentViewModelProvider);
+    final accountSettings = ref.watch(accountSettingsViewModelProvider);
 
-  final animalsMap = ref.watch(enrichmentViewModelProvider);
-
-  if (animalsMap[animalType] == null || animalsMap[animalType]!.isEmpty) {
-    return const Center(child: CircularProgressIndicator());
-  } else {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final int columns = (constraints.maxWidth / 390).floor();
-          final double aspectRatio = constraints.maxWidth / (columns * 215);
-
-          return PagedGridView<int, dynamic>(
-            pagingController: pagingController,
-            scrollController: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            builderDelegate: PagedChildBuilderDelegate<dynamic>(
-              itemBuilder: (context, item, index) {
-                if (item is Animal) {
-                  return AnimalCardView(animal: item);
-                } else if (item is Ad) {
-                  return CustomAffiliateAd(ad: item);
-                } else {
-                  return const SizedBox.shrink();
-                }
-              },
-              firstPageProgressIndicatorBuilder: (_) =>
-                  const Center(child: CircularProgressIndicator()),
-              newPageProgressIndicatorBuilder: (_) =>
-                  const Center(child: CircularProgressIndicator()),
-              noItemsFoundIndicatorBuilder: (_) =>
-                  const Center(child: Text('No animals found')),
-            ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columns,
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
-              childAspectRatio: aspectRatio,
-            ),
-          );
-        },
-      ),
-    );
+    if (animalsMap[animalType] == null || animalsMap[animalType]!.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    } else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final int columns = (constraints.maxWidth / 390).floor();
+            final double aspectRatio = constraints.maxWidth / (columns * 215);
+            final double simplisticAspectRatio = constraints.maxWidth / (columns * 160);
+            return PagedGridView<int, dynamic>(
+              pagingController: pagingController,
+              scrollController: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              builderDelegate: PagedChildBuilderDelegate<dynamic>(
+                itemBuilder: (context, item, index) {
+                  if (item is Animal) {
+                    if (accountSettings
+                            .value!.accountSettings?.simplisticMode ??
+                        true) {
+                      return SimplisticAnimalCardView(animal: item);
+                    } else {
+                      return AnimalCardView(animal: item);
+                    }
+                  } else if (item is Ad) {
+                    return CustomAffiliateAd(ad: item);
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+                firstPageProgressIndicatorBuilder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
+                newPageProgressIndicatorBuilder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
+                noItemsFoundIndicatorBuilder: (_) =>
+                    const Center(child: Text('No animals found')),
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: accountSettings
+                        .value!.accountSettings!.simplisticMode ? simplisticAspectRatio : aspectRatio,
+              ),
+            );
+          },
+        ),
+      );
+    }
   }
-}
-
-
 
   Widget _buildAdCard(Ad ad) {
-  return CustomAffiliateAd(ad: ad);
-}
-
+    return CustomAffiliateAd(ad: ad);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -363,16 +367,16 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
 
-      ref.listen<AsyncValue<List<Ad>>>(adsProvider, (previous, next) {
-    next.when(
-      data: (ads) {
-        // Update the adsStateProvider
-        ref.read(adsStateProvider.notifier).state = ads;
-      },
-      loading: () {},
-      error: (error, stackTrace) {},
-    );
-  });
+    ref.listen<AsyncValue<List<Ad>>>(adsProvider, (previous, next) {
+      next.when(
+        data: (ads) {
+          // Update the adsStateProvider
+          ref.read(adsStateProvider.notifier).state = ads;
+        },
+        loading: () {},
+        error: (error, stackTrace) {},
+      );
+    });
 
     // Handle loading and error states
     if (appUser == null) {
@@ -451,8 +455,24 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                         horizontal: 8.0, vertical: 8.0),
                     child: Column(
                       children: [
+                              SwitchToggleView(
+                                title: "Simplistic Mode",
+                                value: accountSettings.value?.accountSettings?.simplisticMode ?? true,
+                                onChanged: (bool newValue) {
+                                  final user = ref.read(appUserProvider);
+                                  if (user != null) {
+                                    ref.read(accountSettingsViewModelProvider.notifier)
+                                        .toggleAttribute(user.id, "simplisticMode");
+                                  }
+                                },
+                              ),
+                            
+
+
                         Row(
                           children: [
+                            // Toggle simplistic mode
+                            
                             // Search bar
                             Expanded(
                               child: TextField(
@@ -495,6 +515,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                           ],
                         ),
                         const SizedBox(height: 8),
+
                         // Navigation button for user filter
                         NavigationButton(
                           title: "User Enrichment Filter",
@@ -639,7 +660,11 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
     _scrollController = ScrollController();
 
     // Duplicate the images to create a seamless loop
-    _imageUrls = [...widget.ad.imageUrls, ...widget.ad.imageUrls, ...widget.ad.imageUrls];
+    _imageUrls = [
+      ...widget.ad.imageUrls,
+      ...widget.ad.imageUrls,
+      ...widget.ad.imageUrls
+    ];
 
     // Set the initial scroll position to the start of the second set of images
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -770,7 +795,6 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
     );
   }
 }
-
 
 final adsProvider = StreamProvider<List<Ad>>((ref) {
   return FirebaseFirestore.instance.collection('ads').snapshots().map(
