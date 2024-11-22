@@ -38,6 +38,7 @@ dependencies:
   infinite_scroll_pagination: ^4.0.0
   cupertino_icons: ^1.0.8
   qonversion_flutter: ^9.1.5
+  auto_size_text: ^3.0.0
 
 
 
@@ -65,3 +66,10 @@ flutter:
     - assets/images/
     - assets/csv/
 
+  fonts:
+    - family: CabinBold
+      fonts:
+        - asset: assets/fonts/CabinSketch-Bold.ttf
+    - family: CabinRegular
+      fonts:
+        - asset: assets/fonts/CabinSketch-Regular.ttf

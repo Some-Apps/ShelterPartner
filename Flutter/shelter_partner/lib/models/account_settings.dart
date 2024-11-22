@@ -24,6 +24,8 @@ class AccountSettings {
   final bool appendAnimalDataToURL;
   final bool removeAds;
 
+  final bool simplisticMode;
+
   AccountSettings({
     required this.mode,
     required this.photoUploadsAllowed,
@@ -44,6 +46,8 @@ class AccountSettings {
     required this.buttonType,
     required this.appendAnimalDataToURL,
     required this.removeAds,
+
+    required this.simplisticMode,
   });
 
   AccountSettings copyWith({
@@ -68,6 +72,8 @@ class AccountSettings {
   String? buttonType,
   bool? appendAnimalDataToURL,
   bool? removeAds,
+
+  bool? simplisticMode,
 }) {
   return AccountSettings(
     mode: mode ?? this.mode,
@@ -91,6 +97,8 @@ class AccountSettings {
     buttonType: buttonType ?? this.buttonType,
     appendAnimalDataToURL: appendAnimalDataToURL ?? this.appendAnimalDataToURL,
     removeAds: removeAds ?? this.removeAds,
+
+    simplisticMode: simplisticMode ?? this.simplisticMode,
   );
 }
 
@@ -117,6 +125,8 @@ class AccountSettings {
       'buttonType': buttonType,
       'appendAnimalDataToURL': appendAnimalDataToURL,
       'removeAds': removeAds,
+
+      'simplisticMode': simplisticMode,
     };
   }
 
@@ -180,6 +190,8 @@ class AccountSettings {
       buttonType: data['buttonType'] ?? "Unknown",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
       removeAds: data['removeAds'] ?? false,
+
+      simplisticMode: data['simplisticMode'] ?? true,
     );
   }
 }
