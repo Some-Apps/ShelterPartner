@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/animal_card_repository.dart';
 import 'package:shelter_partner/view_models/animal_card_view_model.dart';
@@ -15,6 +14,7 @@ import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
 import 'package:shelter_partner/views/components/add_log_view.dart';
 import 'package:shelter_partner/views/components/add_note_view.dart';
+import 'package:shelter_partner/views/components/animal_card_image.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:uuid/uuid.dart';
@@ -100,7 +100,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
 
         // Animation completed, show confirmation dialog
         if (currentAnimal.inKennel) {
-          final accountDetails = ref.read(accountSettingsViewModelProvider).value;
+          final accountDetails =
+              ref.read(accountSettingsViewModelProvider).value;
           if (accountDetails != null &&
               (accountDetails.accountSettings!.requireName ||
                   accountDetails.accountSettings!.requireLetOutType)) {
@@ -220,104 +221,37 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
               children: [
                 // Animal image and interaction
                 GestureDetector(
-                  onTapDown: canInteract
-                      ? (_) {
-                          setState(() {
-                            isPressed = true;
-                          });
-                          _controller.forward();
-                          HapticFeedback.mediumImpact();
-                        }
-                      : null,
-                  onTapUp: canInteract
-                      ? (_) {
-                          setState(() {
-                            isPressed = false;
-                          });
-                          _controller.reverse();
-                          HapticFeedback.lightImpact();
-                        }
-                      : null,
-                  onTapCancel: canInteract
-                      ? () {
-                          setState(() {
-                            isPressed = false;
-                          });
-                          _controller.reverse();
-                          HapticFeedback.lightImpact();
-                        }
-                      : null,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Background stroke (semi-transparent)
-                      CircleAvatar(
-                        radius: 65,
-                        backgroundColor: Colors.black.withOpacity(0.2),
-                      ),
-
-                      AnimatedBuilder(
-                        animation: _curvedAnimation,
-                        builder: (context, child) {
-                          return SizedBox(
-                            width: 115,
-                            height: 115,
-                            child: CircularProgressIndicator(
-                              value: _curvedAnimation.value,
-                              strokeWidth: 15,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                animal.inKennel
-                                    ? Colors.orange.shade100
-                                    : Colors.lightBlue.shade100,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-
-
-                      // Image with shadow and scale effect
-                      AnimatedScale(
-                        scale: isPressed ? 1.0 : 1.025,
-                        duration: const Duration(milliseconds: 0),
-                        child: Container(
-                          width: 105,
-                          height: 105,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.6),
-                                blurRadius: 0.9,
-                                spreadRadius: 0,
-                                offset: isPressed
-                                    ? const Offset(0, 0)
-                                    : const Offset(1, 1.5),
-                              ),
-                            ],
-                          ),
-                          child: ClipOval(
-                            child: animal.photos?.isNotEmpty ?? false
-                                ? CachedNetworkImage(
-                                    imageUrl: animal.photos?.first.url ?? '',
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Icon(
-                                        Icons.pets,
-                                        size: 50,
-                                        color: Colors.grey.shade400),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  )
-                                : Icon(Icons.pets,
-                                    size: 50, color: Colors.grey.shade400),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    onTapDown: canInteract
+                        ? (_) {
+                            setState(() {
+                              isPressed = true;
+                            });
+                            _controller.forward();
+                            HapticFeedback.mediumImpact();
+                          }
+                        : null,
+                    onTapUp: canInteract
+                        ? (_) {
+                            setState(() {
+                              isPressed = false;
+                            });
+                            _controller.reverse();
+                            HapticFeedback.lightImpact();
+                          }
+                        : null,
+                    onTapCancel: canInteract
+                        ? () {
+                            setState(() {
+                              isPressed = false;
+                            });
+                            _controller.reverse();
+                            HapticFeedback.lightImpact();
+                          }
+                        : null,
+                    child: AnimalCardImage(
+                        curvedAnimation: _curvedAnimation,
+                        isPressed: isPressed,
+                        animal: animal)),
                 const SizedBox(width: 10),
                 // Animal details
                 Expanded(
@@ -347,7 +281,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               ],
                             ),
                           ),
-
                           PopupMenuButton<String>(
                             offset: const Offset(0, 40),
                             onSelected: (value) {
@@ -434,7 +367,9 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               label: animal.volunteerCategory,
                             ),
                           // Add the top 3 tags as info chips
-                            for (var tag in (animal.tags..sort((a, b) => b.count.compareTo(a.count))).take(3))
+                          for (var tag in (animal.tags
+                                ..sort((a, b) => b.count.compareTo(a.count)))
+                              .take(3))
                             _buildInfoChip(
                               icon: Icons.label,
                               label: tag.title,

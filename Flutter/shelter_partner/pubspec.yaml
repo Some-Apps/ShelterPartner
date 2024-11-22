@@ -66,3 +66,10 @@ flutter:
     - assets/images/
     - assets/csv/
 
+  fonts:
+    - family: CabinBold
+      fonts:
+        - asset: assets/fonts/CabinSketch-Bold.ttf
+    - family: CabinRegular
+      fonts:
+        - asset: assets/fonts/CabinSketch-Regular.ttf

@@ -317,7 +317,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
             ? 600.0 
             : 625.0;
           final double itemHeight = accountSettings.value!.accountSettings!.simplisticMode 
-            ? 150.0 
+            ? 160.0 
             : 235.0;
           return PagedGridView<int, dynamic>(
             pagingController: pagingController,
@@ -349,8 +349,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: minWidth,
             mainAxisExtent: itemHeight,
-            crossAxisSpacing: 8.0,
-            mainAxisSpacing: 8.0,
+            crossAxisSpacing: 0.0,
+            mainAxisSpacing: 0.0,
             ),
           );
           },

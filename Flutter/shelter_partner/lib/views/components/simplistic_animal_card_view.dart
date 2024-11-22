@@ -1,11 +1,11 @@
 // Import statements
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/animal_card_repository.dart';
 import 'package:shelter_partner/view_models/animal_card_view_model.dart';
@@ -15,6 +15,7 @@ import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/take_out_confirmation_view_model.dart';
 import 'package:shelter_partner/views/components/add_log_view.dart';
 import 'package:shelter_partner/views/components/add_note_view.dart';
+import 'package:shelter_partner/views/components/animal_card_image.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:uuid/uuid.dart';
@@ -203,254 +204,180 @@ class _SimplisticAnimalCardViewState
       },
     );
 
-    return Card(
-
-      color:
-          animal.inKennel ? Colors.lightBlue.shade100 : Colors.orange.shade100,
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(25),
-        // side: BorderSide(color: Colors.white, width: 0.25),
-      ),
-      shadowColor: Colors.black, // Customize shadow color
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // Animal image and interaction
-            GestureDetector(
-              onTapDown: canInteract
-                  ? (_) {
-                      setState(() {
-                        isPressed = true;
-                      });
-                      _controller.forward();
-                      HapticFeedback.mediumImpact();
-                    }
-                  : null,
-              onTapUp: canInteract
-                  ? (_) {
-                      setState(() {
-                        isPressed = false;
-                      });
-                      _controller.reverse();
-                      HapticFeedback.lightImpact();
-                    }
-                  : null,
-              onTapCancel: canInteract
-                  ? () {
-                      setState(() {
-                        isPressed = false;
-                      });
-                      _controller.reverse();
-                      HapticFeedback.lightImpact();
-                    }
-                  : null,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Background stroke (semi-transparent)
-                  CircleAvatar(
-                    radius: 65,
-                    backgroundColor: Colors.black.withOpacity(0.2),
-                  ),
-              
-                  AnimatedBuilder(
-                    animation: _curvedAnimation,
-                    builder: (context, child) {
-                      return SizedBox(
-                        width: 115,
-                        height: 115,
-                        child: CircularProgressIndicator(
-                          value: _curvedAnimation.value,
-                          strokeWidth: 15,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            animal.inKennel
-                                ? Colors.orange.shade100
-                                : Colors.lightBlue.shade100,
+    return Padding(
+      padding: const EdgeInsets.all(6.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: animal.inKennel
+              ? Colors.lightBlue.shade100
+              : Colors.orange.shade100,
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              // spreadRadius: 0.5,
+              blurRadius: 1,
+              offset: const Offset(0, 1.5),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // Animal image and interaction
+              GestureDetector(
+                onTapDown: canInteract
+                    ? (_) {
+                        setState(() {
+                          isPressed = true;
+                        });
+                        _controller.forward();
+                        HapticFeedback.mediumImpact();
+                      }
+                    : null,
+                onTapUp: canInteract
+                    ? (_) {
+                        setState(() {
+                          isPressed = false;
+                        });
+                        _controller.reverse();
+                        HapticFeedback.lightImpact();
+                      }
+                    : null,
+                onTapCancel: canInteract
+                    ? () {
+                        setState(() {
+                          isPressed = false;
+                        });
+                        _controller.reverse();
+                        HapticFeedback.lightImpact();
+                      }
+                    : null,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: 
+                  AnimalCardImage(curvedAnimation: _curvedAnimation, isPressed: isPressed, animal: animal)
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Animal details
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Name, symbol, and menu
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    animal.name,
+                                    style: const TextStyle(
+                                      fontFamily: 'CabinBold',
+                                      fontSize: 32.0,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                if (animal.symbol.isNotEmpty)
+                                  _buildIcon(animal.symbol, animal.symbolColor),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-              
-                  // Image with shadow and scale effect
-                  AnimatedScale(
-                    scale: isPressed ? 1.0 : 1.025,
-                    duration: const Duration(milliseconds: 0),
-                    child: Container(
-                      width: 105,
-                      height: 105,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.6),
-                            blurRadius: 0.9,
-                            spreadRadius: 0,
-                            offset: isPressed
-                                ? const Offset(0, 0)
-                                : const Offset(1, 1.5),
+                          PopupMenuButton<String>(
+                            offset: const Offset(0, 40),
+                            onSelected: (value) {
+                              // Handle menu item selection
+                              switch (value) {
+                                case 'Details':
+                                  context.push('/enrichment/details',
+                                      extra: animal);
+                                  break;
+                                case 'Add Note':
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        AddNoteView(animal: animal),
+                                  );
+                                  break;
+                                case 'Add Log':
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          AddLogView(animal: animal));
+                                  break;
+                              }
+                            },
+                            itemBuilder: (BuildContext context) {
+                              final appUser = ref.read(appUserProvider);
+                              final accountSettings = ref
+                                  .read(accountSettingsViewModelProvider)
+                                  .value;
+
+                              final menuItems = {'Details', 'Add Note'};
+                              if (appUser?.type == "admin" &&
+                                  accountSettings!.accountSettings?.mode ==
+                                      "Admin" &&
+                                  animal.inKennel) {
+                                menuItems.add('Add Log');
+                              }
+
+                              return menuItems.map((String choice) {
+                                return PopupMenuItem<String>(
+                                  value: choice,
+                                  child: Text(choice),
+                                );
+                              }).toList();
+                            },
+                            icon: const Icon(Icons.more_vert),
                           ),
                         ],
                       ),
-                      child: ClipOval(
-                        child: animal.photos?.isNotEmpty ?? false
-                            ? CachedNetworkImage(
-                                imageUrl: animal.photos?.first.url ?? '',
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Icon(
-                                    Icons.pets,
-                                    size: 50,
-                                    color: Colors.grey.shade400),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              )
-                            : Icon(Icons.pets,
-                                size: 50, color: Colors.grey.shade400),
+                      // Location
+
+                      Row(
+                        children: [
+                          Text(animal.location,
+                              style: TextStyle(
+                                  fontFamily: 'CabinBold',
+                                  fontSize: 25,
+                                  color: Colors.grey.shade800)),
+                        ],
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            // Animal details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Name, symbol, and menu
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                        Flexible(
-                        child: Row(
-                          children: [
-                          Flexible(
-                            child: Text(
-                            animal.name,
-                            style: const TextStyle(
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.w900,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          if (animal.symbol.isNotEmpty)
-                            _buildIcon(animal.symbol, animal.symbolColor),
-                          ],
+
+                      // Last Let out
+                      Text(
+                        _timeAgo(
+                            widget.animal.inKennel
+                                ? animal.logs.last.endTime.toDate()
+                                : animal.logs.last.startTime.toDate(),
+                            widget.animal.inKennel),
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontFamily: 'CabinBold',
                         ),
-                        ),
-                      PopupMenuButton<String>(
-                        offset: const Offset(0, 40),
-                        onSelected: (value) {
-                          // Handle menu item selection
-                          switch (value) {
-                            case 'Details':
-                              context.push('/enrichment/details',
-                                  extra: animal);
-                              break;
-                            case 'Add Note':
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    AddNoteView(animal: animal),
-                              );
-                              break;
-                            case 'Add Log':
-                              showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      AddLogView(animal: animal));
-                              break;
-                          }
-                        },
-                        itemBuilder: (BuildContext context) {
-                          final appUser = ref.read(appUserProvider);
-                          final accountSettings = ref
-                              .read(accountSettingsViewModelProvider)
-                              .value;
-              
-                          final menuItems = {'Details', 'Add Note'};
-                          if (appUser?.type == "admin" &&
-                              accountSettings!.accountSettings?.mode ==
-                                  "Admin" &&
-                              animal.inKennel) {
-                            menuItems.add('Add Log');
-                          }
-              
-                          return menuItems.map((String choice) {
-                            return PopupMenuItem<String>(
-                              value: choice,
-                              child: Text(choice),
-                            );
-                          }).toList();
-                        },
-                        icon: const Icon(Icons.more_vert),
                       ),
                     ],
                   ),
-                  // Location
-              
-                  Row(
-                    children: [
-                      Text(animal.location,
-                          style: TextStyle(
-                              fontSize: 25, color: Colors.grey.shade800)),
-                    ],
-                  ),
-              
-              
-                  // Last Let out
-                  Text(
-                    _timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel),
-                    style: TextStyle(color: Colors.grey.shade600),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
-}
-
-Widget _buildInfoChip({
-  required IconData icon,
-  required String label,
-  double textSize = 10.0,
-}) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.5),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.white.withOpacity(0.5)),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 12,
-          color: Colors.grey,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(color: Colors.black, fontSize: textSize),
-        ),
-      ],
-    ),
-  );
 }
 
 Icon _buildIcon(String symbol, String symbolColor) {
@@ -511,3 +438,4 @@ Color _parseColor(String colorString) {
       return Colors.transparent; // Default case if color is not recognized
   }
 }
+
