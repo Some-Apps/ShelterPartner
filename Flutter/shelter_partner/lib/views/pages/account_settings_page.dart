@@ -97,24 +97,25 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                               onChanged: (String? newValue) {
                                 if (newValue != null && newValue.isNotEmpty) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .modifyAccountSettingString(
                                           user!.id, "mode", newValue);
-                  
+
                                   final appUser =
                                       ref.read(appUserProvider.notifier).state;
                                   final updatedAppUser = appUser!.copyWith(
                                     accountSettings: appUser.accountSettings
                                         ?.copyWith(mode: newValue),
                                   );
-                  
-                                  if (context.mounted && newValue != 'Visitor') {
+
+                                  if (context.mounted &&
+                                      newValue != 'Visitor') {
                                     context.go('/enrichment');
                                   } else {
                                     context.go('/visitors');
                                   }
-                  
+
                                   // Update the provider with the new state
                                   ref.read(appUserProvider.notifier).state =
                                       updatedAppUser;
@@ -126,23 +127,25 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                               height: 0,
                               thickness: 1,
                             ),
-
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Remove Ads",
-                                value: user?.accountSettings?.removeAds ?? false,
+                                value:
+                                    user?.accountSettings?.removeAds ?? false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .toggleAttribute(user!.id, "removeAds");
                                 },
                               ),
+                              subtitle: const Text(
+                                  "Just for testing. Not in final app."),
                             ),
                           ],
                         )),
                         const SizedBox(height: 25.0),
-                  // Enrichment
+                        // Enrichment
                         const Padding(
                           padding: EdgeInsets.only(left: 16.0),
                           child: Text(
@@ -161,8 +164,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                               onChanged: (String? newValue) {
                                 if (newValue != null && newValue.isNotEmpty) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .modifyAccountSettingString(
                                           user!.id, "enrichmentSort", newValue);
                                 }
@@ -180,7 +183,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                 title: "Account Enrichment Filter",
                                 collection: 'users',
                                 documentID: shelterAsyncValue.value!.id,
-                                filterFieldPath: 'accountSettings.enrichmentFilter',
+                                filterFieldPath:
+                                    'accountSettings.enrichmentFilter',
                               ),
                             ),
                             Divider(
@@ -199,8 +203,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                 focusNode: _focusNode,
                                 onChanged: (String value) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .modifyAccountSettingString(
                                           user!.id, "customFormURL", value);
                                 },
@@ -218,18 +222,19 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                 minValue: 1,
                                 maxValue: 600,
                                 value:
-                                    user?.accountSettings?.minimumLogMinutes ?? 0,
+                                    user?.accountSettings?.minimumLogMinutes ??
+                                        0,
                                 increment: () {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .incrementAttribute(
                                           user!.id, "minimumLogMinutes");
                                 },
                                 decrement: () {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .decrementAttribute(
                                           user!.id, "minimumLogMinutes");
                                 },
@@ -243,12 +248,13 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Photo Uploads Allowed",
-                                value: user?.accountSettings?.photoUploadsAllowed ??
+                                value: user?.accountSettings
+                                        ?.photoUploadsAllowed ??
                                     false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .toggleAttribute(
                                           user!.id, "photoUploadsAllowed");
                                 },
@@ -262,12 +268,13 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Allow Bulk Take Out",
-                                value: user?.accountSettings?.allowBulkTakeOut ??
-                                    false,
+                                value:
+                                    user?.accountSettings?.allowBulkTakeOut ??
+                                        false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .toggleAttribute(
                                           user!.id, "allowBulkTakeOut");
                                 },
@@ -281,12 +288,13 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Require Let Out Type",
-                                value: user?.accountSettings?.requireLetOutType ??
-                                    false,
+                                value:
+                                    user?.accountSettings?.requireLetOutType ??
+                                        false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .toggleAttribute(
                                           user!.id, "requireLetOutType");
                                 },
@@ -305,10 +313,10 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                     false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
-                                      .toggleAttribute(
-                                          user!.id, "requireEarlyPutBackReason");
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
+                                      .toggleAttribute(user!.id,
+                                          "requireEarlyPutBackReason");
                                 },
                               ),
                             ),
@@ -320,11 +328,12 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Require Name",
-                                value: user?.accountSettings?.requireName ?? false,
+                                value:
+                                    user?.accountSettings?.requireName ?? false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .toggleAttribute(user!.id, "requireName");
                                 },
                               ),
@@ -336,14 +345,15 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ),
                             ListTile(
                               title: SwitchToggleView(
-                                title: "Create Logs When Under Minimum Duration",
+                                title:
+                                    "Create Logs When Under Minimum Duration",
                                 value: user?.accountSettings
                                         ?.createLogsWhenUnderMinimumDuration ??
                                     false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .toggleAttribute(user!.id,
                                           "createLogsWhenUnderMinimumDuration");
                                 },
@@ -357,13 +367,14 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Show Custom Form",
-                                value:
-                                    user?.accountSettings?.showCustomForm ?? false,
+                                value: user?.accountSettings?.showCustomForm ??
+                                    false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
-                                      .toggleAttribute(user!.id, "showCustomForm");
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
+                                      .toggleAttribute(
+                                          user!.id, "showCustomForm");
                                 },
                               ),
                             ),
@@ -375,13 +386,13 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Append Animal Data To URL",
-                                value:
-                                    user?.accountSettings?.appendAnimalDataToURL ??
-                                        false,
+                                value: user?.accountSettings
+                                        ?.appendAnimalDataToURL ??
+                                    false,
                                 onChanged: (bool newValue) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .toggleAttribute(
                                           user!.id, "appendAnimalDataToURL");
                                 },
@@ -389,9 +400,9 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ),
                           ],
                         )),
-                  
+
                         const SizedBox(height: 25.0),
-                  
+
                         const Padding(
                           padding: EdgeInsets.only(left: 16.0),
                           child: Text(
@@ -409,8 +420,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                               onChanged: (String? newValue) {
                                 if (newValue != null && newValue.isNotEmpty) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .modifyAccountSettingString(
                                           user!.id, "visitorSort", newValue);
                                 }
@@ -423,12 +434,14 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ),
                             NavigationButton(
                               title: "Visitor Filter",
-                              route: '/settings/account-settings/visitor-filter',
+                              route:
+                                  '/settings/account-settings/visitor-filter',
                               extra: FilterParameters(
                                 title: "Account Visitor Filter",
                                 collection: 'users',
                                 documentID: shelterAsyncValue.value!.id,
-                                filterFieldPath: 'accountSettings.visitorFilter',
+                                filterFieldPath:
+                                    'accountSettings.visitorFilter',
                               ),
                             ),
                             Divider(
@@ -448,18 +461,18 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                               onChanged: (String? newValue) {
                                 if (newValue != null && newValue.isNotEmpty) {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .modifyAccountSettingString(
                                           user!.id, "slideshowSize", newValue);
-                  
+
                                   final appUser =
                                       ref.read(appUserProvider.notifier).state;
                                   final updatedAppUser = appUser!.copyWith(
                                     accountSettings: appUser.accountSettings
                                         ?.copyWith(slideshowSize: newValue),
                                   );
-                  
+
                                   // Update the provider with the new state
                                   ref.read(appUserProvider.notifier).state =
                                       updatedAppUser;
@@ -471,25 +484,25 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                               height: 0,
                               thickness: 1,
                             ),
-                            
                             ListTile(
                               title: NumberStepperView(
                                 title: "Slideshow Timer",
                                 label: "seconds",
                                 minValue: 5,
                                 maxValue: 600,
-                                value: user?.accountSettings?.slideshowTimer ?? 15,
+                                value:
+                                    user?.accountSettings?.slideshowTimer ?? 15,
                                 increment: () {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .incrementAttribute(
                                           user!.id, "slideshowTimer");
                                 },
                                 decrement: () {
                                   ref
-                                      .read(
-                                          accountSettingsViewModelProvider.notifier)
+                                      .read(accountSettingsViewModelProvider
+                                          .notifier)
                                       .decrementAttribute(
                                           user!.id, "slideshowTimer");
                                 },
