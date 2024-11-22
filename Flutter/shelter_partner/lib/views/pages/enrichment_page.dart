@@ -314,8 +314,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
         child: LayoutBuilder(
           builder: (context, constraints) {
             final int columns = (constraints.maxWidth / 390).floor();
+            final int simplisticColumns = (constraints.maxWidth / 350).floor();
             final double aspectRatio = constraints.maxWidth / (columns * 215);
-            final double simplisticAspectRatio = constraints.maxWidth / (columns * 160);
+            final double simplisticAspectRatio = constraints.maxWidth / (columns * 200);
             return PagedGridView<int, dynamic>(
               pagingController: pagingController,
               scrollController: _scrollController,
@@ -344,7 +345,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                     const Center(child: Text('No animals found')),
               ),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columns,
+                crossAxisCount: accountSettings
+                        .value!.accountSettings!.simplisticMode ? simplisticColumns : columns,
                 crossAxisSpacing: 8.0,
                 mainAxisSpacing: 8.0,
                 childAspectRatio: accountSettings
@@ -740,6 +742,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
           borderRadius: BorderRadius.circular(25.0),
         ),
         clipBehavior: Clip.antiAlias,
+        
         child: InkWell(
           onTap: _launchUrl,
           child: Column(

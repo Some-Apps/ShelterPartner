@@ -337,7 +337,7 @@ class _SimplisticAnimalCardViewState
                               Text(
                                 animal.name,
                                 style: const TextStyle(
-                                  fontSize: 35.0,
+                                  fontSize: 25.0,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
