@@ -22,6 +22,7 @@ import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/scheduled_reports_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:shelter_partner/views/pages/shelter_settings_page.dart';
+import 'package:shelter_partner/views/pages/stats_page.dart';
 import 'package:shelter_partner/views/pages/switch_to_admin_page.dart';
 import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
@@ -241,6 +242,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: "change-password",
                     builder: (context, state) => const ChangePasswordPage(),
+                  ),
+                  GoRoute(
+                    path: "stats",
+                    builder: (context, state) => const StatsPage(),
                   ),
                   GoRoute(
                     path: 'shelter-settings',

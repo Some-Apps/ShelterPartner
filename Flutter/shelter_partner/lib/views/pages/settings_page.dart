@@ -101,6 +101,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   thickness: 1,
                                 ),
                                 ListTile(
+                                  leading: const Icon(Icons.bar_chart),
+                                  title: const Text("Shelter Stats"),
+                                  trailing: const Icon(Icons.chevron_right),
+                                  onTap: () {
+                                    context.push('/settings/stats');
+                                  },
+                                ),
+                                Divider(
+                                  color: Colors.black.withOpacity(0.1),
+                                  height: 0,
+                                  thickness: 1,
+                                ),
+                                ListTile(
                                   leading: const Icon(Icons.devices),
                                   title: const Text("Account Settings"),
                                   trailing: const Icon(Icons.chevron_right),
@@ -118,6 +131,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 leading: const Icon(Icons.swap_horiz),
                                 title: Text(
                                     "Toggle Account Type: ${appUser?.type}"),
+                                subtitle: const Text(
+                                    "Just for testing. Not in final app."),
                                 onTap: () async {
                                   final currentType = appUser?.type;
                                   final newType = currentType == 'admin'
@@ -190,7 +205,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 leading: const Icon(Icons.delete_outline),
                                 title: const Text("Delete Account"),
                                 subtitle: const Text(
-                                    "This won't be in the final app but I'd recommend deleting your account and recreating it every once in a while because the organization of the app is going to change a lot so stuff may break for old accounts."),
+                                    "Just for testing. Not in final app."),
                                 onTap: () async {
                                   final confirm = await showDialog<bool>(
                                     context: context,
