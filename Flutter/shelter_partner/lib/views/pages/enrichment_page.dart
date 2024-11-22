@@ -313,46 +313,46 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final int columns = (constraints.maxWidth / 390).floor();
-            final int simplisticColumns = (constraints.maxWidth / 350).floor();
-            final double aspectRatio = constraints.maxWidth / (columns * 215);
-            final double simplisticAspectRatio = constraints.maxWidth / (columns * 200);
-            return PagedGridView<int, dynamic>(
-              pagingController: pagingController,
-              scrollController: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                itemBuilder: (context, item, index) {
-                  if (item is Animal) {
-                    if (accountSettings
-                            .value!.accountSettings?.simplisticMode ??
-                        true) {
-                      return SimplisticAnimalCardView(animal: item);
-                    } else {
-                      return AnimalCardView(animal: item);
-                    }
-                  } else if (item is Ad) {
-                    return CustomAffiliateAd(ad: item);
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-                firstPageProgressIndicatorBuilder: (_) =>
-                    const Center(child: CircularProgressIndicator()),
-                newPageProgressIndicatorBuilder: (_) =>
-                    const Center(child: CircularProgressIndicator()),
-                noItemsFoundIndicatorBuilder: (_) =>
-                    const Center(child: Text('No animals found')),
-              ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: accountSettings
-                        .value!.accountSettings!.simplisticMode ? simplisticColumns : columns,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: accountSettings
-                        .value!.accountSettings!.simplisticMode ? simplisticAspectRatio : aspectRatio,
-              ),
-            );
+          final double minWidth = accountSettings.value!.accountSettings!.simplisticMode 
+            ? 600.0 
+            : 625.0;
+          final double itemHeight = accountSettings.value!.accountSettings!.simplisticMode 
+            ? 150.0 
+            : 235.0;
+          return PagedGridView<int, dynamic>(
+            pagingController: pagingController,
+            scrollController: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            builderDelegate: PagedChildBuilderDelegate<dynamic>(
+            itemBuilder: (context, item, index) {
+              if (item is Animal) {
+              if (accountSettings
+                  .value!.accountSettings?.simplisticMode ??
+                true) {
+                return SimplisticAnimalCardView(animal: item);
+              } else {
+                return AnimalCardView(animal: item);
+              }
+              } else if (item is Ad) {
+              return CustomAffiliateAd(ad: item);
+              } else {
+              return const SizedBox.shrink();
+              }
+            },
+            firstPageProgressIndicatorBuilder: (_) =>
+              const Center(child: CircularProgressIndicator()),
+            newPageProgressIndicatorBuilder: (_) =>
+              const Center(child: CircularProgressIndicator()),
+            noItemsFoundIndicatorBuilder: (_) =>
+              const Center(child: Text('No animals found')),
+            ),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: minWidth,
+            mainAxisExtent: itemHeight,
+            crossAxisSpacing: 8.0,
+            mainAxisSpacing: 8.0,
+            ),
+          );
           },
         ),
       );

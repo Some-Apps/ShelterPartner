@@ -328,20 +328,26 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                animal.name,
-                                style: const TextStyle(
-                                  fontSize: 25.0,
-                                  // fontWeight: FontWeight.bold,
+                          Flexible(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    animal.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 25.0,
+                                      // fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 5),
-                              if (animal.symbol.isNotEmpty)
-                                _buildIcon(animal.symbol, animal.symbolColor),
-                            ],
+                                const SizedBox(width: 5),
+                                if (animal.symbol.isNotEmpty)
+                                  _buildIcon(animal.symbol, animal.symbolColor),
+                              ],
+                            ),
                           ),
+
                           PopupMenuButton<String>(
                             offset: const Offset(0, 40),
                             onSelected: (value) {
