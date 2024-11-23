@@ -351,7 +351,7 @@ class _SimplisticAnimalCardViewState
                         children: [
                           Text(animal.location,
                               style: TextStyle(
-                                  fontFamily: 'CabinRegular',
+                                  fontFamily: 'CabinBold',
                                   fontSize: 25,
                                   color: Colors.grey.shade800)),
                         ],
@@ -369,7 +369,7 @@ class _SimplisticAnimalCardViewState
                                 widget.animal.inKennel),
                             style: TextStyle(
                               color: Colors.grey.shade600,
-                              fontFamily: 'CabinRegular',
+                              fontFamily: 'CabinBold',
                             ),
                           ),
                           if (animal.symbol.isNotEmpty)
