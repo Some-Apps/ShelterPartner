@@ -39,6 +39,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   qonversion_flutter: ^9.1.5
   auto_size_text: ^3.0.0
+  icon_decoration: ^2.1.0
 
 
 

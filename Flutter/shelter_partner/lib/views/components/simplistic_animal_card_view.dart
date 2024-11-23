@@ -19,6 +19,8 @@ import 'package:shelter_partner/views/components/animal_card_image.dart';
 import 'package:shelter_partner/views/components/put_back_confirmation_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:uuid/uuid.dart';
+import 'package:icon_decoration/icon_decoration.dart';
+
 
 class SimplisticAnimalCardView extends ConsumerStatefulWidget {
   final Animal animal;
@@ -289,9 +291,8 @@ class _SimplisticAnimalCardViewState
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                const SizedBox(width: 5),
-                                if (animal.symbol.isNotEmpty)
-                                  _buildIcon(animal.symbol, animal.symbolColor),
+                                // const SizedBox(width: 5),
+                                
                               ],
                             ),
                           ),
@@ -350,23 +351,33 @@ class _SimplisticAnimalCardViewState
                         children: [
                           Text(animal.location,
                               style: TextStyle(
-                                  fontFamily: 'CabinBold',
+                                  fontFamily: 'CabinRegular',
                                   fontSize: 25,
                                   color: Colors.grey.shade800)),
                         ],
                       ),
 
                       // Last Let out
-                      Text(
-                        _timeAgo(
-                            widget.animal.inKennel
-                                ? animal.logs.last.endTime.toDate()
-                                : animal.logs.last.startTime.toDate(),
-                            widget.animal.inKennel),
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontFamily: 'CabinBold',
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _timeAgo(
+                                widget.animal.inKennel
+                                    ? animal.logs.last.endTime.toDate()
+                                    : animal.logs.last.startTime.toDate(),
+                                widget.animal.inKennel),
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontFamily: 'CabinRegular',
+                            ),
+                          ),
+                          if (animal.symbol.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: _buildIcon(animal.symbol, animal.symbolColor),
+                                  ),
+                        ],
                       ),
                     ],
                   ),
@@ -380,8 +391,8 @@ class _SimplisticAnimalCardViewState
   }
 }
 
-Icon _buildIcon(String symbol, String symbolColor) {
-  IconData iconData;
+Widget _buildIcon(String symbol, String symbolColor) {
+  IconData? iconData;
 
   switch (symbol) {
     case 'pets':
@@ -394,20 +405,24 @@ Icon _buildIcon(String symbol, String symbolColor) {
       iconData = Icons.star;
       break;
     default:
-      iconData = Icons.help_outline;
+      return const SizedBox.shrink(); // No icon for default case
   }
 
-  return Icon(
+  return DecoratedIcon(icon: Icon(
     iconData,
     color: _parseColor(symbolColor),
-    shadows: [
-      Shadow(
-        blurRadius: 1.0,
-        color: Colors.black.withOpacity(0.7),
-        offset: const Offset(0.35, 0.35),
-      ),
-    ],
+    size: 24, // Original size
+  ),
+  
+  decoration: const IconDecoration(
+    border: IconBorder(
+      color: Colors.black,
+      width: 0.75,
+    )
+  ),
   );
+  
+  
 }
 
 Color _parseColor(String colorString) {
