@@ -8,6 +8,17 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Register the YouTube iframe element
+    // ignore: undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory(
+      'youtube-video',
+      (int viewId) => html.IFrameElement()
+        ..width = '560'
+        ..height = '315'
+        ..src = 'https://www.youtube.com/embed/obv5Pvv2caw' // Replace with your video ID
+        ..style.border = 'none',
+    );
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -23,18 +34,50 @@ class HomePage extends StatelessWidget {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-                    Tooltip(
-                        message: "Coming January 1, 2025\nWindows\nMac\niOS\nAndroid\nWeb",
-                      child: TextButton(
-                        onPressed: () {
-                          // Handle the button press if needed
-                        },
-                        child: const Text(
-                          'Download',
-                          style: TextStyle(color: Colors.black),
-                        ),
+              // Beta Button
+              TextButton(
+                onPressed: () {
+                  launchUrl(Uri(
+                    scheme: 'https',
+                    host: 'beta.shelterpartner.org',
+                  ));
+                },
+                child: const Text(
+                  'Beta',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              // Download Button with Dialog Tooltip
+              TextButton(
+                onPressed: () {
+                    showDialog(
+                    context: context,
+                    builder: (context) => const AlertDialog(
+                      title: Text('Download Information'),
+                      content: Text(
+                      'Coming January 1, 2025\n\n'
+                      'Platforms:\n'
+                      '- Windows\n'
+                      '- Mac\n'
+                      '- iOS\n'
+                      '- Android\n'
+                      '- Web',
+                      style: TextStyle(fontSize: 16),
                       ),
+                      actions: [
+                      // TextButton(
+                      //   onPressed: () => Navigator.of(context).pop(),
+                      //   child: const Text('OK'),
+                      // ),
+                      ],
                     ),
+                    );
+                },
+                child: const Text(
+                  'Download',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
               TextButton(
                 onPressed: () {
                   launchUrl(Uri(
@@ -88,26 +131,33 @@ class HomePage extends StatelessWidget {
                       style: TextStyle(fontSize: 15),
                     ),
                     SizedBox(height: 36),
+                    // Text(
+                    //   'Create Account',
+                    //   style:
+                    //       TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    // ),
+                    // SizedBox(height: 16),
+                    // Text(
+                    //   'As I transition to Version 2, I have disabled the ability to create an account. If you would like to create an account, Version 2 will be released on January 1, 2025. If you have any questions, feel free to email me at jared@shelterpartner.org',
+                    //   style: TextStyle(fontSize: 15),
+                    // ),
+                    // SizedBox(height: 36),
                     Text(
-                      'Create Account',
+                      'Version 2 Demo',
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 16),
                     Text(
-                      'As I transition to Version 2, I have disabled the ability to create an account. If you would like to create an account, Version 2 will be released on January 1, 2025. If you have any questions, feel free to email me at jared@shelterpartner.org',
+                      'Version 2 is a complete rewrite of the app. It will be available on all platforms including web, iOS, Android, Windows, and Mac and will be released on January 1, 2025. You can watch the demo below and try it out by clicking the "Beta" button above.',
                       style: TextStyle(fontSize: 15),
                     ),
                     SizedBox(height: 36),
-                    Text(
-                      'Version 2',
-                      style:
-                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Version 2 is a complete rewrite of the app. It will be available on all platforms including web, iOS, Android, Windows, and Mac and will be released on January 1, 2025. A demo version of the app will be available on December 1, 2024. This will allow you to test the full functionality of the new version while helping me refine it and work out any bugs before the full release. If you have any questions, feel free to email me at jared@shelterpartner.org',
-                      style: TextStyle(fontSize: 15),
+                    // Embedded YouTube Video
+                    SizedBox(
+                      width: 560,
+                      height: 315,
+                      child: HtmlElementView(viewType: 'youtube-video'),
                     ),
                   ],
                 ),
