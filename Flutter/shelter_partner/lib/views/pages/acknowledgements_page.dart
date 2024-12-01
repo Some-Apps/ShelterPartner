@@ -82,11 +82,11 @@ class AcknowledgementsPage extends StatelessWidget {
                           subtitle: Text(
                               "Encouraged me to make the app available for other shelters."),
                         ),
-                        ListTile(
-                          title: Text("John Russell Seal"),
-                          subtitle: Text(
-                              "Shot a commercial for the app and provided b-roll footage."),
-                        ),
+                        // ListTile(
+                        //   title: Text("John Russell Seal"),
+                        //   subtitle: Text(
+                        //       "Shot a commercial for the app and provided b-roll footage."),
+                        // ),
                         ListTile(
                           title: Text("Early Adopters"),
                           subtitle: Text(
