@@ -142,7 +142,7 @@ struct SettingsView: View {
                 
 
                     Section(header: Text("About")) {
-                        Link("Tutorials", destination: URL(string: "https://shelterpartner.org/tutorials")!)
+                        Link("Tutorials", destination: URL(string: "https://shelterpartner.org/wiki")!)
                         
                         HStack {
                             Image(systemName: "info.circle")
@@ -155,7 +155,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.red)
                                 Text("Your app is not up to date. Please update when convenient.")
                                     .foregroundStyle(.red)
-                                Link("Update", destination: (URL(string: updateAppURL) ?? URL(string: "https://pawparnter.app"))!)
+                                Link("Update", destination: (URL(string: updateAppURL) ?? URL(string: "https://shelterpartner.org"))!)
                                     .buttonStyle(.bordered)
                             }
                         }

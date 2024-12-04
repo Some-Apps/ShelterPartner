@@ -19,6 +19,8 @@ struct CardView: View {
     @State private var showEditInfo = false
     @State private var showPopover = false
     @State private var isAnimating: Bool = false
+    @State private var showLocationPopover = false
+    @State private var showNamePopover = false
 
     @AppStorage("societyID") var societyID = ""
     @AppStorage("allowPhotoUploads") var allowPhotoUploads = true
@@ -46,7 +48,9 @@ struct CardView: View {
         let timeSinceLastLetOut: String = {
             if let lastLog = animal.logs.last,
                Int(animal.logs.last!.startTime) - Int(animal.logs.last!.endTime) != 0 {
-                return Date().timeDifference(from: Date(timeIntervalSince1970: lastLog.endTime))
+                let timeDiff = Date().timeDifference(from: Date(timeIntervalSince1970: lastLog.endTime))
+                let letOutType = lastLog.letOutType ?? ""
+                return "\(timeDiff)\(letOutType.isEmpty ? "" : " (\(letOutType))")"
             }
             return "No Logs"
         }()
@@ -54,21 +58,39 @@ struct CardView: View {
         let timeElapsed: String = {
             let interval = Date().timeIntervalSince(Date(timeIntervalSince1970: animal.startTime))
             let minutes = Int(interval) / 60
-            return "\(minutes) \(minutes != 1 ? "minutes" : "minute")"
+            let hours = minutes / 60
+            let days = hours / 24
+            var duration = ""
+            
+            if days > 0 {
+                duration = "\(days) \(days != 1 ? "days" : "day")"
+            } else if hours > 0 {
+                duration = "\(hours) \(hours != 1 ? "hours" : "hour")"
+            } else {
+                duration = "\(minutes) \(minutes != 1 ? "minutes" : "minute")"
+            }
+            
+            let lastLetOutType = animal.lastLetOutType ?? ""
+            return "\(duration)\(lastLetOutType.isEmpty ? "" : " (\(lastLetOutType))")"
         }()
+
         
         VStack(alignment: .leading) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 7) {
                     HStack(alignment: .center) {
-                        Menu {
+                        Text(animal.name)
+                            .font(.title)
+                            .bold()
+                            .underline()
+                            .foregroundStyle(.black)
+                        .onTapGesture {
+                            showNamePopover.toggle()
+                        }
+                        .popover(isPresented: $showNamePopover, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom) {
                             Text(animal.name)
-                        } label: {
-                            Text(animal.name)
-                                .font(.title)
-                                .bold()
-                                .underline()
-                                .foregroundStyle(.black)
+                                .padding()
+                                .presentationCompactAdaptation((.popover))
                         }
                             
                         Menu {
@@ -98,14 +120,7 @@ struct CardView: View {
                             Image(systemName: "ellipsis.circle")
                                 .foregroundStyle(.black.opacity(0.5))
                                 .font(.title)
-
                         }
-//                        if animal.animalType == .Dog && (societyID == "ChIJ8WVKpxEfAIgRIMOBoCkxBtY" || societyID == "ChIJgbjU6bBRBogRKBb3KxOJGn8") {
-//                            Image(systemName: animal.aggressionRating == 1 ? "1.circle.fill" : animal.aggressionRating == 2 ? "2.square.fill" : animal.aggressionRating == 3 ? "3.circle.fill" : "")
-//                                .font(.title)
-//                                .foregroundColor(animal.aggressionRating == 1 ? .green : animal.aggressionRating == 2 ? .orange : animal.aggressionRating == 3 ? .red : .primary.opacity(0.2))
-//
-//                        }
                         if let symbol = animal.symbol, let symbolColor = animal.symbolColor {
                             Image(systemName: symbol)
                                 .foregroundStyle(
@@ -135,16 +150,25 @@ struct CardView: View {
                                 Image(systemName: "tag")
                                 ForEach(topTags(for: animal, count: 3), id: \.self) {
                                     Text($0)
-                                        .background(.ultraThinMaterial)
+                                        .padding(.horizontal, 7)
+                                        .background(.regularMaterial)
+                                        .clipShape(.capsule)
 //                                        .clipShape(.containerRelative)
                                 }
                             }
                             .lineLimit(1)
                         }
-                        Menu(animal.location, systemImage: "mappin.circle") {
-                            Text(animal.fullLocation ?? animal.location)
-                        }
+                        Label(animal.location, systemImage: "mappin.circle")
                         .foregroundStyle(.black)
+                        .onTapGesture {
+                            showLocationPopover.toggle()
+                        }
+                        .popover(isPresented: $showLocationPopover, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom) {
+                            Text(animal.fullLocation ?? animal.location)
+                                .padding()
+                                .presentationCompactAdaptation((.popover))
+                        }
+
                         if let medicalGroup = animal.medicalGroup {
                             if !medicalGroup.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 Label(medicalGroup, systemImage: "stethoscope.circle")
@@ -202,7 +226,7 @@ struct CardView: View {
         .padding()
         .background(RoundedRectangle(cornerRadius: 20)
             .foregroundColor(backgroundColor)
-            .shadow(color: .black.opacity(0.5), radius: 2, x: 1, y: 2))
+            .shadow(color: .black.opacity(0.5), radius: 1, x: 1, y: 2))
         .sheet(isPresented: $showViewInfo) {
             ViewInfoView(viewModel: ViewInfoViewModel(animal: animal))
         }

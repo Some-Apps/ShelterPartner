@@ -15,11 +15,15 @@ struct SettingElement: View {
                     .foregroundStyle(.blue)
             }
             .popover(isPresented: $showPopover) {
-                Text(explanation)
-                    .padding()
-                    .textCase(nil)
-                    .lineLimit(nil) // Allows unlimited lines
-                    .fixedSize(horizontal: false, vertical: true) // Wrap text to new line
+                ScrollView {
+                    Text(explanation)
+                        .padding()
+                        .textCase(nil)
+                        .lineLimit(nil) // Allows unlimited lines
+//                        .fixedSize(horizontal: false, vertical: true) // Wrap text to new line
+                        .presentationCompactAdaptation(.popover)
+                }
+                .frame(maxHeight: 750)
             }
             Text(title)
         }

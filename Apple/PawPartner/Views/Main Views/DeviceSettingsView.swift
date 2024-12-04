@@ -52,18 +52,18 @@ struct DeviceSettingsView: View {
         Form {
             Section {
                 Toggle(isOn: $volunteerSettingsEnabled) {
-                    SettingElement(title: "Apply Device Settings To Volunteer Accounts: \(volunteerSettingsEnabled ? "Enabled" : "Disabled")", explanation: "Apply all the settings on this page your volunteer accounts.")
+                    SettingElement(title: "Apply Device Settings To Volunteer Accounts", explanation: "Apply all the settings on this page your volunteer accounts.")
                 }
                     .tint(.customBlue)
                     .onChange(of: volunteerSettingsEnabled) { _ in saveSettings() }
             }
             Toggle(isOn: $adminMode) {
-                SettingElement(title: "Admin Mode: \(adminMode ? "Enabled" : "Disabled")", explanation: "Turn on when allowing someone else to use your device. This will disable settings and destructive actions until you enter your password.")
+                SettingElement(title: "Admin Mode", explanation: "Turn on when allowing someone else to use your device. This will disable settings and destructive actions until you enter your password.")
             }
                 .tint(.customBlue)
                 .onChange(of: adminMode) { _ in saveSettings() }
             Toggle(isOn: $allowPhotoUploads) {
-                SettingElement(title: "Photo Uploads: \(allowPhotoUploads ? "Enabled" : "Disabled")", explanation: "Allow users to add photos by scanning a QR Code when the device is an Admin Account or directly from the device when a Volunteer Account")
+                SettingElement(title: "Photo Uploads", explanation: "Allow users to add photos by scanning a QR Code when the device is an Admin Account or directly from the device when a Volunteer Account")
             }
                 .tint(.customBlue)
                 .onChange(of: allowPhotoUploads) { _ in saveSettings() }
@@ -92,12 +92,12 @@ struct DeviceSettingsView: View {
             
             Section {
                 Toggle(isOn: $enableAutomaticPutBack) {
-                    SettingElement(title: "Automatically Put Back Animals: \(enableAutomaticPutBack ? "Enabled" : "Disabled")", explanation: "Automatically put back animals that have been out of their kennel for a period of time.")
+                    SettingElement(title: "Automatically Put Back Animals", explanation: "Automatically put back animals that have been out of their kennel for a period of time.")
                 }
                     .tint(.customBlue)
                     .onChange(of: enableAutomaticPutBack) { _ in saveSettings() }
                 Toggle(isOn: $automaticPutBackIgnoreVisit) {
-                    SettingElement(title: "Ignore Visit When Automatically Put Back: \(automaticPutBackIgnoreVisit ? "Enabled" : "Disabled")", explanation: "Ignore the visit and don't create a log when an animal is automatically put back.")
+                    SettingElement(title: "Ignore Visit When Automatically Put Back", explanation: "Ignore the visit and don't create a log when an animal is automatically put back.")
                 }
                     .tint(.customBlue)
                     .disabled(!enableAutomaticPutBack)
@@ -111,7 +111,7 @@ struct DeviceSettingsView: View {
 
             Section {
                 Toggle(isOn: $requireLetOutType) {
-                    SettingElement(title: "Show \"Let Out Type\" Prompt: \(requireLetOutType ? "Enabled" : "Disabled")", explanation: "When a user takes out an animal, they will be prompted to specify what the animal will be doing. For example, whether they'll be going for a walk or in a playgroup. You can specify these options in Shelter Settings")
+                    SettingElement(title: "Show \"Let Out Type\" Prompt", explanation: "When a user takes out an animal, they will be prompted to specify what the animal will be doing. For example, whether they'll be going for a walk or in a playgroup. You can specify these options in Shelter Settings")
                 }
                 .tint(.customBlue)
                 .onChange(of: requireLetOutType) { _ in saveSettings() }
@@ -120,7 +120,7 @@ struct DeviceSettingsView: View {
             
             Section {
                 Toggle(isOn: $requireReason) {
-                    SettingElement(title: "Require Reason When Under Minimum Duration: \(requireReason ? "Enabled" : "Disabled")", explanation: "Require users to a add a reason for why they put the animal back before the minimum duration. You can create a list of reasons for them to choose from in Shelter Setttings.")
+                    SettingElement(title: "Require Reason When Under Minimum Duration", explanation: "Require users to a add a reason for why they put the animal back before the minimum duration. You can create a list of reasons for them to choose from in Shelter Setttings.")
                 }
                     .tint(.customBlue)
                     .onChange(of: requireReason) { _ in saveSettings() }
@@ -128,7 +128,7 @@ struct DeviceSettingsView: View {
             
             Section {
                 Toggle(isOn: $createLogsAlways) {
-                    SettingElement(title: "Create Logs Even Under Minimum Duration: \(createLogsAlways ? "Enabled" : "Disabled")", explanation: "Create logs for animals that are put back before the minimum duration.")
+                    SettingElement(title: "Create Logs Even Under Minimum Duration", explanation: "Create logs for animals that are put back before the minimum duration.")
                 }
                     .tint(.customBlue)
                     .onChange(of: createLogsAlways) { _ in saveSettings() }
@@ -142,21 +142,21 @@ struct DeviceSettingsView: View {
             }
             Section {
                 Toggle(isOn: $showNoteDates) {
-                    SettingElement(title: "Show Note Dates: \(showNoteDates ? "Enabled" : "Disabled")", explanation: "Display the date notes were created")
+                    SettingElement(title: "Show Note Dates", explanation: "Display the date notes were created")
                 }
                     .tint(.customBlue)
                     .onChange(of: showNoteDates) { _ in saveSettings() }
             }
             Section {
                 Toggle(isOn: $requireName) {
-                    SettingElement(title: "Require Name: \(requireName ? "Enabled" : "Disabled")", explanation: "Before an animal can be taken out, you must enter your name if you are not logged in to your volunteer account.")
+                    SettingElement(title: "Require Name", explanation: "Before an animal can be taken out, you must enter your name if you are not logged in to your volunteer account.")
                 }
                     .tint(.customBlue)
                     .onChange(of: requireName) { _ in saveSettings() }
             }
             Section {
                 Toggle(isOn: $isCustomFormOn) {
-                    SettingElement(title: "Custom Form: \(isCustomFormOn ? "Enabled" : "Disabled")", explanation: "If you would like to prompt users to fill out a custom form of your choice after visiting with an animal, add the url and turn on the toggle. This will display a \"Custom Form\" button on the \"Thank You\" pop up after putting an animal back. If the button doesn't work, make sure your url begins with https://")
+                    SettingElement(title: "Custom Form", explanation: "If you would like to prompt users to fill out a custom form of your choice after visiting with an animal, add the url and turn on the toggle. This will display a \"Custom Form\" button on the \"Thank You\" pop up after putting an animal back. If the button doesn't work, make sure your url begins with https://")
                 }
                     .tint(.customBlue)
                     .onChange(of: isCustomFormOn) { _ in saveSettings() }
@@ -190,14 +190,14 @@ struct DeviceSettingsView: View {
             
             Section {
                 Toggle(isOn: $showAllAnimals) {
-                    SettingElement(title: "Display All Animals: \(showAllAnimals ? "Enabled" : "Disabled")", explanation: "Display all animals including ones you've selected to filter out. Filtered animals will be gray and won't be able to be taken out.")
+                    SettingElement(title: "Display All Animals", explanation: "Display all animals including ones you've selected to filter out. Filtered animals will be gray and won't be able to be taken out.")
                 }
                     .tint(.customBlue)
                     .onChange(of: showAllAnimals) { _ in saveSettings() }
             }
             Section {
                 Toggle(isOn: $showSearchBar) {
-                    SettingElement(title: "Show Search Bar: \(showSearchBar ? "Enabled" : "Disabled")", explanation: "Search animals by name, notes, breed, etc.")
+                    SettingElement(title: "Show Search Bar", explanation: "Search animals by name, notes, breed, etc.")
                 }
                     .tint(.customBlue)
                     .onChange(of: showSearchBar) { _ in saveSettings() }

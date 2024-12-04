@@ -1,0 +1,2 @@
+As a volunteer, the Volunteer View will be the most important and relevant page you use. Here you can find out more about the animals in the shelter and document your own experiences with them, as well as locate which animals you should tend to first and keep the shelter informed of an animal's whereabouts and wellbeing. 
+The [Animal Cards](Animal%20Card.md) at the top of the page are of the highest priority. Once an animal has been taken out of its kennel and placed back, its card will go to the back of the queue. 

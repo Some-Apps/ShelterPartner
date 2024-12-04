@@ -65,6 +65,11 @@ struct AnimalView: View {
     @AppStorage("expandedGroupsStorageeDogs") private var expandedGroupsStorageDogs: String = ""
     @State private var expandedGroupsCats: Set<String> = []
     @State private var expandedGroupsDogs: Set<String> = []
+    
+    @State private var displayedGroups: Set<String> = [] // Tracks displayed groups across pagination
+    @State private var visitedPages: Set<Int> = [] // Track visited pages
+
+
 
     @State private var currentPage = 1
 
@@ -263,7 +268,12 @@ struct AnimalView: View {
                         }
                     }
                     if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
-                        PageNavigationElement(currentPage: $currentPage, totalPages: totalPages(animalType == .Cat ? filteredCatsList : filteredDogsList))
+                        PageNavigationElement(
+                            currentPage: $currentPage,
+                            totalPages: totalPages(animalType == .Cat ? filteredCatsList : filteredDogsList),
+                            onPageChange: handlePageChange // Trigger page change handling
+                        )
+ 
                     }
                     switch animalType {
                     case .Dog:
@@ -275,6 +285,7 @@ struct AnimalView: View {
                                 columns: columns,
                                 cardViewModel: cardViewModel,
                                 cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }
+                                
                             )
                         } else {
                             GroupAnimalGridView(
@@ -284,7 +295,9 @@ struct AnimalView: View {
 
                                 columns: columns,
                                 cardViewModel: cardViewModel,
-                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }, expandedGroups: $expandedGroupsDogs
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }, expandedGroups: $expandedGroupsDogs,
+                                displayedGroups: $displayedGroups,
+                                currentPage: $currentPage
                             )
                         }
                     case .Cat:
@@ -305,13 +318,19 @@ struct AnimalView: View {
 
                                 columns: columns,
                                 cardViewModel: cardViewModel,
-                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }, expandedGroups: $expandedGroupsCats
+                                cardView: { CardView(animal: $0, showAnimalAlert: $showAnimalAlert, viewModel: cardViewModel) }, expandedGroups: $expandedGroupsCats,
+                                displayedGroups: $displayedGroups,
+                                currentPage: $currentPage
                             )
                         }
                     }
 
                     if animalType == .Cat ? (!viewModel.sortedCats.isEmpty) : (!viewModel.sortedDogs.isEmpty) {
-                        PageNavigationElement(currentPage: $currentPage, totalPages: totalPages(animalType == .Cat ? filteredCatsList : filteredDogsList))
+                        PageNavigationElement(
+                            currentPage: $currentPage,
+                            totalPages: totalPages(animalType == .Cat ? filteredCatsList : filteredDogsList),
+                            onPageChange: handlePageChange // Trigger page change handling
+                        )
 
                         if authViewModel.accountType == "admin" {
                             Button {
@@ -325,7 +344,7 @@ struct AnimalView: View {
                                 .fontWeight(.black)
                             }
                         } else {
-                            Link(destination: URL(string: "https://shelterpartner.org/tutorials")!) {
+                            Link(destination: URL(string: "https://shelterpartner.org/wiki")!) {
                                 Label("Tutorials", systemImage: "globe")
                             }
 
@@ -431,14 +450,14 @@ struct AnimalView: View {
             QRCodeView(animal: viewModel.animal)
         }
         .sheet(isPresented: $showTutorialQRCode) {
-            Image(uiImage: generateQRCode(from: "https://shelterpartner.org/tutorials"))
+            Image(uiImage: generateQRCode(from: "https://shelterpartner.org/wiki"))
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: 500)
         }
         .present(isPresented: $viewModel.showRequireName, type: .alert, duration: 60, closeOnTap: false, closeOnTapOutside: false) {
-            RequireNameView(animal: viewModel.animal)
+            RequireNameView(animal: viewModel.animal, shouldTakeOutAfter: viewModel.showRequireLetOutType)
         }
         .present(isPresented: $viewModel.showRequireReason, type: .alert, duration: 60, closeOnTap: false, closeOnTapOutside: false) {
             RequireReasonView(animal: viewModel.animal)
@@ -451,6 +470,19 @@ struct AnimalView: View {
         }
     }
 
+    private func handlePageChange(newPage: Int) {
+        if visitedPages.contains(newPage) {
+            // If we're navigating to a previously visited page, reset displayedGroups
+            displayedGroups = Set<String>()
+        } else {
+            // Otherwise, mark the new page as visited
+            visitedPages.insert(newPage)
+        }
+
+        // Update the current page
+        currentPage = newPage
+    }
+    
     private func updatePresentationState() {
         shouldPresentThankYouView = viewModel.showLogCreated && isImageLoaded
     }
@@ -586,16 +618,19 @@ struct AnimalView: View {
 
 
     private func totalPages(_ animals: [Animal]) -> Int {
-        let animalCount = animals.count
+        // Filter out animals with name equal to "placeholderanimal"
+        let filteredAnimals = animals.filter { $0.name != "placeholderanimal" }
+        let animalCount = filteredAnimals.count
         let pages = Double(animalCount) / Double(cardsPerPage)
         return max(1, Int(ceil(pages)))
     }
+
 
     private func paginatedAnimals(_ animals: [Animal]) -> [Animal] {
         let startIndex = max(0, (currentPage - 1) * cardsPerPage)
         let endIndex = min(startIndex + cardsPerPage, animals.count)
 
-        guard startIndex < animals.count else {
+        guard startIndex <= animals.count else {
             print("Start index \(startIndex) out of bounds for array of size \(animals.count)")
             return []
         }
@@ -664,9 +699,14 @@ struct GroupAnimalGridView: View {
     let columns: [GridItem]
     let cardViewModel: CardViewModel
     let cardView: (Animal) -> CardView
+    @State private var visitedPages: Set<Int> = []
+    @State private var groupToPage: [String: Int] = [:] // Tracks the page where each empty group was first displayed
     @Binding var expandedGroups: Set<String>
-    @AppStorage("groupOption") var groupOption = ""
+    @Binding var displayedGroups: Set<String> // Tracks groups that have been displayed globally (empty groups)
+    @Binding var currentPage: Int
 
+    @AppStorage("groupOption") var groupOption = ""
+    
     var body: some View {
         if allAnimals.isEmpty {
             VStack {
@@ -676,46 +716,131 @@ struct GroupAnimalGridView: View {
         } else {
             ScrollView {
                 LazyVStack(alignment: .leading) {
-                    ForEach(groupAnimals().sorted(by: { $0.key < $1.key }), id: \.key) { group, animals in
-                        Section(
-                            header: NavigationLink {
-                                GroupsView(species: species, groupCategory: groupOption, groupSelection: group, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
-                            } label: {
-                                HStack {
-                                    Text(group)
-                                    Button {
-                                        if expandedGroups.contains(group) {
-                                            expandedGroups.remove(group)
-                                        } else {
-                                            expandedGroups.insert(group)
+                    ForEach(animalGroups(), id: \.self) { group in
+                        let groupedAnimals = groupAnimals()[group] ?? []
+                        
+                        if groupedAnimals.isEmpty {
+                            // Check if the group should be displayed
+                            if shouldDisplayEmptyGroup(group) {
+                                VStack(alignment: .leading) {
+                                    NavigationLink(destination: GroupsView(species: species, groupCategory: groupOption, groupSelection: group, columns: columns, cardViewModel: cardViewModel, cardView: cardView)) {
+                                        HStack {
+                                            Text(group)
+                                                .font(.title)
+                                                .fontWeight(.bold)
+                                                .foregroundStyle(.black)
+                                            Button {
+                                                toggleGroupExpansion(for: group)
+                                            } label: {
+                                                Image(systemName: expandedGroups.contains(group) ? "chevron.down" : "chevron.right")
+                                                    .font(.title)
+                                                    .foregroundStyle(.secondary)
+                                            }
                                         }
-                                    } label: {
-                                        Image(systemName: expandedGroups.contains(group) ? "chevron.down" : "chevron.right")
+                                        .padding()
                                     }
                                 }
-                                .foregroundStyle(.black)
-                                .fontWeight(.bold)
-                                .font(.title)
-                                .padding([.leading, .trailing, .top])
+                                .onAppear {
+                                    markGroupAsDisplayed(group) // Track that this empty group has been displayed
+                                }
                             }
-                        ) {
-                            if expandedGroups.contains(group) {
-                                LazyVGrid(columns: columns) {
-                                    ForEach(animals, id: \.id) { animal in
-                                        cardView(animal)
-                                            .padding(2)
+                        } else {
+                            // Always show non-empty groups
+                            Section(
+                                header: NavigationLink(destination: GroupsView(species: species, groupCategory: groupOption, groupSelection: group, columns: columns, cardViewModel: cardViewModel, cardView: cardView)) {
+                                    HStack {
+                                        Text(group)
+                                            .font(.title)
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(.black)
+                                        Button {
+                                            toggleGroupExpansion(for: group)
+                                        } label: {
+                                            Image(systemName: expandedGroups.contains(group) ? "chevron.down" : "chevron.right")
+                                                .font(.title)
+                                                .foregroundStyle(.secondary)
+                                        }
                                     }
+                                    .padding()
                                 }
-                                .padding(.horizontal)
-                                .id(animals)  // Force UI update
+                            ) {
+                                if expandedGroups.contains(group) {
+                                    LazyVGrid(columns: columns) {
+                                        ForEach(groupedAnimals, id: \.id) { animal in
+                                            cardView(animal)
+                                                .padding(2)
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                    .id(groupedAnimals)  // Force UI update
+                                }
                             }
                         }
                     }
                 }
             }
+            .onAppear {
+                visitedPages.insert(currentPage) // Mark the page as visited when it appears
+            }
         }
     }
 
+    // This function checks if the empty group should be displayed on the current page
+    private func shouldDisplayEmptyGroup(_ group: String) -> Bool {
+        // Display if the group hasn't been displayed before
+        if displayedGroups.contains(group) {
+            // Check if this group is already tied to a page, and if so, only display it on that page
+            if let page = groupToPage[group], page == currentPage {
+                return true // Only show it on the page where it was originally displayed
+            }
+            return false // Don't show it on any new pages
+        } else {
+            return true // This group hasn't been displayed yet, allow it to be shown
+        }
+    }
+
+    // This function marks an empty group as displayed and records the page where it was displayed
+    private func markGroupAsDisplayed(_ group: String) {
+        if !displayedGroups.contains(group) {
+            // Track the group and the page where it was displayed
+            displayedGroups.insert(group)
+            groupToPage[group] = currentPage // Remember which page it was displayed on
+        }
+    }
+
+    // This function toggles the group expansion
+    private func toggleGroupExpansion(for group: String) {
+        if expandedGroups.contains(group) {
+            expandedGroups.remove(group)
+        } else {
+            expandedGroups.insert(group)
+        }
+    }
+
+    // This function returns the available groups as an array
+    private func animalGroups() -> [String] {
+        let groups: [String]
+        switch groupOption {
+        case "Color":
+            groups = Array(Set(allAnimals.map { $0.colorGroup ?? "\u{200B}Unknown Group" }))
+        case "Building":
+            groups = Array(Set(allAnimals.map { $0.buildingGroup ?? "\u{200B}Unknown Group" }))
+        case "Behavior":
+            groups = Array(Set(allAnimals.map { $0.behaviorGroup ?? "\u{200B}Unknown Group" }))
+        case "Adoption":
+            groups = Array(Set(allAnimals.map { $0.adoptionGroup ?? "\u{200B}Unknown Group" }))
+        case "Medical":
+            groups = Array(Set(allAnimals.map { $0.medicalGroup ?? "\u{200B}Unknown Group" }))
+        case "Location":
+            groups = Array(Set(allAnimals.map { $0.locationGroup ?? "\u{200B}Unknown Group" }))
+        default:
+            groups = Array(Set(allAnimals.map { _ in "\u{200B}Unknown Group" }))
+        }
+
+        return groups.sorted() // Sorting the groups alphabetically
+    }
+
+    // This function returns a dictionary of groups with their animals
     private func groupAnimals() -> [String: [Animal]] {
         let groupedAnimals: [String: [Animal]]
         switch groupOption {
@@ -735,36 +860,14 @@ struct GroupAnimalGridView: View {
             groupedAnimals = Dictionary(grouping: animals, by: { _ in "\u{200B}Unknown Group" })
         }
 
-        // Ensure all groups are included
-        let allGroups: Set<String> = Set(groupedAnimals.keys).union(
-            Set(animals.compactMap { animal in
-                switch groupOption {
-                case "Color":
-                    return animal.colorGroup ?? "\u{200B}Unknown Group"
-                case "Building":
-                    return animal.buildingGroup ?? "\u{200B}Unknown Group"
-                case "Behavior":
-                    return animal.behaviorGroup ?? "\u{200B}Unknown Group"
-                case "Adoption":
-                    return animal.adoptionGroup ?? "\u{200B}Unknown Group"
-                case "Medical":
-                    return animal.medicalGroup ?? "\u{200B}Unknown Group"
-                case "Location":
-                    return animal.locationGroup ?? "\u{200B}Unknown Group"
-                default:
-                    return "\u{200B}Unknown Group"
-                }
-            })
-        )
-
-        var result: [String: [Animal]] = [:]
-        for group in allGroups.sorted() {
-            result[group] = groupedAnimals[group] ?? []
-        }
-
-        return result
+        return groupedAnimals
     }
 }
+
+
+
+
+
 
 
 struct CollapsibleSection: View {

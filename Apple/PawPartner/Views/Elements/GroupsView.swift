@@ -153,12 +153,12 @@ struct GroupsView: View {
                 }
                 
                 if !filteredAnimals.isEmpty {
-                    PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)
+                    PageNavigationElement(currentPage: $currentPage, totalPages: totalPages, onPageChange: {_ in })
                 }
                 AnimalGridView(allAnimals: allAnimals, animals: paginatedAnimals, columns: columns, cardViewModel: cardViewModel, cardView: cardView)
 
                 if !filteredAnimals.isEmpty {
-                    PageNavigationElement(currentPage: $currentPage, totalPages: totalPages)
+                    PageNavigationElement(currentPage: $currentPage, totalPages: totalPages, onPageChange: {_ in })
                 }
             }
         }
@@ -254,6 +254,17 @@ struct AnimalFilterView: View {
         }
         if !filterSelectionOptions(for: "Behavior").isEmpty {
             categories.append("Behavior")
+        }
+        
+        if !filterSelectionOptions(for: "Adoption").isEmpty {
+            categories.append("Adoption")
+        }
+        if !filterSelectionOptions(for: "Medical").isEmpty {
+            categories.append("Medical")
+        }
+        
+        if !filterSelectionOptions(for: "Location").isEmpty {
+            categories.append("Location")
         }
         
         return categories

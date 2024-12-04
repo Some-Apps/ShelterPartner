@@ -1,0 +1,39 @@
+name: Update Contributors
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  update-contributors:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install requests
+
+    - name: Run update script
+      run: |
+        python scripts/update_contributors.py
+
+    # Create a new branch and open a pull request
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4  # Action to create a pull request
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: update-contributors  # Name of the new branch
+        commit-message: "Auto-update contributor tiers"
+        title: "Auto-update contributor tiers"
+        body: "This PR updates the contributor tiers based on their latest contributions."
+        labels: "automation"
+
