@@ -5,7 +5,7 @@ import 'package:shelter_partner/repositories/stats_repository.dart';
 import 'package:intl/intl.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 
-class StatsViewModel extends StateNotifier<Map<String, int>> {
+class StatsViewModel extends StateNotifier<Map<String, Map<String, int>>> {
   final StatsRepository _repository;
   final Ref ref;
 
@@ -47,38 +47,45 @@ class StatsViewModel extends StateNotifier<Map<String, int>> {
     });
   }
 
-  Map<String, int> _groupByTimeframe(List<Animal> animals) {
-  final grouped = <String, int>{
-    '<1 day': 0,
-    '1-2 days': 0,
-    '3-5 days': 0,
-    '6-7 days': 0,
-    '8+ days': 0,
+Map<String, Map<String, int>> _groupByTimeframe(List<Animal> animals) {
+  final grouped = <String, Map<String, int>>{
+    '<6 hours': {},
+    '6-24 hours': {},
+    '1-2 days': {},
+    '3+ days': {},
   };
 
   final now = DateTime.now();
 
   for (final animal in animals) {
     if (animal.logs.last?.startTime != null) {
-      final duration = now.difference(animal.logs.last!.startTime.toDate()).inDays;
+      final duration = now.difference(animal.logs.last!.startTime.toDate()).inHours;
+      String interval;
 
-      if (duration < 1) {
-        grouped['<1 day'] = grouped['<1 day']! + 1;
-      } else if (duration < 3) {
-        grouped['1-2 days'] = grouped['1-2 days']! + 1;
-      } else if (duration < 6) {
-        grouped['3-5 days'] = grouped['3-5 days']! + 1;
-      } else if (duration < 8) {
-        grouped['6-7 days'] = grouped['6-7 days']! + 1;
+      if (duration < 6) {
+        interval = '<6 hours';
+      } else if (duration < 24) {
+        interval = '6-24 hours';
+      } else if (duration < 48) {
+        interval = '1-2 days';
       } else {
-        grouped['8+ days'] = grouped['8+ days']! + 1;
+        interval = '3+ days';
       }
+
+      final category = animal.species ?? 'cat'; // Handle null species
+
+      // Ensure the category is initialized
+      if (!grouped[interval]!.containsKey(category)) {
+        grouped[interval]![category] = 0;
+      }
+
+      // Increment the count
+      grouped[interval]![category] = grouped[interval]![category]! + 1;
     }
   }
 
   return grouped;
 }
-
 
   @override
   void dispose() {
@@ -88,7 +95,9 @@ class StatsViewModel extends StateNotifier<Map<String, int>> {
 }
 
 final statsViewModelProvider =
-    StateNotifierProvider<StatsViewModel, Map<String, int>>((ref) {
+    StateNotifierProvider<StatsViewModel, Map<String, Map<String, int>>>((ref) {
   final repository = ref.watch(statsRepositoryProvider);
   return StatsViewModel(repository, ref);
 });
+
+final categoryProvider = StateProvider<String?>((ref) => null);
