@@ -229,6 +229,7 @@ class AuthRepository {
         showCustomForm: false,
         customFormURL: "",
         appendAnimalDataToURL: true,
+        
         // Create default geofence
         geofence: Geofence(
           location: const GeoPoint(43.0722, -89.4008),
