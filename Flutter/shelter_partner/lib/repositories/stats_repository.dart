@@ -13,17 +13,18 @@ class StatsRepository {
         _firestore.collection('shelters/$shelterID/dogs').snapshots();
 
     return CombineLatestStream.list([catsStream, dogsStream]).map((snapshots) {
+      print('Snapshots: $snapshots');
       final allAnimals = <Animal>[];
       for (var snapshot in snapshots) {
+        print('Snapshot data: ${snapshot.docs}');
         allAnimals.addAll(snapshot.docs
             .map((doc) => Animal.fromFirestore(doc.data(), doc.id)));
       }
       return allAnimals;
     });
   }
-
 }
 
-final sttatsRepositoryProvider = Provider<StatsRepository>((ref) {
+final statsRepositoryProvider = Provider<StatsRepository>((ref) {
   return StatsRepository();
 });
