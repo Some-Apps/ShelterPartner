@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/repositories/stats_repository.dart';
-import 'package:intl/intl.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 
-class StatsViewModel extends StateNotifier<Map<String, Map<String, int>>> {
+
+
+// The state now holds a map with two top-level keys: "Species" and "Color".
+class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, int>>>> {
   final StatsRepository _repository;
   final Ref ref;
 
@@ -19,7 +21,6 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, int>>> {
       },
     );
 
-    // Immediately check the current auth state
     final authState = ref.read(authViewModelProvider);
     _onAuthStateChanged(authState);
   }
@@ -31,61 +32,70 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, int>>> {
         fetchAnimals(shelterID: shelterID);
       }
     } else {
-      // Clear stats when not authenticated
       state = {};
       _animalsSubscription?.cancel();
     }
   }
 
   void fetchAnimals({required String shelterID}) {
-    _animalsSubscription?.cancel(); // Cancel any existing subscription
+    _animalsSubscription?.cancel();
     final animalsStream = _repository.fetchAnimals(shelterID);
 
     _animalsSubscription = animalsStream.listen((animals) {
-      final counts = _groupByTimeframe(animals);
-      state = counts; // Update state with grouped data
+      final result = _groupByTimeframe(animals);
+      state = result; 
     });
   }
 
-Map<String, Map<String, int>> _groupByTimeframe(List<Animal> animals) {
-  final grouped = <String, Map<String, int>>{
-    '<6 hours': {},
-    '6-24 hours': {},
-    '1-2 days': {},
-    '3+ days': {},
-  };
+  Map<String, Map<String, Map<String, int>>> _groupByTimeframe(List<Animal> animals) {
+    final intervals = ['<6 hours', '6-24 hours', '1-2 days', '3+ days'];
 
-  final now = DateTime.now();
+    // Initialize species and color maps
+    final speciesData = {
+      '<6 hours': <String, int>{},
+      '6-24 hours': <String, int>{},
+      '1-2 days': <String, int>{},
+      '3+ days': <String, int>{},
+    };
 
-  for (final animal in animals) {
-    if (animal.logs.last?.startTime != null) {
-      final duration = now.difference(animal.logs.last!.startTime.toDate()).inHours;
-      String interval;
+    final colorData = {
+      '<6 hours': <String, int>{},
+      '6-24 hours': <String, int>{},
+      '1-2 days': <String, int>{},
+      '3+ days': <String, int>{},
+    };
 
-      if (duration < 6) {
-        interval = '<6 hours';
-      } else if (duration < 24) {
-        interval = '6-24 hours';
-      } else if (duration < 48) {
-        interval = '1-2 days';
-      } else {
-        interval = '3+ days';
+    final now = DateTime.now();
+
+    for (final animal in animals) {
+      if (animal.logs.isNotEmpty && animal.logs.last.startTime != null) {
+        final duration = now.difference(animal.logs.last.startTime.toDate()).inHours;
+        String interval;
+        if (duration < 6) {
+          interval = '<6 hours';
+        } else if (duration < 24) {
+          interval = '6-24 hours';
+        } else if (duration < 48) {
+          interval = '1-2 days';
+        } else {
+          interval = '3+ days';
+        }
+
+        final species = animal.species ?? 'cat';
+        speciesData[interval]?[species] = (speciesData[interval]?[species] ?? 0) + 1;
+
+        final colorString = (animal.symbolColor ?? '').toLowerCase();
+        if (colorString.isNotEmpty) {
+          colorData[interval]?[colorString] = (colorData[interval]?[colorString] ?? 0) + 1;
+        }
       }
-
-      final category = animal.species ?? 'cat'; // Handle null species
-
-      // Ensure the category is initialized
-      if (!grouped[interval]!.containsKey(category)) {
-        grouped[interval]![category] = 0;
-      }
-
-      // Increment the count
-      grouped[interval]![category] = grouped[interval]![category]! + 1;
     }
-  }
 
-  return grouped;
-}
+    return {
+      'Species': speciesData,
+      'Color': colorData,
+    };
+  }
 
   @override
   void dispose() {
@@ -95,7 +105,7 @@ Map<String, Map<String, int>> _groupByTimeframe(List<Animal> animals) {
 }
 
 final statsViewModelProvider =
-    StateNotifierProvider<StatsViewModel, Map<String, Map<String, int>>>((ref) {
+    StateNotifierProvider<StatsViewModel, Map<String, Map<String, Map<String,int>>>>((ref) {
   final repository = ref.watch(statsRepositoryProvider);
   return StatsViewModel(repository, ref);
 });
