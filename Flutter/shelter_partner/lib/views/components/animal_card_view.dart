@@ -471,7 +471,7 @@ Icon _buildIcon(String symbol, String symbolColor) {
       iconData = Icons.star;
       break;
     default:
-      iconData = Icons.help_outline;
+      iconData = Icons.pets;
   }
 
   return Icon(
