@@ -17,6 +17,7 @@ class ShelterSettings {
   final bool automaticallyPutBackAnimals;
   final bool ignoreVisitWhenAutomaticallyPutBack;
   final int automaticPutBackHours;
+  final String shortUUID;
 
   ShelterSettings({
     required this.scheduledReports,
@@ -34,6 +35,7 @@ class ShelterSettings {
     this.automaticallyPutBackAnimals = false,
     this.ignoreVisitWhenAutomaticallyPutBack = false,
     this.automaticPutBackHours = 12,
+    required this.shortUUID,
   });
 
   // Method to dynamically return a list based on the key
@@ -78,6 +80,7 @@ class ShelterSettings {
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
       'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
       'automaticPutBackHours': automaticPutBackHours,
+      'shortUUID': shortUUID,
     };
   }
 
@@ -121,6 +124,7 @@ class ShelterSettings {
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
       ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
       automaticPutBackHours: data['automaticPutBackHours'] ?? 12,
+      shortUUID: data['shortUUID'] ?? '',
     );
   }
 }

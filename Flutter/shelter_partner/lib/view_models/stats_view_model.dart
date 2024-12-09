@@ -68,7 +68,7 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
     final now = DateTime.now();
 
     for (final animal in animals) {
-      if (animal.logs.isNotEmpty && animal.logs.last.startTime != null) {
+      if (animal.logs.isNotEmpty) {
         final duration = now.difference(animal.logs.last.startTime.toDate()).inHours;
         String interval;
         if (duration < 6) {

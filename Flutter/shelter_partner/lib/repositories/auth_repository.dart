@@ -215,6 +215,10 @@ class AuthRepository {
         automaticallyPutBackAnimals: false,
         ignoreVisitWhenAutomaticallyPutBack: false,
         automaticPutBackHours: 12,
+        shortUUID: List.generate(10, (index) {
+          const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+          return chars[Random().nextInt(chars.length)];
+        }).join(),
       ),
       volunteerSettings: VolunteerSettings(
         photoUploadsAllowed: true,
