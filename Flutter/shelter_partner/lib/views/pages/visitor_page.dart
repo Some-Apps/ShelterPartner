@@ -8,9 +8,10 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 // Conditional import for platform-specific full-screen functionality
 import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub file which will import correct platform-specific file.
-  if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart' 
-  if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
+    if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart'
+    if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
+
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
 
@@ -39,7 +40,8 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   @override
   void initState() {
     super.initState();
-    PaintingBinding.instance.imageCache.maximumSize = 1000; // Increased cache size
+    PaintingBinding.instance.imageCache.maximumSize =
+        1000; // Increased cache size
     PaintingBinding.instance.imageCache.maximumSizeBytes =
         100 * 1024 * 1024; // 100 MB
 
@@ -89,7 +91,9 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
     // Preload a subset of images to avoid excessive memory usage
     const start = 0;
-    final end = (preloadImageCount < animals.length) ? preloadImageCount : animals.length;
+    final end = (preloadImageCount < animals.length)
+        ? preloadImageCount
+        : animals.length;
 
     for (int i = start; i < end; i++) {
       final animal = animals[i];
@@ -98,10 +102,28 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
           : '';
 
       if (imageUrl.isNotEmpty) {
-        precacheImage(
-          CachedNetworkImageProvider(imageUrl),
-          context,
-        );
+        final animal = animals[i];
+        final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
+            ? animal.photos!.first.url
+            : '';
+        if (originalUrl.contains("amazonaws")) {
+          final fallbackUrl =
+              'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
+          // Debugging print statements
+          print('Preloading image for animal: ${animal.name}');
+          print('Original URL: $originalUrl');
+          print('Fallback URL: $fallbackUrl');
+          // Precache using fallbackUrl directly to avoid CORS issues
+          precacheImage(
+            CachedNetworkImageProvider(fallbackUrl),
+            context,
+          );
+        } else {
+          precacheImage(
+            CachedNetworkImageProvider(originalUrl),
+            context,
+          );
+        }
       }
     }
   }
@@ -142,16 +164,16 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
               TabBar(
                 controller: _tabController,
                 tabs: const [
-                  Tab(text: 'Cats'),
                   Tab(text: 'Dogs'),
+                  Tab(text: 'Cats'),
                 ],
               ),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildAnimalGrid(animalsMap['cats'] ?? []),
                     _buildAnimalGrid(animalsMap['dogs'] ?? []),
+                    _buildAnimalGrid(animalsMap['cats'] ?? []),
                   ],
                 ),
               ),
@@ -209,7 +231,12 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                               children: [
                                 imageUrl.isNotEmpty
                                     ? CachedNetworkImage(
-                                        imageUrl: imageUrl,
+                                        imageUrl: animal.photos?.first.url
+                                                    .contains(
+                                                        'amazonaws.com') ??
+                                                false
+                                            ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
+                                            : animal.photos?.first.url ?? '',
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                         height: double.infinity,
@@ -339,8 +366,12 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
   void _startSlideshow() {
     // Get the slideshow timer setting from account settings
-    final accountSettings = widget.ref.read(accountSettingsViewModelProvider).value?.accountSettings;
-    final slideshowTimer = accountSettings?.slideshowTimer ?? 10; // Default to 10 seconds if not set
+    final accountSettings = widget.ref
+        .read(accountSettingsViewModelProvider)
+        .value
+        ?.accountSettings;
+    final slideshowTimer = accountSettings?.slideshowTimer ??
+        10; // Default to 10 seconds if not set
 
     // Start the timer to change images based on the slideshow timer setting
     _timer = Timer.periodic(Duration(seconds: slideshowTimer), (timer) {
@@ -361,7 +392,10 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   @override
   Widget build(BuildContext context) {
     // Get the slideshow size setting from account settings
-    final accountSettings = widget.ref.watch(accountSettingsViewModelProvider).value?.accountSettings;
+    final accountSettings = widget.ref
+        .watch(accountSettingsViewModelProvider)
+        .value
+        ?.accountSettings;
 
     // Determine the BoxFit based on the slideshow size setting
     BoxFit boxFit;

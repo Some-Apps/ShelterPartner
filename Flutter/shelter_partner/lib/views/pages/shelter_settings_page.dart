@@ -383,7 +383,7 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                   ),
                                   const ListTile(
                                     title: Text("How to set up the scheduled report"),
-                                    subtitle: Text("Only send information on animals. Check all available fields and set the report to run daily at 5AM CST. Give it 24 hours and Shelter Partner will automatically start using the new information. This is meant to be used in conjunction with the API, not as a replacement."),
+                                    subtitle: Text("Only send information on animals. Check all available fields and set the report to send daily at 5AM CST to reports@shelterpartner.org. Give it 24 hours and Shelter Partner will automatically start using the new information. This is meant to be used in conjunction with the API, not as a replacement."),
                                   ),
                                   ListTile(
                                     title: const Text(

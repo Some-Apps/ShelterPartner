@@ -17,7 +17,8 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
   final Animal initialAnimal;
   final bool visitorPage;
 
-  const EnrichmentAnimalDetailPage({super.key, required this.initialAnimal, required this.visitorPage});
+  const EnrichmentAnimalDetailPage(
+      {super.key, required this.initialAnimal, required this.visitorPage});
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +113,7 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                               showFullScreenGallery(
                                 context,
                                 (animal.photos ?? [])
-                                    .map((photo) => photo.url)
+                                    .map((photo) => photo.url.contains('amazonaws.com') ? 'https://cors-images-222422545919.us-central1.run.app?url=${photo.url}' : photo.url)
                                     .toList(),
                                 index,
                               );
@@ -152,46 +153,58 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                   ),
                   const Divider(),
                   GridView.count(
-                        crossAxisCount:
+                      crossAxisCount:
                           (MediaQuery.of(context).size.width / 200).floor(),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        childAspectRatio: 3,
-                        children: [
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      childAspectRatio: 3,
+                      children: [
                         Card(
                           child: ListTile(
-                          title: const Text('Age', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
-                          subtitle: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                          "${animal.monthsOld} months old",
-                          style: const TextStyle(color: Colors.black, fontSize: 15),
-                          ),
-                          ),
+                            title: const Text('Age',
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 12.0)),
+                            subtitle: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                "${animal.monthsOld} months old",
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 15),
+                              ),
+                            ),
                           ),
                         ),
                         Card(
                           child: ListTile(
-                          title: const Text('Sex', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
-                          subtitle: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                          animal.sex == "m" ? "Male" : "Female",
-                          style: const TextStyle(color: Colors.black, fontSize: 15),
-                          ),
-                          ),
+                            title: const Text('Sex',
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 12.0)),
+                            subtitle: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                animal.sex == "m" ? "Male" : "Female",
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 15),
+                              ),
+                            ),
                           ),
                         ),
                         Card(
                           child: ListTile(
-                          title: const Text('Breed', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
-                          subtitle: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                          animal.breed,
-                          style: const TextStyle(color: Colors.black, fontSize: 15),
-                          ),
-                          ),
+                            title: const Text('Breed',
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 12.0)),
+                            subtitle: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                animal.breed,
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 15),
+                              ),
+                            ),
                           ),
                         ),
                       ]),
@@ -214,8 +227,7 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                     },
                   ),
 
-                  
-                    if (!visitorPage) ...[
+                  if (!visitorPage) ...[
                     const SizedBox(height: 32.0),
 
                     // Logs section
@@ -223,18 +235,18 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                       logs: animal.logs,
                       isAdmin: isAdmin(),
                       onDelete: (String logId) {
-                      ref
-                        .read(animalProvider(initialAnimal).notifier)
-                        .deleteItemOptimistically(
-                          appUser!.shelterId,
-                          animal.species,
-                          animal.id,
-                          'logs',
-                          logId,
-                        );
+                        ref
+                            .read(animalProvider(initialAnimal).notifier)
+                            .deleteItemOptimistically(
+                              appUser!.shelterId,
+                              animal.species,
+                              animal.id,
+                              'logs',
+                              logId,
+                            );
                       },
                     ),
-                    ],
+                  ],
                 ],
               ),
             ),
@@ -488,7 +500,13 @@ class PhotoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scaledUrl = photo.url.replaceFirst('.jpeg', '_250x250.jpeg');
+    // final scaledUrl = photo.url.replaceFirst('.jpeg', '_250x250.jpeg');
+
+    final originalPhoto = photo;
+    final fallbackUrl =
+        'https://cors-images-222422545919.us-central1.run.app?url=${originalPhoto.url}'; // Replace with your actual fallback URL
+    // final photo1 = originalPhoto.url.contains('amazonaws.com') ? fallbackUrl : originalPhoto.url;
+    final scaledUrl = originalPhoto.url.contains('amazonaws.com') ? fallbackUrl : originalPhoto.url.replaceFirst('.jpeg', '_250x250.jpeg'); // Assuming the image format is always .jpeg
 
     return Padding(
       padding: const EdgeInsets.all(8.0),

@@ -194,25 +194,36 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     ref.read(subscriptionStatusProvider.notifier).state =
         isActive ? "Active" : "Inactive";
   }
-
   void _preloadImages(List<Animal> animals) {
-    const int preloadImageCount = 150; // Limit the number of images to preload
+    const int preloadImageCount = 150;
     final int endIndex = min(preloadImageCount, animals.length);
 
     for (int i = 0; i < endIndex; i++) {
       final animal = animals[i];
-      final imageUrl = (animal.photos != null && animal.photos!.isNotEmpty)
-          ? animal.photos?.first.url ?? ''
+      final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
+          ? animal.photos!.first.url
           : '';
-
-      if (imageUrl.isNotEmpty) {
+      if (originalUrl.contains("amazonaws")) {
+        final fallbackUrl = 'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
+        // Debugging print statements
+        print('Preloading image for animal: ${animal.name}');
+        print('Original URL: $originalUrl');
+        print('Fallback URL: $fallbackUrl');
+        // Precache using fallbackUrl directly to avoid CORS issues
         precacheImage(
-          CachedNetworkImageProvider(imageUrl),
+          CachedNetworkImageProvider(fallbackUrl),
+          context,
+        );
+      } else {
+        precacheImage(
+          CachedNetworkImageProvider(originalUrl),
           context,
         );
       }
     }
   }
+
+
 
   Future<void> _fetchPage({
     required String animalType,
@@ -313,46 +324,48 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: LayoutBuilder(
           builder: (context, constraints) {
-          final double minWidth = accountSettings.value!.accountSettings!.simplisticMode 
-            ? 600.0 
-            : 625.0;
-          final double itemHeight = accountSettings.value!.accountSettings!.simplisticMode 
-            ? 160.0 
-            : 235.0;
-          return PagedGridView<int, dynamic>(
-            pagingController: pagingController,
-            scrollController: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            builderDelegate: PagedChildBuilderDelegate<dynamic>(
-            itemBuilder: (context, item, index) {
-              if (item is Animal) {
-              if (accountSettings
-                  .value!.accountSettings?.simplisticMode ??
-                true) {
-                return SimplisticAnimalCardView(animal: item);
-              } else {
-                return AnimalCardView(animal: item);
-              }
-              } else if (item is Ad) {
-              return CustomAffiliateAd(ad: item);
-              } else {
-              return const SizedBox.shrink();
-              }
-            },
-            firstPageProgressIndicatorBuilder: (_) =>
-              const Center(child: CircularProgressIndicator()),
-            newPageProgressIndicatorBuilder: (_) =>
-              const Center(child: CircularProgressIndicator()),
-            noItemsFoundIndicatorBuilder: (_) =>
-              const Center(child: Text('No animals found')),
-            ),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: minWidth,
-            mainAxisExtent: itemHeight,
-            crossAxisSpacing: 0.0,
-            mainAxisSpacing: 0.0,
-            ),
-          );
+            final double minWidth =
+                accountSettings.value!.accountSettings!.simplisticMode
+                    ? 600.0
+                    : 625.0;
+            final double itemHeight =
+                accountSettings.value!.accountSettings!.simplisticMode
+                    ? 160.0
+                    : 235.0;
+            return PagedGridView<int, dynamic>(
+              pagingController: pagingController,
+              scrollController: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              builderDelegate: PagedChildBuilderDelegate<dynamic>(
+                itemBuilder: (context, item, index) {
+                  if (item is Animal) {
+                    if (accountSettings
+                            .value!.accountSettings?.simplisticMode ??
+                        true) {
+                      return SimplisticAnimalCardView(animal: item);
+                    } else {
+                      return AnimalCardView(animal: item);
+                    }
+                  } else if (item is Ad) {
+                    return CustomAffiliateAd(ad: item);
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+                firstPageProgressIndicatorBuilder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
+                newPageProgressIndicatorBuilder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
+                noItemsFoundIndicatorBuilder: (_) =>
+                    const Center(child: Text('No animals found')),
+              ),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: minWidth,
+                mainAxisExtent: itemHeight,
+                crossAxisSpacing: 0.0,
+                mainAxisSpacing: 0.0,
+              ),
+            );
           },
         ),
       );
@@ -457,24 +470,26 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                         horizontal: 8.0, vertical: 8.0),
                     child: Column(
                       children: [
-                              SwitchToggleView(
-                                title: "Simplistic Mode",
-                                value: accountSettings.value?.accountSettings?.simplisticMode ?? true,
-                                onChanged: (bool newValue) {
-                                  final user = ref.read(appUserProvider);
-                                  if (user != null) {
-                                    ref.read(accountSettingsViewModelProvider.notifier)
-                                        .toggleAttribute(user.id, "simplisticMode");
-                                  }
-                                },
-                              ),
-                            
-
+                        SwitchToggleView(
+                          title: "Simplistic Mode",
+                          value: accountSettings
+                                  .value?.accountSettings?.simplisticMode ??
+                              true,
+                          onChanged: (bool newValue) {
+                            final user = ref.read(appUserProvider);
+                            if (user != null) {
+                              ref
+                                  .read(
+                                      accountSettingsViewModelProvider.notifier)
+                                  .toggleAttribute(user.id, "simplisticMode");
+                            }
+                          },
+                        ),
 
                         Row(
                           children: [
                             // Toggle simplistic mode
-                            
+
                             // Search bar
                             Expanded(
                               child: TextField(
@@ -718,19 +733,15 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
   @override
   Widget build(BuildContext context) {
     // Resize images to reduce memory usage
+
     final resizedImages = _imageUrls.map((url) {
+      final originalImageUrl = url;
+
       return Image.network(
-        url,
+        originalImageUrl,
         fit: BoxFit.cover,
-        width: 100, // Adjust the width and height as needed
-        height: 100,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            color: Colors.grey[300],
-            child: Icon(Icons.image, size: 50, color: Colors.grey[700]),
-          );
-        },
       );
+      
     }).toList();
 
     return Padding(
@@ -742,7 +753,6 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
           borderRadius: BorderRadius.circular(25.0),
         ),
         clipBehavior: Clip.antiAlias,
-        
         child: InkWell(
           onTap: _launchUrl,
           child: Column(

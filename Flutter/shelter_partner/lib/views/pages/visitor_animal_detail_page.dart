@@ -51,12 +51,14 @@ class VisitorAnimalDetailPage extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: animal.photos?.length ?? 0,
             itemBuilder: (context, index) {
-            final photo = animal.photos![index];
-            final scaledUrl = photo.url.replaceFirst('.jpeg', '_250x250.jpeg'); // Assuming the image format is always .jpeg
+            final originalPhoto = animal.photos![index];
+            final fallbackUrl = 'https://cors-images-222422545919.us-central1.run.app?url=${originalPhoto.url}'; // Replace with your actual fallback URL
+            final photo = originalPhoto.url.contains('amazonaws.com') ? fallbackUrl : originalPhoto.url;
+            final scaledUrl = originalPhoto.url.contains('amazonaws.com') ? fallbackUrl : originalPhoto.url.replaceFirst('.jpeg', '_250x250.jpeg'); // Assuming the image format is always .jpeg
             return Padding(
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
-            onTap: () => showFullScreenImage(context, photo.url),
+            onTap: () => showFullScreenImage(context, photo),
             child: Image.network(
               scaledUrl, // Use the scaled down version of the image
               fit: BoxFit.cover,
