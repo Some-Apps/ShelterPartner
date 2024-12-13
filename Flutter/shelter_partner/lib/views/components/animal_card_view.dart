@@ -512,6 +512,6 @@ Color _parseColor(String colorString) {
     case 'white':
       return Colors.white;
     default:
-      return Colors.transparent; // Default case if color is not recognized
+      return Colors.transparent;
   }
 }

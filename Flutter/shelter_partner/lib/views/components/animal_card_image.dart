@@ -70,15 +70,17 @@ class AnimalCardImage extends StatelessWidget {
                 // Apply ShaderMask for faded edges
                 ClipOval(
                   child: animal.photos?.isNotEmpty ?? false
-                      ? CachedNetworkImage(
-                          imageUrl: animal.photos?.first.url ?? '',
+                        ? CachedNetworkImage(
+                          imageUrl: animal.photos?.first.url.contains('amazonaws.com') ?? false
+                            ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
+                            : animal.photos?.first.url ?? '',
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Icon(Icons.pets,
-                              size: 50, color: Colors.grey.shade400),
+                            size: 50, color: Colors.grey.shade400),
                           errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
+                            const Icon(Icons.error),
                         )
                       : Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
                 ),
