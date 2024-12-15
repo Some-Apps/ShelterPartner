@@ -15,7 +15,8 @@ class HomePage extends StatelessWidget {
       (int viewId) => html.IFrameElement()
         ..width = '560'
         ..height = '315'
-        ..src = 'https://www.youtube.com/embed/obv5Pvv2caw' // Replace with your video ID
+        ..src =
+            'https://www.youtube.com/embed/obv5Pvv2caw' // Replace with your video ID
         ..style.border = 'none',
     );
 
@@ -50,28 +51,28 @@ class HomePage extends StatelessWidget {
               // Download Button with Dialog Tooltip
               TextButton(
                 onPressed: () {
-                    showDialog(
+                  showDialog(
                     context: context,
                     builder: (context) => const AlertDialog(
                       title: Text('Download Information'),
                       content: Text(
-                      'Coming January 1, 2025\n\n'
-                      'Platforms:\n'
-                      '- Windows\n'
-                      '- Mac\n'
-                      '- iOS\n'
-                      '- Android\n'
-                      '- Web',
-                      style: TextStyle(fontSize: 16),
+                        'Coming January 1, 2025\n\n'
+                        'Platforms:\n'
+                        '- Windows\n'
+                        '- Mac\n'
+                        '- iOS\n'
+                        '- Android\n'
+                        '- Web',
+                        style: TextStyle(fontSize: 16),
                       ),
                       actions: [
-                      // TextButton(
-                      //   onPressed: () => Navigator.of(context).pop(),
-                      //   child: const Text('OK'),
-                      // ),
+                        // TextButton(
+                        //   onPressed: () => Navigator.of(context).pop(),
+                        //   child: const Text('OK'),
+                        // ),
                       ],
                     ),
-                    );
+                  );
                 },
                 child: const Text(
                   'Download',
@@ -131,17 +132,6 @@ class HomePage extends StatelessWidget {
                       style: TextStyle(fontSize: 15),
                     ),
                     SizedBox(height: 36),
-                    // Text(
-                    //   'Create Account',
-                    //   style:
-                    //       TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                    // ),
-                    // SizedBox(height: 16),
-                    // Text(
-                    //   'As I transition to Version 2, I have disabled the ability to create an account. If you would like to create an account, Version 2 will be released on January 1, 2025. If you have any questions, feel free to email me at jared@shelterpartner.org',
-                    //   style: TextStyle(fontSize: 15),
-                    // ),
-                    // SizedBox(height: 36),
                     Text(
                       'Version 2 Demo',
                       style:
@@ -159,6 +149,8 @@ class HomePage extends StatelessWidget {
                       height: 315,
                       child: HtmlElementView(viewType: 'youtube-video'),
                     ),
+                    SizedBox(height: 36),
+                    SponsorsWidget()
                   ],
                 ),
               ),
@@ -193,6 +185,121 @@ class SponsorButton extends StatelessWidget {
       child: HtmlElementView(
         viewType: 'iframeElement',
       ),
+    );
+  }
+}
+
+class SponsorsWidget extends StatelessWidget {
+  const SponsorsWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Sample data for demonstration purposes
+ 
+    final sponsors = List.generate(
+      100,
+      (index) => {
+      'name': 'Sponsor ${index + 1}',
+      'amount': (index + 1) * 5,
+      'photoUrl': 'assets/logo.png',
+      },
+    );
+
+    final lessThan25 =
+        sponsors.where((s) => (s['amount'] as int) < 25).toList();
+    final between25And100 = sponsors
+        .where((s) => (s['amount'] as int) >= 25 && (s['amount'] as int) < 100)
+        .toList();
+    final between100And250 = sponsors
+        .where((s) => (s['amount'] as int) >= 100 && (s['amount'] as int) < 250)
+        .toList();
+    final above250 =
+        sponsors.where((s) => (s['amount'] as int) >= 250).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (above250.isNotEmpty) ...[
+          const Text('Gold Sponsors'),
+          Column(
+            children: above250
+                .map((s) => Card(
+                      child: ListTile(
+                        leading: Image.asset(
+                          s['photoUrl'] as String? ?? 'assets/logo.png',
+                          width: 100,
+                          height: 100,
+                        ),
+                        title: Text(
+                          s['name']! as String,
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (between100And250.isNotEmpty) ...[
+          const Text('Silver Sponsors'),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: between100And250
+                .map((s) => Column(
+                      children: [
+                        Image.asset(
+                          s['photoUrl'] as String? ?? 'assets/logo.png',
+                          width: 100,
+                          height: 100,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          s['name']! as String,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (between25And100.isNotEmpty) ...[
+          const Text('Bronze Sponsors'),
+          GridView.count(
+            crossAxisCount: 4,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: between25And100
+                .map((s) => Column(
+                      children: [
+                        Image.asset(
+                          s['photoUrl'] as String? ?? 'assets/logo.png',
+                          width: 50,
+                          height: 50,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(s['name']! as String),
+                      ],
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (lessThan25.isNotEmpty) ...[
+          const Text('Supporters'),
+          Wrap(
+            children: lessThan25
+                .map((s) => Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(s['name']! as String),
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ],
     );
   }
 }
