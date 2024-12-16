@@ -139,42 +139,47 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   @override
   Widget build(BuildContext context) {
     final animalsMap = ref.watch(visitorsViewModelProvider);
-    final animals = animalsMap[selectedAnimalType] ?? [];
+    final dogs = animalsMap['dogs'] ?? [];
+    final cats = animalsMap['cats'] ?? [];
 
-    // Removed on-demand preloading since we're preloading both tabs initially
+    // Determine which tabs to show based on available animals
+    final List<Tab> tabs = [];
+    final List<Widget> tabViews = [];
 
-    ref.listen<bool>(scrollToTopProviderVisitors, (previous, next) {
-      if (next == true) {
-        _scrollController.animateTo(
-          0.0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-        // Reset the provider value to false
-        ref.read(scrollToTopProviderVisitors.notifier).state = false;
-      }
-    });
+    if (dogs.isNotEmpty) {
+      tabs.add(const Tab(text: 'Dogs'));
+      tabViews.add(_buildAnimalGrid(dogs));
+    }
+
+    if (cats.isNotEmpty) {
+      tabs.add(const Tab(text: 'Cats'));
+      tabViews.add(_buildAnimalGrid(cats));
+    }
+
+    // If no animals are available, show a message
+    if (tabs.isEmpty) {
+      return Scaffold(
+        body: Center(
+          child: Text('No animals available'),
+        ),
+      );
+    }
 
     return DefaultTabController(
-      length: 2,
+      length: tabs.length,
       child: Scaffold(
         body: SafeArea(
           child: Column(
             children: [
-              TabBar(
-                controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Dogs'),
-                  Tab(text: 'Cats'),
-                ],
-              ),
+              if (tabs.length > 1)
+                TabBar(
+                  controller: _tabController,
+                  tabs: tabs,
+                ),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
-                  children: [
-                    _buildAnimalGrid(animalsMap['dogs'] ?? []),
-                    _buildAnimalGrid(animalsMap['cats'] ?? []),
-                  ],
+                  children: tabViews,
                 ),
               ),
             ],
