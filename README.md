@@ -11,7 +11,7 @@
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
 
-## Bounties To Be Paid at the Beginning of Next Month
+## Bounties To Be Paid On January 1st
 
 <details>
   <summary>John Doe: $75</summary>
