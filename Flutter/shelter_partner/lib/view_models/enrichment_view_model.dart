@@ -5,7 +5,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/models/filter_condition.dart';
 import 'package:shelter_partner/models/filter_group.dart';
-import 'package:shelter_partner/repositories/animals_repository.dart';
+import 'package:shelter_partner/repositories/enrichment_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
@@ -20,7 +20,6 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
   EnrichmentViewModel(this._repository, this.ref)
       : super({'cats': [], 'dogs': []}) {
-
     ref.listen<AuthState>(
       authViewModelProvider,
       (previous, next) {
@@ -32,6 +31,8 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
     final authState = ref.read(authViewModelProvider);
     _onAuthStateChanged(authState);
   }
+
+  DateTime? _ignoreFirestoreUpdatesUntil;
 
   void _onAuthStateChanged(AuthState authState) {
     if (authState.status == AuthStatus.authenticated) {
@@ -62,25 +63,34 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
         .watch(accountSettingsViewModelProvider.notifier)
         .stream
         .map((asyncValue) {
-          return asyncValue.asData?.value;
-        });
+      return asyncValue.asData?.value;
+    });
 
     // Combine both streams
-    _animalsSubscription = CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
+    _animalsSubscription =
+        CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
       animalsStream,
       accountSettingsStream,
       (animals, appUser) {
-        _enrichmentFilter = appUser?.type == 'admin' 
-            ? appUser?.accountSettings?.enrichmentFilter 
-            : ref.read(volunteersViewModelProvider).value?.volunteerSettings.enrichmentFilter;
+        _enrichmentFilter = appUser?.type == 'admin'
+            ? appUser?.accountSettings?.enrichmentFilter
+            : ref
+                .read(volunteersViewModelProvider)
+                .value
+                ?.volunteerSettings
+                .enrichmentFilter;
 
         _secondaryFilter = appUser?.userFilter;
         print(_secondaryFilter.toString());
 
         // Apply the filters
         final filteredAnimals = animals.where((animal) {
-          final enrichmentFilterResult = _enrichmentFilter != null ? evaluateFilter(_enrichmentFilter!, animal) : true;
-          final secondaryFilterResult = _secondaryFilter != null ? evaluateFilter(_secondaryFilter!, animal) : true;
+          final enrichmentFilterResult = _enrichmentFilter != null
+              ? evaluateFilter(_enrichmentFilter!, animal)
+              : true;
+          final secondaryFilterResult = _secondaryFilter != null
+              ? evaluateFilter(_secondaryFilter!, animal)
+              : true;
           return enrichmentFilterResult && secondaryFilterResult;
         }).toList();
 
@@ -88,6 +98,13 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
             filteredAnimals.where((animal) => animal.species == 'cat').toList();
         final dogs =
             filteredAnimals.where((animal) => animal.species == 'dog').toList();
+
+        if (_ignoreFirestoreUpdatesUntil != null &&
+            DateTime.now().isBefore(_ignoreFirestoreUpdatesUntil!)) {
+          // Ignore this update - just return without changing state
+          print("Ignoring Firestore update due to recent optimistic update.");
+          return;
+        }
 
         state = {'cats': cats, 'dogs': dogs};
 
@@ -97,14 +114,44 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
     ).listen((_) {});
   }
 
+  void updateAnimalOptimistically(Animal updatedAnimal) {
+    final currentCats = List<Animal>.from(state['cats'] ?? []);
+    final currentDogs = List<Animal>.from(state['dogs'] ?? []);
+
+    // Check which list the animal belongs to and update it
+    if (updatedAnimal.species == 'cat') {
+      final index = currentCats.indexWhere((a) => a.id == updatedAnimal.id);
+      if (index != -1) {
+        currentCats[index] = updatedAnimal;
+      }
+    } else if (updatedAnimal.species == 'dog') {
+      final index = currentDogs.indexWhere((a) => a.id == updatedAnimal.id);
+      if (index != -1) {
+        currentDogs[index] = updatedAnimal;
+      }
+    }
+
+    final newState = {
+      'cats': currentCats,
+      'dogs': currentDogs,
+    };
+    _ignoreFirestoreUpdatesUntil = DateTime.now().add(Duration(seconds: 3));
+
+    state = newState; // This will trigger a rebuild only where it's needed
+  }
+
   void _sortAnimals() {
     final accountSettings =
         ref.read(accountSettingsViewModelProvider).asData?.value;
 
     final enrichmentSort = (ref.read(appUserProvider)?.type == 'admin')
-      ? accountSettings?.accountSettings?.enrichmentSort ?? 'Alphabetical'
-      : ref.read(volunteersViewModelProvider).value?.volunteerSettings.enrichmentSort ?? 'Alphabetical';
-    
+        ? accountSettings?.accountSettings?.enrichmentSort ?? 'Alphabetical'
+        : ref
+                .read(volunteersViewModelProvider)
+                .value
+                ?.volunteerSettings
+                .enrichmentSort ??
+            'Alphabetical';
 
     final sortedState = <String, List<Animal>>{};
 
@@ -189,57 +236,56 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
   }
 
   dynamic getAttributeValue(Animal animal, String attribute) {
-  switch (attribute) {
-    case 'name':
-      return animal.name;
-    case 'sex':
-      return animal.sex;
-    case 'species':
-      return animal.species;
-    case 'breed':
-      return animal.breed;
-    case 'location':
-      return animal.location;
-    case 'description':
-      return animal.description;
-    case 'symbol':
-      return animal.symbol;
-    case 'symbolColor':
-      return animal.symbolColor;
-    case 'takeOutAlert':
-      return animal.takeOutAlert;
-    case 'putBackAlert':
-      return animal.putBackAlert;
-    case 'adoptionCategory':
-      return animal.adoptionCategory;
-    case 'behaviorCategory':
-      return animal.behaviorCategory;
-    case 'locationCategory':
-      return animal.locationCategory;
-    case 'medicalCategory':
-      return animal.medicalCategory;
-    case 'volunteerCategory':
-      return animal.volunteerCategory;
-    case 'inKennel':
-      return animal.inKennel;
-    case 'monthsOld': // Add this case
-      return animal.monthsOld;
-    default:
-      return null;
+    switch (attribute) {
+      case 'name':
+        return animal.name;
+      case 'sex':
+        return animal.sex;
+      case 'species':
+        return animal.species;
+      case 'breed':
+        return animal.breed;
+      case 'location':
+        return animal.location;
+      case 'description':
+        return animal.description;
+      case 'symbol':
+        return animal.symbol;
+      case 'symbolColor':
+        return animal.symbolColor;
+      case 'takeOutAlert':
+        return animal.takeOutAlert;
+      case 'putBackAlert':
+        return animal.putBackAlert;
+      case 'adoptionCategory':
+        return animal.adoptionCategory;
+      case 'behaviorCategory':
+        return animal.behaviorCategory;
+      case 'locationCategory':
+        return animal.locationCategory;
+      case 'medicalCategory':
+        return animal.medicalCategory;
+      case 'volunteerCategory':
+        return animal.volunteerCategory;
+      case 'inKennel':
+        return animal.inKennel;
+      case 'monthsOld': // Add this case
+        return animal.monthsOld;
+      default:
+        return null;
+    }
   }
-}
-
 
   @override
   void dispose() {
     _animalsSubscription?.cancel();
     super.dispose();
   }
-
 }
 
 final enrichmentViewModelProvider =
-    StateNotifierProvider<EnrichmentViewModel, Map<String, List<Animal>>>((ref) {
+    StateNotifierProvider<EnrichmentViewModel, Map<String, List<Animal>>>(
+        (ref) {
   final repository =
       ref.watch(enrichmentRepositoryProvider); // Access the repository
   return EnrichmentViewModel(repository, ref); // Pass the repository and ref

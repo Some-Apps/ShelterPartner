@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/put_back_confirmation_repository.dart';
+import 'package:shelter_partner/view_models/enrichment_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 
 class PutBackConfirmationViewModel extends StateNotifier<Animal> {
@@ -16,6 +17,9 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
     print(log.toMap());
         // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
+    // final enrichmentViewModel = ref.read(enrichmentViewModelProvider.notifier);
+
+    // enrichmentViewModel.updateAnimalOptimistically(animal.copyWith(inKennel: true));
     try {
       await _repository.putBackAnimal(animal, shelterDetailsAsync.value!.id, log);
       // Optionally, update the state if needed
@@ -28,6 +32,7 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
   Future<void> deleteLastLog(Animal animal) async {
     // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
+    
     try {
       await _repository.deleteLastLog(animal, shelterDetailsAsync.value!.id);
       // Optionally, update the state if needed
