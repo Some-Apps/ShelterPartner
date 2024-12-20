@@ -158,7 +158,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
     // If no animals are available, show a message
     if (tabs.isEmpty) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: Text('No animals available'),
         ),

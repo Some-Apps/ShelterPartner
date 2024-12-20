@@ -14,7 +14,7 @@ import 'package:qonversion_flutter/qonversion_flutter.dart';
 import 'package:shelter_partner/models/ad.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
-import 'package:shelter_partner/view_models/animals_view_model.dart';
+import 'package:shelter_partner/view_models/enrichment_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
