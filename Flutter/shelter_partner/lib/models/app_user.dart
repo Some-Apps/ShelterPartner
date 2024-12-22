@@ -10,8 +10,6 @@ class AppUser {
   final String email;
 
   final Timestamp lastActivity;
-  final int averageLogDuration;
-  final int totalTimeLoggedWithAnimals;
 
   final String type;
   final String shelterId;
@@ -26,8 +24,6 @@ class AppUser {
     required this.email,
 
     required this.lastActivity,
-    required this.averageLogDuration,
-    required this.totalTimeLoggedWithAnimals,
 
     required this.type,
     required this.shelterId,
@@ -74,8 +70,6 @@ class AppUser {
       lastName: data['lastName'],
       email: data['email'],
       lastActivity: data['lastActivity'],
-      averageLogDuration: data['averageLogDuration'],
-      totalTimeLoggedWithAnimals: data['totalTimeLoggedWithAnimals'],
       type: data['type'],
       shelterId: data['shelterID'],
       accountSettings: AccountSettings.fromMap(data['accountSettings'] ?? {}),
@@ -105,8 +99,6 @@ class AppUser {
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
       lastActivity: this.lastActivity,
-      averageLogDuration: this.averageLogDuration,
-      totalTimeLoggedWithAnimals: this.totalTimeLoggedWithAnimals,
       type: type ?? this.type,
       shelterId: shelterId ?? this.shelterId,
       accountSettings: accountSettings ?? this.accountSettings,
