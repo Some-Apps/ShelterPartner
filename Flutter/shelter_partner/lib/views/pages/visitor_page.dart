@@ -10,7 +10,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub file which will import correct platform-specific file.
     if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart'
     if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
-import 'package:shelter_partner/views/pages/main_page.dart';
 
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});

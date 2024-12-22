@@ -69,7 +69,7 @@ FilterElement? enrichmentFilter;
 
     return VolunteerSettings(
       photoUploadsAllowed: data['photoUploadsAllowed'] ?? false,
-      enrichmentSort: data['enrichmentSort;'] ?? "None",
+      enrichmentSort: data['enrichmentSort'] ?? "None",
       enrichmentFilter: enrichmentFilter,
       allowBulkTakeOut: data['allowBulkTakeOut'] ?? false,
       minimumLogMinutes: data['minimumLogMinutes'] ?? 0,

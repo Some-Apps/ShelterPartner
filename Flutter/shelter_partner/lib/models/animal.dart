@@ -83,10 +83,10 @@ class Animal {
     volunteerCategory: data['volunteerCategory'] ?? 'Unknown',
     inKennel: data['inKennel'] ?? true,
     intakeDate: data['intakeDate'],
-    photos: (data['photos'] as List?)?.map((photo) => Photo.fromMap(photo)).toList() ?? [],
-    notes: (data['notes'] as List?)?.map((note) => Note.fromMap(note)).toList() ?? [],
-    logs: (data['logs'] as List?)?.map((log) => Log.fromMap(log)).toList() ?? [],
-    tags: (data['tags'] as List?)?.map((tag) => Tag.fromMap(tag)).toList() ?? [],
+    photos: (data['photos'] is List) ? (data['photos'] as List).map((photo) => Photo.fromMap(photo)).toList() : [],
+    notes: (data['notes'] is List) ? (data['notes'] as List).map((note) => Note.fromMap(note)).toList() : [],
+    logs: (data['logs'] is List) ? (data['logs'] as List).map((log) => Log.fromMap(log)).toList() : [],
+    tags: (data['tags'] is List) ? (data['tags'] as List).map((tag) => Tag.fromMap(tag)).toList() : [],
   );
 }
 

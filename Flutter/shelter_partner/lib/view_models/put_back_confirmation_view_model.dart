@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/put_back_confirmation_repository.dart';
-import 'package:shelter_partner/view_models/enrichment_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 
 class PutBackConfirmationViewModel extends StateNotifier<Animal> {
