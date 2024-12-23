@@ -127,48 +127,48 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   thickness: 1,
                                 ),
                               ],
-                              ListTile(
-                                leading: const Icon(Icons.swap_horiz),
-                                title: Text(
-                                    "Toggle Account Type: ${appUser?.type}"),
-                                subtitle: const Text(
-                                    "Just for testing. Not in final app."),
-                                onTap: () async {
-                                  final currentType = appUser?.type;
-                                  final newType = currentType == 'admin'
-                                      ? 'volunteer'
-                                      : 'admin';
-                                  try {
-                                    final firestore =
-                                        FirebaseFirestore.instance;
-                                    final userId = appUser?.id;
+                              // ListTile(
+                              //   leading: const Icon(Icons.swap_horiz),
+                              //   title: Text(
+                              //       "Toggle Account Type: ${appUser?.type}"),
+                              //   subtitle: const Text(
+                              //       "Just for testing. Not in final app."),
+                              //   onTap: () async {
+                              //     final currentType = appUser?.type;
+                              //     final newType = currentType == 'admin'
+                              //         ? 'volunteer'
+                              //         : 'admin';
+                              //     try {
+                              //       final firestore =
+                              //           FirebaseFirestore.instance;
+                              //       final userId = appUser?.id;
 
-                                    if (userId != null) {
-                                      await firestore
-                                          .collection('users')
-                                          .doc(userId)
-                                          .update({'type': newType});
-                                      ref.read(appUserProvider.notifier).state =
-                                          appUser?.copyWith(type: newType);
+                              //       if (userId != null) {
+                              //         await firestore
+                              //             .collection('users')
+                              //             .doc(userId)
+                              //             .update({'type': newType});
+                              //         ref.read(appUserProvider.notifier).state =
+                              //             appUser?.copyWith(type: newType);
 
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                'Account type changed to $newType')),
-                                      );
-                                    } else {
-                                      throw Exception('User ID is null');
-                                    }
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'Error changing account type: $e')),
-                                    );
-                                  }
-                                },
-                              ),
+                              //         ScaffoldMessenger.of(context)
+                              //             .showSnackBar(
+                              //           SnackBar(
+                              //               content: Text(
+                              //                   'Account type changed to $newType')),
+                              //         );
+                              //       } else {
+                              //         throw Exception('User ID is null');
+                              //       }
+                              //     } catch (e) {
+                              //       ScaffoldMessenger.of(context).showSnackBar(
+                              //         SnackBar(
+                              //             content: Text(
+                              //                 'Error changing account type: $e')),
+                              //       );
+                              //     }
+                              //   },
+                              // ),
                               Divider(
                                 color: Colors.black.withOpacity(0.1),
                                 height: 0,
@@ -201,98 +201,98 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                              ListTile(
-                                leading: const Icon(Icons.delete_outline),
-                                title: const Text("Delete Account"),
-                                subtitle: const Text(
-                                    "Just for testing. Not in final app."),
-                                onTap: () async {
-                                  final confirm = await showDialog<bool>(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text("Confirm Deletion"),
-                                      content: const Text(
-                                          "Are you sure you want to delete your account? This action cannot be undone."),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                          child: const Text("Cancel"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(true),
-                                          child: const Text("Delete",
-                                              style:
-                                                  TextStyle(color: Colors.red)),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  if (confirm == true) {
-                                    final emailController =
-                                        TextEditingController();
-                                    final passwordController =
-                                        TextEditingController();
+                              // ListTile(
+                              //   leading: const Icon(Icons.delete_outline),
+                              //   title: const Text("Delete Account"),
+                              //   subtitle: const Text(
+                              //       "Just for testing. Not in final app."),
+                              //   onTap: () async {
+                              //     final confirm = await showDialog<bool>(
+                              //       context: context,
+                              //       builder: (context) => AlertDialog(
+                              //         title: const Text("Confirm Deletion"),
+                              //         content: const Text(
+                              //             "Are you sure you want to delete your account? This action cannot be undone."),
+                              //         actions: [
+                              //           TextButton(
+                              //             onPressed: () =>
+                              //                 Navigator.of(context).pop(false),
+                              //             child: const Text("Cancel"),
+                              //           ),
+                              //           TextButton(
+                              //             onPressed: () =>
+                              //                 Navigator.of(context).pop(true),
+                              //             child: const Text("Delete",
+                              //                 style:
+                              //                     TextStyle(color: Colors.red)),
+                              //           ),
+                              //         ],
+                              //       ),
+                              //     );
+                              //     if (confirm == true) {
+                              //       final emailController =
+                              //           TextEditingController();
+                              //       final passwordController =
+                              //           TextEditingController();
 
-                                    final credentialsConfirmed =
-                                        await showDialog<bool>(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text("Enter Credentials"),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            TextField(
-                                              controller: emailController,
-                                              decoration: const InputDecoration(
-                                                  labelText: "Email"),
-                                            ),
-                                            TextField(
-                                              controller: passwordController,
-                                              decoration: const InputDecoration(
-                                                  labelText: "Password"),
-                                              obscureText: true,
-                                            ),
-                                          ],
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context)
-                                                    .pop(false),
-                                            child: const Text("Cancel"),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(true),
-                                            child: const Text("Confirm"),
-                                          ),
-                                        ],
-                                      ),
-                                    );
+                              //       final credentialsConfirmed =
+                              //           await showDialog<bool>(
+                              //         context: context,
+                              //         builder: (context) => AlertDialog(
+                              //           title: const Text("Enter Credentials"),
+                              //           content: Column(
+                              //             mainAxisSize: MainAxisSize.min,
+                              //             children: [
+                              //               TextField(
+                              //                 controller: emailController,
+                              //                 decoration: const InputDecoration(
+                              //                     labelText: "Email"),
+                              //               ),
+                              //               TextField(
+                              //                 controller: passwordController,
+                              //                 decoration: const InputDecoration(
+                              //                     labelText: "Password"),
+                              //                 obscureText: true,
+                              //               ),
+                              //             ],
+                              //           ),
+                              //           actions: [
+                              //             TextButton(
+                              //               onPressed: () =>
+                              //                   Navigator.of(context)
+                              //                       .pop(false),
+                              //               child: const Text("Cancel"),
+                              //             ),
+                              //             TextButton(
+                              //               onPressed: () =>
+                              //                   Navigator.of(context).pop(true),
+                              //               child: const Text("Confirm"),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //       );
 
-                                    if (credentialsConfirmed == true) {
-                                      final email = emailController.text;
-                                      final password = passwordController.text;
-                                      try {
-                                        await ref
-                                            .read(
-                                                authViewModelProvider.notifier)
-                                            .deleteAccount(
-                                                context, email, password);
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Error reauthenticating user: $e')),
-                                        );
-                                      }
-                                    }
-                                  }
-                                },
-                              ),
+                              //       if (credentialsConfirmed == true) {
+                              //         final email = emailController.text;
+                              //         final password = passwordController.text;
+                              //         try {
+                              //           await ref
+                              //               .read(
+                              //                   authViewModelProvider.notifier)
+                              //               .deleteAccount(
+                              //                   context, email, password);
+                              //         } catch (e) {
+                              //           ScaffoldMessenger.of(context)
+                              //               .showSnackBar(
+                              //             SnackBar(
+                              //                 content: Text(
+                              //                     'Error reauthenticating user: $e')),
+                              //           );
+                              //         }
+                              //       }
+                              //     }
+                              //   },
+                              // ),
                             ],
                           ),
                         ),

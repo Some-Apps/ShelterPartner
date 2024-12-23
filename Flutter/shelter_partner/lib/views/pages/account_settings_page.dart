@@ -127,21 +127,21 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                               height: 0,
                               thickness: 1,
                             ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title: "Remove Ads",
-                                value:
-                                    user?.accountSettings?.removeAds ?? false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(user!.id, "removeAds");
-                                },
-                              ),
-                              subtitle: const Text(
-                                  "Just for testing. Not in final app."),
-                            ),
+                            // ListTile(
+                            //   title: SwitchToggleView(
+                            //     title: "Remove Ads",
+                            //     value:
+                            //         user?.accountSettings?.removeAds ?? false,
+                            //     onChanged: (bool newValue) {
+                            //       ref
+                            //           .read(accountSettingsViewModelProvider
+                            //               .notifier)
+                            //           .toggleAttribute(user!.id, "removeAds");
+                            //     },
+                            //   ),
+                            //   subtitle: const Text(
+                            //       "Just for testing. Not in final app."),
+                            // ),
                           ],
                         )),
                         const SizedBox(height: 25.0),
