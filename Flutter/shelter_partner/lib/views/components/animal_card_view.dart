@@ -477,13 +477,13 @@ Icon _buildIcon(String symbol, String symbolColor) {
   return Icon(
     iconData,
     color: _parseColor(symbolColor),
-    shadows: [
-      Shadow(
-        blurRadius: 1.0,
-        color: Colors.black.withOpacity(0.7),
-        offset: const Offset(0.35, 0.35),
-      ),
-    ],
+    // shadows: [
+    //   Shadow(
+    //     blurRadius: 1.0,
+    //     color: Colors.black.withOpacity(0.7),
+    //     offset: const Offset(0.35, 0.35),
+    //   ),
+    // ],
   );
 }
 

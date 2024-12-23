@@ -414,12 +414,12 @@ Widget _buildIcon(String symbol, String symbolColor) {
     size: 24, // Original size
   ),
   
-  decoration: const IconDecoration(
-    border: IconBorder(
-      color: Colors.black,
-      width: 0.75,
-    )
-  ),
+  // decoration: const IconDecoration(
+  //   border: IconBorder(
+  //     color: Colors.black,
+  //     width: 0.75,
+  //   )
+  // ),
   );
   
   
