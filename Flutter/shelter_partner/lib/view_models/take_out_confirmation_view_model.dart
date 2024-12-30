@@ -20,8 +20,10 @@ class TakeOutConfirmationViewModel extends StateNotifier<Animal> {
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);  
     final enrichmentViewModel = ref.read(enrichmentViewModelProvider.notifier);
 
-    enrichmentViewModel.updateAnimalOptimistically(animal.copyWith(inKennel: false));
-    
+    enrichmentViewModel.updateAnimalOptimistically(
+        animal.copyWith(inKennel: false, 
+        logs: [...animal.logs, log]
+        ));    
 
     try {
       await _repository.takeOutAnimal(

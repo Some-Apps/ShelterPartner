@@ -3,6 +3,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'dart:ui' as ui;
 
+import 'package:website/pages/privacy_policy.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -116,41 +118,67 @@ class HomePage extends StatelessWidget {
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 800),
-              child: const Padding(
-                padding: EdgeInsets.all(40.0),
+              child: Padding(
+                padding: const EdgeInsets.all(40.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Welcome to Shelter Partner',
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 16),
-                    Text(
+                    const SizedBox(height: 16),
+                    const Text(
                       'Shelter Partner is a free and open source volunteer facing shelter management app that allows volunteers to have their own accounts and records visits. It’s highly customizable and connects directly to your ShelterLuv or ShelterManager account. It can also connect to Better Impact to sync your volunteers.',
                       style: TextStyle(fontSize: 15),
                     ),
-                    SizedBox(height: 36),
-                    Text(
+                    const SizedBox(height: 36),
+                    const Text(
                       'Version 2 Demo',
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 16),
-                    Text(
+                    const SizedBox(height: 16),
+                    const Text(
                       'Version 2 is a complete rewrite of the app. It will be available on all platforms including web, iOS, Android, Windows, and Mac and will be released on January 1, 2025. You can watch the demo below and try it out by clicking the "Beta" button above.',
                       style: TextStyle(fontSize: 15),
                     ),
-                    SizedBox(height: 36),
+                    const SizedBox(height: 36),
                     // Embedded YouTube Video
-                    SizedBox(
+                    const SizedBox(
                       width: 560,
                       height: 315,
                       child: HtmlElementView(viewType: 'youtube-video'),
                     ),
-                    SizedBox(height: 36),
-                    SponsorsWidget()
+                    const SizedBox(height: 36),
+                    const SponsorsWidget(),
+                    const SizedBox(height: 36),
+                    // Footer with Privacy Policy
+                    TextButton(
+                      onPressed: () async {
+                        const pdfUrl =
+                            'assets/privacy_policy.pdf'; // For local assets
+                        final pdfUri = Uri.parse(pdfUrl);
+
+                        // If hosted online, use an HTTP/HTTPS link:
+                        // final pdfUri = Uri.parse('https://example.com/privacy_policy.pdf');
+
+                        if (await canLaunchUrl(pdfUri)) {
+                          await launchUrl(pdfUri);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('Unable to open Privacy Policy PDF')),
+                          );
+                        }
+                      },
+                      child: const Text(
+                        'Privacy Policy',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -195,13 +223,13 @@ class SponsorsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Sample data for demonstration purposes
- 
+
     final sponsors = List.generate(
       100,
       (index) => {
-      'name': 'Sponsor ${index + 1}',
-      'amount': (index + 1) * 5,
-      'photoUrl': 'assets/logo.png',
+        'name': 'Sponsor ${index + 1}',
+        'amount': (index + 1) * 5,
+        'photoUrl': 'assets/logo.png',
       },
     );
 

@@ -69,7 +69,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   final PagingController<int, dynamic> _catsPagingController =
       PagingController(firstPageKey: 0);
 
-  static const int _pageSize = 50;
+  static const int _pageSize = 500;
 
   late ScrollController _scrollController;
 
@@ -194,6 +194,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     ref.read(subscriptionStatusProvider.notifier).state =
         isActive ? "Active" : "Inactive";
   }
+
   void _preloadImages(List<Animal> animals) {
     const int preloadImageCount = 150;
     final int endIndex = min(preloadImageCount, animals.length);
@@ -204,7 +205,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
           ? animal.photos!.first.url
           : '';
       if (originalUrl.contains("amazonaws")) {
-        final fallbackUrl = 'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
+        final fallbackUrl =
+            'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
         // Debugging print statements
         print('Preloading image for animal: ${animal.name}');
         print('Original URL: $originalUrl');
@@ -222,8 +224,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       }
     }
   }
-
-
 
   Future<void> _fetchPage({
     required String animalType,
@@ -259,9 +259,10 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
 
       // Determine whether to show ads
       final subscriptionStatus = ref.read(subscriptionStatusProvider);
-      final accountSettings = ref.read(accountSettingsViewModelProvider);
-      bool shouldShowAds = subscriptionStatus != 'Active' &&
-          accountSettings.value?.accountSettings?.removeAds == false;
+      // final accountSettings = ref.read(accountSettingsViewModelProvider);
+      // bool shouldShowAds = subscriptionStatus != 'Active' &&
+      //     accountSettings.value?.accountSettings?.removeAds == false;
+      bool shouldShowAds = subscriptionStatus != 'Active';
 
       List<dynamic> itemsWithAds = [];
       if (shouldShowAds) {
@@ -463,219 +464,229 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
             children: [
               // Collapsible section for search bar, attribute dropdown, and "Take Out All Animals" button
               ExpansionTile(
-              title: const Text('Additional Options'),
-              children: [
-                Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0, vertical: 8.0),
-                child: Column(
-                  children: [
-                  SwitchToggleView(
-                    title: "Simplistic Mode",
-                    value: accountSettings
-                        .value?.accountSettings?.simplisticMode ??
-                      true,
-                    onChanged: (bool newValue) {
-                    final user = ref.read(appUserProvider);
-                    if (user != null) {
-                      ref
-                        .read(
-                          accountSettingsViewModelProvider.notifier)
-                        .toggleAttribute(user.id, "simplisticMode");
-                    }
-                    },
+                title: const Text('Additional Options'),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 8.0),
+                    child: Column(
+                      children: [
+                        SwitchToggleView(
+                          title: "Simplistic Mode",
+                          value: accountSettings
+                                  .value?.accountSettings?.simplisticMode ??
+                              true,
+                          onChanged: (bool newValue) {
+                            final user = ref.read(appUserProvider);
+                            if (user != null) {
+                              ref
+                                  .read(
+                                      accountSettingsViewModelProvider.notifier)
+                                  .toggleAttribute(user.id, "simplisticMode");
+                            }
+                          },
+                        ),
+
+                        Row(
+                          children: [
+                            // Toggle simplistic mode
+
+                            // Search bar
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: const InputDecoration(
+                                  hintText: 'Search animals...',
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    searchQuery = value.toLowerCase();
+                                    // Refresh paging controllers
+                                    _dogsPagingController.refresh();
+                                    _catsPagingController.refresh();
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Attribute dropdown
+                            DropdownButton<String>(
+                              value: selectedAttributeDisplayName,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedAttributeDisplayName = newValue!;
+                                  selectedAttribute =
+                                      attributeDisplayNames[newValue]!;
+                                  // Refresh paging controllers
+                                  _dogsPagingController.refresh();
+                                  _catsPagingController.refresh();
+                                });
+                              },
+                              items: attributeDisplayNames.keys
+                                  .map<DropdownMenuItem<String>>((String key) {
+                                return DropdownMenuItem<String>(
+                                  value: key,
+                                  child: Text(key),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Navigation button for user filter
+                        NavigationButton(
+                          title: "User Enrichment Filter",
+                          route: '/enrichment/main-filter',
+                          extra: FilterParameters(
+                            title: "User Enrichment Filter",
+                            collection: 'users',
+                            documentID: appUser.id,
+                            filterFieldPath: 'userFilter',
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Conditionally show the bulk take out button
+                        if ((accountAllowsBulkTakeOut && isAdmin) ||
+                            (isVolunteer && shelterAllowsBulkTakeOut))
+                          ElevatedButton(
+                            onPressed: () {
+                              // Determine the animal type based on available data
+                              final animalsMap =
+                                  ref.read(enrichmentViewModelProvider);
+                              final animalType =
+                                  animalsMap['dogs']?.isNotEmpty ?? false
+                                      ? 'dogs'
+                                      : 'cats';
+                              final animals =
+                                  _filterAnimals(animalsMap[animalType] ?? []);
+
+                              if (animals.isEmpty) {
+                                Fluttertoast.showToast(
+                                  msg: 'No animals available',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.TOP,
+                                  backgroundColor: Colors.red,
+                                );
+                                return;
+                              }
+
+                              // Determine the majority inKennel status
+                              final inKennelCount = animals
+                                  .where((animal) => animal.inKennel)
+                                  .length;
+                              final majorityInKennel =
+                                  inKennelCount > animals.length / 2;
+
+                              if (majorityInKennel) {
+                                showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return TakeOutConfirmationView(
+                                      animals: animals,
+                                    );
+                                  },
+                                );
+                              } else {
+                                showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return PutBackConfirmationView(
+                                      animals: animals,
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                            child: Text(
+                              (ref.watch(enrichmentViewModelProvider)['dogs']?.isNotEmpty ??
+                                      false)
+                                  ? (_filterAnimals(ref.watch(enrichmentViewModelProvider)['dogs'] ?? [])
+                                              .isNotEmpty &&
+                                          _filterAnimals(ref.watch(enrichmentViewModelProvider)['dogs'] ?? [])
+                                                  .where((animal) =>
+                                                      animal.inKennel)
+                                                  .length >
+                                              (_filterAnimals(ref.watch(enrichmentViewModelProvider)['dogs'] ?? [])
+                                                      .length /
+                                                  2)
+                                      ? "Take Out All Visible Dogs"
+                                      : "Put Back All Visible Dogs")
+                                  : (_filterAnimals(ref.watch(enrichmentViewModelProvider)['cats'] ?? [])
+                                              .isNotEmpty &&
+                                          _filterAnimals(ref.watch(enrichmentViewModelProvider)['cats'] ?? [])
+                                                  .where((animal) =>
+                                                      animal.inKennel)
+                                                  .length >
+                                              (_filterAnimals(ref.watch(enrichmentViewModelProvider)['cats'] ?? []).length / 2)
+                                      ? "Take Out All Visible Cats"
+                                      : "Put Back All Visible Cats"),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-
-                  Row(
-                    children: [
-                    // Toggle simplistic mode
-
-                    // Search bar
-                    Expanded(
-                      child: TextField(
-                      controller: _searchController,
-                      decoration: const InputDecoration(
-                        hintText: 'Search animals...',
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                        searchQuery = value.toLowerCase();
-                        // Refresh paging controllers
-                        _dogsPagingController.refresh();
-                        _catsPagingController.refresh();
-                        });
-                      },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Attribute dropdown
-                    DropdownButton<String>(
-                      value: selectedAttributeDisplayName,
-                      onChanged: (String? newValue) {
-                      setState(() {
-                        selectedAttributeDisplayName = newValue!;
-                        selectedAttribute =
-                          attributeDisplayNames[newValue]!;
-                        // Refresh paging controllers
-                        _dogsPagingController.refresh();
-                        _catsPagingController.refresh();
-                      });
-                      },
-                      items: attributeDisplayNames.keys
-                        .map<DropdownMenuItem<String>>((String key) {
-                      return DropdownMenuItem<String>(
-                        value: key,
-                        child: Text(key),
-                      );
-                      }).toList(),
-                    ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Navigation button for user filter
-                  NavigationButton(
-                    title: "User Enrichment Filter",
-                    route: '/enrichment/main-filter',
-                    extra: FilterParameters(
-                    title: "User Enrichment Filter",
-                    collection: 'users',
-                    documentID: appUser.id,
-                    filterFieldPath: 'userFilter',
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Conditionally show the bulk take out button
-                  if ((accountAllowsBulkTakeOut && isAdmin) ||
-                    (isVolunteer && shelterAllowsBulkTakeOut))
-                    ElevatedButton(
-                    onPressed: () {
-                      // Determine the animal type based on available data
-                      final animalsMap = ref.read(enrichmentViewModelProvider);
-                      final animalType = animalsMap['dogs']?.isNotEmpty ?? false
-                          ? 'dogs'
-                          : 'cats';
-                      final animals = _filterAnimals(animalsMap[animalType] ?? []);
-
-                      if (animals.isEmpty) {
-                        Fluttertoast.showToast(
-                          msg: 'No animals available',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: Colors.red,
-                        );
-                        return;
-                      }
-
-                      // Determine the majority inKennel status
-                      final inKennelCount = animals
-                        .where((animal) => animal.inKennel)
-                        .length;
-                      final majorityInKennel =
-                        inKennelCount > animals.length / 2;
-
-                      if (majorityInKennel) {
-                      showDialog<bool>(
-                        context: context,
-                        builder: (context) {
-                        return TakeOutConfirmationView(
-                          animals: animals,
-                        );
-                        },
-                      );
-                      } else {
-                      showDialog<bool>(
-                        context: context,
-                        builder: (context) {
-                        return PutBackConfirmationView(
-                          animals: animals,
-                        );
-                        },
-                      );
-                      }
-                    },
-                    child: Text(
-                      (ref.watch(enrichmentViewModelProvider)['dogs']?.isNotEmpty ?? false)
-                        ? (_filterAnimals(ref.watch(enrichmentViewModelProvider)['dogs'] ?? []).isNotEmpty &&
-                           _filterAnimals(ref.watch(enrichmentViewModelProvider)['dogs'] ?? [])
-                              .where(
-                                (animal) => animal.inKennel)
-                              .length >
-                            (_filterAnimals(ref.watch(
-                                      enrichmentViewModelProvider)[
-                                    'dogs'] ??
-                                  [])
-                                .length /
-                              2)
-                          ? "Take Out All Visible Dogs"
-                          : "Put Back All Visible Dogs")
-                        : (_filterAnimals(ref.watch(enrichmentViewModelProvider)['cats'] ?? []).isNotEmpty &&
-                           _filterAnimals(ref.watch(enrichmentViewModelProvider)['cats'] ?? [])
-                              .where(
-                                (animal) => animal.inKennel)
-                              .length >
-                            (_filterAnimals(
-                                  ref.watch(enrichmentViewModelProvider)['cats'] ?? [])
-                                .length /
-                              2)
-                          ? "Take Out All Visible Cats"
-                          : "Put Back All Visible Cats"),
-                    ),
-                    ),
-                  ],
-                ),
-                ),
-              ],
+                ],
               ),
               // Conditionally show the TabBar if there are animals in both categories
-              if ((ref.watch(enrichmentViewModelProvider)['dogs']?.isNotEmpty ?? false) &&
-                (ref.watch(enrichmentViewModelProvider)['cats']?.isNotEmpty ?? false))
-              TabBar(
-                controller: _tabController,
-                tabs: const [
-                Tab(text: 'Dogs'),
-                Tab(text: 'Cats'),
-                ],
-                onTap: (index) {
-                // Refresh the appropriate paging controller when switching tabs
-                if (index == 0) {
-                  _dogsPagingController.refresh();
-                } else {
-                  _catsPagingController.refresh();
-                }
-                },
-              ),
-              // Conditionally show the TabBarView if there are animals in both categories
-              if ((ref.watch(enrichmentViewModelProvider)['dogs']?.isNotEmpty ?? false) &&
-                (ref.watch(enrichmentViewModelProvider)['cats']?.isNotEmpty ?? false))
-              Expanded(
-                child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Dogs
-                  _buildAnimalGridView('dogs'),
-                  // Cats
-                  _buildAnimalGridView('cats'),
-                ],
+              if ((ref.watch(enrichmentViewModelProvider)['dogs']?.isNotEmpty ??
+                      false) &&
+                  (ref.watch(enrichmentViewModelProvider)['cats']?.isNotEmpty ??
+                      false))
+                TabBar(
+                  controller: _tabController,
+                  tabs: const [
+                    Tab(text: 'Dogs'),
+                    Tab(text: 'Cats'),
+                  ],
+                  onTap: (index) {
+                    // Refresh the appropriate paging controller when switching tabs
+                    if (index == 0) {
+                      _dogsPagingController.refresh();
+                    } else {
+                      _catsPagingController.refresh();
+                    }
+                  },
                 ),
-              )
+              // Conditionally show the TabBarView if there are animals in both categories
+              if ((ref.watch(enrichmentViewModelProvider)['dogs']?.isNotEmpty ??
+                      false) &&
+                  (ref.watch(enrichmentViewModelProvider)['cats']?.isNotEmpty ??
+                      false))
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      // Dogs
+                      _buildAnimalGridView('dogs'),
+                      // Cats
+                      _buildAnimalGridView('cats'),
+                    ],
+                  ),
+                )
               // Show only dogs if there are no cats
-              else if (ref.watch(enrichmentViewModelProvider)['dogs']?.isNotEmpty ?? false)
-              Expanded(
-                child: _buildAnimalGridView('dogs'),
-              )
+              else if (ref
+                      .watch(enrichmentViewModelProvider)['dogs']
+                      ?.isNotEmpty ??
+                  false)
+                Expanded(
+                  child: _buildAnimalGridView('dogs'),
+                )
               // Show only cats if there are no dogs
-              else if (ref.watch(enrichmentViewModelProvider)['cats']?.isNotEmpty ?? false)
-              Expanded(
-                child: _buildAnimalGridView('cats'),
-              )
+              else if (ref
+                      .watch(enrichmentViewModelProvider)['cats']
+                      ?.isNotEmpty ??
+                  false)
+                Expanded(
+                  child: _buildAnimalGridView('cats'),
+                )
               // Show a message if there are no animals
               else
-              const Expanded(
-                child: Center(
-                child: Text('No animals available'),
+                const Expanded(
+                  child: Center(
+                    child: Text('No animals available'),
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -773,7 +784,6 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
         originalImageUrl,
         fit: BoxFit.cover,
       );
-      
     }).toList();
 
     return Padding(

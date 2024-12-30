@@ -73,7 +73,7 @@ class Animal {
     fullLocation: data['fullLocation'] ?? 'Unknown',
     description: data['description'] ?? 'No description available.',
     symbol: data['symbol'] ?? 'tag',
-    symbolColor: data['symbolColor'] ?? 'red',
+    symbolColor: data['symbolColor'] ?? '',
     takeOutAlert: data['takeOutAlert'] ?? 'Unknown',
     putBackAlert: data['putBackAlert'] ?? 'Unknown',
     adoptionCategory: data['adoptionCategory'] ?? 'Unknown',
