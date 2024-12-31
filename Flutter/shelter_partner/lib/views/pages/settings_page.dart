@@ -325,19 +325,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                         },
                                 )
                               else
-                                ListTile(
-                                  leading: const Icon(Icons.favorite_border),
-                                  title: Text(
-                                    subscriptionStatus == "Active"
-                                        ? "Thank you for supporting us!"
-                                        : "Support us and remove ads",
-                                  ),
-                                  subtitle: Text(
-                                    subscriptionStatus == "Active"
-                                        ? "You can manage your subscription on the mobile app"
-                                        : "Remove ads and support the developer by subscribing on the mobile app",
-                                  ),
-                                ),
+                                // ListTile(
+                                //   leading: const Icon(Icons.favorite_border),
+                                //   title: Text(
+                                //     subscriptionStatus == "Active"
+                                //         ? "Thank you for supporting us!"
+                                //         : "Support us and remove ads",
+                                //   ),
+                                //   subtitle: Text(
+                                //     subscriptionStatus == "Active"
+                                //         ? "You can manage your subscription on the mobile app"
+                                //         : "Remove ads and support the developer by subscribing on the mobile app",
+                                //   ),
+                                // ),
                               Divider(
                                 color: Colors.black.withOpacity(0.1),
                                 height: 0,

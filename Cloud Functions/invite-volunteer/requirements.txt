@@ -1,0 +1,4 @@
+functions-framework==3.*
+sendgrid
+google-cloud-firestore
+firebase_admin

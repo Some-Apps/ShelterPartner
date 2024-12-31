@@ -1,0 +1,10 @@
+{
+    "dependencies": {
+      "@google-cloud/functions-framework": "^3.0.0",
+      "firebase-admin": "^11.0.0",
+      "axios": "^1.4.0",
+      "cors": "^2.8.5",
+      "firebase-functions": "^4.4.1"
+    }
+  }
+  

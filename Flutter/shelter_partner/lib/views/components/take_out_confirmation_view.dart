@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/repositories/update_volunteer_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
@@ -21,7 +22,8 @@ class TakeOutConfirmationView extends ConsumerStatefulWidget {
   TakeOutConfirmationViewState createState() => TakeOutConfirmationViewState();
 }
 
-class TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationView> {
+class TakeOutConfirmationViewState
+    extends ConsumerState<TakeOutConfirmationView> {
   final TextEditingController _nameController = TextEditingController();
   String? _selectedLetOutType;
   bool _isConfirmEnabled = false;
@@ -42,11 +44,15 @@ class TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationView
   void _updateConfirmButtonState() {
     setState(() {
       final accountSettings = ref.read(accountSettingsViewModelProvider);
-      final requireLetOutType = accountSettings.value?.accountSettings?.requireLetOutType ?? false;
-      final requireName = accountSettings.value?.accountSettings?.requireName ?? false;
+      final requireLetOutType =
+          accountSettings.value?.accountSettings?.requireLetOutType ?? false;
+      final requireName =
+          accountSettings.value?.accountSettings?.requireName ?? false;
 
-      _isConfirmEnabled = (!requireLetOutType || (_selectedLetOutType != null && _selectedLetOutType!.isNotEmpty)) &&
-          (!requireName || _nameController.text.isNotEmpty) ||
+      _isConfirmEnabled = (!requireLetOutType ||
+                  (_selectedLetOutType != null &&
+                      _selectedLetOutType!.isNotEmpty)) &&
+              (!requireName || _nameController.text.isNotEmpty) ||
           (!requireLetOutType && !requireName);
     });
   }
@@ -57,78 +63,83 @@ class TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationView
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final userDetails = ref.read(appUserProvider);
 
-    final takeOutViewModel = ref.read(takeOutConfirmationViewModelProvider(widget.animals.first).notifier);
+    final takeOutViewModel = ref.read(
+        takeOutConfirmationViewModelProvider(widget.animals.first).notifier);
 
     return AlertDialog(
       title: Center(
         child: Text(
           widget.animals.length == 1
-          ? 'Confirm Action for ${widget.animals.first.name}'
-          : 'Confirm Action for ${widget.animals.length} animals',
+              ? 'Confirm Action for ${widget.animals.first.name}'
+              : 'Confirm Action for ${widget.animals.length} animals',
         ),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-        widget.animals.length == 1
-            ? 'Do you want to take out ${widget.animals.first.name}?'
-            : 'Do you want to take out the selected animals?',
+            widget.animals.length == 1
+                ? 'Do you want to take out ${widget.animals.first.name}?'
+                : 'Do you want to take out the selected animals?',
           ),
           const SizedBox(height: 20),
           if (widget.animals.any((animal) => animal.takeOutAlert.isNotEmpty))
-        Column(
-          children: widget.animals
-          .where((animal) => animal.takeOutAlert.isNotEmpty)
-          .map((animal) => RichText(
-            text: TextSpan(
+            Column(
+              children: widget.animals
+                  .where((animal) => animal.takeOutAlert.isNotEmpty)
+                  .map((animal) => RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Alert for ${animal.name}: ',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            TextSpan(
+                              text: animal.takeOutAlert,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ))
+                  .toList(),
+            ),
+          if (accountSettings.value?.accountSettings?.requireLetOutType ==
+                  true &&
+              shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty ==
+                  true)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextSpan(
-              text: 'Alert for ${animal.name}: ',
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                TextSpan(
-              text: animal.takeOutAlert,
-              style: const TextStyle(color: Colors.red),
+                const Text('Type of Let Out'),
+                const Spacer(),
+                DropdownButton<String>(
+                  value: _selectedLetOutType,
+                  hint: const Text('Select type'),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedLetOutType = newValue;
+                      _updateConfirmButtonState();
+                    });
+                  },
+                  items: shelterSettings.value!.shelterSettings.letOutTypes
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
               ],
             ),
-              ))
-          .toList(),
-        ),
-          if (accountSettings.value?.accountSettings?.requireLetOutType == true &&
-          shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text('Type of Let Out'),
-            const Spacer(),
-            DropdownButton<String>(
-          value: _selectedLetOutType,
-          hint: const Text('Select type'),
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedLetOutType = newValue;
-              _updateConfirmButtonState();
-            });
-          },
-          items: shelterSettings.value!.shelterSettings.letOutTypes
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-            ),
-          ],
-        ),
           if (accountSettings.value?.accountSettings?.requireName == true)
-        TextField(
-          controller: _nameController..text = userDetails?.firstName ?? '',
-          decoration: const InputDecoration(
-            labelText: 'Volunteer Name',
-          ),
-        ),
+            TextField(
+              controller: _nameController..text = userDetails?.firstName ?? '',
+              decoration: const InputDecoration(
+                labelText: 'Volunteer Name',
+              ),
+            ),
         ],
       ),
       actions: [
@@ -140,9 +151,10 @@ class TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationView
         ),
         TextButton(
           onPressed: _isConfirmEnabled
-                ? () async {
+              ? () async {
                   setState(() {
-                    _isConfirmEnabled = false; // Disable the button to prevent multiple taps
+                    _isConfirmEnabled =
+                        false; // Disable the button to prevent multiple taps
                   });
 
                   final currentContext = context;
@@ -159,7 +171,8 @@ class TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationView
 
                   // Apply take-out action for each animal in the list
                   for (final animal in widget.animals) {
-                    await takeOutViewModel.takeOutAnimal(
+                    await takeOutViewModel
+                        .takeOutAnimal(
                       animal,
                       Log(
                         id: const Uuid().v4().toString(),
@@ -170,11 +183,20 @@ class TakeOutConfirmationViewState extends ConsumerState<TakeOutConfirmationView
                         startTime: Timestamp.now(),
                         endTime: animal.logs.last.endTime,
                       ),
-                    );
+                    )
+                        .then((_) {
+                      if (mounted) {
+                        ref
+                            .read(updateVolunteerRepositoryProvider)
+                            .modifyVolunteerLastActivity(
+                                userDetails.id, Timestamp.now());
+                      }
+                    });
                   }
 
                   if (mounted) {
-                    Navigator.of(currentContext).pop(); // Close the loading indicator
+                    Navigator.of(currentContext)
+                        .pop(); // Close the loading indicator
                     Navigator.of(currentContext).pop(true); // User confirmed
                   }
                 }

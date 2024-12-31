@@ -262,7 +262,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       // final accountSettings = ref.read(accountSettingsViewModelProvider);
       // bool shouldShowAds = subscriptionStatus != 'Active' &&
       //     accountSettings.value?.accountSettings?.removeAds == false;
-      bool shouldShowAds = subscriptionStatus != 'Active';
+      bool shouldShowAds = subscriptionStatus != 'Active' && !kIsWeb && !Platform.isWindows;
 
       List<dynamic> itemsWithAds = [];
       if (shouldShowAds) {

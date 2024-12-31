@@ -147,7 +147,7 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
           onPressed: (_selectedType != null &&
                   _startTimeController.text.isNotEmpty &&
                   _endTimeController.text.isNotEmpty)
-              ? () {
+              ? () async {
                   Log log = Log(
                     id: const Uuid().v4().toString(),
                     type: _selectedType!,
@@ -160,14 +160,19 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                     earlyReason: _selectedEarlyReason,
                   );
 
-                  ref
+                    await ref
                       .read(addLogViewModelProvider(widget.animal).notifier)
-                      .addLogToAnimal(widget.animal, log);
-
-                  ref
-                      .read(updateVolunteerRepositoryProvider)
-                      .modifyVolunteerLastActivity(
-                          userDetails.id, Timestamp.now());
+                      .addLogToAnimal(widget.animal, log)
+                      .then((_) {
+                      print('Log added');
+                      if (mounted) {
+                        print('Updating last activity');
+                        ref
+                          .read(updateVolunteerRepositoryProvider)
+                          .modifyVolunteerLastActivity(userDetails.id, Timestamp.now());
+                        print('Last activity updated');
+                      }
+                      });
 
                   Navigator.of(context).pop(log);
                 }

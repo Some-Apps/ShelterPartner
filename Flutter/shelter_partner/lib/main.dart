@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,6 +34,56 @@ import 'package:shelter_partner/views/pages/volunteers_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  bool isMobileWeb() {
+    if (!kIsWeb) return false; // Only do UA checks in web builds
+    final userAgent = html.window.navigator.userAgent.toLowerCase();
+    return userAgent.contains('iphone') ||
+        userAgent.contains('ipad') ||
+        userAgent.contains('android');
+  }
+
+  bool isIosWeb() {
+    if (!kIsWeb) return false;
+    final userAgent = html.window.navigator.userAgent.toLowerCase();
+    return userAgent.contains('iphone') || userAgent.contains('ipad');
+  }
+
+  bool isAndroidWeb() {
+    if (!kIsWeb) return false;
+    final userAgent = html.window.navigator.userAgent.toLowerCase();
+    return userAgent.contains('android');
+  }
+
+  // If running on the web AND on a mobile browser, redirect:
+  if (isMobileWeb()) {
+    if (isIosWeb()) {
+      // 1) Try to open via custom URI scheme (if your iOS app uses one)
+      html.window.location.assign("myapp://");
+
+      // 2) Fallback: if not installed, wait ~0.5s and open the App Store
+      Future.delayed(const Duration(milliseconds: 500), () {
+        html.window.location.assign(
+          "https://apps.apple.com/us/app/6449749673" // Your iOS App Store link
+        );
+      });
+      return; // Don’t proceed to runApp
+    } else if (isAndroidWeb()) {
+      // 1) Try to open via Android Intent URI scheme
+      //    Replace "com.mycompany.myapp" with your package name
+      html.window.location.assign(
+        "intent://myapp/#Intent;scheme=myapp;package=me.jareddanieljones.HumaneSociety;end"
+      );
+
+      // 2) Fallback: if not installed, open Google Play Store
+      Future.delayed(const Duration(milliseconds: 500), () {
+        html.window.location.assign(
+          "https://play.google.com/store/apps/details?id=me.jareddanieljones.HumaneSociety"
+        );
+      });
+      return; // Don’t proceed to runApp
+    }
+  }
+
   final theme = lightTheme;
 
   final FirebaseService firebaseService = FirebaseService();
@@ -41,11 +93,14 @@ void main() async {
     FlutterError.dumpErrorToConsole(details);
   };
 
-  final config = QonversionConfigBuilder('kgASA45BHEGFzMnqmQPYKQEEGZJCmaok', QLaunchMode.subscriptionManagement)
-  .setEnvironment(QEnvironment.sandbox)
-  .build();
+  final config = QonversionConfigBuilder('kgASA45BHEGFzMnqmQPYKQEEGZJCmaok',
+          QLaunchMode.subscriptionManagement)
+      .setEnvironment(QEnvironment.sandbox)
+      .build();
 
   Qonversion.initialize(config);
+
+  
 
   runApp(ProviderScope(
       child: MyApp(
@@ -347,3 +402,4 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+

@@ -1,0 +1,15 @@
+firebase-admin
+google-cloud-pubsub
+google-api-python-client
+functions-framework
+pandas
+xlrd
+google-cloud-firestore==2.3.4
+imapclient
+pyzmail36
+pytz
+PyMuPDF
+Pillow
+google-cloud-storage
+beautifulsoup4
+openpyxl
