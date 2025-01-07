@@ -71,7 +71,8 @@ class AnimalCardImage extends StatelessWidget {
                 ClipOval(
                   child: animal.photos?.isNotEmpty ?? false
                         ? CachedNetworkImage(
-                          imageUrl: animal.photos?.first.url.contains('amazonaws.com') ?? false
+                            imageUrl: (animal.photos?.first.url.contains('amazonaws.com') ?? false) ||
+                                (animal.photos?.first.url.contains('storage.googleapis.com') ?? false)
                             ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
                             : animal.photos?.first.url ?? '',
                           width: 100,

@@ -204,7 +204,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
           ? animal.photos!.first.url
           : '';
-      if (originalUrl.contains("amazonaws")) {
+      if (originalUrl.contains("amazonaws") || originalUrl.contains("storage.googleapis.com")) {
         final fallbackUrl =
             'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
         // Debugging print statements

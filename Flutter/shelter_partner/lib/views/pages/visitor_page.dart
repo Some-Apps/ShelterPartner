@@ -105,7 +105,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
         final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
             ? animal.photos!.first.url
             : '';
-        if (originalUrl.contains("amazonaws")) {
+        if (originalUrl.contains("amazonaws") || originalUrl.contains("storage.googleapis.com")) {
           final fallbackUrl =
               'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
           // Debugging print statements
@@ -235,12 +235,12 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                               children: [
                                 imageUrl.isNotEmpty
                                     ? CachedNetworkImage(
-                                        imageUrl: animal.photos?.first.url
-                                                    .contains(
-                                                        'amazonaws.com') ??
-                                                false
-                                            ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
-                                            : animal.photos?.first.url ?? '',
+                                        imageUrl: (animal.photos?.first.url
+                                              .contains('amazonaws.com') ?? false) ||
+                                            (animal.photos?.first.url
+                                              .contains('storage.googleapis.com') ?? false)
+                                          ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
+                                          : animal.photos?.first.url ?? '',
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                         height: double.infinity,

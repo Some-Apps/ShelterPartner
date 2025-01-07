@@ -3,8 +3,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'dart:ui' as ui;
 
-import 'package:website/pages/privacy_policy.dart';
-
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -18,10 +16,9 @@ class HomePage extends StatelessWidget {
         ..width = '560'
         ..height = '315'
         ..src =
-            'https://www.youtube.com/embed/obv5Pvv2caw' // Replace with your video ID
+            'https://www.youtube.com/embed/phDOgusydnk' // Replace with your video ID
         ..style.border = 'none',
     );
-
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -38,46 +35,58 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               // Beta Button
+              // TextButton(
+              //   onPressed: () {
+              //     launchUrl(Uri(
+              //       scheme: 'https',
+              //       host: 'beta.shelterpartner.org',
+              //     ));
+              //   },
+              //   child: const Text(
+              //     'Beta',
+              //     style: TextStyle(color: Colors.black),
+              //   ),
+              // ),
+              // Download Button with Dialog Tooltip
+              // TextButton(
+              //   onPressed: () {
+              //     showDialog(
+              //       context: context,
+              //       builder: (context) => const AlertDialog(
+              //         title: Text('Download Information'),
+              //         content: Text(
+              //           'Coming January 1, 2025\n\n'
+              //           'Platforms:\n'
+              //           '- Windows\n'
+              //           '- Mac\n'
+              //           '- iOS\n'
+              //           '- Android\n'
+              //           '- Web',
+              //           style: TextStyle(fontSize: 16),
+              //         ),
+              //         actions: [
+              //           // TextButton(
+              //           //   onPressed: () => Navigator.of(context).pop(),
+              //           //   child: const Text('OK'),
+              //           // ),
+              //         ],
+              //       ),
+              //     );
+              //   },
+              //   child: const Text(
+              //     'Download',
+              //     style: TextStyle(color: Colors.black),
+              //   ),
+              // ),
               TextButton(
                 onPressed: () {
                   launchUrl(Uri(
                     scheme: 'https',
-                    host: 'beta.shelterpartner.org',
+                    host: 'app.shelterpartner.org',
                   ));
                 },
                 child: const Text(
-                  'Beta',
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-              // Download Button with Dialog Tooltip
-              TextButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => const AlertDialog(
-                      title: Text('Download Information'),
-                      content: Text(
-                        'Coming January 1, 2025\n\n'
-                        'Platforms:\n'
-                        '- Windows\n'
-                        '- Mac\n'
-                        '- iOS\n'
-                        '- Android\n'
-                        '- Web',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      actions: [
-                        // TextButton(
-                        //   onPressed: () => Navigator.of(context).pop(),
-                        //   child: const Text('OK'),
-                        // ),
-                      ],
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Download',
+                  'App',
                   style: TextStyle(color: Colors.black),
                 ),
               ),
@@ -124,61 +133,73 @@ class HomePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'Welcome to Shelter Partner',
+                      'Happy New Year!',
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Shelter Partner is a free and open source volunteer facing shelter management app that allows volunteers to have their own accounts and records visits. It’s highly customizable and connects directly to your ShelterLuv or ShelterManager account. It can also connect to Better Impact to sync your volunteers.',
+                      'Version 2 is out! Watch the video below to learn more. The iOS and Android versions are still being processed by the app stores, but you can access the web version by clicking the "App" button above.',
                       style: TextStyle(fontSize: 15),
                     ),
                     const SizedBox(height: 36),
                     const Text(
-                      'Version 2 Demo',
+                      'Version 2 Tutorial',
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Version 2 is a complete rewrite of the app. It will be available on all platforms including web, iOS, Android, Windows, and Mac and will be released on January 1, 2025. You can watch the demo below and try it out by clicking the "Beta" button above.',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    const SizedBox(height: 36),
+                    // const Text(
+                    //   'Version 2 is a complete rewrite of the app. It will be available on all platforms including web, iOS, Android, Windows, and Mac and will be released on January 1, 2025. You can watch the demo below and try it out by clicking the "Beta" button above.',
+                    //   style: TextStyle(fontSize: 15),
+                    // ),
+                    // const SizedBox(height: 36),
                     // Embedded YouTube Video
                     const SizedBox(
                       width: 560,
                       height: 315,
                       child: HtmlElementView(viewType: 'youtube-video'),
                     ),
-                    const SizedBox(height: 36),
-                    const SponsorsWidget(),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                      launchUrl(Uri(
+                        scheme: 'https',
+                        host: 'www.youtube.com',
+                        path: '/watch',
+                        queryParameters: {'v': 'phDOgusydnk'}, // Replace with your video ID
+                      ));
+                      },
+                      child: const Text('Watch Full Screen on YouTube'),
+                    ),
+                    // const SizedBox(height: 36),
+                    // const SponsorsWidget(),
                     const SizedBox(height: 36),
                     // Footer with Privacy Policy
-                    TextButton(
-                      onPressed: () async {
-                        const pdfUrl =
-                            'assets/privacy_policy.pdf'; // For local assets
-                        final pdfUri = Uri.parse(pdfUrl);
+                    // TextButton(
+                    //   onPressed: () async {
+                    //     const pdfUrl =
+                    //         'assets/privacy_policy.pdf'; // For local assets
+                    //     final pdfUri = Uri.parse(pdfUrl);
 
-                        // If hosted online, use an HTTP/HTTPS link:
-                        // final pdfUri = Uri.parse('https://example.com/privacy_policy.pdf');
+                    //     // If hosted online, use an HTTP/HTTPS link:
+                    //     // final pdfUri = Uri.parse('https://example.com/privacy_policy.pdf');
 
-                        if (await canLaunchUrl(pdfUri)) {
-                          await launchUrl(pdfUri);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text('Unable to open Privacy Policy PDF')),
-                          );
-                        }
-                      },
-                      child: const Text(
-                        'Privacy Policy',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
+                    //     if (await canLaunchUrl(pdfUri)) {
+                    //       await launchUrl(pdfUri);
+                    //     } else {
+                    //       ScaffoldMessenger.of(context).showSnackBar(
+                    //         const SnackBar(
+                    //             content:
+                    //                 Text('Unable to open Privacy Policy PDF')),
+                    //       );
+                    //     }
+                    //   },
+                    //   child: const Text(
+                    //     'Privacy Policy',
+                    //     style: TextStyle(color: Colors.blue),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
