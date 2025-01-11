@@ -1,0 +1,1 @@
+Additional Options in the Enrichment Tab allows the user to turn Simplistic Mode on or off, search for or filter the animals using customizable categories, or select to "Take Out All Visible Dogs/Cats".
