@@ -1,0 +1,3 @@
+By default, the animal cards are shown in the simplistic view version. This shows their name, their location, the time since they were last let out, and a colored symbol that can show what customized category that animal is in.
+
+If you want more information about the animal, you can turn simplistic mode off. Then it will show the animal's name, their location, their symbol, their adoption category, behavior category, medical category, volunteer category, any tags that you've added for the animals. It will also display the time since they were last let out and the let out type and the volunteer who took them out.

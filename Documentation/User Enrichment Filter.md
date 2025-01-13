@@ -1,0 +1,1 @@
+The User Enrichment Filter allows you to make customizable filters to sort animals that will save for your account, even when using other devices. You can choose single or multiple conditions to filter with and you can easily learn to set these by watching the home page tutorial. 
