@@ -89,31 +89,31 @@ class AuthRepository {
         await user.reauthenticateWithCredential(credential);
 
         // Fetch the shelter ID linked to the user
-        final userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-        final shelterId = userDoc.data()?['shelterID'];
+        // final userDoc =
+        //     await _firestore.collection('users').doc(user.uid).get();
+        // final shelterId = userDoc.data()?['shelterID'];
 
-        if (shelterId != null) {
-          // Manually delete documents from known subcollections
-          final subcollections = [
-            'cats',
-            'dogs'
-          ]; // replace with actual subcollection names
+        // if (shelterId != null) {
+        //   // Manually delete documents from known subcollections
+        //   final subcollections = [
+        //     'cats',
+        //     'dogs'
+        //   ]; // replace with actual subcollection names
 
-          for (var subcollectionName in subcollections) {
-            final snapshots = await _firestore
-                .collection('shelters')
-                .doc(shelterId)
-                .collection(subcollectionName)
-                .get();
-            for (var doc in snapshots.docs) {
-              await doc.reference.delete();
-            }
-          }
+        //   for (var subcollectionName in subcollections) {
+        //     final snapshots = await _firestore
+        //         .collection('shelters')
+        //         .doc(shelterId)
+        //         .collection(subcollectionName)
+        //         .get();
+        //     for (var doc in snapshots.docs) {
+        //       await doc.reference.delete();
+        //     }
+        //   }
 
-          // Delete the shelter document from Firestore
-          await _firestore.collection('shelters').doc(shelterId).delete();
-        }
+        //   // Delete the shelter document from Firestore
+        //   await _firestore.collection('shelters').doc(shelterId).delete();
+        // }
 
         // Delete user document from Firestore
         await _firestore.collection('users').doc(user.uid).delete();

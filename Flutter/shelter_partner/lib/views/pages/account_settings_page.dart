@@ -122,11 +122,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                 }
                               },
                             ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
+                          
                             // ListTile(
                             //   title: SwitchToggleView(
                             //     title: "Remove Ads",

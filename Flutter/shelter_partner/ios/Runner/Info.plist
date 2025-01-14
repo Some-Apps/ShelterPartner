@@ -45,22 +45,16 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
-		<key>NSLocationAlwaysAndWhenInUsageDescription</key>
-		<string>App app want&apos;s to access your location to get address</string>
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>App app want&apos;s to access your location to get address.</string>
-		<key>NSLocationAlwaysUsageDescription</key>
-		<string>App app want&apos;s to access your location to get address.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>App want&apos;s to access your location to get address.</string>
+		<string>We need to access your location verify your distance from your shelter and to set georestriction boundaries.</string>
 		<key>io.flutter.embedded_views_preview</key>
 		<true/>
 		<key>GMSApiKey</key>
 		<string>AIzaSyCqKPd59J83BCXIkUotrmh1hu7VySoN1r8</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>We need access to your photo library to select photos.</string>
+		<string>We need access to your photo library to allow you to add photos to your animals.</string>
 		<key>NSCameraUsageDescription</key>
-		<string>We need access to your camera to take photos.</string>
+		<string>We need access to your camera to allow you to take photos of your animals.</string>
 		<key>io.flutter.embedded_views_preview</key>
 		<string>yes</string>
 		<key>NSAppTransportSecurity</key>

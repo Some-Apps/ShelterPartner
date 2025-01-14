@@ -200,6 +200,27 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 height: 0,
                                 thickness: 1,
                               ),
+                             
+                              ListTile(
+                                leading: const Icon(Icons.delete_outline),
+                                title: const Text("Delete Account"),
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text("Delete Account"),
+                                      content: const Text(
+                                          "To delete your account and all data associated with it, please email jared@shelterpartner.org"),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(context).pop(),
+                                          child: const Text("OK"),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                               // ListTile(
                               //   leading: const Icon(Icons.delete_outline),
                               //   title: const Text("Delete Account"),
@@ -308,23 +329,23 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             children: [
-                              if (!kIsWeb &&
-                                  (defaultTargetPlatform ==
-                                          TargetPlatform.iOS ||
-                                      defaultTargetPlatform ==
-                                          TargetPlatform.android))
-                                ListTile(
-                                  leading: const Icon(Icons.favorite_border),
-                                  title: Text(subscriptionStatus == "Active"
-                                      ? "Thank You For Supporting Us!"
-                                      : "Support Us And Remove Ads"),
-                                  onTap: subscriptionStatus == "Active"
-                                      ? null
-                                      : () async {
-                                          _showSupportUsModal(context, ref);
-                                        },
-                                )
-                              else
+                              // if (!kIsWeb &&
+                              //     (defaultTargetPlatform ==
+                              //             TargetPlatform.iOS ||
+                              //         defaultTargetPlatform ==
+                              //             TargetPlatform.android))
+                              //   ListTile(
+                              //     leading: const Icon(Icons.favorite_border),
+                              //     title: Text(subscriptionStatus == "Active"
+                              //         ? "Thank You For Supporting Us!"
+                              //         : "Support Us And Remove Ads"),
+                              //     onTap: subscriptionStatus == "Active"
+                              //         ? null
+                              //         : () async {
+                              //             _showSupportUsModal(context, ref);
+                              //           },
+                              //   )
+                              // else
                                 // ListTile(
                                 //   leading: const Icon(Icons.favorite_border),
                                 //   title: Text(
