@@ -11,38 +11,12 @@
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
 
-## Bounties To Be Paid On January 1st
+## Bounties To Be Paid On February 1st
 
 <details>
-  <summary>John Doe: $75</summary>
+  <summary>Renee Jones: $25</summary>
 
-  - Issue #1: Fixed bug in payment processing ($25)  
-  - Issue #2: Updated documentation ($20)  
-  - Issue #3: Improved testing scripts ($30)  
+  - Issue #354: Enrichment Tab Wiki Entries ($25)  
 
 </details>
-
-<details>
-  <summary>Jane Doe: $50</summary>
-
-  - Issue #1: Designed new UI mockup ($20)  
-  - Issue #2: Enhanced website accessibility ($30)  
-
-</details>
-
-<details>
-  <summary>Chris Smith: $120</summary>
-
-  - Issue #3: Developed new analytics feature ($60)  
-  - Issue #4: Optimized database queries ($40)  
-  - Issue #5: Refactored API endpoints ($20)  
-
-</details>
-
-<details>
-  <summary>Alex Johnson: $30</summary>
-
-  - Issue #6: Fixed typos in documentation ($10)  
-  - Issue #7: Updated deployment pipeline ($20)  
-
 
