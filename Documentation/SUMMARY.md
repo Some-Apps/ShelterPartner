@@ -6,7 +6,7 @@
 * [FAQs](FAQs.md)
 
 ## Enrichment Tab
-* [Enrichment Tab](Documentation/Enrichement%20Tab.md)
+* [Enrichment Tab](Enrichement%20Tab.md)
 * [Animal Card]
 * [Animal Detail Page]
 * [Additional Options]
