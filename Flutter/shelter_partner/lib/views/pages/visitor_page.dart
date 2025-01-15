@@ -352,8 +352,14 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     // Shuffle the list of animals
     _shuffledAnimals = List.from(widget.animals)..shuffle();
 
-    // Set the initial image URL and animal
-    _setCurrentImage();
+    // Set the initial image URL and animal, ensuring it skips animals without images
+    _currentIndex = 0;
+    do {
+      _setCurrentImage();
+      if (_currentImageUrl.isEmpty) {
+        _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
+      }
+    } while (_currentImageUrl.isEmpty && _currentIndex != 0);
 
     // Start the slideshow
     _startSlideshow();
