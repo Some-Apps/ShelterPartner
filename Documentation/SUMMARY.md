@@ -6,7 +6,7 @@
 * [FAQs](FAQs.md)
 
 ## Enrichment Tab
-* [Enrichment Tab](ShelterPartner%20App/Documentation/Enrichement%20Tab)
+* [Enrichment Tab](ShelterPartner%20App/Enrichement%20Tab.md)
 * [Animal Card]
 * [Animal Detail Page]
 * [Additional Options]
