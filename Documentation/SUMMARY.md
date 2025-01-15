@@ -7,13 +7,13 @@
 
 ## Enrichment Tab
 * [Enrichment Tab](Enrichment%20Tab.md)
-* [Animal Card]
-* [Animal Detail Page]
-* [Additional Options]
-* [Simplistic Mode]
-* [Search Bar]
-* [User Enrichment Filter]
-* [Take Out All Animals Button]
+* [Animal Card](Enrichment%20Animal%20Tab.md)
+* [Animal Detail Page](Enrichment%20Animal%20Detail%20Page.md)
+* [Additional Options](Enrichment%20Additional%20Options.md)
+* [Simplistic Mode](Simplistic%20Mode.md)
+* [Search Bar](Search%20Bar.md)
+* [User Enrichment Filter](User%20Enrichment%20Filter.md)
+* [Take Out All Animals Button](Take%20Out%20All%20Animals%20Button.md)
 
 
 ## Visitor Tab (admin accounts)
