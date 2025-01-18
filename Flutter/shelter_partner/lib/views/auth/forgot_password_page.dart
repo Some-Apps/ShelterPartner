@@ -116,13 +116,16 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                       children: [
                         const Text('Remember your password?'),
                         const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: widget.onTapLogin,
-                          child: const Text(
-                            'Go Back To Login',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: widget.onTapLogin,
+                            child: const Text(
+                              'Go Back to Login',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),

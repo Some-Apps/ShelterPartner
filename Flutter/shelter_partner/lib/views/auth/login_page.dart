@@ -83,11 +83,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          GestureDetector(
-                            onTap: widget.onTapForgotPassword,
-                            child: Text(
-                              'Forgot Password?',
-                              style: TextStyle(color: Colors.grey[600]),
+                          MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: widget.onTapForgotPassword,
+                              child: Text(
+                                'Forgot Password?',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
                             ),
                           ),
                         ],
@@ -102,13 +105,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           style: TextStyle(color: Colors.grey[700]),
                         ),
                         const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: widget.onTapSignup,
-                          child: const Text(
-                            'Create Shelter',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: widget.onTapSignup,
+                            child: const Text(
+                              'Create Shelter',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
