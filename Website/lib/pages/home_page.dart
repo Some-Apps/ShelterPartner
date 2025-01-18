@@ -139,7 +139,7 @@ class HomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Version 2 is out! Watch the video below to learn more. The iOS and Android versions are still being processed by the app stores, but you can access the web version by clicking the "App" button above.',
+                      'Version 2 is out! Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
                       style: TextStyle(fontSize: 15),
                     ),
                     const SizedBox(height: 36),
