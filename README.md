@@ -21,7 +21,7 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 </details>
 
 <details>
-  <summary>Shivam Kumar: $25</summary>
+  <summary>Shivam Kumar: $50</summary>
 
   - Issue #368: Slideshows should only show animals with images ($25)
   - Issue #369: Simplistic card text should automatically scaled down to fit instead of overflow ($25)
