@@ -269,121 +269,128 @@ class _SimplisticAnimalCardViewState
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Name, symbol, and menu
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  if (animal.name.length < 10) {
-                                    return FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        animal.name,
-                                        style: const TextStyle(
-                                          fontFamily: 'CabinBold',
-                                          fontSize: 32.0,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                                    );
-                                  } else {
-                                    return Text(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Name, symbol, and menu
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                if (animal.name.length < 10) {
+                                  return FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
                                       animal.name,
                                       style: const TextStyle(
                                         fontFamily: 'CabinBold',
-                                        fontSize: 27.0,
+                                        fontSize: 32.0,
                                         fontWeight: FontWeight.w800,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
-                                    );
-                                  }
-                                },
-                              ),
+                                    ),
+                                  );
+                                } else {
+                                  return Text(
+                                    animal.name,
+                                    style: const TextStyle(
+                                      fontFamily: 'CabinBold',
+                                      fontSize: 27.0,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                }
+                              },
                             ),
-                            PopupMenuButton<String>(
-                              offset: const Offset(0, 40),
-                              onSelected: (value) {
-                                // Handle menu item selection
-                                switch (value) {
-                                  case 'Details':
-                                    context.push('/enrichment/details',
-                                        extra: animal);
-                                    break;
-                                  case 'Add Note':
-                                    showDialog(
+                          ),
+                          PopupMenuButton<String>(
+                            offset: const Offset(0, 40),
+                            onSelected: (value) {
+                              // Handle menu item selection
+                              switch (value) {
+                                case 'Details':
+                                  context.push('/enrichment/details',
+                                      extra: animal);
+                                  break;
+                                case 'Add Note':
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        AddNoteView(animal: animal),
+                                  );
+                                  break;
+                                case 'Add Log':
+                                  showDialog(
                                       context: context,
                                       builder: (context) =>
-                                          AddNoteView(animal: animal),
-                                    );
-                                    break;
-                                  case 'Add Log':
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            AddLogView(animal: animal));
-                                    break;
-                                }
-                              },
-                              itemBuilder: (BuildContext context) {
-                                final appUser = ref.read(appUserProvider);
-                                final accountSettings = ref
-                                    .read(accountSettingsViewModelProvider)
-                                    .value;
+                                          AddLogView(animal: animal));
+                                  break;
+                              }
+                            },
+                            itemBuilder: (BuildContext context) {
+                              final appUser = ref.read(appUserProvider);
+                              final accountSettings = ref
+                                  .read(accountSettingsViewModelProvider)
+                                  .value;
 
-                                final menuItems = {'Details', 'Add Note'};
-                                if (appUser?.type == "admin" &&
-                                    accountSettings!.accountSettings?.mode ==
-                                        "Admin" &&
-                                    animal.inKennel) {
-                                  menuItems.add('Add Log');
-                                }
+                              final menuItems = {'Details', 'Add Note'};
+                              if (appUser?.type == "admin" &&
+                                  accountSettings!.accountSettings?.mode ==
+                                      "Admin" &&
+                                  animal.inKennel) {
+                                menuItems.add('Add Log');
+                              }
 
-                                return menuItems.map((String choice) {
-                                  return PopupMenuItem<String>(
-                                    value: choice,
-                                    child: Text(choice),
-                                  );
-                                }).toList();
-                              },
-                              icon: const Icon(Icons.more_vert),
-                            ),
-                          ],
-                        ),
-                        // Location
-                        Row(
-                          children: [
-                            Expanded(
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final words = animal.location.split(' ');
-                                  String firstLine = '';
-                                  String secondLine = '';
+                              return menuItems.map((String choice) {
+                                return PopupMenuItem<String>(
+                                  value: choice,
+                                  child: Text(choice),
+                                );
+                              }).toList();
+                            },
+                            icon: const Icon(Icons.more_vert),
+                          ),
+                        ],
+                      ),
+                      // Location
+                      Row(
+                        children: [
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final words = animal.location.split(' ');
+                                String firstLine = '';
+                                String secondLine = '';
 
-                                  for (var word in words) {
-                                    if (('$firstLine $word').trim().length <=
-                                        12) {
-                                      firstLine = '$firstLine $word'.trim();
-                                    } else {
-                                      secondLine = '$secondLine $word'.trim();
-                                    }
+                                for (var word in words) {
+                                  if (('$firstLine $word').trim().length <=
+                                      12) {
+                                    firstLine = '$firstLine $word'.trim();
+                                  } else {
+                                    secondLine = '$secondLine $word'.trim();
                                   }
+                                }
 
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      firstLine,
+                                      style: TextStyle(
+                                        fontFamily: 'CabinBold',
+                                        fontSize: 25,
+                                        color: Colors.grey.shade800,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    if (secondLine.isNotEmpty)
                                       Text(
-                                        firstLine,
+                                        secondLine,
                                         style: TextStyle(
                                           fontFamily: 'CabinBold',
                                           fontSize: 25,
@@ -391,50 +398,39 @@ class _SimplisticAnimalCardViewState
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      if (secondLine.isNotEmpty)
-                                        Text(
-                                          secondLine,
-                                          style: TextStyle(
-                                            fontFamily: 'CabinBold',
-                                            fontSize: 25,
-                                            color: Colors.grey.shade800,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                    ],
-                                  );
-                                },
-                              ),
+                                  ],
+                                );
+                              },
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
 
-                        // Last Let out
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _timeAgo(
-                                  widget.animal.inKennel
-                                      ? animal.logs.last.endTime.toDate()
-                                      : animal.logs.last.startTime.toDate(),
-                                  widget.animal.inKennel),
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontFamily: 'CabinBold',
-                              ),
+                      // Last Let out
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _timeAgo(
+                                widget.animal.inKennel
+                                    ? animal.logs.last.endTime.toDate()
+                                    : animal.logs.last.startTime.toDate(),
+                                widget.animal.inKennel),
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontFamily: 'CabinBold',
                             ),
-                            if (animal.symbol.isNotEmpty)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: _buildIcon(
-                                    animal.symbol, animal.symbolColor),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          if (animal.symbol.isNotEmpty)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child:
+                                  _buildIcon(animal.symbol, animal.symbolColor),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
