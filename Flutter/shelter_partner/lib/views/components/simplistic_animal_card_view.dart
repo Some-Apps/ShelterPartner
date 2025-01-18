@@ -282,12 +282,7 @@ class _SimplisticAnimalCardViewState
                             Flexible(
                               child: LayoutBuilder(
                                 builder: (context, constraints) {
-                                  // Check if the name contains multiple words
-                                  final isSingleWord =
-                                      !animal.name.contains(' ');
-
-                                  if (isSingleWord) {
-                                    // Used FittedBox for single-word names
+                                  if (animal.name.length < 10) {
                                     return FittedBox(
                                       fit: BoxFit.scaleDown,
                                       alignment: Alignment.centerLeft,
@@ -305,12 +300,10 @@ class _SimplisticAnimalCardViewState
                                       animal.name,
                                       style: const TextStyle(
                                         fontFamily: 'CabinBold',
-                                        fontSize: 32.0,
+                                        fontSize: 27.0,
                                         fontWeight: FontWeight.w800,
                                       ),
-                                      softWrap: true,
-                                      overflow: TextOverflow.visible,
-                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                     );
                                   }
                                 },
@@ -369,16 +362,48 @@ class _SimplisticAnimalCardViewState
                         Row(
                           children: [
                             Expanded(
-                              child: Text(
-                                animal.location,
-                                style: TextStyle(
-                                  fontFamily: 'CabinBold',
-                                  fontSize: 25,
-                                  color: Colors.grey.shade800,
-                                ),
-                                softWrap: true,
-                                overflow: TextOverflow.visible,
-                                maxLines: 2,
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final words = animal.location.split(' ');
+                                  String firstLine = '';
+                                  String secondLine = '';
+
+                                  for (var word in words) {
+                                    if (('$firstLine $word').trim().length <=
+                                        12) {
+                                      firstLine = '$firstLine $word'.trim();
+                                    } else {
+                                      secondLine = '$secondLine $word'.trim();
+                                    }
+                                  }
+
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        firstLine,
+                                        style: TextStyle(
+                                          fontFamily: 'CabinBold',
+                                          fontSize: 25,
+                                          color: Colors.grey.shade800,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      if (secondLine.isNotEmpty)
+                                        Text(
+                                          secondLine,
+                                          style: TextStyle(
+                                            fontFamily: 'CabinBold',
+                                            fontSize: 25,
+                                            color: Colors.grey.shade800,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                           ],
