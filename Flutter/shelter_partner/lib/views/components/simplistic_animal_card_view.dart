@@ -357,54 +357,28 @@ class _SimplisticAnimalCardViewState
                         ],
                       ),
                       // Location
-                      Row(
+                        Row(
                         children: [
                           Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                final words = animal.location.split(' ');
-                                String firstLine = '';
-                                String secondLine = '';
-
-                                for (var word in words) {
-                                  if (('$firstLine $word').trim().length <=
-                                      12) {
-                                    firstLine = '$firstLine $word'.trim();
-                                  } else {
-                                    secondLine = '$secondLine $word'.trim();
-                                  }
-                                }
-
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      firstLine,
-                                      style: TextStyle(
-                                        fontFamily: 'CabinBold',
-                                        fontSize: 25,
-                                        color: Colors.grey.shade800,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    if (secondLine.isNotEmpty)
-                                      Text(
-                                        secondLine,
-                                        style: TextStyle(
-                                          fontFamily: 'CabinBold',
-                                          fontSize: 25,
-                                          color: Colors.grey.shade800,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                  ],
-                                );
-                              },
-                            ),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                            return FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                              animal.location,
+                              style: TextStyle(
+                                fontFamily: 'CabinBold',
+                                fontSize: 25,
+                                color: Colors.grey.shade800,
+                              ),
+                              ),
+                            );
+                            },
+                          ),
                           ),
                         ],
-                      ),
+                        ),
 
                       // Last Let out
                       Row(

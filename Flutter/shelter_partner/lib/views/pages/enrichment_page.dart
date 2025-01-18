@@ -296,7 +296,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                     : 625.0;
             final double itemHeight =
                 accountSettings.value!.accountSettings!.simplisticMode
-                    ? 185.0
+                    ? 160.0
                     : 235.0;
             return PagedGridView<int, dynamic>(
               pagingController: pagingController,
