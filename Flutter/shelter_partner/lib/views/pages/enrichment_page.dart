@@ -204,7 +204,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
           ? animal.photos!.first.url
           : '';
-      if (originalUrl.contains("amazonaws") || originalUrl.contains("storage.googleapis.com")) {
+      if (originalUrl.contains("amazonaws") ||
+          originalUrl.contains("storage.googleapis.com")) {
         final fallbackUrl =
             'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
         // Debugging print statements
@@ -514,73 +515,73 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                         if ((accountAllowsBulkTakeOut && isAdmin) ||
                             (isVolunteer && shelterAllowsBulkTakeOut))
                           ElevatedButton(
-                          onPressed: () {
-                            // Determine the animal type based on available data
-                            final animalsMap =
-                              ref.read(enrichmentViewModelProvider);
-                            final animalType =
-                              _tabController.index == 0 ? 'dogs' : 'cats';
-                            final animals =
-                              _filterAnimals(animalsMap[animalType] ?? []);
+                            onPressed: () {
+                              // Determine the animal type based on available data
+                              final animalsMap =
+                                  ref.read(enrichmentViewModelProvider);
+                              final animalType =
+                                  _tabController.index == 0 ? 'dogs' : 'cats';
+                              final animals =
+                                  _filterAnimals(animalsMap[animalType] ?? []);
 
-                            if (animals.isEmpty) {
-                            Fluttertoast.showToast(
-                              msg: 'No animals available',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.TOP,
-                              backgroundColor: Colors.red,
-                            );
-                            return;
-                            }
+                              if (animals.isEmpty) {
+                                Fluttertoast.showToast(
+                                  msg: 'No animals available',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.TOP,
+                                  backgroundColor: Colors.red,
+                                );
+                                return;
+                              }
 
-                            // Determine the majority inKennel status
-                            final inKennelCount = animals
-                              .where((animal) => animal.inKennel)
-                              .length;
-                            final majorityInKennel =
-                              inKennelCount > animals.length / 2;
+                              // Determine the majority inKennel status
+                              final inKennelCount = animals
+                                  .where((animal) => animal.inKennel)
+                                  .length;
+                              final majorityInKennel =
+                                  inKennelCount > animals.length / 2;
 
-                            if (majorityInKennel) {
-                            showDialog<bool>(
-                              context: context,
-                              builder: (context) {
-                              return TakeOutConfirmationView(
-                                animals: animals,
-                              );
-                              },
-                            );
-                            } else {
-                            showDialog<bool>(
-                              context: context,
-                              builder: (context) {
-                              return PutBackConfirmationView(
-                                animals: animals,
-                              );
-                              },
-                            );
-                            }
-                          },
-                          child: Consumer(
-                            builder: (context, watch, child) {
-                            final animalsMap =
-                              ref.watch(enrichmentViewModelProvider);
-                            final animalType =
-                              _tabController.index == 0 ? 'dogs' : 'cats';
-                            final animals =
-                              _filterAnimals(animalsMap[animalType] ?? []);
-
-                            return Text(
-                              animals.isNotEmpty &&
-                                  animals
-                                      .where((animal) =>
-                                        animal.inKennel)
-                                      .length >
-                                    (animals.length / 2)
-                                ? "Take Out All Visible ${_tabController.index == 0 ? 'Dogs' : 'Cats'}"
-                                : "Put Back All Visible ${_tabController.index == 0 ? 'Dogs' : 'Cats'}",
-                            );
+                              if (majorityInKennel) {
+                                showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return TakeOutConfirmationView(
+                                      animals: animals,
+                                    );
+                                  },
+                                );
+                              } else {
+                                showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return PutBackConfirmationView(
+                                      animals: animals,
+                                    );
+                                  },
+                                );
+                              }
                             },
-                          ),
+                            child: Consumer(
+                              builder: (context, watch, child) {
+                                final animalsMap =
+                                    ref.watch(enrichmentViewModelProvider);
+                                final animalType =
+                                    _tabController.index == 0 ? 'dogs' : 'cats';
+                                final animals = _filterAnimals(
+                                    animalsMap[animalType] ?? []);
+
+                                return Text(
+                                  animals.isNotEmpty &&
+                                          animals
+                                                  .where((animal) =>
+                                                      animal.inKennel)
+                                                  .length >
+                                              (animals.length / 2)
+                                      ? "Take Out All Visible ${_tabController.index == 0 ? 'Dogs' : 'Cats'}"
+                                      : "Put Back All Visible ${_tabController.index == 0 ? 'Dogs' : 'Cats'}",
+                                );
+                              },
+                            ),
                           ),
                       ],
                     ),

@@ -21,7 +21,6 @@ import 'package:shelter_partner/views/components/take_out_confirmation_view.dart
 import 'package:uuid/uuid.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 
-
 class SimplisticAnimalCardView extends ConsumerStatefulWidget {
   final Animal animal;
 
@@ -259,10 +258,11 @@ class _SimplisticAnimalCardViewState
                       }
                     : null,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: 
-                  AnimalCardImage(curvedAnimation: _curvedAnimation, isPressed: isPressed, animal: animal)
-                ),
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: AnimalCardImage(
+                        curvedAnimation: _curvedAnimation,
+                        isPressed: isPressed,
+                        animal: animal)),
               ),
               const SizedBox(width: 10),
               // Animal details
@@ -278,22 +278,33 @@ class _SimplisticAnimalCardViewState
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Flexible(
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                if (animal.name.length < 10) {
+                                  return FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      animal.name,
+                                      style: const TextStyle(
+                                        fontFamily: 'CabinBold',
+                                        fontSize: 32.0,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Text(
                                     animal.name,
                                     style: const TextStyle(
                                       fontFamily: 'CabinBold',
-                                      fontSize: 32.0,
+                                      fontSize: 27.0,
                                       fontWeight: FontWeight.w800,
                                     ),
                                     overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                // const SizedBox(width: 5),
-                                
-                              ],
+                                  );
+                                }
+                              },
                             ),
                           ),
                           PopupMenuButton<String>(
@@ -346,16 +357,28 @@ class _SimplisticAnimalCardViewState
                         ],
                       ),
                       // Location
-
-                      Row(
+                        Row(
                         children: [
-                          Text(animal.location,
+                          Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                            return FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                              animal.location,
                               style: TextStyle(
-                                  fontFamily: 'CabinBold',
-                                  fontSize: 25,
-                                  color: Colors.grey.shade800)),
+                                fontFamily: 'CabinBold',
+                                fontSize: 25,
+                                color: Colors.grey.shade800,
+                              ),
+                              ),
+                            );
+                            },
+                          ),
+                          ),
                         ],
-                      ),
+                        ),
 
                       // Last Let out
                       Row(
@@ -373,10 +396,12 @@ class _SimplisticAnimalCardViewState
                             ),
                           ),
                           if (animal.symbol.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: _buildIcon(animal.symbol, animal.symbolColor),
-                                  ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child:
+                                  _buildIcon(animal.symbol, animal.symbolColor),
+                            ),
                         ],
                       ),
                     ],
@@ -408,21 +433,20 @@ Widget _buildIcon(String symbol, String symbolColor) {
       return const SizedBox.shrink(); // No icon for default case
   }
 
-  return DecoratedIcon(icon: Icon(
-    iconData,
-    color: _parseColor(symbolColor),
-    size: 24, // Original size
-  ),
-  
-  // decoration: const IconDecoration(
-  //   border: IconBorder(
-  //     color: Colors.black,
-  //     width: 0.75,
-  //   )
-  // ),
+  return DecoratedIcon(
+    icon: Icon(
+      iconData,
+      color: _parseColor(symbolColor),
+      size: 24, // Original size
+    ),
+
+    // decoration: const IconDecoration(
+    //   border: IconBorder(
+    //     color: Colors.black,
+    //     width: 0.75,
+    //   )
+    // ),
   );
-  
-  
 }
 
 Color _parseColor(String colorString) {
@@ -453,4 +477,3 @@ Color _parseColor(String colorString) {
       return Colors.transparent; // Default case if color is not recognized
   }
 }
-
