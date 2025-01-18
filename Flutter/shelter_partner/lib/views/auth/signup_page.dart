@@ -196,13 +196,16 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           style: TextStyle(color: Colors.grey[700]),
                         ),
                         const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: widget.onTapLogin,
-                          child: const Text(
-                            'Login Here',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: widget.onTapLogin,
+                            child: const Text(
+                              'Login Here',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
