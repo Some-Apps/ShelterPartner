@@ -15,15 +15,20 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 
 <details>
   <summary>Renee Jones: $25</summary>
-
+  
   - Issue #354: Enrichment Tab Wiki Entries ($25)  
-
 </details>
 
 <details>
   <summary>Shivam Kumar: $50</summary>
-
+  
   - Issue #368: Slideshows should only show animals with images ($25)
+  
   - Issue #369: Simplistic card text should automatically scaled down to fit instead of overflow ($25)
+</details>
 
+<details>
+  <summary>Ian Fife: $10</summary>
+  
+  - Issue #377: Mouse pointer not set to correct state ($10) **_Just to have it written down but you can optionally accept it_**
 </details>
