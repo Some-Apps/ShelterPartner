@@ -102,6 +102,10 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       _preloadImages(animalsMap['dogs'] ?? []);
       _preloadImages(animalsMap['cats'] ?? []);
     });
+
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -577,8 +581,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                                       animal.inKennel)
                                                   .length >
                                               (animals.length / 2)
-                                      ? "Take Out All Visible ${_tabController.index == 0 ? 'Dogs' : 'Cats'}"
-                                      : "Put Back All Visible ${_tabController.index == 0 ? 'Dogs' : 'Cats'}",
+                                      ? "Take Out All Visible ${animalType == 'dogs' ? 'Dogs' : 'Cats'}"
+                                      : "Put Back All Visible ${animalType == 'dogs' ? 'Dogs' : 'Cats'}",
                                 );
                               },
                             ),
