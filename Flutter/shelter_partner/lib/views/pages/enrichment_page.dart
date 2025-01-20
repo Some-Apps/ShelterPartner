@@ -102,6 +102,10 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       _preloadImages(animalsMap['dogs'] ?? []);
       _preloadImages(animalsMap['cats'] ?? []);
     });
+
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -519,8 +523,27 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                               // Determine the animal type based on available data
                               final animalsMap =
                                   ref.read(enrichmentViewModelProvider);
-                              final animalType =
-                                  _tabController.index == 0 ? 'dogs' : 'cats';
+
+                              final availableAnimalTypes = ['dogs', 'cats']
+                                  .where((type) =>
+                                      (animalsMap[type]?.isNotEmpty ?? false))
+                                  .toList();
+
+                              if (availableAnimalTypes.isEmpty) {
+                                Fluttertoast.showToast(
+                                  msg: 'No animals available',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.TOP,
+                                  backgroundColor: Colors.red,
+                                );
+                                return;
+                              }
+
+                              // Safely determine the animal type
+                              final animalType = availableAnimalTypes[
+                                  availableAnimalTypes.length == 1
+                                      ? 0
+                                      : _tabController.index];
                               final animals =
                                   _filterAnimals(animalsMap[animalType] ?? []);
 
@@ -541,6 +564,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                               final majorityInKennel =
                                   inKennelCount > animals.length / 2;
 
+                              // Show the appropriate dialog
                               if (majorityInKennel) {
                                 showDialog<bool>(
                                   context: context,
@@ -565,8 +589,20 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                               builder: (context, watch, child) {
                                 final animalsMap =
                                     ref.watch(enrichmentViewModelProvider);
-                                final animalType =
-                                    _tabController.index == 0 ? 'dogs' : 'cats';
+
+                                final availableAnimalTypes = ['dogs', 'cats']
+                                    .where((type) =>
+                                        (animalsMap[type]?.isNotEmpty ?? false))
+                                    .toList();
+
+                                if (availableAnimalTypes.isEmpty) {
+                                  return const Text('No animals available');
+                                }
+
+                                final animalType = availableAnimalTypes[
+                                    availableAnimalTypes.length == 1
+                                        ? 0
+                                        : _tabController.index];
                                 final animals = _filterAnimals(
                                     animalsMap[animalType] ?? []);
 
@@ -577,8 +613,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                                       animal.inKennel)
                                                   .length >
                                               (animals.length / 2)
-                                      ? "Take Out All Visible ${_tabController.index == 0 ? 'Dogs' : 'Cats'}"
-                                      : "Put Back All Visible ${_tabController.index == 0 ? 'Dogs' : 'Cats'}",
+                                      ? "Take Out All Visible ${animalType == 'dogs' ? 'Dogs' : 'Cats'}"
+                                      : "Put Back All Visible ${animalType == 'dogs' ? 'Dogs' : 'Cats'}",
                                 );
                               },
                             ),
