@@ -1,0 +1,1 @@
+This simple slideshow displays a full-screen view featuring images of various animals depending on the tab in which you chose to view the slideshow, with their names shown below each image. As the slideshow progresses by itself, the user can touch the screen to end it, allowing for an interactive experience.
