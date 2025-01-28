@@ -18,6 +18,9 @@
 
 ## Visitor Tab (admin accounts)
 * [Visitor Tab](ShelterPartner%20App/Visitor%20Tab/Visitor%20Tab.md)
+* [Animal Detail Page](ShelterPartner%20App/Visitor%20Tab/Visitor%20Animal%20Detail%20page.md)
+* [Visitor Slideshow](ShelterPartner%20App/Visitor%20Tab/Visitor%20Slideshow.md)
+* [
 
 ## Manage Volunteers Tab (admin accounts)
 
