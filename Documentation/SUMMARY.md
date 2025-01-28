@@ -36,7 +36,7 @@
 * [Volunteer Accounts](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Account%20Setup.md)
 * [API Keys](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/API%20Keys.md)
 
-### Device Settings
+### Account Settings
 * [Admin Mode](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Admin%20Mode.md)
 * [Apply Device Settings to Volunteer Accounts](ShelterPartner%20App/Settings%20Tab/Apply%20Device%20Settings%20to%20Volunteer%20Accounts.md)
 * [Automatically Put Back Animals](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Automatically%20Put%20Back%20Animals.md)
