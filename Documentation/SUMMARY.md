@@ -16,15 +16,16 @@
 * [Take Out All Animals Button](Take%20Out%20All%20Animals%20Button.md)
 
 
-## Visitor Tab (admin accounts)
+## Visitor Tab
 * [Visitor Tab](ShelterPartner%20App/Visitor%20Tab/Visitor%20Tab.md)
 * [Animal Detail Page](ShelterPartner%20App/Visitor%20Tab/Visitor%20Animal%20Detail%20page.md)
 * [Visitor Slideshow](ShelterPartner%20App/Visitor%20Tab/Visitor%20Slideshow.md)
-* [
 
-## Manage Volunteers Tab (admin accounts)
+## Volunteers Tab
 
-## Shelter Settings
+## Settings Tab
+
+### Shelter Settings
 * [Shelter Settings](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Shelter%20Settings.md)
 * [Account Setup](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Account%20Setup.md)
 * [Cat Tags](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Cat%20Tags.md)
@@ -35,7 +36,7 @@
 * [Volunteer Accounts](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Account%20Setup.md)
 * [API Keys](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/API%20Keys.md)
 
-## Device Settings
+### Device Settings
 * [Admin Mode](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Admin%20Mode.md)
 * [Apply Device Settings to Volunteer Accounts](ShelterPartner%20App/Settings%20Tab/Apply%20Device%20Settings%20to%20Volunteer%20Accounts.md)
 * [Automatically Put Back Animals](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Automatically%20Put%20Back%20Animals.md)
@@ -59,7 +60,6 @@
 * [Show Search Bar](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Show%20Search%20Bar.md)
 * [Sort Options](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Sort%20Options.md)
 
-## Volunteer Settings
 
 
 
