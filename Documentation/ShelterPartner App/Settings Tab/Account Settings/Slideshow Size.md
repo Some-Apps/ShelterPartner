@@ -1,0 +1,1 @@
+There is a slideshow button at the bottom of the visitors tab. This dropdown allows you to select how the images in the slideshow should be shown i.e. scaled to fit, scaled to fill or cropped to square.
