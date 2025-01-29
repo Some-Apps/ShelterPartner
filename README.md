@@ -20,7 +20,7 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 </details>
 
 <details>
-  <summary>Shivam Kumar: $85</summary>
+  <summary>Shivam Kumar: $95</summary>
   
   - Issue #368: Slideshows should only show animals with images ($25)
   
@@ -29,6 +29,8 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
   - Issue #381: Take out all cats or dogs button is incorrect sometimes ($25)
 
   - Issue #355: Visitors Tab Wiki Entries ($10)
+
+  - Issue #386: Be able to search volunteers and sort them alphabetically ($10)
 </details>
 
 <details>
