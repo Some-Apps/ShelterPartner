@@ -30,6 +30,12 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _sortVolunteers("Ascending");
+  }
+
   void _unfocusTextFields(BuildContext context) {
     FocusScope.of(context).unfocus();
   }
@@ -99,7 +105,8 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
     setState(() {
       _sortOrder = order;
       filteredVolunteers.sort((a, b) {
-        int comparison = a.firstName.compareTo(b.firstName);
+        int comparison =
+            a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase());
         return order == "Ascending" ? comparison : -comparison;
       });
     });
@@ -295,6 +302,13 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                                 content: Text(
                                                                     'Invite sent successfully')),
                                                           );
+
+                                                          setState(() {
+                                                            filteredVolunteers =
+                                                                shelter!
+                                                                    .volunteers
+                                                                    .toList();
+                                                          });
 
                                                           // Clear the text fields
                                                           _firstNameController
