@@ -1,0 +1,1 @@
+It lets you restrict volunteer activities to specific locations for a better shelter experience.
