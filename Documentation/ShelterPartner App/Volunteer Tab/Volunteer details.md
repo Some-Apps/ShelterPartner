@@ -1,0 +1,1 @@
+The Volunteer Details Page provides a comprehensive overview of an individual volunteer to the shelter. It displays key details such as the volunteer’s name, email, average login duration, last recorded presence at the shelter, and total time logged with animals. In brief, this page helps shelters track volunteer engagement.

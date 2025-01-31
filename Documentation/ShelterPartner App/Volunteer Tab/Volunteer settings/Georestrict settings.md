@@ -1,0 +1,1 @@
+The Georestriction Settings allow you to set location-based restrictions with ease. The page features an interactive map where you can define a specific radius for the allowed area, ensuring precise configuration and better control over location-based access.

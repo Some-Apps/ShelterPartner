@@ -1,0 +1,1 @@
+The Volunteers Tab provides with tools to manage the volunteer operations effectively. It allows shelters to track, sync, and organize volunteer information while offering various customization settings for volunteers.

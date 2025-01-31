@@ -52,7 +52,8 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
         ),
       ),
       data: (shelter) {
-        _customFormURLController.text = shelter?.volunteerSettings.customFormURL ?? "";
+        _customFormURLController.text =
+            shelter?.volunteerSettings.customFormURL ?? "";
 
         return Scaffold(
           appBar: AppBar(
@@ -76,13 +77,21 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             PickerView(
                               title: "Enrichment Sort",
                               options: const ["Last Let Out", "Alphabetical"],
-                              value: shelter?.volunteerSettings.enrichmentSort ?? "Last Let Out",
+                              value: (shelter?.volunteerSettings
+                                              .enrichmentSort !=
+                                          null &&
+                                      ["Last Let Out", "Alphabetical"].contains(
+                                          shelter?.volunteerSettings
+                                              .enrichmentSort))
+                                  ? shelter?.volunteerSettings.enrichmentSort
+                                  : "Last Let Out",
                               onChanged: (String? newValue) {
                                 if (newValue != null && newValue.isNotEmpty) {
                                   ref
-                                      .read(volunteersViewModelProvider.notifier)
-                                      .modifyVolunteerSettingString(
-                                          shelter!.id, "enrichmentSort", newValue);
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .modifyVolunteerSettingString(shelter!.id,
+                                          "enrichmentSort", newValue);
                                 }
                               },
                             ),
@@ -97,7 +106,8 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                               title: "Volunteers Enrichment Filter",
                               collection: 'shelters',
                               documentID: shelterAsyncValue.value!.id,
-                              filterFieldPath: 'volunteerSettings.enrichmentFilter',
+                              filterFieldPath:
+                                  'volunteerSettings.enrichmentFilter',
                             ),
                           ),
                         ),
@@ -122,27 +132,29 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                         ),
                         const SizedBox(height: 25),
                         Card.outlined(
-                          child: 
-                          ListTile(title: NumberStepperView(
-                            title: "Minimum Duration",
-                            label: "minutes",
-                            minValue: 1,
-                            maxValue: 600,
-                            value: shelter?.volunteerSettings.minimumLogMinutes ?? 0,
-                            increment: () {
-                              ref
-                                  .read(volunteersViewModelProvider.notifier)
-                                  .incrementAttribute(
-                                      shelter!.id, "minimumLogMinutes");
-                            },
-                            decrement: () {
-                              ref
-                                  .read(volunteersViewModelProvider.notifier)
-                                  .decrementAttribute(
-                                      shelter!.id, "minimumLogMinutes");
-                            },
-                          ),),
-                          
+                          child: ListTile(
+                            title: NumberStepperView(
+                              title: "Minimum Duration",
+                              label: "minutes",
+                              minValue: 1,
+                              maxValue: 600,
+                              value: shelter
+                                      ?.volunteerSettings.minimumLogMinutes ??
+                                  0,
+                              increment: () {
+                                ref
+                                    .read(volunteersViewModelProvider.notifier)
+                                    .incrementAttribute(
+                                        shelter!.id, "minimumLogMinutes");
+                              },
+                              decrement: () {
+                                ref
+                                    .read(volunteersViewModelProvider.notifier)
+                                    .decrementAttribute(
+                                        shelter!.id, "minimumLogMinutes");
+                              },
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 25),
                         Card.outlined(
@@ -150,9 +162,15 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Photo Uploads Allowed",
-                                value: shelter?.volunteerSettings.photoUploadsAllowed ?? false,
+                                value: shelter?.volunteerSettings
+                                        .photoUploadsAllowed ??
+                                    false,
                                 onChanged: (bool newValue) {
-                                  ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "photoUploadsAllowed");
+                                  ref
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .toggleAttribute(
+                                          shelter!.id, "photoUploadsAllowed");
                                 },
                               ),
                             ),
@@ -164,9 +182,15 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Allow Bulk Take Out",
-                                value: shelter?.volunteerSettings.allowBulkTakeOut ?? false,
+                                value: shelter
+                                        ?.volunteerSettings.allowBulkTakeOut ??
+                                    false,
                                 onChanged: (bool newValue) {
-                                  ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "allowBulkTakeOut");
+                                  ref
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .toggleAttribute(
+                                          shelter!.id, "allowBulkTakeOut");
                                 },
                               ),
                             ),
@@ -178,9 +202,15 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Require Let Out Type",
-                                value: shelter?.volunteerSettings.requireLetOutType ?? false,
+                                value: shelter
+                                        ?.volunteerSettings.requireLetOutType ??
+                                    false,
                                 onChanged: (bool newValue) {
-                                  ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "requireLetOutType");
+                                  ref
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .toggleAttribute(
+                                          shelter!.id, "requireLetOutType");
                                 },
                               ),
                             ),
@@ -192,9 +222,15 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Require Early Put Back Reason",
-                                value: shelter?.volunteerSettings.requireEarlyPutBackReason ?? false,
+                                value: shelter?.volunteerSettings
+                                        .requireEarlyPutBackReason ??
+                                    false,
                                 onChanged: (bool newValue) {
-                                  ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "requireEarlyPutBackReason");
+                                  ref
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .toggleAttribute(shelter!.id,
+                                          "requireEarlyPutBackReason");
                                 },
                               ),
                             ),
@@ -206,9 +242,14 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Require Name",
-                                value: shelter?.volunteerSettings.requireName ?? false,
+                                value: shelter?.volunteerSettings.requireName ??
+                                    false,
                                 onChanged: (bool newValue) {
-                                  ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "requireName");
+                                  ref
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .toggleAttribute(
+                                          shelter!.id, "requireName");
                                 },
                               ),
                             ),
@@ -219,10 +260,17 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             ),
                             ListTile(
                               title: SwitchToggleView(
-                                title: "Create Logs When Under Minimum Duration",
-                                value: shelter?.volunteerSettings.createLogsWhenUnderMinimumDuration ?? false,
+                                title:
+                                    "Create Logs When Under Minimum Duration",
+                                value: shelter?.volunteerSettings
+                                        .createLogsWhenUnderMinimumDuration ??
+                                    false,
                                 onChanged: (bool newValue) {
-                                  ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "createLogsWhenUnderMinimumDuration");
+                                  ref
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .toggleAttribute(shelter!.id,
+                                          "createLogsWhenUnderMinimumDuration");
                                 },
                               ),
                             ),
@@ -234,9 +282,15 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Show Custom Form",
-                                value: shelter?.volunteerSettings.showCustomForm ?? false,
+                                value:
+                                    shelter?.volunteerSettings.showCustomForm ??
+                                        false,
                                 onChanged: (bool newValue) {
-                                  ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "showCustomForm");
+                                  ref
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .toggleAttribute(
+                                          shelter!.id, "showCustomForm");
                                 },
                               ),
                             ),
@@ -248,9 +302,15 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                             ListTile(
                               title: SwitchToggleView(
                                 title: "Append Animal Data To URL",
-                                value: shelter?.volunteerSettings.appendAnimalDataToURL ?? false,
+                                value: shelter?.volunteerSettings
+                                        .appendAnimalDataToURL ??
+                                    false,
                                 onChanged: (bool newValue) {
-                                  ref.read(volunteersViewModelProvider.notifier).toggleAttribute(shelter!.id, "appendAnimalDataToURL");
+                                  ref
+                                      .read(
+                                          volunteersViewModelProvider.notifier)
+                                      .toggleAttribute(
+                                          shelter!.id, "appendAnimalDataToURL");
                                 },
                               ),
                             ),
@@ -263,11 +323,15 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                               ListTile(
                                 title: SwitchToggleView(
                                   title: "Georestrict",
-                                  value: shelter?.volunteerSettings.geofence?.isEnabled ?? false,
+                                  value: shelter?.volunteerSettings.geofence
+                                          ?.isEnabled ??
+                                      false,
                                   onChanged: (bool newValue) {
                                     ref
-                                        .read(volunteersViewModelProvider.notifier)
-                                        .toggleAttribute(shelter!.id, "geofence.isEnabled");
+                                        .read(volunteersViewModelProvider
+                                            .notifier)
+                                        .toggleAttribute(
+                                            shelter!.id, "geofence.isEnabled");
                                   },
                                 ),
                               ),
@@ -283,7 +347,8 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const GeorestrictionSettingsPage(),
+                                      builder: (context) =>
+                                          const GeorestrictionSettingsPage(),
                                     ),
                                   );
                                 },
