@@ -20,7 +20,7 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 </details>
 
 <details>
-  <summary>Shivam Kumar: $95</summary>
+  <summary>Shivam Kumar: $120</summary>
   
   - Issue #368: Slideshows should only show animals with images ($25)
   
@@ -31,6 +31,8 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
   - Issue #355: Visitors Tab Wiki Entries ($10)
 
   - Issue #386: Be able to search volunteers and sort them alphabetically ($10)
+
+  - Issue #357: Settings Wiki Entries ($25)
 </details>
 
 <details>
