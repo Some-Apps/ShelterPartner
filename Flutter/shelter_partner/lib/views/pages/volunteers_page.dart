@@ -105,10 +105,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
     setState(() {
       _sortOrder = order;
       filteredVolunteers.sort((a, b) {
-
-        int comparison =
-            a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase());
-
+        int comparison = a.firstName.compareTo(b.firstName);
         return order == "Ascending" ? comparison : -comparison;
       });
     });
@@ -304,6 +301,13 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                                 content: Text(
                                                                     'Invite sent successfully')),
                                                           );
+
+                                                          setState(() {
+                                                            filteredVolunteers =
+                                                                shelter!
+                                                                    .volunteers
+                                                                    .toList();
+                                                          });
 
 
                                                           setState(() {

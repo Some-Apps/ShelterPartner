@@ -24,6 +24,13 @@
 ## Volunteers Tab
 
 ## Settings Tab
+* [Settings Tab](ShelterPartner%20App/Settings%20Tab/Settings%20tab.md)
+* [Shelter Stats](ShelterPartner%20App/Settings%20Tab/Shelter%20Stats.md)
+* [Account Settings](ShelterPartner%20App/Settings%20Tab/Account%20Settings/Account%20Settings.md)
+* [Change Password](ShelterPartner%20App/Settings%20Tab/Change%20Password.md)
+* [Logout](ShelterPartner%20App/Settings%20Tab/Logout.md)
+* [Wiki](ShelterPartner%20App/Settings%20Tab/Wiki.md)
+* [Acknowledgements](ShelterPartner%20App/Settings%20Tab/Acknowledgements.md)
 
 ### Shelter Settings
 * [Shelter Settings](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/Shelter%20Settings.md)
@@ -37,6 +44,7 @@
 * [API Keys](ShelterPartner%20App/Settings%20Tab/Shelter%20Settings/API%20Keys.md)
 
 ### Account Settings
+* [Account Settings](ShelterPartner%20App/Settings%20Tab/Account%20Settings/Account%20Settings.md)
 * [Admin Mode](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Admin%20Mode.md)
 * [Apply Device Settings to Volunteer Accounts](ShelterPartner%20App/Settings%20Tab/Apply%20Device%20Settings%20to%20Volunteer%20Accounts.md)
 * [Automatically Put Back Animals](ShelterPartner%20App/Settings%20Tab/Device%20Settings/Automatically%20Put%20Back%20Animals.md)

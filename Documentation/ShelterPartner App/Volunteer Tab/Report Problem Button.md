@@ -1,1 +1,0 @@
-To report an issue with the app, tap the ‘Report Problem’ button in the top right corner. Simply describe the issue you are experiencing and I’ll do everything I can to resolve the issue as quickly as possible. 
