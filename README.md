@@ -10,8 +10,10 @@
 
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
+## Bounties To Be Paid On March 1st
 
-## Bounties To Be Paid On February 1st
+
+## Bounties Paid On February 1st
 
 <details>
   <summary>Renee Jones: $25</summary>
