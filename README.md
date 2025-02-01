@@ -20,7 +20,7 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 </details>
 
 <details>
-  <summary>Shivam Kumar: $145</summary>
+  <summary>Shivam Kumar: $155</summary>
   
   - Issue #368: Slideshows should only show animals with images ($25)
   
@@ -35,6 +35,8 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
   - Issue #357: Settings Wiki Entries ($25)
 
   - Issue #356: Volunteers Tab Wiki Entries ($25)
+
+  - Issue #394: Upade Summary.md file ($10)
 </details>
 
 <details>
