@@ -1,4 +1,3 @@
-// Import statements
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -193,8 +192,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     );
 
     return Card(
-      color:
-          animal.inKennel ? Colors.lightBlue.shade100 : Colors.orange.shade100,
+      color: animal.inKennel ? Colors.lightBlue.shade100 : Colors.orange.shade100,
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25),
@@ -250,12 +248,10 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Row with name and menu.
+                      // Row with name and icons.
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Always wrap the animal name in a Flexible/FittedBox combo.
-                          Flexible(
+                          Expanded(
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
                               alignment: Alignment.centerLeft,
@@ -269,53 +265,57 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               ),
                             ),
                           ),
-                          const Spacer(),
-                          _buildIcon(animal.symbol, animal.symbolColor),
-
-                          PopupMenuButton<String>(
-                            offset: const Offset(0, 40),
-                            onSelected: (value) {
-                              switch (value) {
-                                case 'Details':
-                                  context.push('/enrichment/details',
-                                      extra: animal);
-                                  break;
-                                case 'Add Note':
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        AddNoteView(animal: animal),
-                                  );
-                                  break;
-                                case 'Add Log':
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        AddLogView(animal: animal),
-                                  );
-                                  break;
-                              }
-                            },
-                            itemBuilder: (BuildContext context) {
-                              final appUser = ref.read(appUserProvider);
-                              final accountSettings = ref
-                                  .read(accountSettingsViewModelProvider)
-                                  .value;
-                              final menuItems = {'Details', 'Add Note'};
-                              if (appUser?.type == "admin" &&
-                                  accountSettings!.accountSettings?.mode ==
-                                      "Admin" &&
-                                  animal.inKennel) {
-                                menuItems.add('Add Log');
-                              }
-                              return menuItems.map((String choice) {
-                                return PopupMenuItem<String>(
-                                  value: choice,
-                                  child: Text(choice),
-                                );
-                              }).toList();
-                            },
-                            icon: const Icon(Icons.more_vert),
+                          // Wrap the icon and menu button in a Row that takes only its natural size.
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _buildIcon(animal.symbol, animal.symbolColor),
+                              PopupMenuButton<String>(
+                                offset: const Offset(0, 40),
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'Details':
+                                      context.push('/enrichment/details',
+                                          extra: animal);
+                                      break;
+                                    case 'Add Note':
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            AddNoteView(animal: animal),
+                                      );
+                                      break;
+                                    case 'Add Log':
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            AddLogView(animal: animal),
+                                      );
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) {
+                                  final appUser = ref.read(appUserProvider);
+                                  final accountSettings = ref
+                                      .read(accountSettingsViewModelProvider)
+                                      .value;
+                                  final menuItems = {'Details', 'Add Note'};
+                                  if (appUser?.type == "admin" &&
+                                      accountSettings!.accountSettings?.mode ==
+                                          "Admin" &&
+                                      animal.inKennel) {
+                                    menuItems.add('Add Log');
+                                  }
+                                  return menuItems.map((String choice) {
+                                    return PopupMenuItem<String>(
+                                      value: choice,
+                                      child: Text(choice),
+                                    );
+                                  }).toList();
+                                },
+                                icon: const Icon(Icons.more_vert),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -421,11 +421,15 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
 }
 
 /// Builds an info chip that scales its text down if needed.
+/// If the [label] is "Unknown" (ignoring case and whitespace), nothing is rendered.
 Widget _buildInfoChip({
   required IconData icon,
   required String label,
   double textSize = 10.0,
 }) {
+  if (label.trim().toLowerCase() == 'unknown') {
+    return const SizedBox.shrink();
+  }
   return ConstrainedBox(
     // Constrain the chip’s max width to prevent unbounded growth.
     constraints: const BoxConstraints(maxWidth: 250),
@@ -484,7 +488,6 @@ Widget _buildIcon(String symbol, String symbolColor) {
       color: _parseColor(symbolColor),
       size: 24, // Original size
     ),
-
     // decoration: const IconDecoration(
     //   border: IconBorder(
     //     color: Colors.black,
