@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:icon_decoration/icon_decoration.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/animal_card_repository.dart';
@@ -19,16 +20,7 @@ import 'package:shelter_partner/views/components/put_back_confirmation_view.dart
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:uuid/uuid.dart';
 
-class AnimalCardView extends ConsumerStatefulWidget {
-  final Animal animal;
-
-  const AnimalCardView({super.key, required this.animal});
-
-  @override
-  _AnimalCardViewState createState() => _AnimalCardViewState();
-}
-
-/// Helper method to calculate time ago from a given DateTime
+/// Helper method to calculate time ago from a given DateTime.
 String _timeAgo(DateTime dateTime, bool inKennel) {
   final Duration difference = DateTime.now().difference(dateTime);
 
@@ -45,10 +37,18 @@ String _timeAgo(DateTime dateTime, bool inKennel) {
   }
 }
 
+class AnimalCardView extends ConsumerStatefulWidget {
+  final Animal animal;
+
+  const AnimalCardView({super.key, required this.animal});
+
+  @override
+  _AnimalCardViewState createState() => _AnimalCardViewState();
+}
+
 class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     with TickerProviderStateMixin {
   bool _automaticPutBackHandled = false;
-
   late AnimationController _controller;
   late Animation<double> _curvedAnimation;
   bool isPressed = false;
@@ -57,48 +57,42 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   void initState() {
     super.initState();
 
+    // Handle automatic put back after the first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_automaticPutBackHandled) {
         final shelterDetails = ref.read(shelterDetailsViewModelProvider).value;
-
         if (shelterDetails != null) {
           final shelterSettings = shelterDetails.shelterSettings;
           final shelterId = shelterDetails.id;
           final animalType = widget.animal.species;
-
           final viewModel = AnimalCardViewModel(
             repository: AnimalRepository(),
             shelterId: shelterId,
             animalType: animalType,
             shelterSettings: shelterSettings,
           );
-
           viewModel.handleAutomaticPutBack(widget.animal);
         }
         _automaticPutBackHandled = true;
       }
     });
+
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2), // 2 seconds duration
+      duration: const Duration(seconds: 2),
     );
 
-    // Non-linear progress curve: slow at first, speeding up later
+    // Use a non-linear curve (easeIn) for a gradual start.
     _curvedAnimation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeIn,
     );
 
-    // Listen for animation completion
+    // Listen for animation completion.
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // Reset the animation instantly
         _controller.reset();
-
-        // Retrieve the latest animal state
         final currentAnimal = widget.animal;
-
-        // Animation completed, show confirmation dialog
         if (currentAnimal.inKennel) {
           final accountDetails =
               ref.read(accountSettingsViewModelProvider).value;
@@ -111,16 +105,17 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 .read(takeOutConfirmationViewModelProvider(widget.animal)
                     .notifier)
                 .takeOutAnimal(
-                    widget.animal,
-                    Log(
-                      id: const Uuid().v4().toString(),
-                      type: '',
-                      author: '',
-                      authorID: '',
-                      earlyReason: '',
-                      startTime: Timestamp.now(),
-                      endTime: widget.animal.logs.last.endTime,
-                    ));
+                  widget.animal,
+                  Log(
+                    id: const Uuid().v4().toString(),
+                    type: '',
+                    author: '',
+                    authorID: '',
+                    earlyReason: '',
+                    startTime: Timestamp.now(),
+                    endTime: widget.animal.logs.last.endTime,
+                  ),
+                );
           }
         } else {
           _showPutBackConfirmationDialog();
@@ -136,7 +131,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   }
 
   Future<void> _showTakeOutConfirmationDialog() async {
-    // Show the custom confirmation widget using the ref object
     await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -169,7 +163,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   }
 
   Future<void> _showPutBackConfirmationDialog() async {
-    // Show the custom confirmation dialog using the helper
     await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -184,8 +177,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   Widget build(BuildContext context) {
     final animal = widget.animal;
     final shelterDetailsAsync = ref.watch(shelterDetailsViewModelProvider);
-
-    // Determine if shelterID is available
     bool canInteract = false;
     shelterDetailsAsync.when(
       data: (shelter) {
@@ -207,84 +198,83 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25),
-        // side: BorderSide(color: Colors.white, width: 0.25),
       ),
-      shadowColor: Colors.black, // Customize shadow color
+      shadowColor: Colors.black,
       child: Container(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Row: Image and details
+            // Top Row: Image and details.
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Animal image and interaction
+                // Animal image with tap interactions.
                 GestureDetector(
-                    onTapDown: canInteract
-                        ? (_) {
-                            setState(() {
-                              isPressed = true;
-                            });
-                            _controller.forward();
-                            HapticFeedback.mediumImpact();
-                          }
-                        : null,
-                    onTapUp: canInteract
-                        ? (_) {
-                            setState(() {
-                              isPressed = false;
-                            });
-                            _controller.reverse();
-                            HapticFeedback.lightImpact();
-                          }
-                        : null,
-                    onTapCancel: canInteract
-                        ? () {
-                            setState(() {
-                              isPressed = false;
-                            });
-                            _controller.reverse();
-                            HapticFeedback.lightImpact();
-                          }
-                        : null,
-                    child: AnimalCardImage(
-                        curvedAnimation: _curvedAnimation,
-                        isPressed: isPressed,
-                        animal: animal)),
+                  onTapDown: canInteract
+                      ? (_) {
+                          setState(() {
+                            isPressed = true;
+                          });
+                          _controller.forward();
+                          HapticFeedback.mediumImpact();
+                        }
+                      : null,
+                  onTapUp: canInteract
+                      ? (_) {
+                          setState(() {
+                            isPressed = false;
+                          });
+                          _controller.reverse();
+                          HapticFeedback.lightImpact();
+                        }
+                      : null,
+                  onTapCancel: canInteract
+                      ? () {
+                          setState(() {
+                            isPressed = false;
+                          });
+                          _controller.reverse();
+                          HapticFeedback.lightImpact();
+                        }
+                      : null,
+                  child: AnimalCardImage(
+                    curvedAnimation: _curvedAnimation,
+                    isPressed: isPressed,
+                    animal: animal,
+                  ),
+                ),
                 const SizedBox(width: 10),
-                // Animal details
+                // Animal details.
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Name, symbol, and menu
+                      // Row with name and menu.
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          // Always wrap the animal name in a Flexible/FittedBox combo.
                           Flexible(
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    animal.name,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 25.0,
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                animal.name,
+                                style: const TextStyle(
+                                  fontFamily: 'CabinBold',
+                                  fontSize: 32.0,
+                                  fontWeight: FontWeight.w800,
                                 ),
-                                const SizedBox(width: 5),
-                                if (animal.symbol.isNotEmpty)
-                                  _buildIcon(animal.symbol, animal.symbolColor),
-                              ],
+                              ),
                             ),
                           ),
+                          const Spacer(),
+                          _buildIcon(animal.symbol, animal.symbolColor),
+
                           PopupMenuButton<String>(
                             offset: const Offset(0, 40),
                             onSelected: (value) {
-                              // Handle menu item selection
                               switch (value) {
                                 case 'Details':
                                   context.push('/enrichment/details',
@@ -299,9 +289,10 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                                   break;
                                 case 'Add Log':
                                   showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          AddLogView(animal: animal));
+                                    context: context,
+                                    builder: (context) =>
+                                        AddLogView(animal: animal),
+                                  );
                                   break;
                               }
                             },
@@ -310,7 +301,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               final accountSettings = ref
                                   .read(accountSettingsViewModelProvider)
                                   .value;
-
                               final menuItems = {'Details', 'Add Note'};
                               if (appUser?.type == "admin" &&
                                   accountSettings!.accountSettings?.mode ==
@@ -318,7 +308,6 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                                   animal.inKennel) {
                                 menuItems.add('Add Log');
                               }
-
                               return menuItems.map((String choice) {
                                 return PopupMenuItem<String>(
                                   value: choice,
@@ -331,7 +320,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                         ],
                       ),
                       const SizedBox(height: 5),
-                      // Info chips
+                      // Info chips wrapped in a Wrap.
                       Wrap(
                         spacing: 4,
                         runSpacing: 4,
@@ -366,7 +355,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               icon: Icons.volunteer_activism,
                               label: animal.volunteerCategory,
                             ),
-                          // Add the top 3 tags as info chips
+                          // Add the top 3 tags as info chips.
                           for (var tag in (animal.tags
                                 ..sort((a, b) => b.count.compareTo(a.count)))
                               .take(3))
@@ -382,12 +371,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
               ],
             ),
             const Spacer(),
-            // Spacer(),
-            // Author and timeago at the bottom center
+            // Bottom row: Time and author information.
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 4.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -398,7 +386,12 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               size: 16, color: Colors.grey.shade600),
                           const SizedBox(width: 4),
                           Text(
-                            "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
+                            "${_timeAgo(
+                              widget.animal.inKennel
+                                  ? animal.logs.last.endTime.toDate()
+                                  : animal.logs.last.startTime.toDate(),
+                              widget.animal.inKennel,
+                            )}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
                             style: TextStyle(color: Colors.grey.shade600),
                           ),
                         ],
@@ -427,38 +420,49 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   }
 }
 
+/// Builds an info chip that scales its text down if needed.
 Widget _buildInfoChip({
   required IconData icon,
   required String label,
   double textSize = 10.0,
 }) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.5),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.white.withOpacity(0.5)),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 12,
-          color: Colors.grey,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(color: Colors.black, fontSize: textSize),
-        ),
-      ],
+  return ConstrainedBox(
+    // Constrain the chip’s max width to prevent unbounded growth.
+    constraints: const BoxConstraints(maxWidth: 250),
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.5)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 12,
+            color: Colors.grey,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                label,
+                style: TextStyle(color: Colors.black, fontSize: textSize),
+              ),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }
 
-Icon _buildIcon(String symbol, String symbolColor) {
-  IconData iconData;
+Widget _buildIcon(String symbol, String symbolColor) {
+  IconData? iconData;
 
   switch (symbol) {
     case 'pets':
@@ -471,22 +475,26 @@ Icon _buildIcon(String symbol, String symbolColor) {
       iconData = Icons.star;
       break;
     default:
-      iconData = Icons.pets;
+      return const SizedBox.shrink(); // No icon for default case
   }
 
-  return Icon(
-    iconData,
-    color: _parseColor(symbolColor),
-    // shadows: [
-    //   Shadow(
-    //     blurRadius: 1.0,
-    //     color: Colors.black.withOpacity(0.7),
-    //     offset: const Offset(0.35, 0.35),
-    //   ),
-    // ],
+  return DecoratedIcon(
+    icon: Icon(
+      iconData,
+      color: _parseColor(symbolColor),
+      size: 24, // Original size
+    ),
+
+    // decoration: const IconDecoration(
+    //   border: IconBorder(
+    //     color: Colors.black,
+    //     width: 0.75,
+    //   )
+    // ),
   );
 }
 
+/// Parses a color string into a [Color] value.
 Color _parseColor(String colorString) {
   switch (colorString.toLowerCase()) {
     case 'red':

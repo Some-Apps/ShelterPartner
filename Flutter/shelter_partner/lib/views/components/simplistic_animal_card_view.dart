@@ -357,6 +357,7 @@ class _SimplisticAnimalCardViewState
                         ],
                       ),
                       // Location
+                      
                         Row(
                         children: [
                           Expanded(
