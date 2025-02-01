@@ -1,1 +1,1 @@
-If activated, the system will not consider ongoing visits while putting animals back into kennels.
+If activated, the system will not consider ongoing visits when animals are automatically put back into kennels.
