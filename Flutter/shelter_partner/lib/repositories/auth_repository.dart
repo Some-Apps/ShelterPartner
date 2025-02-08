@@ -345,6 +345,7 @@ class AuthRepository {
             {
               'id': const Uuid().v4(),
               'url':
+                  // "https://storage.googleapis.com/production-10b3e.firebasestorage.app/${collectionName == 'dogs' ? 'Dogs' : 'Cats'}/$animalId.jpeg",
                   "https://storage.googleapis.com/development-e5282.appspot.com/${collectionName == 'dogs' ? 'Dogs' : 'Cats'}/$animalId.jpeg",
               'timestamp': Timestamp.now(),
             }
