@@ -29,7 +29,6 @@ class EditAnimalRepository {
   }
 
   Future<void> deletePhotoFromStorage(String shelterId, String animalId, String photoId) async {
-    print('Deleting photo from storage: gs://development-e5282.appspot.com/$shelterId/$animalId/$photoId');
 
     final storage = FirebaseStorage.instance;
     final List<String> sizes = ['100x100', '250x250', '500x500', '750x750'];
@@ -43,7 +42,6 @@ class EditAnimalRepository {
       final resizedPhotoRef = storage.ref().child('$shelterId/$animalId/${photoId}_$size');
       try {
         await resizedPhotoRef.delete();
-        print('Deleted resized photo: gs://development-e5282.appspot.com/$shelterId/$animalId/${photoId}_$size');
       } catch (e) {
         print('Failed to delete resized photo: ${e.toString()}');
         // You can handle the error if needed

@@ -138,7 +138,6 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                           const Center(
                               child: Text("No shelter data available"));
                         }
-                        ;
                         if (filteredVolunteers.isEmpty) {
                           filteredVolunteers = List.from(shelter!.volunteers);
                         }
