@@ -255,8 +255,8 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                                         ),
                                         errorWidget: (context, url, error) =>
                                             const Center(
-                                          child: Icon(Icons.error,
-                                              color: Colors.red),
+                                          child: Icon(Icons.pets,
+                                              size: 50, color: Colors.grey),
                                         ),
                                       )
                                     : const Center(

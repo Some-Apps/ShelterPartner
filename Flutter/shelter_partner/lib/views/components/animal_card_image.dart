@@ -14,7 +14,7 @@ class AnimalCardImage extends StatelessWidget {
     required Animation<double> curvedAnimation,
     required this.isPressed,
     required this.animal,
-  })  : _curvedAnimation = curvedAnimation;
+  }) : _curvedAnimation = curvedAnimation;
 
   @override
   Widget build(BuildContext context) {
@@ -70,18 +70,22 @@ class AnimalCardImage extends StatelessWidget {
                 // Apply ShaderMask for faded edges
                 ClipOval(
                   child: animal.photos?.isNotEmpty ?? false
-                        ? CachedNetworkImage(
-                            imageUrl: (animal.photos?.first.url.contains('amazonaws.com') ?? false) ||
-                                (animal.photos?.first.url.contains('storage.googleapis.com') ?? false)
-                            ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
-                            : animal.photos?.first.url ?? '',
+                      ? CachedNetworkImage(
+                          imageUrl: (animal.photos?.first.url
+                                          .contains('amazonaws.com') ??
+                                      false) ||
+                                  (animal.photos?.first.url
+                                          .contains('storage.googleapis.com') ??
+                                      false)
+                              ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
+                              : animal.photos?.first.url ?? '',
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Icon(Icons.pets,
-                            size: 50, color: Colors.grey.shade400),
-                          errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
+                              size: 50, color: Colors.grey.shade400),
+                          errorWidget: (context, url, error) => Icon(Icons.pets,
+                              size: 50, color: Colors.grey.shade400),
                         )
                       : Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
                 ),
@@ -102,7 +106,6 @@ class AnimalCardImage extends StatelessWidget {
     );
   }
 }
-
 
 class CircleProgressPainter extends CustomPainter {
   final double progress; // Progress from 0.0 to 1.0
