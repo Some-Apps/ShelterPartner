@@ -12,6 +12,13 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 
 ## Bounties To Be Paid On March 1st
 
+<details>
+  <summary>Shivam Kumar: $10</summary>
+  
+  - Issue #404: Change missing/error image ($10)
+
+</details>
+
 
 ## Bounties Paid On February 1st
 
