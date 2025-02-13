@@ -13,9 +13,11 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 ## Bounties To Be Paid On March 1st
 
 <details>
-  <summary>Shivam Kumar: $10</summary>
+  <summary>Shivam Kumar: $60</summary>
   
   - Issue #404: Change missing/error image ($10)
+
+  - Issue #395: Allow users to group by category ($50)
 
 </details>
 
