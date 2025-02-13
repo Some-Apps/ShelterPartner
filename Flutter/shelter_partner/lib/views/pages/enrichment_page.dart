@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 
@@ -38,6 +39,7 @@ class EnrichmentPage extends ConsumerStatefulWidget {
 class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String selectedGroupingCategory = 'None';
 
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
@@ -182,6 +184,41 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     }
   }
 
+  Map<String, List<Animal>> _groupAnimalsByCategory(
+      List<Animal> animals, String category) {
+    SplayTreeMap<String, List<Animal>> groupedAnimals = SplayTreeMap();
+
+    for (var animal in animals) {
+      String? key;
+
+      switch (category) {
+        case 'Adoption Category':
+          key = animal.adoptionCategory;
+          break;
+        case 'Behavior Category':
+          key = animal.behaviorCategory;
+          break;
+        case 'Location Category':
+          key = animal.locationCategory;
+          break;
+        case 'Medical Category':
+          key = animal.medicalCategory;
+          break;
+        case 'Volunteer Category':
+          key = animal.volunteerCategory;
+          break;
+        default:
+          key = null;
+      }
+
+      if (key != null && key.isNotEmpty) {
+        groupedAnimals.putIfAbsent(key, () => []).add(animal);
+      }
+    }
+
+    return groupedAnimals;
+  }
+
   Future<void> _getSubscriptionStatus(WidgetRef ref) async {
     final entitlements =
         await Qonversion.getSharedInstance().checkEntitlements();
@@ -280,7 +317,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     }
   }
 
-  Widget _buildAnimalGridView(String animalType) {
+  Widget _buildAnimalGridView(String animalType, String category) {
     final pagingController =
         animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
 
@@ -289,7 +326,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
 
     if (animalsMap[animalType] == null || animalsMap[animalType]!.isEmpty) {
       return const Center(child: CircularProgressIndicator());
-    } else {
+    } else if (category == 'None') {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: LayoutBuilder(
@@ -335,6 +372,80 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                 crossAxisSpacing: 0.0,
                 mainAxisSpacing: 0.0,
               ),
+            );
+          },
+        ),
+      );
+    } else {
+      List<Animal> allAnimals = List.from(animalsMap[animalType]!);
+      List<Animal> filteredAnimals = _filterAnimals(allAnimals);
+
+      Map<String, List<Animal>> groupedAnimals =
+          _groupAnimalsByCategory(filteredAnimals, category);
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: ListView.builder(
+          itemCount: groupedAnimals.keys.length,
+          itemBuilder: (context, index) {
+            String sectionTitle = groupedAnimals.keys.elementAt(index);
+            List<Animal> sectionAnimals = groupedAnimals[sectionTitle]!;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Section Header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 16, 8, 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        sectionTitle,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.1,
+                          fontFamily: 'Roboto',
+                        ),
+                      ),
+                      const Divider(
+                        thickness: 2,
+                        color: Color.fromARGB(222, 158, 158, 158),
+                      ),
+                      const SizedBox(height: 3)
+                    ],
+                  ),
+                ),
+
+                // Grid for Animals in this Section
+                GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent:
+                        accountSettings.value!.accountSettings!.simplisticMode
+                            ? 600.0
+                            : 625.0,
+                    mainAxisExtent:
+                        accountSettings.value!.accountSettings!.simplisticMode
+                            ? 160.0
+                            : 235.0,
+                    crossAxisSpacing: 8.0,
+                    mainAxisSpacing: 8.0,
+                  ),
+                  itemCount: sectionAnimals.length,
+                  itemBuilder: (context, itemIndex) {
+                    Animal animal = sectionAnimals[itemIndex];
+
+                    return accountSettings
+                                .value!.accountSettings?.simplisticMode ??
+                            true
+                        ? SimplisticAnimalCardView(animal: animal)
+                        : AnimalCardView(animal: animal);
+                  },
+                ),
+              ],
             );
           },
         ),
@@ -502,6 +613,56 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                           ],
                         ),
                         const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 8.0),
+                          child: Row(
+                            children: [
+                              const Text(
+                                'Group by :',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: Colors.grey, width: 1.5)),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: selectedGroupingCategory,
+                                      isExpanded: true,
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedGroupingCategory = newValue!;
+                                        });
+                                      },
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.black),
+                                      items: [
+                                        'None',
+                                        'Adoption Category',
+                                        'Behavior Category',
+                                        'Location Category',
+                                        'Medical Category',
+                                        'Volunteer Category'
+                                      ].map<DropdownMenuItem<String>>(
+                                          (String category) {
+                                        return DropdownMenuItem<String>(
+                                          value: category,
+                                          child: Text(category),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                         // Navigation button for user filter
                         NavigationButton(
@@ -654,9 +815,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                     controller: _tabController,
                     children: [
                       // Dogs
-                      _buildAnimalGridView('dogs'),
+                      _buildAnimalGridView('dogs', selectedGroupingCategory),
                       // Cats
-                      _buildAnimalGridView('cats'),
+                      _buildAnimalGridView('cats', selectedGroupingCategory),
                     ],
                   ),
                 )
@@ -666,7 +827,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                       ?.isNotEmpty ??
                   false)
                 Expanded(
-                  child: _buildAnimalGridView('dogs'),
+                  child: _buildAnimalGridView('dogs', selectedGroupingCategory),
                 )
               // Show only cats if there are no dogs
               else if (ref
@@ -674,7 +835,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                       ?.isNotEmpty ??
                   false)
                 Expanded(
-                  child: _buildAnimalGridView('cats'),
+                  child: _buildAnimalGridView('cats', selectedGroupingCategory),
                 )
               // Show a message if there are no animals
               else
