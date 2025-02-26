@@ -7,9 +7,20 @@ import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 // Conditional import for platform-specific full-screen functionality
-import 'package:shelter_partner/helper/fullscreen_stub.dart' // Import the stub file which will import correct platform-specific file.
+import 'package:shelter_partner/helper/fullscreen_stub.dart'
     if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart'
     if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
+
+/// A helper function that returns a formatted URL.
+/// If the URL contains 'amazonaws.com' or 'storage.googleapis.com',
+/// it is wrapped with your CORS proxy.
+String formatImageUrl(String? url) {
+  if (url == null || url.isEmpty) return '';
+  if (url.contains('amazonaws.com') || url.contains('storage.googleapis.com')) {
+    return 'https://us-central1-production-10b3e.cloudfunctions.net/cors-images?url=$url';
+  }
+  return url;
+}
 
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
@@ -64,9 +75,6 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
     if (_tabController.indexIsChanging) {
       setState(() {
         selectedAnimalType = _tabController.index == 0 ? 'cats' : 'dogs';
-        // No need to reset _hasPreloadedImages if both tabs are preloaded
-        // Optionally, you can preload again if needed
-        // _preloadImages(selectedAnimalType);
         // Reset scroll position
         _scrollController.jumpTo(0);
       });
@@ -96,34 +104,19 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
     for (int i = start; i < end; i++) {
       final animal = animals[i];
-      final imageUrl = (animal.photos != null && animal.photos!.isNotEmpty)
-          ? animal.photos!.first.url ?? ''
+      final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
+          ? animal.photos!.first.url
           : '';
 
-      if (imageUrl.isNotEmpty) {
-        final animal = animals[i];
-        final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
-            ? animal.photos!.first.url
-            : '';
-        if (originalUrl.contains("amazonaws") ||
-            originalUrl.contains("storage.googleapis.com")) {
-          final fallbackUrl =
-              'https://us-central1-production-10b3e.cloudfunctions.net/cors-images?url=https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
-          // Debugging print statements
-          print('Preloading image for animal: ${animal.name}');
-          print('Original URL: $originalUrl');
-          print('Fallback URL: $fallbackUrl');
-          // Precache using fallbackUrl directly to avoid CORS issues
-          precacheImage(
-            CachedNetworkImageProvider(fallbackUrl),
-            context,
-          );
-        } else {
-          precacheImage(
-            CachedNetworkImageProvider(originalUrl),
-            context,
-          );
-        }
+      final formattedUrl = formatImageUrl(originalUrl);
+      if (formattedUrl.isNotEmpty) {
+        // Debugging print statements
+        print('Preloading image for animal: ${animal.name}');
+        print('Using URL: $formattedUrl');
+        precacheImage(
+          CachedNetworkImageProvider(formattedUrl),
+          context,
+        );
       }
     }
   }
@@ -209,10 +202,10 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               final animal = animals[index];
-              final imageUrl =
-                  (animal.photos != null && animal.photos!.isNotEmpty)
-                      ? animal.photos!.first.url ?? ''
-                      : '';
+              final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
+                  ? animal.photos!.first.url
+                  : '';
+              final displayUrl = formatImageUrl(originalUrl);
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -234,17 +227,9 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                             color: Colors.grey[300],
                             child: Stack(
                               children: [
-                                imageUrl.isNotEmpty
+                                displayUrl.isNotEmpty
                                     ? CachedNetworkImage(
-                                        imageUrl: (animal.photos?.first.url
-                                                        .contains(
-                                                            'amazonaws.com') ??
-                                                    false) ||
-                                                (animal.photos?.first.url.contains(
-                                                        'storage.googleapis.com') ??
-                                                    false)
-                                            ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
-                                            : animal.photos?.first.url ?? '',
+                                        imageUrl: displayUrl,
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                         height: double.infinity,
@@ -372,7 +357,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     final animal = _shuffledAnimals[_currentIndex];
     _currentAnimal = animal; // Set the current animal
     if (animal.photos != null && animal.photos!.isNotEmpty) {
-      _currentImageUrl = animal.photos!.first.url;
+      _currentImageUrl = formatImageUrl(animal.photos!.first.url);
     } else {
       _currentImageUrl = '';
     }
@@ -390,13 +375,12 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
         .read(accountSettingsViewModelProvider)
         .value
         ?.accountSettings;
-    final slideshowTimer = accountSettings?.slideshowTimer ??
-        10; // Default to 10 seconds if not set
+    final slideshowTimer = accountSettings?.slideshowTimer ?? 10;
 
     // Start the timer to change images based on the slideshow timer setting
     _timer = Timer.periodic(Duration(seconds: slideshowTimer), (timer) {
       setState(() {
-        //Skip slides which do not contain image animal
+        // Skip slides which do not contain images
         do {
           _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
           _setCurrentImage();
@@ -449,7 +433,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
           child: CircularProgressIndicator(),
         ),
         errorWidget: (context, url, error) => const Center(
-          child: Icon(Icons.error, color: Colors.red),
+          child: Icon(Icons.pets, color: Colors.grey, size: 50),
         ),
       );
     } else {
@@ -512,8 +496,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       child: Scaffold(
         backgroundColor: Colors.black,
         body: AnimatedSwitcher(
-          duration:
-              const Duration(seconds: 2), // Duration of the fade transition
+          duration: const Duration(seconds: 2),
           transitionBuilder: (Widget child, Animation<double> animation) {
             return FadeTransition(opacity: animation, child: child);
           },
