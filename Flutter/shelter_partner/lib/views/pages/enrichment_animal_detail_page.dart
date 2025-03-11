@@ -79,6 +79,18 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
           );
         }
 
+        String formatAge(int months) {
+          if (months < 12) {
+            return '$months months old';
+          } else {
+            int years = months ~/ 12;
+            int remainingMonths = months % 12;
+            return remainingMonths == 0
+                ? '$years years old'
+                : '$years year${years > 1 ? "s" : ""} $remainingMonths months old';
+          }
+        }
+
         return Scaffold(
           appBar: AppBar(
             title: Text(animal.name), // Display the animal's name at the top
@@ -113,7 +125,12 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                               showFullScreenGallery(
                                 context,
                                 (animal.photos ?? [])
-                                    .map((photo) => (photo.url.contains('amazonaws.com') || photo.url.contains('storage.googleapis.com')) ? 'https://cors-images-222422545919.us-central1.run.app?url=${photo.url}' : photo.url)
+                                    .map((photo) => (photo.url
+                                                .contains('amazonaws.com') ||
+                                            photo.url.contains(
+                                                'storage.googleapis.com'))
+                                        ? 'https://cors-images-222422545919.us-central1.run.app?url=${photo.url}'
+                                        : photo.url)
                                     .toList(),
                                 index,
                               );
@@ -168,7 +185,7 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
-                                "${animal.monthsOld} months old",
+                                formatAge(animal.monthsOld),
                                 style: const TextStyle(
                                     color: Colors.black, fontSize: 15),
                               ),
@@ -506,7 +523,10 @@ class PhotoItem extends StatelessWidget {
     final fallbackUrl =
         'https://cors-images-222422545919.us-central1.run.app?url=${originalPhoto.url}'; // Replace with your actual fallback URL
     // final photo1 = originalPhoto.url.contains('amazonaws.com') ? fallbackUrl : originalPhoto.url;
-    final scaledUrl = (originalPhoto.url.contains('amazonaws.com') || originalPhoto.url.contains('storage.googleapis.com')) ? fallbackUrl : originalPhoto.url;
+    final scaledUrl = (originalPhoto.url.contains('amazonaws.com') ||
+            originalPhoto.url.contains('storage.googleapis.com'))
+        ? fallbackUrl
+        : originalPhoto.url;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
