@@ -198,9 +198,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
         case 'Behavior Category':
           key = animal.behaviorCategory;
           break;
-        case 'Location Category':
-          key = animal.locationCategory;
-          break;
+        // case 'Location Category':
+        //   key = animal.locationCategory;
+        //   break;
         case 'Medical Category':
           key = animal.medicalCategory;
           break;
@@ -646,7 +646,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                         'None',
                                         'Adoption Category',
                                         'Behavior Category',
-                                        'Location Category',
+                                        // 'Location Category',
                                         'Medical Category',
                                         'Volunteer Category'
                                       ].map<DropdownMenuItem<String>>(
