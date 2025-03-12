@@ -79,17 +79,20 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
           );
         }
 
-        String formatAge(int months) {
-          if (months < 12) {
-            return '$months months old';
-          } else {
-            int years = months ~/ 12;
-            int remainingMonths = months % 12;
-            return remainingMonths == 0
-                ? '$years years old'
-                : '$years year${years > 1 ? "s" : ""} $remainingMonths months old';
-          }
-        }
+        String formatAge(int monthsOld) {
+  int years = monthsOld ~/ 12;
+  int months = monthsOld % 12;
+
+  String yearsText = years > 0 ? '$years year${years > 1 ? 's' : ''}' : '';
+  String monthsText = months > 0 ? '$months month${months > 1 ? 's' : ''}' : '';
+
+  if (yearsText.isNotEmpty && monthsText.isNotEmpty) {
+    return '$yearsText and $monthsText';
+  } else {
+    return yearsText.isNotEmpty ? yearsText : monthsText;
+  }
+}
+
 
         return Scaffold(
           appBar: AppBar(
