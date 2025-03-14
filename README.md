@@ -13,9 +13,11 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 ## Bounties To Be Paid On April 1st
 
 <details>
-  <summary>Sehaj Bansal: $10</summary>
+  <summary>Sehaj Bansal: $20</summary>
   
   - Issue #407: Ages are showing in months instead of years ($10)
+    
+  - Issue #409: Version number should automatically update in the settings tab ($10)
 
 </details>
 
