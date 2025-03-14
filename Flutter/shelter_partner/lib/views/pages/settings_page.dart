@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,12 +18,21 @@ class SettingsPage extends ConsumerStatefulWidget {
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
+  String _version = "Loading...";
 
   @override
   void initState() {
     super.initState();
     _getSubscriptionStatus(ref);
+    _fetchVersion();
   }
+   Future<void> _fetchVersion() async {
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  setState(() {
+    _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
+  });
+}
+
 
   Future<void> _getSubscriptionStatus(WidgetRef ref) async {
     final entitlements =
@@ -391,11 +400,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                              const ListTile(
-                                leading:
-                                    Icon(Icons.numbers, color: Colors.grey),
-                                title: Text("Version 2.0.0",
-                                    style: TextStyle(color: Colors.grey)),
+                              ListTile(
+                                leading: const Icon(Icons.numbers, color: Colors.grey),
+                                title: Text(
+                                  _version, // Dynamically fetched version
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
                               ),
                               Divider(
                                 color: Colors.black.withOpacity(0.1),
