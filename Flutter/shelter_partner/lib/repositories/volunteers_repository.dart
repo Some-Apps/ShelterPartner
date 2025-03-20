@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -216,15 +217,12 @@ class VolunteersRepository {
     }
   }
 
-  String _generateRandomPassword() {
-    // Simple random password generator
-    const length = 6;
-    const chars = 'abcdefghijklmnopqrstuvwxyz';
-    return List.generate(
-        length,
-        (index) => chars[(DateTime.now().millisecondsSinceEpoch + index) %
-            chars.length]).join();
-  }
+String _generateRandomPassword() {
+  const length = 6;
+  const chars = 'abcdefghijklmnopqrstuvwxyz';
+  final rand = Random.secure();
+  return List.generate(length, (_) => chars[rand.nextInt(chars.length)]).join();
+}
 
   // Method to increment a specific field within volunteerSettings attribute
   Future<void> incrementVolunteerSetting(String shelterID, String field) async {

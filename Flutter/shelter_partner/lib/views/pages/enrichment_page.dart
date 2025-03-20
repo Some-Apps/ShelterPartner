@@ -250,9 +250,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
         final fallbackUrl =
             'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
         // Debugging print statements
-        print('Preloading image for animal: ${animal.name}');
-        print('Original URL: $originalUrl');
-        print('Fallback URL: $fallbackUrl');
+        // print('Preloading image for animal: ${animal.name}');
+        // print('Original URL: $originalUrl');
+        // print('Fallback URL: $fallbackUrl');
         // Precache using fallbackUrl directly to avoid CORS issues
         precacheImage(
           CachedNetworkImageProvider(fallbackUrl),

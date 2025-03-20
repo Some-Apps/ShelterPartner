@@ -55,7 +55,13 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   @override
   void initState() {
     super.initState();
-
+    
+    // Print the account type on appear.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final appUser = ref.read(appUserProvider);
+      print("Account type on appear: ${appUser?.type}");
+    });
+    
     // Handle automatic put back after the first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_automaticPutBackHandled) {
@@ -90,33 +96,54 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     // Listen for animation completion.
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
+        print("DEBUG: AnimationStatus completed triggered");
         _controller.reset();
         final currentAnimal = widget.animal;
+        print("DEBUG: currentAnimal.inKennel: ${currentAnimal.inKennel}");
         if (currentAnimal.inKennel) {
-          final accountDetails =
-              ref.read(accountSettingsViewModelProvider).value;
-          if (accountDetails != null &&
-              (accountDetails.accountSettings!.requireName ||
-                  accountDetails.accountSettings!.requireLetOutType)) {
-            _showTakeOutConfirmationDialog();
+          final accountDetails = ref.read(accountSettingsViewModelProvider).value;
+          print("DEBUG: accountDetails: $accountDetails");
+          if (accountDetails != null) {
+            final appUser = ref.read(appUserProvider);
+            print("DEBUG: appUser: $appUser");
+            final shelterSettings = ref.read(shelterDetailsViewModelProvider).value;
+            print("DEBUG: shelterSettings: $shelterSettings");
+            bool requireName;
+            bool requireLetOutType;
+            if (appUser?.type == "admin") {
+              requireName = accountDetails.accountSettings!.requireName;
+              requireLetOutType = accountDetails.accountSettings!.requireLetOutType;
+              print("DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+            } else {
+              requireName = shelterSettings!.volunteerSettings.requireName;
+              requireLetOutType = shelterSettings!.volunteerSettings.requireLetOutType;
+              print("DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+            }
+            if (requireName || requireLetOutType) {
+              print("DEBUG: Showing take out confirmation dialog");
+              _showTakeOutConfirmationDialog();
+            } else {
+              print("DEBUG: Directly taking out animal");
+              ref
+                  .read(takeOutConfirmationViewModelProvider(widget.animal).notifier)
+                  .takeOutAnimal(
+                    widget.animal,
+                    Log(
+                      id: const Uuid().v4().toString(),
+                      type: '',
+                      author: '',
+                      authorID: '',
+                      earlyReason: '',
+                      startTime: Timestamp.now(),
+                      endTime: widget.animal.logs.last.endTime,
+                    ),
+                  );
+            }
           } else {
-            ref
-                .read(takeOutConfirmationViewModelProvider(widget.animal)
-                    .notifier)
-                .takeOutAnimal(
-                  widget.animal,
-                  Log(
-                    id: const Uuid().v4().toString(),
-                    type: '',
-                    author: '',
-                    authorID: '',
-                    earlyReason: '',
-                    startTime: Timestamp.now(),
-                    endTime: widget.animal.logs.last.endTime,
-                  ),
-                );
+            print("DEBUG: accountDetails is null");
           }
         } else {
+          print("DEBUG: Animal not in kennel, showing put back confirmation dialog");
           _showPutBackConfirmationDialog();
         }
       }

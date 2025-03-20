@@ -96,25 +96,37 @@ class _SimplisticAnimalCardViewState
     // Listen for animation completion
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // Reset the animation instantly
+        print("DEBUG: AnimationStatus completed triggered");
         _controller.reset();
-
-        // Retrieve the latest animal state
         final currentAnimal = widget.animal;
-
-        // Animation completed, show confirmation dialog
+        print("DEBUG: currentAnimal.inKennel: ${currentAnimal.inKennel}");
         if (currentAnimal.inKennel) {
-          final accountDetails =
-              ref.read(accountSettingsViewModelProvider).value;
-          if (accountDetails != null &&
-              (accountDetails.accountSettings!.requireName ||
-                  accountDetails.accountSettings!.requireLetOutType)) {
-            _showTakeOutConfirmationDialog();
-          } else {
-            ref
-                .read(takeOutConfirmationViewModelProvider(widget.animal)
-                    .notifier)
-                .takeOutAnimal(
+          final accountDetails = ref.read(accountSettingsViewModelProvider).value;
+          print("DEBUG: accountDetails: $accountDetails");
+          if (accountDetails != null) {
+            final appUser = ref.read(appUserProvider);
+            print("DEBUG: appUser: $appUser");
+            final shelterSettings = ref.read(shelterDetailsViewModelProvider).value;
+            print("DEBUG: shelterSettings: $shelterSettings");
+            bool requireName;
+            bool requireLetOutType;
+            if (appUser?.type == "admin") {
+              requireName = accountDetails.accountSettings!.requireName;
+              requireLetOutType = accountDetails.accountSettings!.requireLetOutType;
+              print("DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+            } else {
+              requireName = shelterSettings!.volunteerSettings.requireName;
+              requireLetOutType = shelterSettings!.volunteerSettings.requireLetOutType;
+              print("DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+            }
+            if (requireName || requireLetOutType) {
+              print("DEBUG: Showing take out confirmation dialog");
+              _showTakeOutConfirmationDialog();
+            } else {
+              print("DEBUG: Directly taking out animal");
+              ref
+                  .read(takeOutConfirmationViewModelProvider(widget.animal).notifier)
+                  .takeOutAnimal(
                     widget.animal,
                     Log(
                       id: const Uuid().v4().toString(),
@@ -124,9 +136,14 @@ class _SimplisticAnimalCardViewState
                       earlyReason: '',
                       startTime: Timestamp.now(),
                       endTime: widget.animal.logs.last.endTime,
-                    ));
+                    ),
+                  );
+            }
+          } else {
+            print("DEBUG: accountDetails is null");
           }
         } else {
+          print("DEBUG: Animal not in kennel, showing put back confirmation dialog");
           _showPutBackConfirmationDialog();
         }
       }

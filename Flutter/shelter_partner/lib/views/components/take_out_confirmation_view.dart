@@ -31,6 +31,8 @@ class TakeOutConfirmationViewState
   @override
   void initState() {
     super.initState();
+    final userDetails = ref.read(appUserProvider);
+    _nameController.text = userDetails?.firstName ?? '';
     _nameController.addListener(_updateConfirmButtonState);
     _updateConfirmButtonState();
   }
@@ -44,10 +46,14 @@ class TakeOutConfirmationViewState
   void _updateConfirmButtonState() {
     setState(() {
       final accountSettings = ref.read(accountSettingsViewModelProvider);
-      final requireLetOutType =
-          accountSettings.value?.accountSettings?.requireLetOutType ?? false;
-      final requireName =
-          accountSettings.value?.accountSettings?.requireName ?? false;
+      final shelterSettings = ref.read(shelterSettingsViewModelProvider);
+      final userDetails = ref.read(appUserProvider);
+      final bool requireLetOutType = userDetails?.type == "admin"
+          ? (accountSettings.value?.accountSettings?.requireLetOutType ?? false)
+          : (shelterSettings.value?.volunteerSettings?.requireLetOutType ?? false);
+      final bool requireName = userDetails?.type == "admin"
+          ? (accountSettings.value?.accountSettings?.requireName ?? false)
+          : (shelterSettings.value?.volunteerSettings?.requireName ?? false);
 
       _isConfirmEnabled = (!requireLetOutType ||
                   (_selectedLetOutType != null &&
@@ -62,6 +68,12 @@ class TakeOutConfirmationViewState
     final accountSettings = ref.read(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final userDetails = ref.read(appUserProvider);
+    final bool requireLetOutTypeFlag = userDetails?.type == "admin"
+        ? (accountSettings.value?.accountSettings?.requireLetOutType ?? false)
+        : (shelterSettings.value?.volunteerSettings?.requireLetOutType ?? false);
+    final bool requireNameFlag = userDetails?.type == "admin"
+        ? (accountSettings.value?.accountSettings?.requireName ?? false)
+        : (shelterSettings.value?.volunteerSettings?.requireName ?? false);
 
     final takeOutViewModel = ref.read(
         takeOutConfirmationViewModelProvider(widget.animals.first).notifier);
@@ -105,10 +117,7 @@ class TakeOutConfirmationViewState
                       ))
                   .toList(),
             ),
-          if (accountSettings.value?.accountSettings?.requireLetOutType ==
-                  true &&
-              shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty ==
-                  true)
+          if (requireLetOutTypeFlag && shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -133,9 +142,9 @@ class TakeOutConfirmationViewState
                 ),
               ],
             ),
-          if (accountSettings.value?.accountSettings?.requireName == true)
+          if (requireNameFlag)
             TextField(
-              controller: _nameController..text = userDetails?.firstName ?? '',
+              controller: _nameController,
               decoration: const InputDecoration(
                 labelText: 'Volunteer Name',
               ),

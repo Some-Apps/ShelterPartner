@@ -58,30 +58,36 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
               },
             ),
             TextButton(
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
-              onPressed: () async {
-                Navigator.of(context).pop(); // Dismiss the dialog first
-                setState(() {
-                  isLoading = true;
-                });
-                try {
-                  await ref
-                      .read(volunteersViewModelProvider.notifier)
-                      .deleteVolunteer(volunteerId, shelterID);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('$volunteerName deleted')),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete volunteer: $e')),
-                  );
-                } finally {
-                  setState(() {
-                    isLoading = false;
-                  });
-                }
-              },
-            ),
+  child: const Text('Delete', style: TextStyle(color: Colors.red)),
+  onPressed: () async {
+    Navigator.of(context).pop(); // Dismiss the dialog first
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await ref
+          .read(volunteersViewModelProvider.notifier)
+          .deleteVolunteer(volunteerId, shelterID);
+      // Refresh the volunteers list from the provider.
+      ref.refresh(volunteersViewModelProvider);
+      // Clear local filtered list so the new data is used.
+      setState(() {
+        filteredVolunteers = [];
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$volunteerName deleted')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete volunteer: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  },
+),
           ],
         );
       },
@@ -169,23 +175,23 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                   '/volunteers/volunteer-settings');
                                             },
                                           ),
-                                          Divider(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            height: 0,
-                                            thickness: 1,
-                                          ),
-                                          ListTile(
-                                            leading: const Icon(Icons.sync),
-                                            title: const Text(
-                                                "Sync With Better Impact"),
-                                            trailing:
-                                                const Icon(Icons.chevron_right),
-                                            onTap: () {
-                                              context.push(
-                                                  '/volunteers/better-impact');
-                                            },
-                                          ),
+                                          // Divider(
+                                          //   color:
+                                          //       Colors.black.withOpacity(0.1),
+                                          //   height: 0,
+                                          //   thickness: 1,
+                                          // ),
+                                          // ListTile(
+                                          //   leading: const Icon(Icons.sync),
+                                          //   title: const Text(
+                                          //       "Sync With Better Impact"),
+                                          //   trailing:
+                                          //       const Icon(Icons.chevron_right),
+                                          //   onTap: () {
+                                          //     context.push(
+                                          //         '/volunteers/better-impact');
+                                          //   },
+                                          // ),
                                         ],
                                       ),
                                     ),

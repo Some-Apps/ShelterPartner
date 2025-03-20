@@ -59,6 +59,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
         state = AuthState.unauthenticated();
       }
     } catch (e) {
+      print("ERROR: $e");
       state = AuthState.error(e.toString());
     }
   }
