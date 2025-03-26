@@ -31,11 +31,14 @@ class AcknowledgementsPage extends StatelessWidget {
                         ),
                         // Add your GitHub ListTiles here
                         ListTile(title: Text("Jared Jones")),
+                        ListTile(title: Text("Shivam Kumar")),
                         ListTile(title: Text("Renee Jones")),
+                        ListTile(title: Text("Sehaj Bansal")),
                         ListTile(
                           title: Text("Kate O'Connor"),
                         ),
                         ListTile(title: Text("Jacob Jones")),
+                        ListTile(title: Text("Ian Fife"))
                       ],
                     ),
                   ),
