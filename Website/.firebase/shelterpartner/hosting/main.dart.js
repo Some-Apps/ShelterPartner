@@ -60194,7 +60194,7 @@ O(a){var s,r=null
 $.MU()
 $.mH().lN("youtube-video",new A.RQ(),!0)
 s=t.nA
-return A.a8T(r,A.aed(A.abx(A.a8Z(r,A.acX("assets/logo.png"),new A.RR(a),r,r),A.aea(A.b([A.a_S(B.Kj,new A.RS()),A.a_S(B.ul,new A.RT()),A.a_S(B.Kh,new A.RU()),B.D4],s),B.bc,B.fG,B.dO)),new A.DR(B.y5,A.O8(new A.fp(B.vb,new A.hs(B.y7,A.akU(A.b([B.Kg,B.hu,B.Ke,B.u7,B.Ki,B.hu,B.Gd,B.hu,new A.Ab(new A.RV(),r,r,r,r,r,r,!1,r,!0,B.Kf,r),B.u7],s),B.bc,B.cP),r),r),r,r),r)),B.aL,!1,r,r,r,r,r,r,r,r,r,r,r,r,new A.RW(a),r,r,r)}}
+return A.a8T(r,A.aed(A.abx(A.a8Z(r,A.acX("assets/logo.png"),new A.RR(a),r,r),A.aea(A.b([A.a_S(B.Kj,new A.RS()),A.a_S(B.ul,new A.RT()),A.a_S(B.Kg,new A.RU()),B.D4],s),B.bc,B.fG,B.dO)),new A.DR(B.y5,A.O8(new A.fp(B.vb,new A.hs(B.y7,A.akU(A.b([B.Kf,B.hu,B.Ki,B.u7,B.Kh,B.hu,B.Gd,B.hu,new A.Ab(new A.RV(),r,r,r,r,r,r,!1,r,!0,B.Ke,r),B.u7],s),B.bc,B.cP),r),r),r,r),r)),B.aL,!1,r,r,r,r,r,r,r,r,r,r,r,r,new A.RW(a),r,r,r)}}
 A.RQ.prototype={
 $1(a){var s,r=document.createElement("iframe")
 r.width="560"
@@ -64227,15 +64227,15 @@ B.Js=new A.o(!0,B.y,null,"Roboto",B.z,null,null,null,null,null,null,null,null,nu
 B.IV=new A.o(!0,B.m,null,"Roboto",B.z,null,null,null,null,null,null,null,null,null,null,null,null,B.e,null,null,null,"blackHelsinki labelMedium",null,null,null,null)
 B.J4=new A.o(!0,B.m,null,"Roboto",B.z,null,null,null,null,null,null,null,null,null,null,null,null,B.e,null,null,null,"blackHelsinki labelSmall",null,null,null,null)
 B.Kd=new A.d4(B.JL,B.Hs,B.Ie,B.IU,B.J6,B.H_,B.HT,B.H3,B.II,B.Ji,B.Ik,B.Jj,B.Js,B.IV,B.J4)
-B.Iy=new A.o(!0,null,null,null,null,null,15,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.Ke=new A.fP('Version 2 is out! Watch the video below to learn more. The iOS and Android versions are still being processed by the app stores, but you can access the web version by clicking the "App" button above.',null,B.Iy,null,null)
 B.hA=new A.o(!0,B.m,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.ul=new A.fP("Wiki",null,B.hA,null,null)
-B.Kf=new A.fP("Watch Full Screen on YouTube",null,null,null,null)
+B.Ke=new A.fP("Watch Full Screen on YouTube",null,null,null,null)
 B.uj=new A.o(!0,null,null,null,null,null,28,B.fi,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.Kg=new A.fP("Happy New Year!",null,B.uj,null,null)
-B.Kh=new A.fP("GitHub",null,B.hA,null,null)
-B.Ki=new A.fP("Version 2 Tutorial",null,B.uj,null,null)
+B.Kf=new A.fP("Welcome",null,B.uj,null,null)
+B.Kg=new A.fP("GitHub",null,B.hA,null,null)
+B.Kh=new A.fP("Version 2 Tutorial",null,B.uj,null,null)
+B.Iy=new A.o(!0,null,null,null,null,null,15,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
+B.Ki=new A.fP('Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',null,B.Iy,null,null)
 B.Kj=new A.fP("App",null,B.hA,null,null)
 B.Mw=new A.a0u(0,"system")
 B.Kk=new A.uO(null)

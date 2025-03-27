@@ -133,13 +133,13 @@ class HomePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'Happy New Year!',
+                      'Welcome',
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Version 2 is out! Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
+                      'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
                       style: TextStyle(fontSize: 15),
                     ),
                     const SizedBox(height: 36),

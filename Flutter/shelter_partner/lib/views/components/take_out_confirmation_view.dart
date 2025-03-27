@@ -50,10 +50,10 @@ class TakeOutConfirmationViewState
       final userDetails = ref.read(appUserProvider);
       final bool requireLetOutType = userDetails?.type == "admin"
           ? (accountSettings.value?.accountSettings?.requireLetOutType ?? false)
-          : (shelterSettings.value?.volunteerSettings?.requireLetOutType ?? false);
+          : (shelterSettings.value?.volunteerSettings.requireLetOutType ?? false);
       final bool requireName = userDetails?.type == "admin"
           ? (accountSettings.value?.accountSettings?.requireName ?? false)
-          : (shelterSettings.value?.volunteerSettings?.requireName ?? false);
+          : (shelterSettings.value?.volunteerSettings.requireName ?? false);
 
       _isConfirmEnabled = (!requireLetOutType ||
                   (_selectedLetOutType != null &&
@@ -70,10 +70,10 @@ class TakeOutConfirmationViewState
     final userDetails = ref.read(appUserProvider);
     final bool requireLetOutTypeFlag = userDetails?.type == "admin"
         ? (accountSettings.value?.accountSettings?.requireLetOutType ?? false)
-        : (shelterSettings.value?.volunteerSettings?.requireLetOutType ?? false);
+        : (shelterSettings.value?.volunteerSettings.requireLetOutType ?? false);
     final bool requireNameFlag = userDetails?.type == "admin"
         ? (accountSettings.value?.accountSettings?.requireName ?? false)
-        : (shelterSettings.value?.volunteerSettings?.requireName ?? false);
+        : (shelterSettings.value?.volunteerSettings.requireName ?? false);
 
     final takeOutViewModel = ref.read(
         takeOutConfirmationViewModelProvider(widget.animals.first).notifier);

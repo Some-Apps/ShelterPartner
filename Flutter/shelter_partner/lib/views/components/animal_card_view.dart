@@ -116,7 +116,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
               print("DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType");
             } else {
               requireName = shelterSettings!.volunteerSettings.requireName;
-              requireLetOutType = shelterSettings!.volunteerSettings.requireLetOutType;
+              requireLetOutType = shelterSettings.volunteerSettings.requireLetOutType;
               print("DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType");
             }
             if (requireName || requireLetOutType) {
