@@ -129,9 +129,7 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                                 context,
                                 (animal.photos ?? [])
                                     .map((photo) => (photo.url
-                                                .contains('amazonaws.com') ||
-                                            photo.url.contains(
-                                                'storage.googleapis.com'))
+                                                .contains('amazonaws.com'))
                                         ? 'https://cors-images-222422545919.us-central1.run.app?url=${photo.url}'
                                         : photo.url)
                                     .toList(),
@@ -526,8 +524,9 @@ class PhotoItem extends StatelessWidget {
     final fallbackUrl =
         'https://cors-images-222422545919.us-central1.run.app?url=${originalPhoto.url}'; // Replace with your actual fallback URL
     // final photo1 = originalPhoto.url.contains('amazonaws.com') ? fallbackUrl : originalPhoto.url;
-    final scaledUrl = (originalPhoto.url.contains('amazonaws.com') ||
-            originalPhoto.url.contains('storage.googleapis.com'))
+    final scaledUrl = (originalPhoto.url.contains('amazonaws.com'))
+    // ||
+    //         originalPhoto.url.contains('storage.googleapis.com'))
         ? fallbackUrl
         : originalPhoto.url;
 

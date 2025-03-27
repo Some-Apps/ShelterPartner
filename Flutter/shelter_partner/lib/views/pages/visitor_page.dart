@@ -16,7 +16,7 @@ import 'package:shelter_partner/helper/fullscreen_stub.dart'
 /// it is wrapped with your CORS proxy.
 String formatImageUrl(String? url) {
   if (url == null || url.isEmpty) return '';
-  if (url.contains('amazonaws.com') || url.contains('storage.googleapis.com')) {
+  if (url.contains('amazonaws.com')) {
     return 'https://us-central1-production-10b3e.cloudfunctions.net/cors-images?url=$url';
   }
   return url;
