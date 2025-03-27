@@ -8,6 +8,7 @@ import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/repositories/enrichment_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
+import 'package:shelter_partner/view_models/update_volunteer_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';
@@ -75,13 +76,19 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
         _enrichmentFilter = appUser?.type == 'admin'
             ? appUser?.accountSettings?.enrichmentFilter
             : ref
-                .read(volunteersViewModelProvider)
+                .watch(volunteersViewModelProvider)
                 .value
                 ?.volunteerSettings
                 .enrichmentFilter;
 
+        print("Retrieved enrichment filter: $_enrichmentFilter");
+
         _secondaryFilter = appUser?.userFilter;
-        print(_secondaryFilter.toString());
+        print("Retrieved secondary filter $_secondaryFilter.toString()");
+        print(appUser?.email);
+        print(appUser?.type);
+        print(ref.read(volunteersViewModelProvider).value?.volunteerSettings.toMap());
+
 
         // Apply the filters
         final filteredAnimals = animals.where((animal) {
@@ -135,7 +142,8 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
       'cats': currentCats,
       'dogs': currentDogs,
     };
-    _ignoreFirestoreUpdatesUntil = DateTime.now().add(const Duration(seconds: 3));
+    _ignoreFirestoreUpdatesUntil =
+        DateTime.now().add(const Duration(seconds: 3));
 
     state = newState; // This will trigger a rebuild only where it's needed
   }

@@ -1,5 +1,6 @@
 import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/models/geofence.dart';
+import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
 class VolunteerSettings {
   final bool photoUploadsAllowed;
@@ -36,7 +37,7 @@ class VolunteerSettings {
   Map<String, dynamic> toMap() {
     return {
       'photoUploadsAllowed': photoUploadsAllowed,
-      'enrichmentSort;': enrichmentSort,
+      'enrichmentSort': enrichmentSort,
       'enrichmentFilter': enrichmentFilter,
       'allowBulkTakeOut': allowBulkTakeOut,
       'minimumLogMinutes': minimumLogMinutes,
@@ -53,16 +54,31 @@ class VolunteerSettings {
 
   // Factory constructor to create VolunteerSettings from Firestore Map
   factory VolunteerSettings.fromMap(Map<String, dynamic> data) {
-FilterElement? enrichmentFilter;
-    if (data.containsKey('enrichmentFilter') && data['enrichmentFilter'] != null) {
-      final enrichmentFilterData = data['enrichmentFilter'];
-      if (enrichmentFilterData is Map<String, dynamic> &&
-          enrichmentFilterData['type'] != null) {
-        enrichmentFilter =
-            FilterElement.fromJson(Map<String, dynamic>.from(enrichmentFilterData));
-      } else {
-        enrichmentFilter = null;
+    // Function to reconstruct a FilterGroup from JSON
+    FilterGroup reconstructFilterGroup(Map<String, dynamic> json) {
+      List<FilterElement> elements = [];
+      if (json.containsKey('filterElements')) {
+        elements = (json['filterElements'] as List)
+            .map((e) => FilterElement.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
       }
+
+      LogicalOperator logicalOperator = LogicalOperator.and; // Default operator
+      if (json.containsKey('operatorsBetween') &&
+          (json['operatorsBetween'] as Map).values.any((v) => v == 'or')) {
+        logicalOperator = LogicalOperator.or;
+      }
+
+      return FilterGroup(
+        logicalOperator: logicalOperator,
+        elements: elements,
+      );
+    }
+
+    FilterElement? enrichmentFilter;
+    if (data.containsKey('enrichmentFilter') && data['enrichmentFilter'] != null) {
+      final enrichmentFilterData = data['enrichmentFilter'] as Map<String, dynamic>;
+      enrichmentFilter = reconstructFilterGroup(enrichmentFilterData);
     } else {
       enrichmentFilter = null;
     }
@@ -76,8 +92,7 @@ FilterElement? enrichmentFilter;
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,
-      createLogsWhenUnderMinimumDuration:
-          data['createLogsWhenUnderMinimumDuration'] ?? false,
+      createLogsWhenUnderMinimumDuration: data['createLogsWhenUnderMinimumDuration'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
