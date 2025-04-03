@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import 'package:shelter_partner/view_models/stats_view_model.dart';
 
 // A helper to parse color strings
@@ -49,6 +50,7 @@ class StatsPage extends ConsumerWidget {
     final allStats = ref.watch(statsViewModelProvider);
     final selectedCategory = ref.watch(categoryProvider);
     final lastSync = ref.watch(lastSyncProvider);
+    final lastEmailSync = ref.watch(lastEmailSyncProvider);
     final recentChanges = ref.watch(recentChangesProvider);
 
     if (allStats.isEmpty) {
@@ -87,57 +89,104 @@ class StatsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shelter Stats'),
+        actions: [
+          // Sync status indicator in app bar
+          _buildSyncStatusIndicator(lastSync, lastEmailSync, context),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Last Sync: $lastSync',
-                style:
-                    const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
-              ),
-            ),
-            if (recentChanges.isNotEmpty)
-              Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                color: Colors.blueGrey.withOpacity(0.1),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Recent Changes',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 5),
-                      AnimatedOpacity(
-                        opacity: 1.0,
-                        duration: const Duration(milliseconds: 500),
-                        child: Column(
-                          children: recentChanges.map((change) {
-                            return ListTile(
-                              leading:
-                                  const Icon(Icons.update, color: Colors.blue),
-                              title: Text(
-                                change,
-                                style: const TextStyle(fontSize: 14),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Combined sync status and recent changes card
+              if (recentChanges.isNotEmpty ||
+                  lastSync != null ||
+                  lastEmailSync != null)
+                Card(
+                  margin: const EdgeInsets.all(8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Sync status row
+                        Row(
+                          children: [
+                            const Icon(Icons.sync,
+                                size: 20, color: Colors.blue),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (lastSync != null)
+                                    _buildSyncRow(
+                                      'Last API Sync',
+                                      lastSync,
+                                      Icons.api,
+                                      Colors.green,
+                                    ),
+                                  if (lastEmailSync != null)
+                                    _buildSyncRow(
+                                      'Last Email Sync',
+                                      lastEmailSync,
+                                      Icons.email,
+                                      Colors.purple,
+                                    ),
+                                ],
                               ),
-                            );
-                          }).toList(),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+
+                        if (recentChanges.isNotEmpty) ...[
+                          const Divider(height: 24),
+                          const Text(
+                            'RECENT ACTIVITIES',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: recentChanges.map((change) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                child: Row(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 2),
+                                      child: Icon(Icons.circle,
+                                          size: 8, color: Colors.blue),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        change,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            Expanded(
-              child: GridView(
+
+              // Main content grid
+              GridView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   childAspectRatio: 2 / 1,
                   crossAxisCount:
@@ -246,11 +295,86 @@ class StatsPage extends ConsumerWidget {
                   ),
                 ],
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSyncStatusIndicator(
+      DateTime? lastSync, String? lastEmailSync, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Tooltip(
+        message: 'Sync Status',
+        child: Row(
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _getSyncStatusColor(lastSync, lastEmailSync),
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'Sync',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
       ),
     );
+  }
+
+  Color _getSyncStatusColor(DateTime? lastSync, String? lastEmailSync) {
+    if (lastSync == null) return Colors.grey;
+
+    final now = DateTime.now();
+    final timeSinceLastSync = now.difference(lastSync);
+
+    if (timeSinceLastSync.inHours > 24) return Colors.red;
+    if (timeSinceLastSync.inHours > 6) return Colors.orange;
+    return Colors.green;
+  }
+
+  Widget _buildSyncRow(
+      String label, dynamic value, IconData icon, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Text(
+            '$label: ',
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+          Text(
+            value is DateTime ? _formatDateTime(value) : value.toString(),
+            style: const TextStyle(fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    final dateToCheck = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    if (dateToCheck == today) {
+      return 'Today at ${DateFormat('h:mm a').format(dateTime)}';
+    } else if (dateToCheck == yesterday) {
+      return 'Yesterday at ${DateFormat('h:mm a').format(dateTime)}';
+    } else {
+      return DateFormat('MMM d, y h:mm a').format(dateTime);
+    }
   }
 
   // Extract all keys (species or color names) from the stats map.

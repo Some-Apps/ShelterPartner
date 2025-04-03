@@ -105,6 +105,15 @@ def shelterluv_sync(cloud_event):
         print(f"[DEBUG] Fetching shelter doc from Firestore for ID: {shelter_id}")
         shelter_ref = db.collection('shelters').document(shelter_id)
         shelter_snapshot = shelter_ref.get()
+
+        if email_date:
+            print("[DEBUG] Storing email sync date in Firestore...")
+            try:
+                shelter_ref.update({"lastEmailSync": email_date})
+                print("[DEBUG] Last sync date stored successfully in Firestore.")
+            except exceptions.GoogleCloudError as e_firestore:
+                print(f"[DEBUG] Error updating Firestore with lastSync date: {e_firestore}")
+
         
         if not shelter_snapshot.exists:
             print(f"[DEBUG] Shelter doc '{shelter_id}' not found in Firestore. Exiting.")
@@ -180,6 +189,24 @@ def shelterluv_sync(cloud_event):
         print(f"[DEBUG] Latest email UID is: {latest_email_uid}")
         print("[DEBUG] Fetching the latest email data...")
         result, email_data = mail.uid('fetch', latest_email_uid, '(BODY[])')
+
+        raw_email = email_data[0][1]
+        print("[DEBUG] Constructing email_message from raw bytes...")
+        email_message = email.message_from_bytes(raw_email)
+        print("[DEBUG] email_message created successfully.")
+
+        # Extract the email date
+        email_date_str = email_message["Date"]
+        print(f"[DEBUG] Extracted email date string: {email_date_str}")
+
+        # Convert to a datetime object
+        try:
+            email_date = email.utils.parsedate_to_datetime(email_date_str)
+            print(f"[DEBUG] Parsed email date: {email_date}")
+        except Exception as e_date:
+            print(f"[DEBUG] Error parsing email date: {e_date}")
+            email_date = None
+
         print(f"[DEBUG] Fetch result: {result}")
 
         raw_email = email_data[0][1]

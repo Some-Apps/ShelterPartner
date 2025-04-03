@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/repositories/stats_repository.dart';
@@ -9,6 +10,7 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
   final Ref ref;
 
   StreamSubscription<void>? _animalsSubscription;
+  StreamSubscription<String>? _emailSyncSubscription;
 
   StatsViewModel(this._repository, this.ref) : super({}) {
     ref.listen<AuthState>(
@@ -27,10 +29,12 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
       final shelterID = authState.user?.shelterId;
       if (shelterID != null) {
         fetchAnimals(shelterID: shelterID);
+        _fetchLastEmailSyncTime(shelterID);
       }
     } else {
       state = {};
       _animalsSubscription?.cancel();
+      _emailSyncSubscription?.cancel();
     }
   }
 
@@ -49,7 +53,23 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
       };
 
       ref.read(lastSyncProvider.notifier).state = DateTime.now();
-      ref.read(recentChangesProvider.notifier).state = changes;
+      ref.read(recentChangesProvider.notifier).state =
+          changes.map((change) => _getActivityMessage(change)).toList();
+    });
+  }
+
+  /// Fetches last email sync time separately
+  void _fetchLastEmailSyncTime(String shelterID) {
+    _emailSyncSubscription?.cancel();
+    final emailSyncStream = _repository.fetchLastEmailSync(shelterID);
+
+    _emailSyncSubscription = emailSyncStream.listen((emailSyncTime) {
+      state = {
+        ...state,
+        "lastEmailSyncTime": emailSyncTime,
+      };
+
+      ref.read(lastEmailSyncProvider.notifier).state = emailSyncTime;
     });
   }
 
@@ -107,46 +127,75 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
     };
   }
 
-  List<String> _detectChanges(Map<String, dynamic> oldStats,
-      Map<String, Map<String, Map<String, int>>> newStats) {
-    int addedCount = 0;
-    int removedCount = 0;
-    String? lastAdded;
-    String? lastRemoved;
+  List<Map<String, dynamic>> _detectChanges(
+    Map<String, dynamic> oldStats,
+    Map<String, Map<String, Map<String, int>>> newStats,
+  ) {
+    final changes = <Map<String, dynamic>>[];
+    final now = DateTime.now();
 
     for (var category in newStats.keys) {
       if (category != 'Species') continue;
 
       for (var timeframe in newStats[category]!.keys) {
         for (var key in newStats[category]![timeframe]!.keys) {
-          int oldValue = oldStats[category]?[timeframe]?[key] ?? 0;
-          int newValue = newStats[category]![timeframe]![key]!;
+          final oldValue = oldStats[category]?[timeframe]?[key] ?? 0;
+          final newValue = newStats[category]![timeframe]![key]!;
+          final difference = newValue - oldValue;
 
-          if (newValue > oldValue) {
-            addedCount += (newValue - oldValue);
-            lastAdded = key;
-          } else if (newValue < oldValue) {
-            removedCount += (oldValue - newValue);
-            lastRemoved = key;
+          if (difference > 0) {
+            changes.add({
+              'type': 'added',
+              'species': key,
+              'count': difference,
+              'timeframe': timeframe,
+              'timestamp': now,
+            });
+          } else if (difference < 0) {
+            changes.add({
+              'type': 'removed',
+              'species': key,
+              'count': difference.abs(),
+              'timeframe': timeframe,
+              'timestamp': now,
+            });
           }
         }
       }
     }
+    changes.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
+    return changes.length > 5 ? changes.sublist(0, 5) : changes;
+  }
 
-    if (addedCount == 1 && removedCount == 0) {
-      return ["A new $lastAdded was added to the shelter"];
-    } else if (removedCount == 1 && addedCount == 0) {
-      return ["A $lastRemoved was removed from the shelter"];
-    } else if (addedCount > 1 || removedCount > 1) {
-      return ["API called to sync"];
-    }
+  String _getActivityMessage(Map<String, dynamic> activity) {
+    final count = activity['count'];
+    final species = activity['species'];
+    final timeAgo = _formatTimeAgo(activity['timestamp']);
 
-    return [];
+    return activity['type'] == 'added'
+        ? '$count ${_pluralize(species, count)} added ($timeAgo)'
+        : '$count ${_pluralize(species, count)} removed ($timeAgo)';
+  }
+
+  String _formatTimeAgo(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 1) return 'just now';
+    if (difference.inHours < 1) return '${difference.inMinutes}m ago';
+    if (difference.inDays < 1) return '${difference.inHours}h ago';
+    if (difference.inDays == 1) return 'yesterday';
+    return '${difference.inDays}d ago';
+  }
+
+  String _pluralize(String word, int count) {
+    return count == 1 ? word : '${word}s';
   }
 
   @override
   void dispose() {
     _animalsSubscription?.cancel();
+    _emailSyncSubscription?.cancel();
     super.dispose();
   }
 }
@@ -160,3 +209,5 @@ final statsViewModelProvider =
 final categoryProvider = StateProvider<String?>((ref) => null);
 final lastSyncProvider = StateProvider<DateTime?>((ref) => null);
 final recentChangesProvider = StateProvider<List<String>>((ref) => []);
+final lastEmailSyncProvider =
+    StateProvider<String?>((ref) => "No email sync data available");
