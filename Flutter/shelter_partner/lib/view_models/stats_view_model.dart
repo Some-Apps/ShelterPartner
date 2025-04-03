@@ -4,10 +4,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/repositories/stats_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 
-
-
-// The state now holds a map with two top-level keys: "Species" and "Color".
-class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, int>>>> {
+class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
   final StatsRepository _repository;
   final Ref ref;
 
@@ -42,12 +39,22 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
     final animalsStream = _repository.fetchAnimals(shelterID);
 
     _animalsSubscription = animalsStream.listen((animals) {
-      final result = _groupByTimeframe(animals);
-      state = result; 
+      final newStats = _groupByTimeframe(animals);
+      final changes = _detectChanges(state, newStats);
+
+      state = {
+        ...newStats,
+        "lastApiSyncTime": DateTime.now().toIso8601String(),
+        "recentChanges": changes,
+      };
+
+      ref.read(lastSyncProvider.notifier).state = DateTime.now();
+      ref.read(recentChangesProvider.notifier).state = changes;
     });
   }
 
-  Map<String, Map<String, Map<String, int>>> _groupByTimeframe(List<Animal> animals) {
+  Map<String, Map<String, Map<String, int>>> _groupByTimeframe(
+      List<Animal> animals) {
     final intervals = ['<6 hours', '6-24 hours', '1-2 days', '3+ days'];
 
     // Initialize species and color maps
@@ -69,7 +76,8 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
 
     for (final animal in animals) {
       if (animal.logs.isNotEmpty) {
-        final duration = now.difference(animal.logs.last.startTime.toDate()).inHours;
+        final duration =
+            now.difference(animal.logs.last.startTime.toDate()).inHours;
         String interval;
         if (duration < 6) {
           interval = '<6 hours';
@@ -82,11 +90,13 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
         }
 
         final species = animal.species ?? 'cat';
-        speciesData[interval]?[species] = (speciesData[interval]?[species] ?? 0) + 1;
+        speciesData[interval]?[species] =
+            (speciesData[interval]?[species] ?? 0) + 1;
 
         final colorString = (animal.symbolColor ?? '').toLowerCase();
         if (colorString.isNotEmpty) {
-          colorData[interval]?[colorString] = (colorData[interval]?[colorString] ?? 0) + 1;
+          colorData[interval]?[colorString] =
+              (colorData[interval]?[colorString] ?? 0) + 1;
         }
       }
     }
@@ -97,6 +107,43 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
     };
   }
 
+  List<String> _detectChanges(Map<String, dynamic> oldStats,
+      Map<String, Map<String, Map<String, int>>> newStats) {
+    int addedCount = 0;
+    int removedCount = 0;
+    String? lastAdded;
+    String? lastRemoved;
+
+    for (var category in newStats.keys) {
+      if (category != 'Species') continue;
+
+      for (var timeframe in newStats[category]!.keys) {
+        for (var key in newStats[category]![timeframe]!.keys) {
+          int oldValue = oldStats[category]?[timeframe]?[key] ?? 0;
+          int newValue = newStats[category]![timeframe]![key]!;
+
+          if (newValue > oldValue) {
+            addedCount += (newValue - oldValue);
+            lastAdded = key;
+          } else if (newValue < oldValue) {
+            removedCount += (oldValue - newValue);
+            lastRemoved = key;
+          }
+        }
+      }
+    }
+
+    if (addedCount == 1 && removedCount == 0) {
+      return ["A new $lastAdded was added to the shelter"];
+    } else if (removedCount == 1 && addedCount == 0) {
+      return ["A $lastRemoved was removed from the shelter"];
+    } else if (addedCount > 1 || removedCount > 1) {
+      return ["API called to sync"];
+    }
+
+    return [];
+  }
+
   @override
   void dispose() {
     _animalsSubscription?.cancel();
@@ -105,9 +152,11 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
 }
 
 final statsViewModelProvider =
-    StateNotifierProvider<StatsViewModel, Map<String, Map<String, Map<String,int>>>>((ref) {
+    StateNotifierProvider<StatsViewModel, Map<String, dynamic>>((ref) {
   final repository = ref.watch(statsRepositoryProvider);
   return StatsViewModel(repository, ref);
 });
 
 final categoryProvider = StateProvider<String?>((ref) => null);
+final lastSyncProvider = StateProvider<DateTime?>((ref) => null);
+final recentChangesProvider = StateProvider<List<String>>((ref) => []);

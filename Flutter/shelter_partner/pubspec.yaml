@@ -41,6 +41,7 @@ dependencies:
   auto_size_text: ^3.0.0
   icon_decoration: ^2.1.0
   fl_chart: ^0.69.2
+  rxdart: ^0.28.0
 
 
 

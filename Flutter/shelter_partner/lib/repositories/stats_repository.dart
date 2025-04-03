@@ -21,6 +21,18 @@ class StatsRepository {
       return allAnimals;
     });
   }
+
+  /// Fetches the last sync time and the changes made during the last sync
+  Stream<Map<String, dynamic>> fetchLastSyncData(String shelterID) {
+    return _firestore
+        .collection('shelters')
+        .doc(shelterID)
+        .snapshots()
+        .map((snapshot) {
+      if (!snapshot.exists) return {};
+      return snapshot.data() ?? {};
+    });
+  }
 }
 
 final statsRepositoryProvider = Provider<StatsRepository>((ref) {

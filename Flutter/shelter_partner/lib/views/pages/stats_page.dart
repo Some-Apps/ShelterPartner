@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:shelter_partner/view_models/stats_view_model.dart';
+
 // A helper to parse color strings
 Color _parseColor(String colorString) {
   switch (colorString.toLowerCase()) {
@@ -47,6 +48,8 @@ class StatsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allStats = ref.watch(statsViewModelProvider);
     final selectedCategory = ref.watch(categoryProvider);
+    final lastSync = ref.watch(lastSyncProvider);
+    final recentChanges = ref.watch(recentChangesProvider);
 
     if (allStats.isEmpty) {
       return Scaffold(
@@ -65,23 +68,20 @@ class StatsPage extends ConsumerWidget {
         body: const Center(
           child: Padding(
             padding: EdgeInsets.all(16.0),
-            child: Text('View stats on a larger screen or rotate your phone to landscape'),
+            child: Text(
+                'View stats on a larger screen or rotate your phone to landscape'),
           ),
         ),
       );
     }
 
-    // Determine which data set to use based on selectedCategory
-    // If selectedCategory is null, we show aggregated (sum of species by default)
     final categoryKey = selectedCategory == 'Species'
         ? 'Species'
         : selectedCategory == 'Color'
             ? 'Color'
-            : 'Species'; // default to species if none selected
+            : 'Species';
 
     final stats = allStats[categoryKey]!;
-
-    // Extract all keys from stats to build a legend (species or colors)
     final allKeys = _extractAllKeys(stats);
 
     return Scaffold(
@@ -90,104 +90,161 @@ class StatsPage extends ConsumerWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: GridView(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            childAspectRatio: 2 / 1,
-            crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 2 : 1,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card.outlined(
-              color: Colors.black.withOpacity(0.025),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Time Since Animals Were Let Out',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Last Sync: $lastSync',
+                style:
+                    const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+              ),
+            ),
+            if (recentChanges.isNotEmpty)
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                color: Colors.blueGrey.withOpacity(0.1),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Recent Changes',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 5),
+                      AnimatedOpacity(
+                        opacity: 1.0,
+                        duration: const Duration(milliseconds: 500),
+                        child: Column(
+                          children: recentChanges.map((change) {
+                            return ListTile(
+                              leading:
+                                  const Icon(Icons.update, color: Colors.blue),
+                              title: Text(
+                                change,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            );
+                          }).toList(),
                         ),
-                        const Spacer(),
-                        const Text('Group By: ', overflow: TextOverflow.ellipsis),
-                        DropdownButton<String?>(
-                          value: selectedCategory,
-                          hint: const Text('Select'),
-                          items: [null, 'Species', 'Color']
-                              .map((category) => DropdownMenuItem(
-                                    value: category,
-                                    child: Text(category ?? 'None'),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            ref.read(categoryProvider.notifier).state = value;
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 50),
-                    Expanded(
-                      child: BarChart(
-                        BarChartData(
-                          barGroups: _generateBarGroups(stats, selectedCategory),
-                          titlesData: FlTitlesData(
-                            leftTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 30,
-                                getTitlesWidget: (double value, TitleMeta meta) {
-                                  return SideTitleWidget(
-                                    axisSide: meta.axisSide,
-                                    child: Text(_mapXToInterval(value.toInt())),
-                                  );
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(
+              child: GridView(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  childAspectRatio: 2 / 1,
+                  crossAxisCount:
+                      MediaQuery.of(context).size.width > 1200 ? 2 : 1,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                ),
+                children: [
+                  Card.outlined(
+                    color: Colors.black.withOpacity(0.025),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Time Since Animals Were Let Out',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              const Spacer(),
+                              const Text('Group By: ',
+                                  overflow: TextOverflow.ellipsis),
+                              DropdownButton<String?>(
+                                value: selectedCategory,
+                                hint: const Text('Select'),
+                                items: [null, 'Species', 'Color']
+                                    .map((category) => DropdownMenuItem(
+                                          value: category,
+                                          child: Text(category ?? 'None'),
+                                        ))
+                                    .toList(),
+                                onChanged: (value) {
+                                  ref.read(categoryProvider.notifier).state =
+                                      value;
                                 },
                               ),
-                            ),
-                            topTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
+                            ],
+                          ),
+                          const SizedBox(height: 50),
+                          Expanded(
+                            child: BarChart(
+                              BarChartData(
+                                barGroups:
+                                    _generateBarGroups(stats, selectedCategory),
+                                titlesData: FlTitlesData(
+                                  leftTitles: const AxisTitles(
+                                    sideTitles: SideTitles(showTitles: false),
+                                  ),
+                                  bottomTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      reservedSize: 30,
+                                      getTitlesWidget:
+                                          (double value, TitleMeta meta) {
+                                        return SideTitleWidget(
+                                          axisSide: meta.axisSide,
+                                          child: Text(
+                                              _mapXToInterval(value.toInt())),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  topTitles: const AxisTitles(
+                                    sideTitles: SideTitles(showTitles: false),
+                                  ),
+                                ),
+                                borderData: FlBorderData(show: false),
+                                gridData: const FlGridData(show: false),
+                              ),
                             ),
                           ),
-                          borderData: FlBorderData(show: false),
-                          gridData: const FlGridData(show: false),
+                          const SizedBox(height: 8),
+                          if (selectedCategory == 'Species' ||
+                              selectedCategory == 'Color')
+                            _buildLegend(allKeys, selectedCategory),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Card.outlined(
+                    color: Colors.black.withOpacity(0.025),
+                    child: const Center(
+                      child: Text(
+                        'Other Stats',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    if (selectedCategory == 'Species' || selectedCategory == 'Color')
-                      _buildLegend(allKeys, selectedCategory),
-                  ],
-                ),
-              ),
-            ),
-            Card.outlined(
-              color: Colors.black.withOpacity(0.025),
-              child: const Center(
-                child: Text(
-                  'Other Stats',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
                   ),
-                ),
-              ),
-            ),
-            Card.outlined(
-              color: Colors.black.withOpacity(0.025),
-              child: const Center(
-                child: Text(
-                  'Even More Stats',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  Card.outlined(
+                    color: Colors.black.withOpacity(0.025),
+                    child: const Center(
+                      child: Text(
+                        'Even More Stats',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ],
@@ -262,8 +319,7 @@ class StatsPage extends ConsumerWidget {
         barRods = categoryCounts.entries.map((entry) {
           final name = entry.key;
           final value = entry.value.toDouble();
-          final color =
-              speciesColorMap.putIfAbsent(name, () => Colors.blue);
+          final color = speciesColorMap.putIfAbsent(name, () => Colors.blue);
           return BarChartRodData(
             toY: value,
             width: 20,
