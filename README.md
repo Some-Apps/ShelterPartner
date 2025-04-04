@@ -10,7 +10,16 @@
 
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
-## Bounties To Be Paid On April 1st
+## Bounties To Be Paid On May 1st
+
+<details>
+  <summary>Shivam Kumar: $25</summary>
+  
+  - Issue #410: Add new stat to Stats Page ($25)
+    
+</details>
+
+## Bounties Paid On April 1st
 
 <details>
   <summary>Sehaj Bansal: $20</summary>
