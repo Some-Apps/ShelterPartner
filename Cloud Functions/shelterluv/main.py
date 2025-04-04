@@ -81,6 +81,14 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
             batch = db.batch()  # Start a new batch
             operations_count = 0
 
+    added_animals = []
+    updated_animals = []
+    removed_animals = []
+
+    # Fetch existing Firestore animals
+    firestore_animals = fetch_firestore_animals(cats_ref, dogs_ref, other_ref)
+    firestore_animals_set = set(firestore_animals)
+
     for animal in animals:
         if not animal['id']:
             continue
@@ -101,30 +109,43 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
                 'name', 'location', 'fullLocation', 'description',
                 'sex', 'monthsOld', 'breed'
             ] if key in animal}
+
             # Conditionally update 'photos' if specific criteria are met
             if 'photos' not in existing_data or len(existing_data['photos']) < 1:
                 update_data['photos'] = animal.get('photos', [])
-            batch.update(animal_doc_ref, update_data)
+
+            if existing_data != update_data:  # Only update if there's a change
+                batch.update(animal_doc_ref, update_data)
+                updated_animals.append(animal['id'])
         else:
             batch.set(animal_doc_ref, animal)  # Set the document if it does not exist
+            added_animals.append(animal['id'])
 
         operations_count += 1
         if operations_count >= max_batch_size:
             commit_batch()
 
-    commit_batch()  # Commit any remaining operations
-
-    # Now handle deletions with batch operations as well
-    firestore_animals = fetch_firestore_animals(cats_ref, dogs_ref, other_ref)
-    animals_to_delete = set(firestore_animals) - {animal['id'] for animal in animals if animal['id']}
-
+    commit_batch
+    # Delete removed animals
+    animals_to_delete = firestore_animals_set - {animal['id'] for animal in animals if animal['id']}
     for animal_id in animals_to_delete:
         delete_animal_if_exists(animal_id, cats_ref, dogs_ref, other_ref, shelterId)
+        removed_animals.append(animal_id)
         operations_count += 1
         if operations_count >= max_batch_size:
             commit_batch()
 
-    commit_batch()  # Final commit if there are any operations left
+    commit_batch()
+
+    # Store the last sync changes
+    shelter_doc_ref.update({
+        "lastSync": firestore.SERVER_TIMESTAMP,
+        "lastSyncChanges": {
+            "added": added_animals,
+            "updated": updated_animals,
+            "removed": removed_animals
+        }
+    })
 
 def delete_animal_if_exists(animal_id, cats_ref, dogs_ref, other_ref, shelterId):
     cat_doc_ref = cats_ref.document(animal_id)

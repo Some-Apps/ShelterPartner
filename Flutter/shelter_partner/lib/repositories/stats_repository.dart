@@ -21,6 +21,38 @@ class StatsRepository {
       return allAnimals;
     });
   }
+
+  /// Fetches the last API sync time and related data
+  Stream<Map<String, dynamic>> fetchLastSyncData(String shelterID) {
+    return _firestore
+        .collection('shelters')
+        .doc(shelterID)
+        .snapshots()
+        .map((snapshot) {
+      if (!snapshot.exists) return {};
+      return snapshot.data() ?? {};
+    });
+  }
+
+  /// Fetches only the last email sync timestamp
+  Stream<String> fetchLastEmailSync(String shelterID) {
+    return _firestore
+        .collection('shelters')
+        .doc(shelterID)
+        .snapshots()
+        .map((snapshot) {
+      if (!snapshot.exists) return "No email sync data available";
+
+      final data = snapshot.data();
+      Timestamp? lastEmailSyncTimestamp = data?['lastEmailSync'];
+
+      if (lastEmailSyncTimestamp != null) {
+        return lastEmailSyncTimestamp.toDate().toLocal().toString();
+      } else {
+        return "No email sync data available";
+      }
+    });
+  }
 }
 
 final statsRepositoryProvider = Provider<StatsRepository>((ref) {

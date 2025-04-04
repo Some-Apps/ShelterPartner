@@ -1,17 +1,16 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/repositories/stats_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 
-
-
-// The state now holds a map with two top-level keys: "Species" and "Color".
-class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, int>>>> {
+class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
   final StatsRepository _repository;
   final Ref ref;
 
   StreamSubscription<void>? _animalsSubscription;
+  StreamSubscription<String>? _emailSyncSubscription;
 
   StatsViewModel(this._repository, this.ref) : super({}) {
     ref.listen<AuthState>(
@@ -30,10 +29,12 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
       final shelterID = authState.user?.shelterId;
       if (shelterID != null) {
         fetchAnimals(shelterID: shelterID);
+        _fetchLastEmailSyncTime(shelterID);
       }
     } else {
       state = {};
       _animalsSubscription?.cancel();
+      _emailSyncSubscription?.cancel();
     }
   }
 
@@ -42,12 +43,38 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
     final animalsStream = _repository.fetchAnimals(shelterID);
 
     _animalsSubscription = animalsStream.listen((animals) {
-      final result = _groupByTimeframe(animals);
-      state = result; 
+      final newStats = _groupByTimeframe(animals);
+      final changes = _detectChanges(state, newStats);
+
+      state = {
+        ...newStats,
+        "lastApiSyncTime": DateTime.now().toIso8601String(),
+        "recentChanges": changes,
+      };
+
+      ref.read(lastSyncProvider.notifier).state = DateTime.now();
+      ref.read(recentChangesProvider.notifier).state =
+          changes.map((change) => _getActivityMessage(change)).toList();
     });
   }
 
-  Map<String, Map<String, Map<String, int>>> _groupByTimeframe(List<Animal> animals) {
+  /// Fetches last email sync time separately
+  void _fetchLastEmailSyncTime(String shelterID) {
+    _emailSyncSubscription?.cancel();
+    final emailSyncStream = _repository.fetchLastEmailSync(shelterID);
+
+    _emailSyncSubscription = emailSyncStream.listen((emailSyncTime) {
+      state = {
+        ...state,
+        "lastEmailSyncTime": emailSyncTime,
+      };
+
+      ref.read(lastEmailSyncProvider.notifier).state = emailSyncTime;
+    });
+  }
+
+  Map<String, Map<String, Map<String, int>>> _groupByTimeframe(
+      List<Animal> animals) {
     final intervals = ['<6 hours', '6-24 hours', '1-2 days', '3+ days'];
 
     // Initialize species and color maps
@@ -69,7 +96,8 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
 
     for (final animal in animals) {
       if (animal.logs.isNotEmpty) {
-        final duration = now.difference(animal.logs.last.startTime.toDate()).inHours;
+        final duration =
+            now.difference(animal.logs.last.startTime.toDate()).inHours;
         String interval;
         if (duration < 6) {
           interval = '<6 hours';
@@ -82,11 +110,13 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
         }
 
         final species = animal.species ?? 'cat';
-        speciesData[interval]?[species] = (speciesData[interval]?[species] ?? 0) + 1;
+        speciesData[interval]?[species] =
+            (speciesData[interval]?[species] ?? 0) + 1;
 
         final colorString = (animal.symbolColor ?? '').toLowerCase();
         if (colorString.isNotEmpty) {
-          colorData[interval]?[colorString] = (colorData[interval]?[colorString] ?? 0) + 1;
+          colorData[interval]?[colorString] =
+              (colorData[interval]?[colorString] ?? 0) + 1;
         }
       }
     }
@@ -97,17 +127,87 @@ class StatsViewModel extends StateNotifier<Map<String, Map<String, Map<String, i
     };
   }
 
+  List<Map<String, dynamic>> _detectChanges(
+    Map<String, dynamic> oldStats,
+    Map<String, Map<String, Map<String, int>>> newStats,
+  ) {
+    final changes = <Map<String, dynamic>>[];
+    final now = DateTime.now();
+
+    for (var category in newStats.keys) {
+      if (category != 'Species') continue;
+
+      for (var timeframe in newStats[category]!.keys) {
+        for (var key in newStats[category]![timeframe]!.keys) {
+          final oldValue = oldStats[category]?[timeframe]?[key] ?? 0;
+          final newValue = newStats[category]![timeframe]![key]!;
+          final difference = newValue - oldValue;
+
+          if (difference > 0) {
+            changes.add({
+              'type': 'added',
+              'species': key,
+              'count': difference,
+              'timeframe': timeframe,
+              'timestamp': now,
+            });
+          } else if (difference < 0) {
+            changes.add({
+              'type': 'removed',
+              'species': key,
+              'count': difference.abs(),
+              'timeframe': timeframe,
+              'timestamp': now,
+            });
+          }
+        }
+      }
+    }
+    changes.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
+    return changes.length > 5 ? changes.sublist(0, 5) : changes;
+  }
+
+  String _getActivityMessage(Map<String, dynamic> activity) {
+    final count = activity['count'];
+    final species = activity['species'];
+    final timeAgo = _formatTimeAgo(activity['timestamp']);
+
+    return activity['type'] == 'added'
+        ? '$count ${_pluralize(species, count)} added ($timeAgo)'
+        : '$count ${_pluralize(species, count)} removed ($timeAgo)';
+  }
+
+  String _formatTimeAgo(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 1) return 'just now';
+    if (difference.inHours < 1) return '${difference.inMinutes}m ago';
+    if (difference.inDays < 1) return '${difference.inHours}h ago';
+    if (difference.inDays == 1) return 'yesterday';
+    return '${difference.inDays}d ago';
+  }
+
+  String _pluralize(String word, int count) {
+    return count == 1 ? word : '${word}s';
+  }
+
   @override
   void dispose() {
     _animalsSubscription?.cancel();
+    _emailSyncSubscription?.cancel();
     super.dispose();
   }
 }
 
 final statsViewModelProvider =
-    StateNotifierProvider<StatsViewModel, Map<String, Map<String, Map<String,int>>>>((ref) {
+    StateNotifierProvider<StatsViewModel, Map<String, dynamic>>((ref) {
   final repository = ref.watch(statsRepositoryProvider);
   return StatsViewModel(repository, ref);
 });
 
 final categoryProvider = StateProvider<String?>((ref) => null);
+final lastSyncProvider = StateProvider<DateTime?>((ref) => null);
+final recentChangesProvider = StateProvider<List<String>>((ref) => []);
+final lastEmailSyncProvider =
+    StateProvider<String?>((ref) => "No email sync data available");
