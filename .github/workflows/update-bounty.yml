@@ -59,7 +59,7 @@ jobs:
                 }
 
                 // Calculate new bounty
-                const created = new Date(2025-03-20);
+                const created = new Date(issue.created_at);
                 const now = new Date();
                 const weeksOld = Math.floor((now - created) / weekInMs);
                 const targetBounty = Math.min(10 + (weeksOld * increment), maxBounty);
