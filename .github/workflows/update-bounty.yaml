@@ -24,7 +24,6 @@ jobs:
               const maxBounty = 100;
               const increment = 10;
               const weekInMs = 7 * 24 * 60 * 60 * 1000;
-
               // Get all open issues with bounty label
               const issues = await github.paginate(github.rest.issues.listForRepo, {
                 owner: context.repo.owner,
@@ -32,58 +31,50 @@ jobs:
                 labels: 'bounty',
                 state: 'open'
               });
-
-              console.log(Found ${issues.length} bounty issues);
-
+              console.log(`Found ${issues.length} bounty issues`);
               for (const issue of issues) {
-                console.log(\nProcessing issue #${issue.number}: ${issue.title});
+                console.log(`\nProcessing issue #${issue.number}: ${issue.title}`);
                 
+                // Skip if assigned
                 if (issue.assignee) {
-                  console.log(- Skipping: Already assigned to ${issue.assignee.login});
+                  console.log(`- Skipping: Already assigned to ${issue.assignee.login}`);
                   continue;
                 }
-
+                //  bounty detection
                 const bountyText = issue.body.match(/Bounty:\s*\$\d+/i)?.[0];
                 if (!bountyText) {
                   console.log('- Skipping: No bounty found in body');
                   continue;
                 }
-
                 const currentBounty = parseInt(bountyText.match(/\d+/)[0]);
-                console.log(- Current bounty: $${currentBounty});
-
+                console.log(`- Current bounty: $${currentBounty}`);
                 if (currentBounty >= maxBounty) {
-                  console.log(- Skipping: Already at max bounty ($${maxBounty}));
+                  console.log(`- Skipping: Already at max bounty ($${maxBounty})`);
                   continue;
                 }
-
                 // Calculate new bounty
                 const created = new Date(issue.created_at);
                 const now = new Date();
                 const weeksOld = Math.floor((now - created) / weekInMs);
                 const targetBounty = Math.min(10 + (weeksOld * increment), maxBounty);
-
-                console.log(- Created: ${created.toISOString()});
-                console.log(- Weeks old: ${weeksOld});
-                console.log(- Target bounty: $${targetBounty});
-
+                console.log(`- Created: ${created.toISOString()}`);
+                console.log(`- Weeks old: ${weeksOld}`);
+                console.log(`- Target bounty: $${targetBounty}`);
                 if (targetBounty > currentBounty) {
-                  
+                  // sss
                   const newBody = issue.body.replace(
                     new RegExp(/Bounty:\s*\$\d+/i),
-                    Bounty: $${targetBounty}
+                    `Bounty: $${targetBounty}`
                   );
-
                   await github.rest.issues.update({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: issue.number,
                     body: newBody
                   });
-
-                  console.log(✅ Updated to $${targetBounty});
+                  console.log(`✅ Updated to $${targetBounty}`);
                 } else {
-                  console.log(- No update needed (current >= target));
+                  console.log(`- No update needed (current >= target)`);
                 }
               }
             } catch (error) {
