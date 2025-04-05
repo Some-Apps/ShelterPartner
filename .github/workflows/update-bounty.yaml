@@ -1,7 +1,7 @@
 name: Update Bounty
 
 on:
-  push: #any push
+  push: # any push
   schedule:
     - cron: '0 0 * * *'  # Daily at midnight UTC
   workflow_dispatch:
@@ -23,22 +23,24 @@ jobs:
             const { owner, repo } = context.repo;
             const BOUNTY_STEPS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
             const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-
+            
+            // Fetch all open issues in the repository
             const issues = await github.paginate(
               github.rest.issues.listForRepo,
               { 
                 owner, 
                 repo, 
-                state: 'open',
-                labels: ['bounty'] // Only issues with base 'bounty' label
+                state: 'open'
               }
             );
-
-            console.log(`Found ${issues.length} issues with 'Bounty' label`);
-
             
+            // Filter issues that have a bounty label (starting with "Bounty: $")
+            const bountyIssues = issues.filter(issue =>
+              issue.labels.some(label => label.name.startsWith('Bounty: $'))
+            );
+            console.log(`Found ${bountyIssues.length} issues with a bounty label`);
             
-            for (const issue of issues) {
+            for (const issue of bountyIssues) {
               console.log(`\nProcessing #${issue.number}: ${issue.title}`);
               
               // Skip assigned issues
@@ -46,74 +48,66 @@ jobs:
                 console.log("- Skipping: Already assigned");
                 continue;
               }
-
+              
               // Find current bounty value label
-              const bountyLabel = issue.labels.find(l => 
-                l.name.startsWith('Bounty: $')
-              );
-
+              const bountyLabel = issue.labels.find(l => l.name.startsWith('Bounty: $'));
               if (!bountyLabel) {
                 console.log("- Skipping: No bounty value label found");
                 continue;
               }
-
+              
               // Extract current amount
               const currentAmount = parseInt(bountyLabel.name.split('$')[1]);
               console.log(`- Current bounty: $${currentAmount}`);
-
-              // Check if already at max
+              
+              // Check if already at max bounty
               if (currentAmount >= BOUNTY_STEPS[BOUNTY_STEPS.length - 1]) {
                 console.log("- Skipping: Already at max bounty");
                 continue;
               }
-
+              
               // Get when this label was added
               console.log("- Checking label timeline...");
               const timeline = await github.paginate(
                 github.rest.issues.listEventsForTimeline,
                 { owner, repo, issue_number: issue.number }
               );
-
               const labelEvents = timeline.filter(e => 
-                e.event === 'labeled' && 
-                e.label?.name === bountyLabel.name
+                e.event === 'labeled' && e.label?.name === bountyLabel.name
               );
-
               const lastApplied = labelEvents[labelEvents.length - 1]?.created_at;
-              const labelAge =new Date() - new Date(lastApplied);
+              const labelAge = new Date() - new Date(lastApplied);
               
-              console.log(`- Label was last added ${Math.floor(labelAge/86400000)} days ago`);
-
-              // Only update after 7 days
+              console.log(`- Label was last added ${Math.floor(labelAge / 86400000)} days ago`);
+              // Only update after 7 days have passed
               if (labelAge < WEEK_MS) {
                 console.log("- Skipping: Not enough time passed");
                 continue;
               }
-
+              
               // Calculate new bounty
               const newAmount = BOUNTY_STEPS[BOUNTY_STEPS.findIndex(v => v === currentAmount) + 1];
               const newLabel = `Bounty: $${newAmount}`;
-
+              
               // Verify new label exists
               if (!allLabels.data.some(l => l.name === newLabel)) {
                 console.log(`- Error: Label '${newLabel}' doesn't exist`);
                 continue;
               }
-
-              // Update labels - remove old, add new
+              
+              // Update labels - remove old bounty label and add new one
               console.log(`- Updating to ${newLabel}`);
               const updatedLabels = issue.labels
                 .filter(l => !l.name.startsWith('Bounty: $'))
                 .map(l => l.name)
                 .concat(newLabel);
-
               await github.rest.issues.update({
                 owner,
                 repo,
                 issue_number: issue.number,
                 labels: updatedLabels
               });
-
+              
               // Add audit comment
               await github.rest.issues.createComment({
                 owner,
@@ -121,6 +115,5 @@ jobs:
                 issue_number: issue.number,
                 body: `⬆️ Bounty increased from $${currentAmount} to $${newAmount} (label-only update)`
               });
-
               console.log("✓ Update complete");
             }
