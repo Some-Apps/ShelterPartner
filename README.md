@@ -20,6 +20,11 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
     
 </details>
 
+<details>
+  <summary>Ani: $25</summary>
+  - Issue #427: Create a github action to automatically manage bounties ($25)
+</details>
+
 ## Bounties Paid On April 1st
 
 <details>
