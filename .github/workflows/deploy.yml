@@ -24,7 +24,7 @@ jobs:
       with:
         repository: Some-Apps/ShelterPartner_ReleaseVersion
         ref: main
-       
+        token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
         path: private-repo
 
     - name: Sync changes to Public Directory in Deployment Repository
@@ -33,7 +33,7 @@ jobs:
           --exclude='.git' \
           --exclude='.github' \
           --exclude='private-repo' \
-          --exclude='config/production.json' \  # Example: exclude production config
+          --exclude='config/production.json' \  # Exclude production config
           --exclude='*.env' \                   # Exclude all .env files
           --exclude='credentials*.json' \        # Exclude credential files
           --exclude='secrets/*' \                # Exclude entire secrets directory
