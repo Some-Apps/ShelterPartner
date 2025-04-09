@@ -24,7 +24,7 @@ jobs:
       with:
         repository: Some-Apps/ShelterPartner_ReleaseVersion
         ref: main
-        token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
+       
         path: private-repo
 
     - name: Sync changes to Public Directory in Deployment Repository
