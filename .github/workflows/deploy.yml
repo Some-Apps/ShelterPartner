@@ -22,7 +22,7 @@ jobs:
     - name: Checkout Deployment Repository
       uses: actions/checkout@v2
       with:
-        repository: Some-Apps/ShelterPartner_ReleaseVersion
+        repository: ShelterPartner/ShelterPartner_ReleaseVersion
         ref: main
         token: ${{ secrets.DEPLOYMENT_REPO_PAT }}
         path: private-repo
