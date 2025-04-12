@@ -27,8 +27,11 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 </details>
 
 <details>
-  <summary>Ani: $25</summary>
+  <summary>Ani: $35</summary>
+   
   - Issue #427: Create a github action to automatically manage bounties ($25)
+  - Issue #418: Automate development to production workflow ($10)
+
 </details>
 
 ## Bounties Paid On April 1st
@@ -37,7 +40,6 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
   <summary>Sehaj Bansal: $20</summary>
   
   - Issue #407: Ages are showing in months instead of years ($10)
-    
   - Issue #409: Version number should automatically update in the settings tab ($10)
 
 </details>
