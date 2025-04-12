@@ -33,10 +33,10 @@ jobs:
           --exclude='.git' \
           --exclude='.github' \
           --exclude='private-repo' \
-          --exclude='config/production.json' \  # Exclude production config
-          --exclude='*.env' \                   # Exclude all .env files
-          --exclude='credentials*.json' \        # Exclude credential files
-          --exclude='secrets/*' \                # Exclude entire secrets directory
+          --exclude='config/production.json' \
+          --exclude='*.env' \
+          --exclude='credentials*.json' \
+          --exclude='secrets/*' \
           ./ private-repo/Public/
         cd private-repo
         git config --global user.email "jonesjar222@gmail.com"
