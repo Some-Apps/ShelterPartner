@@ -12,7 +12,7 @@ jobs:
     - name: Checkout Public Repository
       uses: actions/checkout@v2
       with:
-        repository: Some-Apps/ShelterPartner
+        repository: ShelterPartner/ShelterPartner
         ref: main
 
     - name: Create Public Directory in Deployment Repo
