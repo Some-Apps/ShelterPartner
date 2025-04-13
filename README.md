@@ -12,6 +12,7 @@
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
 ### Other Repositories You Can Contribute To
+- [Been There](https://github.com/Some-Apps/BeenThere)
 - [Incremental](https://github.com/Some-Apps/Incremental)
 - [Tipsy Tongue](https://github.come/Some-Apps/TipsyTongue)
 
