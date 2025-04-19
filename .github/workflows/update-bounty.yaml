@@ -119,7 +119,7 @@ jobs:
                 owner,
                 repo,
                 issue_number: issue.number,
-                body: `⬆️ Bounty increased from $${currentAmount} to $${newAmount} (label-only update)`
+                body: `⬆️ Bounty increased from $${currentAmount} to $${newAmount}`
               });
               console.log("✓ Update complete");
             }
