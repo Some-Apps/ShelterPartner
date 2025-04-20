@@ -282,7 +282,7 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
         doc_snapshot = animal_doc_ref.get()
         
         # Get deleted phots for this animal
-        deleted_photos_ref = animal_doc_ref = animal_doc_ref.collection('deleted_photos')
+        deleted_photos_ref = animal_doc_ref.collection('deleted_photos')
         deleted_photos = [doc.to_dict()['url'] for doc in deleted_photos_ref.stream()]
 
         if doc_snapshot.exists:
