@@ -7,6 +7,7 @@ class Photo {
   final Timestamp timestamp;
   final String author;
   final String authorID;
+  final String source;
 
   Photo({
     required this.id,
@@ -14,6 +15,7 @@ class Photo {
     required this.timestamp,
     required this.author,
     required this.authorID,
+    this.source = 'manual', // Default to manual for backward compatibility
   });
 
   factory Photo.fromMap(Map<String, dynamic> data) {
@@ -23,6 +25,7 @@ class Photo {
       timestamp: data['timestamp'] ?? Timestamp.now(),
       author: data['author'] ?? "Unknown",
       authorID: data['authorID'] ?? "Unknown",
+      source: data['source'] ?? 'manual', // Handle missing source field
     );
   }
 
@@ -33,6 +36,7 @@ class Photo {
       'timestamp': timestamp,
       'author': author,
       'authorID': authorID,
+      'source': source,
     };
   }
 
@@ -42,6 +46,7 @@ class Photo {
     Timestamp? timestamp,
     String? author,
     String? authorID,
+    String? source,
   }) {
     return Photo(
       id: id ?? this.id,
@@ -49,6 +54,7 @@ class Photo {
       timestamp: timestamp ?? this.timestamp,
       author: author ?? this.author,
       authorID: authorID ?? this.authorID,
+      source: source ?? this.source,
     );
   }
 }

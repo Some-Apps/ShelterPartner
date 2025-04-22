@@ -195,7 +195,8 @@ def parse_animal(animal_data):
         photos.append({
             'id': photo_id,
             'url': photo_url,
-            'timestamp': timestamp
+            'timestamp': timestamp,
+            'source': 'asm'
         })
 
     # Intake date
@@ -279,6 +280,10 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
             collection_ref = other_ref
         animal_doc_ref = collection_ref.document(animal['id'])
         doc_snapshot = animal_doc_ref.get()
+        
+        # Get deleted phots for this animal
+        deleted_photos_ref = animal_doc_ref.collection('deleted_photos')
+        deleted_photos = [doc.to_dict()['url'] for doc in deleted_photos_ref.stream()]
 
         if doc_snapshot.exists:
             # Fetching the existing data to compare if update is necessary
@@ -287,12 +292,26 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
                 'name', 'location', 'fullLocation', 'description',
                 'sex', 'monthsOld', 'breed'
             ] if key in animal}
-            # Conditionally update 'photos' if specific criteria are met
-            if 'photos' not in existing_data or len(existing_data['photos']) < 1:
-                update_data['photos'] = animal.get('photos', [])
+            
+            # Filter out deleted photos from the update 
+            if 'photos' in animal:
+                # Kepp manually added photos from exisiting data
+                existing_photos = existing_data.get('photos' , [])
+                manually_added_photos = [p for p in existing_photos if p.get('source') == 'manual']
+                
+                # Filter out dellted photos form new photos
+                new_photos = [p for p in animal['photos'] if p['url'] not in deleted_photos] 
+                
+                # Combine manually added phots with non deleted photos
+                update_data['photos'] = manually_added_photos + new_photos
+                
             batch.update(animal_doc_ref, update_data)
             print(f"Updated animal with ID {animal['id']}")
         else:
+            # For new animals, filter out any photos that were previously deleted
+            if 'photos' in animal:
+                animal['photos'] = [p for p in animal['photos'] if p['url'] not in deleted_photos] 
+                
             batch.set(animal_doc_ref, animal)  # Set the document if it does not exist
             print(f"Added new animal with ID {animal['id']}")
 

@@ -101,6 +101,10 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
             collection_ref = other_ref
         animal_doc_ref = collection_ref.document(animal['id'])
         doc_snapshot = animal_doc_ref.get()
+        
+        # Get deleted photos for this animal
+        deleted_photos_ref = animal_doc_ref.collection('deleted_photos')
+        deleted_photos = [doc.to_dict()['url'] for doc in deleted_photos_ref.stream()]
 
         if doc_snapshot.exists:
             # Fetching the existing data to compare if update is necessary
@@ -113,11 +117,27 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
             # Conditionally update 'photos' if specific criteria are met
             if 'photos' not in existing_data or len(existing_data['photos']) < 1:
                 update_data['photos'] = animal.get('photos', [])
+            
+            # Filter out deleted photos from the update 
+            if 'photos' in animal:
+                # Keep manually added photos from existing data
+                existing_photos = existing_data.get('photos', [])
+                manually_added_photos = [p for p in existing_photos if p.get('source') == 'manual']
+                
+                # Filter out deleted photos from new photos 
+                new_photos = [p for p in animal['photos'] if p['url'] not in deleted_photos]
+                
+                # Combine manually added photos with non deleted photos
+                update_data['photos'] = manually_added_photos + new_photos
 
             if existing_data != update_data:  # Only update if there's a change
                 batch.update(animal_doc_ref, update_data)
                 updated_animals.append(animal['id'])
         else:
+            # For new animals, filter out any photos that were previously deleted
+            if 'photos' in animal:
+                animal['photos'] = [p for p in animal['photos'] if p['url'] not in deleted_photos]
+                
             batch.set(animal_doc_ref, animal)  # Set the document if it does not exist
             added_animals.append(animal['id'])
 
