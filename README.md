@@ -32,8 +32,9 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 </details>
 
 <details>
-  <summary>Ani: $35</summary>
+  <summary>Ani: $85</summary>
    
+  - Issue #425: ShelterLuv photos should sync every time it's updated ($50)
   - Issue #427: Create a github action to automatically manage bounties ($25)
   - Issue #418: Automate development to production workflow ($10)
 
