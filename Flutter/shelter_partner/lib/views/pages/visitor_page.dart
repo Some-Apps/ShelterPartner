@@ -11,15 +11,10 @@ import 'package:shelter_partner/helper/fullscreen_stub.dart'
     if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart'
     if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
 
-/// A helper function that returns a formatted URL.
-/// If the URL contains 'amazonaws.com' or 'storage.googleapis.com',
-/// it is wrapped with your CORS proxy.
+/// A helper function that returns a formatted URL using a CORS proxy.
 String formatImageUrl(String? url) {
   if (url == null || url.isEmpty) return '';
-  if (url.contains('amazonaws.com')) {
-    return 'https://us-central1-production-10b3e.cloudfunctions.net/cors-images?url=$url';
-  }
-  return url;
+  return 'https://cors-images-222422545919.us-central1.run.app?url=$url';
 }
 
 class VisitorPage extends ConsumerStatefulWidget {
