@@ -524,11 +524,7 @@ class PhotoItem extends StatelessWidget {
     final fallbackUrl =
         'https://cors-images-222422545919.us-central1.run.app?url=${originalPhoto.url}'; // Replace with your actual fallback URL
     // final photo1 = originalPhoto.url.contains('amazonaws.com') ? fallbackUrl : originalPhoto.url;
-    final scaledUrl = (originalPhoto.url.contains('amazonaws.com'))
-    // ||
-    //         originalPhoto.url.contains('storage.googleapis.com'))
-        ? fallbackUrl
-        : originalPhoto.url;
+    final scaledUrl = fallbackUrl;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
