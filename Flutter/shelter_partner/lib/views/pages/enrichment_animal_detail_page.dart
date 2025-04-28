@@ -12,6 +12,7 @@ import 'package:shelter_partner/view_models/edit_animal_view_model.dart';
 import 'package:shelter_partner/views/components/logs_view.dart';
 import 'package:shelter_partner/views/components/notes_view.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class EnrichmentAnimalDetailPage extends StatelessWidget {
   final Animal initialAnimal;
@@ -52,7 +53,12 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   child: Center(
-                    child: Image.network(imageUrl),
+                    child: CachedNetworkImage(
+                      imageUrl: 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(imageUrl)}',
+                      placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
@@ -127,12 +133,9 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                             onPhotoTap: (index) {
                               showFullScreenGallery(
                                 context,
-                                (animal.photos ?? [])
-                                    .map((photo) => (photo.url
-                                                .contains('amazonaws.com'))
-                                        ? 'https://cors-images-222422545919.us-central1.run.app?url=${photo.url}'
-                                        : photo.url)
-                                    .toList(),
+                                (animal.photos ?? []).map((photo) =>
+                                  'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(photo.url)}'
+                                ).toList(),
                                 index,
                               );
                             },
@@ -380,7 +383,7 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
               },
               itemBuilder: (context, index) {
                 return PhotoView(
-                  imageProvider: NetworkImage(widget.imageUrls[index]),
+                  imageProvider: CachedNetworkImageProvider(widget.imageUrls[index]),
                   backgroundDecoration:
                       const BoxDecoration(color: Colors.black),
                 );
@@ -518,13 +521,7 @@ class PhotoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final scaledUrl = photo.url.replaceFirst('.jpeg', '_250x250.jpeg');
-
-    final originalPhoto = photo;
-    final fallbackUrl =
-        'https://cors-images-222422545919.us-central1.run.app?url=${originalPhoto.url}'; // Replace with your actual fallback URL
-    // final photo1 = originalPhoto.url.contains('amazonaws.com') ? fallbackUrl : originalPhoto.url;
-    final scaledUrl = fallbackUrl;
+    final proxyUrl = 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(photo.url)}';
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -548,27 +545,12 @@ class PhotoItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.0),
                 child: AspectRatio(
                   aspectRatio: 1.0,
-                  child: Image.network(
-                    scaledUrl,
+                  child: CachedNetworkImage(
+                    imageUrl: proxyUrl,
+                    cacheKey: photo.url,
                     fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      } else {
-                        return Container(
-                          color: Colors.grey[200],
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
-                            ),
-                          ),
-                        );
-                      }
-                    },
+                    placeholder: (context, url) => Container(color: Colors.grey[200], child: const Center(child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
                   ),
                 ),
               ),

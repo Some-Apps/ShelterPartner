@@ -245,8 +245,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
           ? animal.photos!.first.url
           : '';
-      final proxyUrl =
-          'https://cors-images-222422545919.us-central1.run.app?url=$originalUrl';
+      final proxyUrl = 'https://us-central1-production-10b3e.cloudfunctions.net/cors-images'
+            '?url=${Uri.encodeComponent(animal.photos?.first.url ?? '')}';
       precacheImage(
         CachedNetworkImageProvider(proxyUrl),
         context,
@@ -919,14 +919,15 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
 
   @override
   Widget build(BuildContext context) {
-    // Resize images to reduce memory usage
 
     final resizedImages = _imageUrls.map((url) {
-      final originalImageUrl = url;
-
-      return Image.network(
-        'https://cors-images-222422545919.us-central1.run.app?url=$url',
+      final proxyUrl = 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(url)}';
+      return CachedNetworkImage(
+        imageUrl: proxyUrl,
+        cacheKey: url,
         fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
       );
     }).toList();
 

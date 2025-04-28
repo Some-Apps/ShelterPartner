@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:core';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -71,15 +72,9 @@ class AnimalCardImage extends StatelessWidget {
                 ClipOval(
                   child: animal.photos?.isNotEmpty ?? false
                       ? CachedNetworkImage(
-                          imageUrl: (animal.photos?.first.url
-                                          .contains('amazonaws.com') ??
-                                      false)
-                                  //      ||
-                                  // (animal.photos?.first.url
-                                  //         .contains('storage.googleapis.com') ??
-                                  //     false)
-                              ? 'https://cors-images-222422545919.us-central1.run.app?url=${animal.photos?.first.url}'
-                              : animal.photos?.first.url ?? '',
+                          imageUrl: 'https://cors-images-222422545919.us-central1.run.app'
+                              '?url=${Uri.encodeComponent(animal.photos?.first.url ?? '')}',
+                          cacheKey: animal.photos?.first.url,
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,

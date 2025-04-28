@@ -83,6 +83,7 @@ struct VisitorDetailView: View {
                         if let url = dailyCacheBustedURL(for: animal.photos[index].url) {
                             ZStack(alignment: .topTrailing) {
                                 KFImage(url)
+                                    .cacheOriginalImage()
                                     .resizable()
                                     .placeholder { ProgressView().scaledToFill() }
                                     .scaledToFit()
@@ -138,6 +139,7 @@ struct VisitorDetailView: View {
                         ForEach(animal.photos.indices, id: \.self) { index in
                             if let url = dailyCacheBustedURL(for: animal.photos[index].url) {
                                 KFImage(url)
+                                    .cacheOriginalImage()
                                     .resizable()
                                     .scaledToFit()
                                     .tag(index)
@@ -168,7 +170,9 @@ struct VisitorDetailView: View {
     }
     
     private func dailyCacheBustedURL(for urlString: String) -> URL? {
-        guard var urlComponents = URLComponents(string: urlString) else { return nil }
+        guard let encodedString = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              var urlComponents = URLComponents(string: encodedString)
+        else { return nil }
 
         // Use a DateFormatter to generate a string that changes once a day
         let dateFormatter = DateFormatter()
@@ -210,7 +214,8 @@ struct FullScreenImageView: View {
     var body: some View {
         TabView(selection: $selectedImageIndex) {
             ForEach(images.indices, id: \.self) { index in
-                if let url = URL(string: images[index]) {
+                if let encoded = images[index].addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                   let url = URL(string: encoded) {
                     KFImage(url)
                         .resizable()
                         .scaledToFit()

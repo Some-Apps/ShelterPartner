@@ -5,6 +5,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'dart:async';
+import 'dart:core';
 import 'package:cached_network_image/cached_network_image.dart';
 // Conditional import for platform-specific full-screen functionality
 import 'package:shelter_partner/helper/fullscreen_stub.dart'
@@ -14,7 +15,7 @@ import 'package:shelter_partner/helper/fullscreen_stub.dart'
 /// A helper function that returns a formatted URL using a CORS proxy.
 String formatImageUrl(String? url) {
   if (url == null || url.isEmpty) return '';
-  return 'https://cors-images-222422545919.us-central1.run.app?url=$url';
+  return 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(url)}';
 }
 
 class VisitorPage extends ConsumerStatefulWidget {
@@ -105,9 +106,6 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
       final formattedUrl = formatImageUrl(originalUrl);
       if (formattedUrl.isNotEmpty) {
-        // Debugging print statements
-        print('Preloading image for animal: ${animal.name}');
-        print('Using URL: $formattedUrl');
         precacheImage(
           CachedNetworkImageProvider(formattedUrl),
           context,
@@ -225,6 +223,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                                 displayUrl.isNotEmpty
                                     ? CachedNetworkImage(
                                         imageUrl: displayUrl,
+                                        cacheKey: originalUrl,
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                         height: double.infinity,
