@@ -27,7 +27,9 @@ class VisitorAnimalDetailPage extends StatelessWidget {
           Navigator.pop(context);
           },
           child: Center(
-          child: Image.network(imageUrl),
+          child: Image.network(
+            'https://cors-images-222422545919.us-central1.run.app?url=$imageUrl',
+          ),
           ),
         ),
         ),
@@ -60,7 +62,7 @@ class VisitorAnimalDetailPage extends StatelessWidget {
             child: GestureDetector(
             onTap: () => showFullScreenImage(context, photo),
             child: Image.network(
-              scaledUrl, // Use the scaled down version of the image
+              'https://cors-images-222422545919.us-central1.run.app?url=$scaledUrl', // Use the scaled down version of the image
               fit: BoxFit.cover,
               loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
               if (loadingProgress == null) {

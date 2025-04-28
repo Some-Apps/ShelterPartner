@@ -939,7 +939,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
       final originalImageUrl = url;
 
       return Image.network(
-        originalImageUrl,
+        'https://cors-images-222422545919.us-central1.run.app?url=$url',
         fit: BoxFit.cover,
       );
     }).toList();
