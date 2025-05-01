@@ -22,7 +22,9 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
    - Each bounty increases by **$10** every week (7 days)
    - Maximum automatic bounty cap: **$100**
 
-## Bounties To Be Paid On May 1st
+## Bounties To Be Paid On June 1st
+
+## Bounties Paid On May 1st
 
 <details>
   <summary>Shivam Kumar: $25</summary>
