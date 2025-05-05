@@ -1,7 +1,5 @@
 # Welcome To [Shelter Partner](https://shelterpartner.org)!
 
-I'm out of town until Monday, May 5 so i may not respond to messages or pull requests until then.
-
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
 2. Comment on the issue that you would like to work on it
