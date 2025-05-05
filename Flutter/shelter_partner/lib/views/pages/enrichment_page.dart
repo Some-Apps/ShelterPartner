@@ -98,12 +98,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       _fetchPage(animalType: 'cats', pageKey: pageKey);
     });
 
-    // Preload images after the first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final animalsMap = ref.read(enrichmentViewModelProvider);
-      _preloadImages(animalsMap['dogs'] ?? []);
-      _preloadImages(animalsMap['cats'] ?? []);
-    });
 
     _tabController.addListener(() {
       setState(() {});
@@ -236,23 +230,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
         isActive ? "Active" : "Inactive";
   }
 
-  void _preloadImages(List<Animal> animals) {
-    const int preloadImageCount = 150;
-    final int endIndex = min(preloadImageCount, animals.length);
-
-    for (int i = 0; i < endIndex; i++) {
-      final animal = animals[i];
-      final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
-          ? animal.photos!.first.url
-          : '';
-      final proxyUrl = 'https://us-central1-production-10b3e.cloudfunctions.net/cors-images'
-            '?url=${Uri.encodeComponent(animal.photos?.first.url ?? '')}';
-      precacheImage(
-        CachedNetworkImageProvider(proxyUrl),
-        context,
-      );
-    }
-  }
 
   Future<void> _fetchPage({
     required String animalType,
@@ -271,9 +248,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
 
       final animals = animalsMap;
       final filteredAnimals = _filterAnimals(animals);
-
-      // Preload images for the filtered animals
-      _preloadImages(filteredAnimals);
 
       final int totalItemCount = filteredAnimals.length;
 
