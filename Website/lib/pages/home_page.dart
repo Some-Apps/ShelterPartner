@@ -221,7 +221,7 @@ class SponsorButton extends StatelessWidget {
     ui.platformViewRegistry.registerViewFactory(
       'iframeElement',
       (int viewId) => html.IFrameElement()
-        ..src = 'https://github.com/sponsors/ShelterPartner/button'
+        ..src = 'https://github.com/sponsors/SomeApps/button'
         ..style.border = '0'
         ..style.borderRadius = '6px'
         ..width = '114'
