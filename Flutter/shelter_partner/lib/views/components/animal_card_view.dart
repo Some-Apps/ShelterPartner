@@ -363,11 +363,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                         spacing: 4,
                         runSpacing: 4,
                         children: [
-                          if (animal.location.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.location_on,
-                              label: animal.location,
-                            ),
+                          // if (animal.location.isNotEmpty)
+                          //   _buildInfoChip(
+                          //     icon: Icons.location_on,
+                          //     label: animal.location,
+                          //   ),
                           if (animal.locationTiers.isNotEmpty)
                             for (var tier in animal.locationTiers.sublist(
                               animal.locationTiers.length > 1
