@@ -34,6 +34,12 @@ class Animal {
   final List<Log> logs;
   final List<Tag> tags;
 
+  List<String> get locationTiers {
+    return fullLocation != 'Unknown'
+        ? fullLocation.split('>').map((tier) => tier.trim()).toList()
+        : [];
+  }
+
   Animal({
     required this.id,
     required this.name,
@@ -62,34 +68,45 @@ class Animal {
   });
 
   factory Animal.fromFirestore(Map<String, dynamic> data, String documentId) {
-  return Animal(
-    id: documentId,
-    name: data['name'] ?? 'Unknown',
-    sex: data['sex'] ?? 'Unknown',
-    monthsOld: data['monthsOld'] ?? 0,
-    species: data['species'] ?? 'Unknown',
-    breed: data['breed'] ?? 'Unknown',
-    location: data['location'] ?? 'Unknown',
-    fullLocation: data['fullLocation'] ?? 'Unknown',
-    description: data['description'] ?? 'No description available.',
-    symbol: data['symbol'] ?? 'tag',
-    symbolColor: data['symbolColor'] ?? '',
-    takeOutAlert: data['takeOutAlert'] ?? 'Unknown',
-    putBackAlert: data['putBackAlert'] ?? 'Unknown',
-    adoptionCategory: data['adoptionCategory'] ?? 'Unknown',
-    behaviorCategory: data['behaviorCategory'] ?? 'Unknown',
-    locationCategory: data['locationCategory'] ?? 'Unknown',
-    medicalCategory: data['medicalCategory'] ?? 'Unknown',
-    volunteerCategory: data['volunteerCategory'] ?? 'Unknown',
-    inKennel: data['inKennel'] ?? true,
-    intakeDate: data['intakeDate'],
-    photos: (data['photos'] is List) ? (data['photos'] as List).map((photo) => Photo.fromMap(photo)).toList() : [],
-    notes: (data['notes'] is List) ? (data['notes'] as List).map((note) => Note.fromMap(note)).toList() : [],
-    logs: (data['logs'] is List) ? (data['logs'] as List).map((log) => Log.fromMap(log)).toList() : [],
-    tags: (data['tags'] is List) ? (data['tags'] as List).map((tag) => Tag.fromMap(tag)).toList() : [],
-  );
-}
+    final fullLocation = data['fullLocation'] ?? 'Unknown';
 
+    return Animal(
+      id: documentId,
+      name: data['name'] ?? 'Unknown',
+      sex: data['sex'] ?? 'Unknown',
+      monthsOld: data['monthsOld'] ?? 0,
+      species: data['species'] ?? 'Unknown',
+      breed: data['breed'] ?? 'Unknown',
+      location: data['location'] ?? 'Unknown',
+      fullLocation: fullLocation,
+      description: data['description'] ?? 'No description available.',
+      symbol: data['symbol'] ?? 'tag',
+      symbolColor: data['symbolColor'] ?? '',
+      takeOutAlert: data['takeOutAlert'] ?? 'Unknown',
+      putBackAlert: data['putBackAlert'] ?? 'Unknown',
+      adoptionCategory: data['adoptionCategory'] ?? 'Unknown',
+      behaviorCategory: data['behaviorCategory'] ?? 'Unknown',
+      locationCategory: data['locationCategory'] ?? 'Unknown',
+      medicalCategory: data['medicalCategory'] ?? 'Unknown',
+      volunteerCategory: data['volunteerCategory'] ?? 'Unknown',
+      inKennel: data['inKennel'] ?? true,
+      intakeDate: data['intakeDate'],
+      photos: (data['photos'] is List)
+          ? (data['photos'] as List)
+              .map((photo) => Photo.fromMap(photo))
+              .toList()
+          : [],
+      notes: (data['notes'] is List)
+          ? (data['notes'] as List).map((note) => Note.fromMap(note)).toList()
+          : [],
+      logs: (data['logs'] is List)
+          ? (data['logs'] as List).map((log) => Log.fromMap(log)).toList()
+          : [],
+      tags: (data['tags'] is List)
+          ? (data['tags'] as List).map((tag) => Tag.fromMap(tag)).toList()
+          : [],
+    );
+  }
 
   // Add copyWith method
   Animal copyWith({
@@ -145,8 +162,7 @@ class Animal {
       tags: tags ?? this.tags,
     );
   }
-  
-  // Add toMap method
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,

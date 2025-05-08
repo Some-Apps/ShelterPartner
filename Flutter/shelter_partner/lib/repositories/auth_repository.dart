@@ -157,7 +157,6 @@ class AuthRepository {
       buttonType: 'In App',
       appendAnimalDataToURL: false,
       removeAds: true,
-
       simplisticMode: true,
     );
 
@@ -166,11 +165,9 @@ class AuthRepository {
       'email': email.trim(),
       'firstName': firstName.trim(),
       'lastName': lastName.trim(),
-
       'lastActivity': Timestamp.now(),
       'averageLogDuration': 0,
       'totalTimeLoggedWithAnimals': 0,
-
       'shelterID': shelterId,
       'type': 'admin',
       'accountSettings': defaultAccountSettings.toMap(),
@@ -232,7 +229,7 @@ class AuthRepository {
         createLogsWhenUnderMinimumDuration: false,
         showCustomForm: false,
         customFormURL: "",
-        appendAnimalDataToURL: true,  
+        appendAnimalDataToURL: true,
         // Create default geofence
         geofence: Geofence(
           location: const GeoPoint(43.0722, -89.4008),
@@ -310,14 +307,8 @@ class AuthRepository {
               : collectionName == 'cats'
                   ? 'cat'
                   : 'Unknown',
-          'symbolColor': [
-            'red',
-            'green',
-            'blue',
-            'yellow',
-            'orange',
-            'purple'
-          ].randomElement(),
+          'symbolColor': ['red', 'green', 'blue', 'yellow', 'orange', 'purple']
+              .randomElement(),
           'symbol': 'pets', // Example static value, adjust as needed
           'volunteerCategory': ['Red', 'Green', 'Blue'].randomElement(),
           'locationCategory':
@@ -335,6 +326,12 @@ class AuthRepository {
           'id': animalId,
           'inKennel': true,
           'location': row['location'] ?? '',
+          'fullLocation':
+              '${row['location'] ?? 'Site 1'} > Building ${Random().nextInt(3) + 1} > Room ${[
+            'A',
+            'B',
+            'C'
+          ].randomElement()} > Kennel ${Random().nextInt(20) + 1}',
           'name': row['name'] ??
               'Unknown', // Default to 'Unknown' if name is missing
           'startTime':
