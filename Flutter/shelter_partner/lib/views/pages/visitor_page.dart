@@ -195,9 +195,10 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               final animal = animals[index];
-              final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
-                  ? animal.photos!.first.url
-                  : '';
+              final originalUrl =
+                  (animal.photos != null && animal.photos!.isNotEmpty)
+                      ? animal.photos!.first.url
+                      : '';
               final displayUrl = formatImageUrl(originalUrl);
 
               return Padding(
@@ -319,6 +320,7 @@ class SlideshowScreen extends StatefulWidget {
 
 class _SlideshowScreenState extends State<SlideshowScreen> {
   int _currentIndex = 0;
+  int _currentPhotoIndex = 0;
   late Timer _timer;
   late List<Animal> _shuffledAnimals;
   String _currentImageUrl = '';
@@ -333,6 +335,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
     // Set the initial image URL and animal, ensuring it skips animals without images
     _currentIndex = 0;
+    _currentPhotoIndex = 0;
     do {
       _setCurrentImage();
       if (_currentImageUrl.isEmpty) {
@@ -351,7 +354,10 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     final animal = _shuffledAnimals[_currentIndex];
     _currentAnimal = animal; // Set the current animal
     if (animal.photos != null && animal.photos!.isNotEmpty) {
-      _currentImageUrl = formatImageUrl(animal.photos!.first.url);
+      if (_currentPhotoIndex >= animal.photos!.length) {
+        _currentPhotoIndex = 0;
+      }
+      _currentImageUrl = formatImageUrl(animal.photos![_currentPhotoIndex].url);
     } else {
       _currentImageUrl = '';
     }
@@ -374,11 +380,25 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     // Start the timer to change images based on the slideshow timer setting
     _timer = Timer.periodic(Duration(seconds: slideshowTimer), (timer) {
       setState(() {
-        // Skip slides which do not contain images
-        do {
-          _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
-          _setCurrentImage();
-        } while (_currentImageUrl.isEmpty && _currentIndex != 0);
+        final photos = _currentAnimal?.photos;
+
+        if (photos != null && _currentPhotoIndex + 1 < photos.length) {
+          // Move to next photo of current animal
+          _currentPhotoIndex++;
+        } else {
+          // Move to next animal that has photos
+          int attempts = 0;
+          do {
+            _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
+            _currentPhotoIndex = 0;
+            _setCurrentImage();
+            attempts++;
+          } while (
+              _currentImageUrl.isEmpty && attempts < _shuffledAnimals.length);
+          return;
+        }
+
+        _setCurrentImage();
       });
     });
   }
