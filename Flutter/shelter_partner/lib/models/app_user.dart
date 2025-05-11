@@ -32,7 +32,7 @@ class AppUser {
 
   // Factory constructor to create AppUser from Firestore document
   factory AppUser.fromDocument(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final data = Map<String, dynamic>.from(doc.data() as Map<dynamic, dynamic>);
 
     // Reconstruct filter group (similar to how it's done in AccountSettings)
     FilterGroup reconstructFilterGroup(Map<String, dynamic> json) {
@@ -58,20 +58,20 @@ class AppUser {
     // Deserialize userFilter (if it exists in Firestore)
     FilterElement? userFilter;
     if (data.containsKey('userFilter') && data['userFilter'] != null) {
-      final userFilterData = data['userFilter'] as Map<String, dynamic>;
+      final userFilterData = Map<String, dynamic>.from(data['userFilter'] as Map);
       userFilter = reconstructFilterGroup(userFilterData);
     }
 
     return AppUser(
       id: doc.id,
-      firstName: data['firstName'],
-      lastName: data['lastName'],
-      email: data['email'],
-      lastActivity: data['lastActivity'],
-      type: data['type'],
-      shelterId: data['shelterID'],
-      accountSettings: AccountSettings.fromMap(data['accountSettings'] ?? {}),
-      userFilter: userFilter, // Assign the deserialized userFilter here
+      firstName: data['firstName'] as String,
+      lastName: data['lastName'] as String,
+      email: data['email'] as String,
+      lastActivity: data['lastActivity'] as Timestamp,
+      type: data['type'] as String,
+      shelterId: data['shelterID'] as String,
+      accountSettings: AccountSettings.fromMap(Map<String, dynamic>.from(data['accountSettings'] ?? {})),
+      userFilter: userFilter,
     );
   }
 

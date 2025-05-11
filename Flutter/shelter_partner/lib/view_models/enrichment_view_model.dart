@@ -8,7 +8,6 @@ import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/repositories/enrichment_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
-import 'package:shelter_partner/view_models/update_volunteer_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';

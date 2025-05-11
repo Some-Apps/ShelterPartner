@@ -22,26 +22,30 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 class AuthRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
+  final Qonversion? _qonversion;
 
   AuthRepository({
     FirebaseFirestore? firestore,
     FirebaseAuth? firebaseAuth,
+    Qonversion? qonversion,
   })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _qonversion = qonversion;
 
   // Fetch user by ID
   Future<AppUser?> getUserById(String userId) async {
     final doc = await _firestore.collection('users').doc(userId).get();
     if (doc.exists) {
-      Qonversion.getSharedInstance().setUserProperty(
-          QUserPropertyKey.customUserId, AppUser.fromDocument(doc).id);
-      print("User ID: ${AppUser.fromDocument(doc).id}");
-      try {
-        final userInfo = await Qonversion.getSharedInstance()
-            .identify(AppUser.fromDocument(doc).id);
-        // use userInfo if necessary
-      } catch (e) {
-        // handle error here
+      if (_qonversion != null) {
+        _qonversion!.setUserProperty(
+            QUserPropertyKey.customUserId, AppUser.fromDocument(doc).id);
+        print("User ID: ${AppUser.fromDocument(doc).id}");
+        try {
+          final userInfo = await _qonversion!.identify(AppUser.fromDocument(doc).id);
+          // use userInfo if necessary
+        } catch (e) {
+          // handle error here
+        }
       }
       return AppUser.fromDocument(doc);
     }
