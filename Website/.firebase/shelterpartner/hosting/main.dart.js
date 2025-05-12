@@ -60228,7 +60228,7 @@ $.mH().lN("iframeElement",new A.a_n(),!0)
 return B.Gb}}
 A.a_n.prototype={
 $1(a){var s,r=document.createElement("iframe")
-r.src="https://github.com/sponsors/ShelterPartner/button"
+r.src="https://github.com/sponsors/Some-Apps/button"
 s=r.style
 s.border="0"
 s=r.style
