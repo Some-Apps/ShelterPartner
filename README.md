@@ -17,6 +17,8 @@ The password for all test accounts is **password123**
 
 If it's your first time getting paid, I will email you and post a verification code on GitHub. I will never ask for any information other than an email or username. Please be cautious of scams. If anything seems sketchy, it's probably a scam.
 
+If you are a US resident, you may be required to fill out a tax form when you receive the payment from Found as you will be considered an independant contractor.
+
 All international payments will be made via PayPal so make sure you have an account. I will contact you from my official email and will also post a verficiation code on github from the official account.
 
 ## How Bounties Work
