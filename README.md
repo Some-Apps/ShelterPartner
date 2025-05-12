@@ -21,7 +21,7 @@ All international payments will be made via PayPal so make sure you have an acco
    - New bounty issues start at **$5**
    - Each bounty increases by **$5** every week (7 days)
    - Maximum automatic bounty cap: **$100**
-   - Patreon members can increase bounties
+   - Patreon members can increase bounties as a perk
 
 ## Bounties To Be Paid On June 1st
 
