@@ -21,7 +21,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const BOUNTY_STEPS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+            const BOUNTY_STEPS = Array.from({ length: 20 }, (_, i) => (i + 1) * 5);
             const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
             // Fetch all labels from the repository
