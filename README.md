@@ -19,7 +19,7 @@ All international payments will be made via PayPal so make sure you have an acco
 ## How Bounties Work
 
    - New bounty issues start at **$5**
-   - Each bounty increases by **$5** every week (7 days)
+   - Each unassigned bounty increases by **$5** every week (7 days)
    - Maximum automatic bounty cap: **$100**
    - Patreon members can increase bounties as a perk
    - The project manager can increase bounties as they see fit
