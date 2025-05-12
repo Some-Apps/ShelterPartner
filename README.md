@@ -30,9 +30,10 @@ All payments will be made via Wise or PayPal so make sure you have an account. I
 ## Bounties To Be Paid On June 1st
 
 <details>
-   <summary>Shivam Kumar: $100</summary>
+   <summary>Shivam Kumar: $110</summary>
   
   - Issue #388: Locations should be separated into separate parts ($100)
+  - Issue #440: Animal slideshow should use all all animal photos ($10)
 
 </details>
 
