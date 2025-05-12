@@ -14,7 +14,7 @@ I will be out of town for work May 8-12 so I may not respond to some stuff until
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
 ### How To Get Paid
-All payments will be made via Wise or PayPal so make sure you have an account. I will contact you from my official email and will also post a verficiation code on github from the official account.
+All international payments will be made via PayPal so make sure you have an account. I will contact you from my official email and will also post a verficiation code on github from the official account.
 
 ### Other Repositories You Can Contribute To
 - [Been There](https://github.com/Some-Apps/BeenThere)
