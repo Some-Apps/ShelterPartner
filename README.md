@@ -15,7 +15,7 @@ The password for all test accounts is **password123**
 
 ### How To Get Paid
 
-If it's your first time getting paid, I will email you and post a verification code on GitHub. I will never ask for any information other than an email or username. Please be cautious of scams. If anything seems sketchy, it's probably a scam.
+If it's your first time getting paid, I will email you and post a verification code on GitHub. I will never ask for any information other than an email or username. Please be cautious of scams. If anything seems sketchy, it's probably a scam. Please report any potential scams to me.
 
 If you are a US resident, you may be required to fill out a tax form when you receive the payment as you will be considered an independant contractor.
 
