@@ -14,6 +14,9 @@ Feel free to use your issue thread to communicate. Contributors will only be ass
 The password for all test accounts is **password123**
 
 ### How To Get Paid
+
+If it's your first time getting paid, I will email you and post a verification code on GitHub. I will never ask for any information other than an email or username. Please be cautious of scams. If anything seems sketchy, it's probably a scam.
+
 All international payments will be made via PayPal so make sure you have an account. I will contact you from my official email and will also post a verficiation code on github from the official account.
 
 ## How Bounties Work
