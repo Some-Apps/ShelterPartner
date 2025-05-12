@@ -1,10 +1,8 @@
 # Welcome To [Shelter Partner](https://shelterpartner.org)!
 
-I will be out of town for work May 8-12 so I may not respond to some stuff until I get back.
-
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
-2. Comment on the issue that you would like to work on it
+2. Comment on the issue "I'd like to work on this"
 3. Once you have been assigned the issue, fork to the repository into a branch containing the issue number
 4. When you are ready, submit a pull request from this branch
 5. Your code will be reviewed and then either be approved or have changes requested
@@ -20,9 +18,10 @@ All international payments will be made via PayPal so make sure you have an acco
 
 ## How Bounties Work
 
-   - New bounty issues start at **$10**
-   - Each bounty increases by **$10** every week (7 days)
+   - New bounty issues start at **$5**
+   - Each bounty increases by **$5** every week (7 days)
    - Maximum automatic bounty cap: **$100**
+   - Patreon members can increase bounties
 
 ## Bounties To Be Paid On June 1st
 
