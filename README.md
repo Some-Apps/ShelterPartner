@@ -13,6 +13,8 @@ I will be out of town for work May 8-12 so I may not respond to some stuff until
 
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
+The password for all test accounts is **password123**
+
 ### How To Get Paid
 All international payments will be made via PayPal so make sure you have an account. I will contact you from my official email and will also post a verficiation code on github from the official account.
 
