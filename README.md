@@ -32,10 +32,19 @@ All international payments will be made via PayPal so make sure you have an acco
 ## Bounties To Be Paid On June 1st
 
 <details>
+   
    <summary>Shivam Kumar: $110</summary>
   
   - Issue #388: Locations should be separated into separate parts ($100)
   - Issue #440: Animal slideshow should use all all animal photos ($10)
+
+</details>
+
+<details>
+   
+   <summary>Vedant Vijay: $40</summary>
+  
+  - Issue #420: Create a bunch of tests ($40)
 
 </details>
 
