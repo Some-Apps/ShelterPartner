@@ -143,26 +143,5 @@ void main() {
       }
     });
   });
-test('Login with vedantvijay!@icloud.com  klausEUGENE@62', () async {
-  // Mock the sign-in process
-  when(mockFirebaseAuth.signInWithEmailAndPassword(
-    email: 'vedantvijay!@icloud.com',
-    password: 'klausEUGENE@62',
-  )).thenAnswer((_) async => mockUserCredential);
 
-  // Perform the login
-  final result = await mockFirebaseAuth.signInWithEmailAndPassword(
-    email: 'vedantvijay!@icloud.com',
-    password: 'klausEUGENE@62',
-  );
-
-  // Check if the result matches the mocked user credential
-  expect(result, mockUserCredential);
-
-  // Verify if the signInWithEmailAndPassword method was called exactly once
-  verify(mockFirebaseAuth.signInWithEmailAndPassword(
-    email: 'vedantvijay!@icloud.com',
-    password: 'klausEUGENE@62',
-  )).called(1);
-});
 }
