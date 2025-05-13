@@ -2,7 +2,7 @@
 
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
-2. Comment on the issue that you would like to work on it
+2. Comment on the issue "I'd like to work on this"
 3. Once you have been assigned the issue, fork to the repository into a branch containing the issue number
 4. When you are ready, submit a pull request from this branch
 5. Your code will be reviewed and then either be approved or have changes requested
@@ -11,18 +11,33 @@
 
 Feel free to use your issue thread to communicate. Contributors will only be assigned one issue at a time.
 
-### Other Repositories You Can Contribute To
-- [Been There](https://github.com/Some-Apps/BeenThere)
-- [Incremental](https://github.com/Some-Apps/Incremental)
-- [Tipsy Tongue](https://github.come/Some-Apps/TipsyTongue)
+The password for all test accounts is **password123**
+
+### How To Get Paid
+
+If it's your first time getting paid, I will email you from jared@shelterpartner.org and post a verification code on GitHub. I will never ask for any information other than an email or username. Please be cautious of scams. If anything seems sketchy, it's probably a scam. Please report any potential scams to me.
+
+If you are a US resident, you may be required to fill out a tax form when you receive the payment as you will be considered an independant contractor.
+
+All international payments will be made via PayPal so make sure you have an account.
 
 ## How Bounties Work
 
-   - New bounty issues start at **$10**
-   - Each bounty increases by **$10** every week (7 days)
+   - New bounty issues start at **$5**
+   - Each unassigned bounty increases by **$5** every week (7 days)
    - Maximum automatic bounty cap: **$100**
+   - Patreon members can increase bounties as a perk
+   - The project manager can increase bounties as they see fit
 
 ## Bounties To Be Paid On June 1st
+
+<details>
+   <summary>Shivam Kumar: $110</summary>
+  
+  - Issue #388: Locations should be separated into separate parts ($100)
+  - Issue #440: Animal slideshow should use all all animal photos ($10)
+
+</details>
 
 ## Bounties Paid On May 1st
 

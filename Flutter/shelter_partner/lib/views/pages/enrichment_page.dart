@@ -44,6 +44,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
+  int selectedLocationTierCount = 2; // Default to 2 location tiers
+  final List<int> locationTierOptions = [1, 2, 3, 4];
 
   // For attribute dropdown
   String selectedAttributeDisplayName = 'Name'; // Default display name
@@ -96,13 +98,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
 
     _catsPagingController.addPageRequestListener((pageKey) {
       _fetchPage(animalType: 'cats', pageKey: pageKey);
-    });
-
-    // Preload images after the first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final animalsMap = ref.read(enrichmentViewModelProvider);
-      _preloadImages(animalsMap['dogs'] ?? []);
-      _preloadImages(animalsMap['cats'] ?? []);
     });
 
     _tabController.addListener(() {
@@ -236,24 +231,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
         isActive ? "Active" : "Inactive";
   }
 
-  void _preloadImages(List<Animal> animals) {
-    const int preloadImageCount = 150;
-    final int endIndex = min(preloadImageCount, animals.length);
-
-    for (int i = 0; i < endIndex; i++) {
-      final animal = animals[i];
-      final originalUrl = (animal.photos != null && animal.photos!.isNotEmpty)
-          ? animal.photos!.first.url
-          : '';
-      final proxyUrl = 'https://us-central1-production-10b3e.cloudfunctions.net/cors-images'
-            '?url=${Uri.encodeComponent(animal.photos?.first.url ?? '')}';
-      precacheImage(
-        CachedNetworkImageProvider(proxyUrl),
-        context,
-      );
-    }
-  }
-
   Future<void> _fetchPage({
     required String animalType,
     required int pageKey,
@@ -271,9 +248,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
 
       final animals = animalsMap;
       final filteredAnimals = _filterAnimals(animals);
-
-      // Preload images for the filtered animals
-      _preloadImages(filteredAnimals);
 
       final int totalItemCount = filteredAnimals.length;
 
@@ -338,7 +312,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                         true) {
                       return SimplisticAnimalCardView(animal: item);
                     } else {
-                      return AnimalCardView(animal: item);
+                      return AnimalCardView(
+                          animal: item,
+                          maxLocationTiers: selectedLocationTierCount);
                     }
                   } else if (item is Ad) {
                     return CustomAffiliateAd(ad: item);
@@ -429,7 +405,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                 .value!.accountSettings?.simplisticMode ??
                             true
                         ? SimplisticAnimalCardView(animal: animal)
-                        : AnimalCardView(animal: animal);
+                        : AnimalCardView(
+                            animal: animal,
+                            maxLocationTiers: selectedLocationTierCount);
                   },
                 ),
               ],
@@ -576,6 +554,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                               ),
                             ),
                             const SizedBox(width: 8),
+
                             // Attribute dropdown
                             DropdownButton<String>(
                               value: selectedAttributeDisplayName,
@@ -599,6 +578,54 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                             ),
                           ],
                         ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Text(
+                              'No. of location tiers shown:',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                        color: Colors.grey, width: 1.5),
+                                  ),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<int>(
+                                    value: selectedLocationTierCount,
+                                    isExpanded: true,
+                                    onChanged: (int? newValue) {
+                                      if (newValue != null) {
+                                        setState(() {
+                                          selectedLocationTierCount = newValue;
+                                          _dogsPagingController.refresh();
+                                          _catsPagingController.refresh();
+                                        });
+                                      }
+                                    },
+                                    style: const TextStyle(
+                                        fontSize: 16, color: Colors.black),
+                                    items: locationTierOptions
+                                        .map<DropdownMenuItem<int>>(
+                                            (int value) {
+                                      return DropdownMenuItem<int>(
+                                        value: value,
+                                        child: Text(
+                                            'Last $value tier${value > 1 ? 's' : ''}'),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
                         const SizedBox(height: 8),
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -919,14 +946,15 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
 
   @override
   Widget build(BuildContext context) {
-
     final resizedImages = _imageUrls.map((url) {
-      final proxyUrl = 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(url)}';
+      final proxyUrl =
+          'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(url)}';
       return CachedNetworkImage(
         imageUrl: proxyUrl,
         cacheKey: url,
         fit: BoxFit.cover,
-        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+        placeholder: (context, url) =>
+            const Center(child: CircularProgressIndicator()),
         errorWidget: (context, url, error) => const Icon(Icons.error),
       );
     }).toList();
