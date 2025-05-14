@@ -44,15 +44,19 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
       if (user.type == 'admin') {
         fetchAnimals(shelterID: shelterID);
       } else if (user.type == 'volunteer') {
-        // Wait until volunteer data has loaded, then fetch with correct filter
+        // Immediately fetch if volunteer data already loaded
+        final volunteerAsync = ref.read(volunteersViewModelProvider);
+        if (volunteerAsync is AsyncData && volunteerAsync.value != null) {
+          fetchAnimals(shelterID: shelterID);
+        }
+        // Listen for transition from not loaded to loaded, then fetch
         ref.listen<AsyncValue<Shelter?>>(
           volunteersViewModelProvider,
           (previous, next) {
-            if (next is AsyncData && next.value != null) {
+            if (previous is! AsyncData && next is AsyncData && next.value != null) {
               fetchAnimals(shelterID: shelterID);
             }
           },
-          fireImmediately: false,
         );
       }
     } else {
