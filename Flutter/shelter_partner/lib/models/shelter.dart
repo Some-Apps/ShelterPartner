@@ -12,7 +12,7 @@ class Shelter {
   final String managementSoftware;
   final ShelterSettings shelterSettings;
   final VolunteerSettings volunteerSettings;
-  List<Volunteer> volunteers; // Make this mutable
+  List<Volunteer> volunteers;
 
   Shelter({
     required this.id,
