@@ -34,56 +34,91 @@ class HomePage extends StatelessWidget {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              // Beta Button
+              // TextButton(
+              //   onPressed: () {
+              //     launchUrl(Uri(
+              //       scheme: 'https',
+              //       host: 'beta.shelterpartner.org',
+              //     ));
+              //   },
+              //   child: const Text(
+              //     'Beta',
+              //     style: TextStyle(color: Colors.black),
+              //   ),
+              // ),
+              // Download Button with Dialog Tooltip
+              // TextButton(
+              //   onPressed: () {
+              //     showDialog(
+              //       context: context,
+              //       builder: (context) => const AlertDialog(
+              //         title: Text('Download Information'),
+              //         content: Text(
+              //           'Coming January 1, 2025\n\n'
+              //           'Platforms:\n'
+              //           '- Windows\n'
+              //           '- Mac\n'
+              //           '- iOS\n'
+              //           '- Android\n'
+              //           '- Web',
+              //           style: TextStyle(fontSize: 16),
+              //         ),
+              //         actions: [
+              //           // TextButton(
+              //           //   onPressed: () => Navigator.of(context).pop(),
+              //           //   child: const Text('OK'),
+              //           // ),
+              //         ],
+              //       ),
+              //     );
+              //   },
+              //   child: const Text(
+              //     'Download',
+              //     style: TextStyle(color: Colors.black),
+              //   ),
+              // ),
               TextButton(
-              onPressed: () {
-                launchUrl(Uri(
-                scheme: 'https',
-                host: 'app.shelterpartner.org',
-                ));
-              },
-              child: const Text(
-                'App',
-                style: TextStyle(color: Colors.black),
-              ),
-              ),
-              TextButton(
-              onPressed: () {
-                launchUrl(Uri(
-                scheme: 'https',
-                host: 'wiki.shelterpartner.org',
-                ));
-              },
-              child: const Text(
-                'Wiki',
-                style: TextStyle(color: Colors.black),
-              ),
-              ),
-              TextButton(
-              onPressed: () {
-                launchUrl(Uri(
-                scheme: 'https',
-                host: 'github.com',
-                path: '/ShelterPartner/ShelterPartner',
-                ));
-              },
-              child: const Text(
-                'GitHub',
-                style: TextStyle(color: Colors.black),
-              ),
+                onPressed: () {
+                  launchUrl(Uri(
+                    scheme: 'https',
+                    host: 'app.shelterpartner.org',
+                  ));
+                },
+                child: const Text(
+                  'App',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
               TextButton(
                 onPressed: () {
-                launchUrl(Uri.parse('https://www.patreon.com/ShelterPartner'));
+                  launchUrl(Uri(
+                    scheme: 'https',
+                    host: 'wiki.shelterpartner.org',
+                  ));
                 },
-                child: Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Image.asset(
-                  'assets/patreon150.gif',
-                  width: 40,
-                  height: 40,
-                  ),
+                child: const Text(
+                  'Wiki',
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
+              TextButton(
+                onPressed: () {
+                  launchUrl(Uri(
+                    scheme: 'https',
+                    host: 'github.com',
+                    path: '/ShelterPartner/ShelterPartner',
+                  ));
+                },
+                child: const Text(
+                  'GitHub',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: SponsorButton(),
+              ), // Use the custom SponsorButton here
             ],
           ),
         ),
@@ -176,6 +211,32 @@ class HomePage extends StatelessWidget {
   }
 }
 
+class SponsorButton extends StatelessWidget {
+  const SponsorButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Register the iframe element
+    // ignore: undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory(
+      'iframeElement',
+      (int viewId) => html.IFrameElement()
+        ..src = 'https://github.com/sponsors/Shelter-Partner/button'
+        ..style.border = '0'
+        ..style.borderRadius = '6px'
+        ..width = '114'
+        ..height = '32',
+    );
+
+    return const SizedBox(
+      width: 114,
+      height: 32,
+      child: HtmlElementView(
+        viewType: 'iframeElement',
+      ),
+    );
+  }
+}
 
 class SponsorsWidget extends StatelessWidget {
   const SponsorsWidget({super.key});
