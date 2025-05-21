@@ -1,3 +1,6 @@
 .DS_Store
 *.xcuserdatad
 *.xcuserstate
+
+# VS Code
+*.code-workspace
