@@ -43,7 +43,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   // State variables for search and attribute selection
   final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
-  int selectedLocationTierCount = 2; // Default to 2 location tiers
+  int selectedLocationTierCount = 4; // Default to 2 location tiers
   final List<int> locationTierOptions = [1, 2, 3, 4];
 
   // For attribute dropdown
@@ -947,7 +947,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
   Widget build(BuildContext context) {
     final resizedImages = _imageUrls.map((url) {
       final proxyUrl =
-          'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(url)}';
+          'https://us-central1-production-10b3e.cloudfunctions.net/cors-images?url=${Uri.encodeComponent(url)}';
       return CachedNetworkImage(
         imageUrl: proxyUrl,
         cacheKey: url,
