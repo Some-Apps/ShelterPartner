@@ -17,7 +17,7 @@ struct TagsView: View {
         Form {
             Section {
                 TextField("New Tag", text: $newTag)
-                
+
                 if newTag.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
                     Button("Add Tag") {
                         viewModel.addTag(tag: newTag, species: species)
@@ -25,11 +25,13 @@ struct TagsView: View {
                     }
                     .disabled(newTag.trimmingCharacters(in: .whitespacesAndNewlines) == "")
                 }
-                
+
             }
-            if (species == .Cat ? !authViewModel.catTags.isEmpty : !authViewModel.dogTags.isEmpty) {
+            if species == .Cat ? !authViewModel.catTags.isEmpty : !authViewModel.dogTags.isEmpty {
                 Section("Tags") {
-                    ForEach(species == .Cat ? authViewModel.catTags : authViewModel.dogTags, id: \.self) { tag in
+                    ForEach(
+                        species == .Cat ? authViewModel.catTags : authViewModel.dogTags, id: \.self
+                    ) { tag in
                         HStack {
                             Text(tag)
                                 .font(.title3)
