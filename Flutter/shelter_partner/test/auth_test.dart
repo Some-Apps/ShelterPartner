@@ -20,7 +20,7 @@ void main() {
     mockFirebaseAuth = MockFirebaseAuth();
     mockUserCredential = MockUserCredential();
     mockUser = MockUser();
-    firestore = FakeFirebaseFirestore(); 
+    firestore = FakeFirebaseFirestore();
   });
 
   group('Firebase Auth Tests', () {
@@ -39,7 +39,7 @@ void main() {
       verify(mockFirebaseAuth.createUserWithEmailAndPassword(
         email: 'shelter@example.com',
         password: 'shelter123',
-      )).called(1); 
+      )).called(1);
     });
 
     test('Create Volunteer Account', () async {
@@ -62,7 +62,7 @@ void main() {
 
     test('Change Password', () async {
       when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
-      when(mockUser.updatePassword('newPassword123')).thenAnswer((_) async => null);
+      when(mockUser.updatePassword('newPassword123')).thenAnswer((_) async {});
 
       await mockFirebaseAuth.currentUser!.updatePassword('newPassword123');
 
@@ -70,7 +70,7 @@ void main() {
     });
 
     test('Logout', () async {
-      when(mockFirebaseAuth.signOut()).thenAnswer((_) async => null);
+      when(mockFirebaseAuth.signOut()).thenAnswer((_) async {});
 
       await mockFirebaseAuth.signOut();
 
@@ -115,7 +115,6 @@ void main() {
     });
   });
 
-
   group('Image Tests', () {
     test('Upload image to Firestore', () async {
       await firestore.collection('images').add({
@@ -139,9 +138,9 @@ void main() {
       for (final doc in snapshot.docs) {
         final url = doc['url'];
         expect(url, isNotNull);
-        expect(Uri.tryParse(url)?.isAbsolute, isTrue); // Simulates valid image display
+        expect(Uri.tryParse(url)?.isAbsolute,
+            isTrue); // Simulates valid image display
       }
     });
   });
-
 }
