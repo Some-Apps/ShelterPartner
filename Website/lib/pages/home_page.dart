@@ -4,6 +4,7 @@ import 'dart:html' as html;
 import 'dart:ui' as ui;
 // Add these two imports for social icons:
 import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -122,13 +123,13 @@ class HomePage extends StatelessWidget {
                 child: SponsorButton(),
               ), // Use the custom SponsorButton here
               IconButton(
-                icon: Icon(Icons.facebook, color: Colors.black),
+                icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.black),
                 onPressed: () {
-                  launchUrl(Uri.parse('https://www.facebook.com/ShelterPartner'));
+                  launchUrl(Uri.parse('https://www.facebook.com/people/Shelter-Partner/61565670425368/'));
                 },
               ),
               IconButton(
-                icon: Icon(Icons.camera_alt, color: Colors.black),
+                icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.black),
                 onPressed: () {
                   launchUrl(Uri.parse('https://www.instagram.com/shelterpartner'));
                 },
@@ -136,125 +137,71 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue.shade50, Colors.white],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
-                child: Padding(
-                  padding: const EdgeInsets.all(40.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      MaterialBanner(
-                        content: const Text(
-                          "There will be an open Zoom meeting on June 6 at 6pm MST for any interested shelters. We'll go over our roadmap and get feedback from shelters.",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        backgroundColor: Theme.of(context).primaryColor,
-                        contentTextStyle: const TextStyle(color: Colors.white),
-                        actions: const [],
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        "There will be an open Zoom meeting on June 6 at 6pm MST for any interested shelters. We'll go over our roadmap and get feedback from shelters.",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 24),
-                      Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: Colors.grey.shade200),
-                        ),
-                        margin: const EdgeInsets.symmetric(vertical: 16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: const [
-                              Text(
-                                'Welcome',
-                                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        children: const [
+                          Text(
+                            'Welcome',
+                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                           ),
-                        ),
-                      ),
-                      Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: Colors.grey.shade200),
-                        ),
-                        margin: const EdgeInsets.symmetric(vertical: 16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'Version 2 Tutorial',
-                                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 16),
-                              const SizedBox(
-                                width: 560,
-                                height: 315,
-                                child: HtmlElementView(viewType: 'youtube-video'),
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: () {
-                                  launchUrl(Uri(
-                                    scheme: 'https',
-                                    host: 'www.youtube.com',
-                                    path: '/watch',
-                                    queryParameters: {'v': 'phDOgusydnk'},
-                                  ));
-                                },
-                                child: const Text('Watch Full Screen on YouTube'),
-                              ),
-                            ],
+                          SizedBox(height: 8),
+                          Text(
+                            'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
+                            style: TextStyle(fontSize: 15),
                           ),
-                        ),
+                        ],
                       ),
-                      // const SizedBox(height: 36),
-                      // const SponsorsWidget(),
-                      const SizedBox(height: 36),
-                      // Footer with Privacy Policy
-                      // TextButton(
-                      //   onPressed: () async {
-                      //     const pdfUrl =
-                      //         'assets/privacy_policy.pdf'; // For local assets
-                      //     final pdfUri = Uri.parse(pdfUrl);
-
-                      //     // If hosted online, use an HTTP/HTTPS link:
-                      //     // final pdfUri = Uri.parse('https://example.com/privacy_policy.pdf');
-
-                      //     if (await canLaunchUrl(pdfUri)) {
-                      //       await launchUrl(pdfUri);
-                      //     } else {
-                      //       ScaffoldMessenger.of(context).showSnackBar(
-                      //         const SnackBar(
-                      //             content:
-                      //                 Text('Unable to open Privacy Policy PDF')),
-                      //       );
-                      //     }
-                      //   },
-                      //   child: const Text(
-                      //     'Privacy Policy',
-                      //     style: TextStyle(color: Colors.blue),
-                      //   ),
-                      // ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Version 2 Tutorial',
+                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 16),
+                          const SizedBox(
+                            width: 560,
+                            height: 315,
+                            child: HtmlElementView(viewType: 'youtube-video'),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              launchUrl(Uri(
+                                scheme: 'https',
+                                host: 'www.youtube.com',
+                                path: '/watch',
+                                queryParameters: {'v': 'phDOgusydnk'},
+                              ));
+                            },
+                            child: const Text('Watch Full Screen on YouTube'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 36),
+                  ],
                 ),
               ),
             ),
