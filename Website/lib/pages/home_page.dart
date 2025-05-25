@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'dart:ui' as ui;
+// Add these two imports for social icons:
+import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -119,6 +122,18 @@ class HomePage extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: SponsorButton(),
               ), // Use the custom SponsorButton here
+              IconButton(
+                icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.black),
+                onPressed: () {
+                  launchUrl(Uri.parse('https://www.facebook.com/people/Shelter-Partner/61565670425368/'));
+                },
+              ),
+              IconButton(
+                icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.black),
+                onPressed: () {
+                  launchUrl(Uri.parse('https://www.instagram.com/shelterpartner'));
+                },
+              ),
             ],
           ),
         ),
@@ -132,74 +147,60 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Welcome',
-                      style:
-                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        "There will be an open Zoom meeting on June 6 at 6pm MST for any interested shelters. We'll go over our roadmap and get feedback from shelters.",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
-                      style: TextStyle(fontSize: 15),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        children: const [
+                          Text(
+                            'Welcome',
+                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Version 2 Tutorial',
+                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 16),
+                          const SizedBox(
+                            width: 560,
+                            height: 315,
+                            child: HtmlElementView(viewType: 'youtube-video'),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              launchUrl(Uri(
+                                scheme: 'https',
+                                host: 'www.youtube.com',
+                                path: '/watch',
+                                queryParameters: {'v': 'phDOgusydnk'},
+                              ));
+                            },
+                            child: const Text('Watch Full Screen on YouTube'),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 36),
-                    const Text(
-                      'Version 2 Tutorial',
-                      style:
-                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    // const Text(
-                    //   'Version 2 is a complete rewrite of the app. It will be available on all platforms including web, iOS, Android, Windows, and Mac and will be released on January 1, 2025. You can watch the demo below and try it out by clicking the "Beta" button above.',
-                    //   style: TextStyle(fontSize: 15),
-                    // ),
-                    // const SizedBox(height: 36),
-                    // Embedded YouTube Video
-                    const SizedBox(
-                      width: 560,
-                      height: 315,
-                      child: HtmlElementView(viewType: 'youtube-video'),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                      launchUrl(Uri(
-                        scheme: 'https',
-                        host: 'www.youtube.com',
-                        path: '/watch',
-                        queryParameters: {'v': 'phDOgusydnk'}, // Replace with your video ID
-                      ));
-                      },
-                      child: const Text('Watch Full Screen on YouTube'),
-                    ),
-                    // const SizedBox(height: 36),
-                    // const SponsorsWidget(),
-                    const SizedBox(height: 36),
-                    // Footer with Privacy Policy
-                    // TextButton(
-                    //   onPressed: () async {
-                    //     const pdfUrl =
-                    //         'assets/privacy_policy.pdf'; // For local assets
-                    //     final pdfUri = Uri.parse(pdfUrl);
-
-                    //     // If hosted online, use an HTTP/HTTPS link:
-                    //     // final pdfUri = Uri.parse('https://example.com/privacy_policy.pdf');
-
-                    //     if (await canLaunchUrl(pdfUri)) {
-                    //       await launchUrl(pdfUri);
-                    //     } else {
-                    //       ScaffoldMessenger.of(context).showSnackBar(
-                    //         const SnackBar(
-                    //             content:
-                    //                 Text('Unable to open Privacy Policy PDF')),
-                    //       );
-                    //     }
-                    //   },
-                    //   child: const Text(
-                    //     'Privacy Policy',
-                    //     style: TextStyle(color: Colors.blue),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -221,7 +222,7 @@ class SponsorButton extends StatelessWidget {
     ui.platformViewRegistry.registerViewFactory(
       'iframeElement',
       (int viewId) => html.IFrameElement()
-        ..src = 'https://github.com/sponsors/Some-Apps/button'
+        ..src = 'https://github.com/sponsors/Shelter-Partner/button'
         ..style.border = '0'
         ..style.borderRadius = '6px'
         ..width = '114'

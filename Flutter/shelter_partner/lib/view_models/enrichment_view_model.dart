@@ -5,6 +5,8 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/models/filter_condition.dart';
 import 'package:shelter_partner/models/filter_group.dart';
+import 'package:shelter_partner/models/shelter.dart';
+import 'package:shelter_partner/models/volunteer_settings.dart';
 import 'package:shelter_partner/repositories/enrichment_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
@@ -37,9 +39,25 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
   void _onAuthStateChanged(AuthState authState) {
     if (authState.status == AuthStatus.authenticated) {
-      final shelterID = authState.user?.shelterId;
-      if (shelterID != null) {
+      final user = authState.user!;
+      final shelterID = user.shelterId!;
+      if (user.type == 'admin') {
         fetchAnimals(shelterID: shelterID);
+      } else if (user.type == 'volunteer') {
+        // Immediately fetch if volunteer data already loaded
+        final volunteerAsync = ref.read(volunteersViewModelProvider);
+        if (volunteerAsync is AsyncData && volunteerAsync.value != null) {
+          fetchAnimals(shelterID: shelterID);
+        }
+        // Listen for transition from not loaded to loaded, then fetch
+        ref.listen<AsyncValue<Shelter?>>(
+          volunteersViewModelProvider,
+          (previous, next) {
+            if (previous is! AsyncData && next is AsyncData && next.value != null) {
+              fetchAnimals(shelterID: shelterID);
+            }
+          },
+        );
       }
     } else {
       // Clear animals when not authenticated
@@ -59,36 +77,33 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
     // Fetch animals stream
     final animalsStream = _repository.fetchAnimals(shelterID);
 
-    // Fetch account settings stream (filter)
+    // Fetch account settings stream (filter), seeded with current value to ensure initial emission
+    final initialAppUser = ref.read(accountSettingsViewModelProvider).asData?.value;
     final accountSettingsStream = ref
-        .watch(accountSettingsViewModelProvider.notifier)
+        .read(accountSettingsViewModelProvider.notifier)
         .stream
-        .map((asyncValue) {
-      return asyncValue.asData?.value;
-    });
+        .map((asyncValue) => asyncValue.asData?.value)
+        .startWith(initialAppUser);
+    // Fetch volunteer settings stream (filter), seeded with current value to ensure initial emission
+    final initialVolunteerSettings = ref.read(volunteersViewModelProvider).value?.volunteerSettings;
+    final volunteerSettingsStream = ref
+        .read(volunteersViewModelProvider.notifier)
+        .stream
+        .map((asyncValue) => asyncValue.asData!.value?.volunteerSettings)
+        .startWith(initialVolunteerSettings);
 
-    // Combine both streams
+    // Combine all three streams
     _animalsSubscription =
-        CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
+        CombineLatestStream.combine3<List<Animal>, AppUser?, VolunteerSettings?, void>(
       animalsStream,
       accountSettingsStream,
-      (animals, appUser) {
+      volunteerSettingsStream,
+      (animals, appUser, volunteerSettings) {
         _enrichmentFilter = appUser?.type == 'admin'
             ? appUser?.accountSettings?.enrichmentFilter
-            : ref
-                .watch(volunteersViewModelProvider)
-                .value
-                ?.volunteerSettings
-                .enrichmentFilter;
-
-        print("Retrieved enrichment filter: $_enrichmentFilter");
+            : volunteerSettings?.enrichmentFilter;
 
         _secondaryFilter = appUser?.userFilter;
-        print("Retrieved secondary filter $_secondaryFilter.toString()");
-        print(appUser?.email);
-        print(appUser?.type);
-        print(ref.read(volunteersViewModelProvider).value?.volunteerSettings.toMap());
-
 
         // Apply the filters
         final filteredAnimals = animals.where((animal) {

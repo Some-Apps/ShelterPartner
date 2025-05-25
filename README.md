@@ -1,5 +1,7 @@
 # Welcome To [Shelter Partner](https://shelterpartner.org)!
 
+I will be out of town from May 25 - 28 and will respond to any messages when I get back.
+
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
 2. Comment on the issue "I'd like to work on this"
@@ -26,16 +28,33 @@ All international payments will be made via PayPal so make sure you have an acco
    - New bounty issues start at **$5**
    - Each unassigned bounty increases by **$5** every week (7 days)
    - Maximum automatic bounty cap: **$100**
-   - Patreon members can increase bounties as a perk
+   - GitHub sponsors can increase bounties as a perk
    - The project manager can increase bounties as they see fit
 
 ## Bounties To Be Paid On June 1st
 
 <details>
+   
    <summary>Shivam Kumar: $110</summary>
   
   - Issue #388: Locations should be separated into separate parts ($100)
   - Issue #440: Animal slideshow should use all all animal photos ($10)
+
+</details>
+
+<details>
+   
+   <summary>Vedant Vijay: $40</summary>
+  
+  - Issue #420: Create a bunch of tests ($40)
+
+</details>
+
+<details>
+   
+   <summary>Ayush Srivastava: $25</summary>
+  
+  - Issue #445: Unable to Re-arrange Cat Tags due to spacing on iPhone 14 ($25)
 
 </details>
 

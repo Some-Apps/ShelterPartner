@@ -15,7 +15,7 @@ class VolunteerSettings {
   final bool showCustomForm;
   final String customFormURL;
   final bool appendAnimalDataToURL;
-  final Geofence? geofence; // Optional geofence field
+  final Geofence? geofence;
 
   VolunteerSettings({
     required this.photoUploadsAllowed,

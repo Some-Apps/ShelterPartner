@@ -371,10 +371,10 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                             ),
                           if (animal.locationTiers.isNotEmpty)
                             for (var tier in animal.locationTiers.sublist(
-                              animal.locationTiers.length > 1
+                              animal.locationTiers.length > widget.maxLocationTiers
                                   ? animal.locationTiers.length -
                                       widget.maxLocationTiers
-                                  : animal.locationTiers.length,
+                                  : 0, // Clamp to 0 if not enough tiers
                             ))
                               _buildInfoChip(
                                 icon: Icons.location_on,
