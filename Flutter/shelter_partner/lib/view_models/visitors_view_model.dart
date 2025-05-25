@@ -12,6 +12,7 @@ import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';
 
+
 class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   final VisitorsRepository _repository;
   final Ref ref;
@@ -51,35 +52,35 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
   // Modify fetchAnimals to apply the filter
   void fetchAnimals({required String shelterID}) {
-    _animalsSubscription?.cancel(); // Cancel any existing subscription
+  _animalsSubscription?.cancel(); // Cancel any existing subscription
 
-    // Fetch animals stream
-    final animalsStream = _repository.fetchAnimals(shelterID);
+  // Fetch animals stream
+  final animalsStream = _repository.fetchAnimals(shelterID);
 
-    // Fetch account settings stream (filter)
-    final accountSettingsStream = ref
-        .watch(accountSettingsViewModelProvider.notifier)
-        .stream
-        .map((asyncValue) {
+  // Fetch account settings stream (filter)
+  final accountSettingsStream = ref
+    .watch(accountSettingsViewModelProvider.notifier)
+    .stream
+    .map((asyncValue) {
       return asyncValue.asData?.value;
-    }).startWith(null); // Ensure the stream emits an initial value
+    })
+    .startWith(null); // Ensure the stream emits an initial value
 
-    // Combine both streams
-    _animalsSubscription =
-        CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
-      animalsStream,
-      accountSettingsStream,
-      (animals, appUser) {
-        _enrichmentFilter = appUser?.accountSettings?.visitorFilter;
+  // Combine both streams
+  _animalsSubscription = CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
+    animalsStream,
+    accountSettingsStream,
+    (animals, appUser) {
+      _enrichmentFilter = appUser?.accountSettings?.visitorFilter;
 
-        // Apply the filter
-        final filteredAnimals = animals.where((animal) {
-          if (_enrichmentFilter != null) {
-            return evaluateFilter(_enrichmentFilter!, animal);
-          } else {
-            return true; // No filter applied
-          }
-        }).toList();
+      // Apply the filter
+      final filteredAnimals = animals.where((animal) {
+        if (_enrichmentFilter != null) {
+          return evaluateFilter(_enrichmentFilter!, animal);
+        } else {
+          return true; // No filter applied
+        }
+      }).toList();
 
         final cats =
             filteredAnimals.where((animal) => animal.species == 'cat').toList();
@@ -98,8 +99,7 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
     final accountSettings =
         ref.read(accountSettingsViewModelProvider).asData?.value;
 
-    final visitorSort =
-        accountSettings?.accountSettings?.visitorSort ?? 'Alphabetical';
+    final visitorSort = accountSettings?.accountSettings?.visitorSort ?? 'Alphabetical';
 
     final sortedState = <String, List<Animal>>{};
 
@@ -109,8 +109,8 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
       if (visitorSort == 'Alphabetical') {
         sortedList.sort((a, b) => a.name.compareTo(b.name));
       } else if (visitorSort == 'Intake Date') {
-        sortedList.sort((a, b) => (a.intakeDate ?? Timestamp(0, 0))
-            .compareTo(b.intakeDate ?? Timestamp(0, 0)));
+        sortedList
+        .sort((a, b) => (a.intakeDate ?? Timestamp(0, 0)).compareTo(b.intakeDate ?? Timestamp(0, 0)));
       }
 
       sortedState[species] = sortedList;
@@ -217,10 +217,6 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
         return animal.volunteerCategory;
       case 'inKennel':
         return animal.inKennel;
-      case 'lastLetOutType':
-        return animal.lastLetOutType;
-      case 'lastEarlyPutBackReason':
-        return animal.lastEarlyPutBackReason;
       default:
         return null;
     }

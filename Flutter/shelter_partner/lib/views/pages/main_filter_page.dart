@@ -469,16 +469,16 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
         ));
       } else if (element is FilterGroup) {
         // Add opening parenthesis
-        spans.add(
-            const TextSpan(text: '(', style: TextStyle(color: Colors.black)));
+        spans.add(const TextSpan(
+            text: '(', style: TextStyle(color: Colors.black)));
 
         // Recursively build the group
         spans.add(buildExpressionSpan(element.elements,
             groupOperator: element.logicalOperator));
 
         // Add closing parenthesis
-        spans.add(
-            const TextSpan(text: ')', style: TextStyle(color: Colors.black)));
+        spans.add(const TextSpan(
+            text: ')', style: TextStyle(color: Colors.black)));
       }
     }
 
@@ -553,10 +553,6 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
     'Name': 'name',
     'Notes': 'notes',
     'Tags': 'tags',
-
-    'Let Out Type': 'lastLetOutType',
-    'Early Put Back Reason': 'lastEarlyPutBackReason',
-
     'Sex': 'sex',
     'Breed': 'breed',
     'Location': 'location',
@@ -617,20 +613,6 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
       OperatorType.contains,
       OperatorType.notContains
     ],
-
-    'lastLetOutType': [
-      OperatorType.equals,
-      OperatorType.notEquals,
-      OperatorType.contains,
-      OperatorType.notContains
-    ],
-    'lastEarlyPutBackReason': [
-      OperatorType.equals,
-      OperatorType.notEquals,
-      OperatorType.contains,
-      OperatorType.notContains
-    ],
-
     'putBackAlert': [
       OperatorType.equals,
       OperatorType.notEquals,
@@ -687,7 +669,8 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    List<OperatorType> operators = attributeOperators[selectedAttribute] ?? [];
+    List<OperatorType> operators =
+        attributeOperators[selectedAttribute] ?? [];
 
     return AlertDialog(
       title: const Text('Add Condition'),
@@ -767,8 +750,7 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
                 if (parsedValue == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content:
-                          Text('Please enter a valid number for Months Old'),
+                      content: Text('Please enter a valid number for Months Old'),
                     ),
                   );
                   return;

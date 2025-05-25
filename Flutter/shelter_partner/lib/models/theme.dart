@@ -18,6 +18,8 @@ final ThemeData lightTheme = ThemeData(
   unselectedWidgetColor: const Color(0x8A000000),
   disabledColor: const Color(0x61000000),
   secondaryHeaderColor: const Color(0xFFE3F2FD),
+  dialogBackgroundColor: const Color(0xFFF8F9FF),
+  indicatorColor: Colors.white,
   hintColor: const Color(0x99000000),
   visualDensity: VisualDensity.compact,
   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -152,7 +154,7 @@ final ThemeData lightTheme = ThemeData(
   primaryIconTheme: const IconThemeData(
     color: Colors.white,
   ),
-
+  
   // Define your button theme
   buttonTheme: ButtonThemeData(
     height: 36,
@@ -169,8 +171,6 @@ final ThemeData lightTheme = ThemeData(
   timePickerTheme: const TimePickerThemeData(
     hourMinuteTextStyle: TextStyle(fontSize: 36.0),
   ),
-  dialogTheme: DialogThemeData(backgroundColor: const Color(0xFFF8F9FF)),
-  tabBarTheme: TabBarThemeData(indicatorColor: Colors.white),
 );
 
 final ThemeData darkTheme = ThemeData(
