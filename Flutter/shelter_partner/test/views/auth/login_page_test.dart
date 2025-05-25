@@ -108,16 +108,9 @@ void main() {
 
       // Act
       await tester.pumpWidget(
-        createTestWidget(
-          providerOverrides: [
-            authRepositoryProvider.overrideWithValue(mockAuthRepository),
-          ],
-        ),
-      );
-      await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authRepositoryProvider.overrideWithValue(mockAuthRepository)
+            authRepositoryProvider.overrideWithValue(mockAuthRepository),
           ],
           child: MaterialApp(
             home: LoginPage(onTapForgotPassword: () => tapped = true),
