@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:universal_html/html.dart' as html;
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -63,20 +63,22 @@ void main() async {
       // 2) Fallback: if not installed, wait ~0.5s and open the App Store
       Future.delayed(const Duration(milliseconds: 500), () {
         html.window.location.assign(
-            "https://apps.apple.com/us/app/6449749673" // Your iOS App Store link
-            );
+          "https://apps.apple.com/us/app/6449749673" // Your iOS App Store link
+        );
       });
       return; // Don’t proceed to runApp
     } else if (isAndroidWeb()) {
       // 1) Try to open via Android Intent URI scheme
       //    Replace "com.mycompany.myapp" with your package name
       html.window.location.assign(
-          "intent://myapp/#Intent;scheme=myapp;package=me.jareddanieljones.HumaneSociety;end");
+        "intent://myapp/#Intent;scheme=myapp;package=me.jareddanieljones.HumaneSociety;end"
+      );
 
       // 2) Fallback: if not installed, open Google Play Store
       Future.delayed(const Duration(milliseconds: 500), () {
         html.window.location.assign(
-            "https://play.google.com/store/apps/details?id=me.jareddanieljones.HumaneSociety");
+          "https://play.google.com/store/apps/details?id=me.jareddanieljones.HumaneSociety"
+        );
       });
       return; // Don’t proceed to runApp
     }
@@ -97,6 +99,8 @@ void main() async {
       .build();
 
   Qonversion.initialize(config);
+
+  
 
   runApp(ProviderScope(
       child: MyApp(
