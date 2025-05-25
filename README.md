@@ -50,6 +50,14 @@ All international payments will be made via PayPal so make sure you have an acco
 
 </details>
 
+<details>
+   
+   <summary>Ayush Srivastava: $25</summary>
+  
+  - Issue #445: Unable to Re-arrange Cat Tags due to spacing on iPhone 14 ($25)
+
+</details>
+
 ## Bounties Paid On May 1st
 
 <details>
