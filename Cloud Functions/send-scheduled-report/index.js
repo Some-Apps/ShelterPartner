@@ -161,7 +161,8 @@ exports.scheduledReport = async (req, res) => {
                 { id: 'logStart', title: 'Log Start' },
                 { id: 'logEnd', title: 'Log End' },
                 { id: 'logDuration', title: 'Log Duration (minutes)' },
-                { id: 'logAuthor', title: 'Log Author' }
+                { id: 'logAuthor', title: 'Log Author' },
+                { id: 'photoUrl', title: 'Photo URL' } // Added photos column
             ]
         });
 
@@ -171,6 +172,24 @@ exports.scheduledReport = async (req, res) => {
             console.log(`Adding records for Animal ID: ${animal.id}, Name: ${animal.name}, Species: ${animal.species}`);
             let isFirstRowForAnimal = true;
 
+            //Format tags for dispaly
+            const formattedTags = animal.tags ? animal.tags.map(tag => `(${tag.name} : ${tag.count})`).join(', ') : '';
+
+            // Add header row for the animal 
+            records.push({
+                id: isFirstRowForAnimal ? animal.id : '',
+                name: isFirstRowForAnimal ? animal.name : '',
+                species: isFirstRowForAnimal ? animal.species : '',
+                noteDate: '',
+                noteAuthor: '',
+                note: '',
+                logType: '',
+                logStart: '',
+                logEnd: '',
+                logDuration: '',
+                logAuthor: '',
+                photoUrl: formattedTags // Add formatted tags to the photoUrl column
+            });
             // Process notes
             animal.notes.forEach(note => {
                 records.push({
@@ -186,7 +205,24 @@ exports.scheduledReport = async (req, res) => {
                     logDuration: '',
                     logAuthor: ''
                 });
-                isFirstRowForAnimal = false;
+            });
+
+            // Process notes
+            animal.notes.forEach(note => {
+                records.push({
+                    id: isFirstRowForAnimal ? animal.id : '',
+                    name: isFirstRowForAnimal ? animal.name : '',
+                    species: isFirstRowForAnimal ? animal.species : '',
+                    noteDate: moment(note.timestamp.toDate()).format('MMM D'),
+                    noteAuthor: note.author || '',
+                    note: note.note || '',
+                    logType: '',
+                    logStart: '',
+                    logEnd: '',
+                    logDuration: '',
+                    logAuthor: '',
+                    photoUrl: note.photoUrl || '' // Add photo URL if available
+                });
             });
 
             // Process logs
@@ -205,9 +241,28 @@ exports.scheduledReport = async (req, res) => {
                     logStart: start.format('MMM D HH:mm'),
                     logEnd: end.format('MMM D HH:mm'),
                     logDuration: duration,
-                    logAuthor: log.author || ''
+                    logAuthor: log.author || '',
+                    photoUrl: '' // No photo URL for logs
                 });
                 isFirstRowForAnimal = false;
+            });
+        });
+
+        // Process photos
+        animal.photos.forEach(photo => {
+            records.push({
+                id: isFirstRowForAnimal ? animal.id : '',
+                name: isFirstRowForAnimal ? animal.name : '',
+                species: isFirstRowForAnimal ? animal.species : '',
+                noteDate: '',
+                noteAuthor: '',
+                note: '',
+                logType: log.type || '',
+                logStart: start.format('MMM D HH:mm'),
+                logEnd: end.format('MMM D HH:mm'),
+                logDuration: duration,
+                logAuthor: log.author || '',
+                photoUrl: photo.url || '' // Add photo URL if available
             });
         });
 
@@ -234,6 +289,13 @@ exports.scheduledReport = async (req, res) => {
             htmlContent += '<h2>Cats</h2>';
             catsData.forEach(animal => {
                 htmlContent += `<h3>${animal.name}</h3>`;
+
+                //Display formatted tags if available
+                if( animal.tags && animal.tags.length > 0) {
+                    htmlContent += `<p><strong>Tags:</strong>`;
+                    htmlContent += animal.tags.map(tag => `(${tag.name} : ${tag.count})`).join(', ');
+                    htmlContent += '</p>';
+                }
                 htmlContent += '<ul>';
 
                 animal.notes.forEach(note => {
@@ -253,6 +315,13 @@ exports.scheduledReport = async (req, res) => {
             htmlContent += '<h2>Dogs</h2>';
             dogsData.forEach(animal => {
                 htmlContent += `<h3>${animal.name}</h3>`;
+
+                //Display formatted tags if available
+                if( animal.tags && animal.tags.length > 0) {
+                    htmlContent += `<p><strong>Tags:</strong>`;
+                    htmlContent += animal.tags.map(tag => `(${tag.name} : ${tag.count})`).join(', ');
+                    htmlContent += '</p>';
+                }
                 htmlContent += '<ul>';
 
                 animal.notes.forEach(note => {
@@ -312,6 +381,7 @@ function fetchAnimalData(doc, species, startDate, endDate) {
     const notes = animal.notes || [];
     const logs = animal.logs || [];
     const photos = animal.photos || [];
+    const tags = animal.tags || [];
 
     // Filter notes within the date range
     const filteredNotes = notes.filter(note => {
@@ -354,6 +424,7 @@ function fetchAnimalData(doc, species, startDate, endDate) {
             id: doc.id,
             name: name,
             species: species,
+            tags: tags,
             notes: filteredNotes,
             logs: filteredLogs,
             photos: filteredPhotos
