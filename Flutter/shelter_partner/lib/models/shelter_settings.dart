@@ -18,6 +18,9 @@ class ShelterSettings {
   final bool ignoreVisitWhenAutomaticallyPutBack;
   final int automaticPutBackHours;
   final String shortUUID;
+  final int tokenCount;
+  final int tokenLimit;
+  final DateTime? lastTokenReset;
 
   ShelterSettings({
     required this.scheduledReports,
@@ -36,6 +39,9 @@ class ShelterSettings {
     this.ignoreVisitWhenAutomaticallyPutBack = false,
     this.automaticPutBackHours = 12,
     required this.shortUUID,
+    this.tokenCount = 0,
+    this.tokenLimit = 1000000,
+    this.lastTokenReset,
   });
 
   // Method to dynamically return a list based on the key
@@ -81,6 +87,9 @@ class ShelterSettings {
       'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
       'automaticPutBackHours': automaticPutBackHours,
       'shortUUID': shortUUID,
+      'tokenCount': tokenCount,
+      'tokenLimit': tokenLimit,
+      'lastTokenReset': lastTokenReset?.toIso8601String(),
     };
   }
 
@@ -125,6 +134,11 @@ class ShelterSettings {
       ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
       automaticPutBackHours: data['automaticPutBackHours'] ?? 12,
       shortUUID: data['shortUUID'] ?? '',
+      tokenCount: data['tokenCount'] ?? 0,
+      tokenLimit: data['tokenLimit'] ?? 1000000,
+      lastTokenReset: data['lastTokenReset'] != null 
+          ? DateTime.parse(data['lastTokenReset'])
+          : null,
     );
   }
 }
