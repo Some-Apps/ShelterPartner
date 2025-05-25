@@ -4,7 +4,6 @@ import 'package:shelter_partner/views/pages/main_filter_page.dart';
 class AccountSettings {
   final String mode;
 
-
   final bool photoUploadsAllowed;
   final String enrichmentSort;
   final FilterElement? enrichmentFilter;
@@ -25,6 +24,7 @@ class AccountSettings {
   final bool removeAds;
 
   final bool simplisticMode;
+  final int locationTierCount;
 
   AccountSettings({
     required this.mode,
@@ -46,62 +46,62 @@ class AccountSettings {
     required this.buttonType,
     required this.appendAnimalDataToURL,
     required this.removeAds,
-
     required this.simplisticMode,
+    required this.locationTierCount,
   });
 
   AccountSettings copyWith({
-  String? mode,
-  bool? photoUploadsAllowed,
-  String? enrichmentSort,
-  FilterElement? enrichmentFilter,
-  FilterElement? visitorFilter,
-  String? visitorSort,
-  String? slideshowSize,
-  bool? allowBulkTakeOut,
-  int? minimumLogMinutes,
-  int? slideshowTimer,
-  bool? requireLetOutType,
-  bool? requireEarlyPutBackReason,
-  bool? requireName,
-  bool? createLogsWhenUnderMinimumDuration,
-  bool? showNoteDates,
-  bool? showLogs,
-  bool? showCustomForm,
-  String? customFormURL,
-  String? buttonType,
-  bool? appendAnimalDataToURL,
-  bool? removeAds,
-
-  bool? simplisticMode,
-}) {
-  return AccountSettings(
-    mode: mode ?? this.mode,
-    photoUploadsAllowed: photoUploadsAllowed ?? this.photoUploadsAllowed,
-    enrichmentSort: enrichmentSort ?? this.enrichmentSort,
-    enrichmentFilter: enrichmentFilter ?? this.enrichmentFilter,
-    visitorFilter: visitorFilter ?? this.visitorFilter,
-    visitorSort: visitorSort ?? this.visitorSort,
-    slideshowSize: slideshowSize ?? this.slideshowSize,
-    allowBulkTakeOut: allowBulkTakeOut ?? this.allowBulkTakeOut,
-    minimumLogMinutes: minimumLogMinutes ?? this.minimumLogMinutes,
-    slideshowTimer: slideshowTimer ?? this.slideshowTimer,
-    requireLetOutType: requireLetOutType ?? this.requireLetOutType,
-    requireEarlyPutBackReason:
-        requireEarlyPutBackReason ?? this.requireEarlyPutBackReason,
-    requireName: requireName ?? this.requireName,
-    createLogsWhenUnderMinimumDuration:
-        createLogsWhenUnderMinimumDuration ?? this.createLogsWhenUnderMinimumDuration,
-    showCustomForm: showCustomForm ?? this.showCustomForm,
-    customFormURL: customFormURL ?? this.customFormURL,
-    buttonType: buttonType ?? this.buttonType,
-    appendAnimalDataToURL: appendAnimalDataToURL ?? this.appendAnimalDataToURL,
-    removeAds: removeAds ?? this.removeAds,
-
-    simplisticMode: simplisticMode ?? this.simplisticMode,
-  );
-}
-
+    String? mode,
+    bool? photoUploadsAllowed,
+    String? enrichmentSort,
+    FilterElement? enrichmentFilter,
+    FilterElement? visitorFilter,
+    String? visitorSort,
+    String? slideshowSize,
+    bool? allowBulkTakeOut,
+    int? minimumLogMinutes,
+    int? slideshowTimer,
+    bool? requireLetOutType,
+    bool? requireEarlyPutBackReason,
+    bool? requireName,
+    bool? createLogsWhenUnderMinimumDuration,
+    bool? showNoteDates,
+    bool? showLogs,
+    bool? showCustomForm,
+    String? customFormURL,
+    String? buttonType,
+    bool? appendAnimalDataToURL,
+    bool? removeAds,
+    bool? simplisticMode,
+    int? locationTierCount,
+  }) {
+    return AccountSettings(
+      mode: mode ?? this.mode,
+      photoUploadsAllowed: photoUploadsAllowed ?? this.photoUploadsAllowed,
+      enrichmentSort: enrichmentSort ?? this.enrichmentSort,
+      enrichmentFilter: enrichmentFilter ?? this.enrichmentFilter,
+      visitorFilter: visitorFilter ?? this.visitorFilter,
+      visitorSort: visitorSort ?? this.visitorSort,
+      slideshowSize: slideshowSize ?? this.slideshowSize,
+      allowBulkTakeOut: allowBulkTakeOut ?? this.allowBulkTakeOut,
+      minimumLogMinutes: minimumLogMinutes ?? this.minimumLogMinutes,
+      slideshowTimer: slideshowTimer ?? this.slideshowTimer,
+      requireLetOutType: requireLetOutType ?? this.requireLetOutType,
+      requireEarlyPutBackReason:
+          requireEarlyPutBackReason ?? this.requireEarlyPutBackReason,
+      requireName: requireName ?? this.requireName,
+      createLogsWhenUnderMinimumDuration: createLogsWhenUnderMinimumDuration ??
+          this.createLogsWhenUnderMinimumDuration,
+      showCustomForm: showCustomForm ?? this.showCustomForm,
+      customFormURL: customFormURL ?? this.customFormURL,
+      buttonType: buttonType ?? this.buttonType,
+      appendAnimalDataToURL:
+          appendAnimalDataToURL ?? this.appendAnimalDataToURL,
+      removeAds: removeAds ?? this.removeAds,
+      simplisticMode: simplisticMode ?? this.simplisticMode,
+      locationTierCount: locationTierCount ?? this.locationTierCount,
+    );
+  }
 
   // Convert AccountSettings to Map<String, dynamic> for Firestore
   Map<String, dynamic> toMap() {
@@ -109,7 +109,8 @@ class AccountSettings {
       'mode': mode,
       'photoUploadsAllowed': photoUploadsAllowed,
       'enrichmentSort': enrichmentSort,
-      if (enrichmentFilter != null) 'enrichmentFilter': enrichmentFilter!.toJson(),
+      if (enrichmentFilter != null)
+        'enrichmentFilter': enrichmentFilter!.toJson(),
       if (visitorFilter != null) 'visitorFilter': visitorFilter!.toJson(),
       'visitorSort': visitorSort,
       'slideshowSize': slideshowSize,
@@ -125,8 +126,8 @@ class AccountSettings {
       'buttonType': buttonType,
       'appendAnimalDataToURL': appendAnimalDataToURL,
       'removeAds': removeAds,
-
       'simplisticMode': simplisticMode,
+      'locationTierCount': locationTierCount,
     };
   }
 
@@ -154,8 +155,10 @@ class AccountSettings {
     }
 
     FilterElement? enrichmentFilter;
-    if (data.containsKey('enrichmentFilter') && data['enrichmentFilter'] != null) {
-      final enrichmentFilterData = data['enrichmentFilter'] as Map<String, dynamic>;
+    if (data.containsKey('enrichmentFilter') &&
+        data['enrichmentFilter'] != null) {
+      final enrichmentFilterData =
+          data['enrichmentFilter'] as Map<String, dynamic>;
       enrichmentFilter = reconstructFilterGroup(enrichmentFilterData);
     } else {
       enrichmentFilter = null;
@@ -190,8 +193,8 @@ class AccountSettings {
       buttonType: data['buttonType'] ?? "Unknown",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
       removeAds: data['removeAds'] ?? false,
-
       simplisticMode: data['simplisticMode'] ?? true,
+      locationTierCount: data['locationTierCount'] ?? 2,
     );
   }
 }

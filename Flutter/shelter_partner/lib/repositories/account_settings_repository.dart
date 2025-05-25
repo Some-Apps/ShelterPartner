@@ -9,51 +9,51 @@ class AccountSettingsRepository {
     return _firestore.collection('users').doc(userID).snapshots();
   }
 
-Future<void> toggleAccountSetting(String userID, String field) async {
-  final docRef = _firestore.collection('users').doc(userID);
-  final snapshot = await docRef.get();
+  Future<void> toggleAccountSetting(String userID, String field) async {
+    final docRef = _firestore.collection('users').doc(userID);
+    final snapshot = await docRef.get();
 
-  // Check if document exists
-  if (!snapshot.exists) {
-    throw Exception("Document does not exist");
-  }
-
-  // Get the 'accountSettings' map (or initialize it if it doesn't exist)
-  Map<String, dynamic> accountSettings =
-      (snapshot.data()?['accountSettings'] as Map<String, dynamic>?) ?? {};
-
-  // Split the field into parts (e.g., "geofence.isEnabled" becomes ["geofence", "isEnabled"])
-  final fieldParts = field.split('.');
-
-  // Traverse (or create) the nested structure for the field
-  dynamic currentValue = accountSettings;
-  for (int i = 0; i < fieldParts.length - 1; i++) {
-    if (currentValue[fieldParts[i]] is Map<String, dynamic>) {
-      currentValue = currentValue[fieldParts[i]];
-    } else {
-      // If the nested map doesn't exist, initialize it
-      currentValue[fieldParts[i]] = <String, dynamic>{};
-      currentValue = currentValue[fieldParts[i]];
+    // Check if document exists
+    if (!snapshot.exists) {
+      throw Exception("Document does not exist");
     }
+
+    // Get the 'accountSettings' map (or initialize it if it doesn't exist)
+    Map<String, dynamic> accountSettings =
+        (snapshot.data()?['accountSettings'] as Map<String, dynamic>?) ?? {};
+
+    // Split the field into parts (e.g., "geofence.isEnabled" becomes ["geofence", "isEnabled"])
+    final fieldParts = field.split('.');
+
+    // Traverse (or create) the nested structure for the field
+    dynamic currentValue = accountSettings;
+    for (int i = 0; i < fieldParts.length - 1; i++) {
+      if (currentValue[fieldParts[i]] is Map<String, dynamic>) {
+        currentValue = currentValue[fieldParts[i]];
+      } else {
+        // If the nested map doesn't exist, initialize it
+        currentValue[fieldParts[i]] = <String, dynamic>{};
+        currentValue = currentValue[fieldParts[i]];
+      }
+    }
+
+    // The last part is the specific field to toggle (e.g., "simplisticMode")
+    final lastField = fieldParts.last;
+
+    // If the field is missing or not a bool, assume default value of true
+    bool currentBool = true;
+    if (currentValue[lastField] is bool) {
+      currentBool = currentValue[lastField] as bool;
+    }
+    final newValue = !currentBool;
+
+    // Update the nested field using the dot notation in the field path
+    return docRef.update({
+      'accountSettings.${fieldParts.join('.')}': newValue,
+    }).catchError((error) {
+      throw Exception("Failed to toggle: $error");
+    });
   }
-
-  // The last part is the specific field to toggle (e.g., "simplisticMode")
-  final lastField = fieldParts.last;
-
-  // If the field is missing or not a bool, assume default value of true
-  bool currentBool = true;
-  if (currentValue[lastField] is bool) {
-    currentBool = currentValue[lastField] as bool;
-  }
-  final newValue = !currentBool;
-
-  // Update the nested field using the dot notation in the field path
-  return docRef.update({
-    'accountSettings.${fieldParts.join('.')}': newValue,
-  }).catchError((error) {
-    throw Exception("Failed to toggle: $error");
-  });
-}
 
   // Method to modify a specific string attribute within volunteerSettings
   Future<void> modifyAccountSettingString(
@@ -75,6 +75,32 @@ Future<void> toggleAccountSetting(String userID, String field) async {
     });
   }
 
+  Future<void> updateLocationTierCount(
+      String userID, int locationTierCount) async {
+    final docRef = _firestore.collection('users').doc(userID);
+    return docRef.update({
+      'accountSettings.locationTierCount': locationTierCount,
+    }).catchError((error) {
+      throw Exception("Failed to update: $error");
+    });
+  }
+
+  Future<int?> getLocationTierCount(
+      String userID, String locationTierCount) async {
+    final docRef = _firestore.collection('users').doc(userID);
+    return docRef.get().then((snapshot) {
+      if (snapshot.exists) {
+        final data = snapshot.data();
+        if (data != null && data['accountSettings'] != null) {
+          return data['accountSettings']['locationTierCount'] as int?;
+        }
+      }
+      return null;
+    }).catchError((error) {
+      throw Exception("Failed to get location tier count: $error");
+    });
+  }
+
   Future<void> decrementAccountSetting(String userID, String field) async {
     final docRef = _firestore.collection('users').doc(userID);
     return docRef.update({
@@ -84,32 +110,30 @@ Future<void> toggleAccountSetting(String userID, String field) async {
     });
   }
 
-
- Future<void> saveFilterExpression(String userID, Map<String, dynamic> filterExpression) async {
-  final docRef = _firestore.collection('users').doc(userID);
-  return docRef.update({
-    'accountSettings.enrichmentFilter': filterExpression,
-  }).catchError((error) {
-    throw Exception("Failed to save filter expression: $error");
-  });
-}
-
-
-
-
-Future<Map<String, dynamic>?> loadFilterExpression(String userID) async {
-  final docRef = _firestore.collection('users').doc(userID);
-  final snapshot = await docRef.get();
-  if (snapshot.exists) {
-    final data = snapshot.data();
-    if (data != null && data['accountSettings'] != null && data['accountSettings']['enrichmentFilter'] != null) {
-      return Map<String, dynamic>.from(data['accountSettings']['enrichmentFilter']);
-    }
+  Future<void> saveFilterExpression(
+      String userID, Map<String, dynamic> filterExpression) async {
+    final docRef = _firestore.collection('users').doc(userID);
+    return docRef.update({
+      'accountSettings.enrichmentFilter': filterExpression,
+    }).catchError((error) {
+      throw Exception("Failed to save filter expression: $error");
+    });
   }
-  return null;
-}
 
-
+  Future<Map<String, dynamic>?> loadFilterExpression(String userID) async {
+    final docRef = _firestore.collection('users').doc(userID);
+    final snapshot = await docRef.get();
+    if (snapshot.exists) {
+      final data = snapshot.data();
+      if (data != null &&
+          data['accountSettings'] != null &&
+          data['accountSettings']['enrichmentFilter'] != null) {
+        return Map<String, dynamic>.from(
+            data['accountSettings']['enrichmentFilter']);
+      }
+    }
+    return null;
+  }
 }
 
 final accountSettingsRepositoryProvider =

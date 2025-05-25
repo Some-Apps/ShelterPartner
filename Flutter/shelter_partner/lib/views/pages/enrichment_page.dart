@@ -426,6 +426,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     final appUser = ref.watch(appUserProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
+    selectedLocationTierCount =
+        accountSettings.value?.accountSettings?.locationTierCount ?? 2;
 
     ref.listen<AsyncValue<List<Ad>>>(adsProvider, (previous, next) {
       next.when(
@@ -596,10 +598,21 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                 ),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<int>(
-                                    value: selectedLocationTierCount,
+                                    value: accountSettings
+                                            .value
+                                            ?.accountSettings
+                                            ?.locationTierCount ??
+                                        2,
                                     isExpanded: true,
-                                    onChanged: (int? newValue) {
-                                      if (newValue != null) {
+                                    onChanged: (int? newValue) async {
+                                      final user = ref.read(appUserProvider);
+                                      if (newValue != null && user != null) {
+                                        await ref
+                                            .read(
+                                                accountSettingsViewModelProvider
+                                                    .notifier)
+                                            .updateLocationTierCount(
+                                                user.id, newValue);
                                         setState(() {
                                           selectedLocationTierCount = newValue;
                                           _dogsPagingController.refresh();

@@ -42,21 +42,20 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   }
 
   // Method to fetch account details from the repository
- void fetchUserDetails({required String userID}) {
-  _userSubscription = _repository.fetchUserDetails(userID).listen(
-    (accountDetails) {
-      if (accountDetails.exists) {
-        state = AsyncValue.data(AppUser.fromDocument(accountDetails));
-      } else {
-        state = AsyncValue.error('No user found', StackTrace.current);
-      }
-    },
-    onError: (error) {
-      state = AsyncValue.error(error, StackTrace.current);
-    },
-  );
-}
-
+  void fetchUserDetails({required String userID}) {
+    _userSubscription = _repository.fetchUserDetails(userID).listen(
+      (accountDetails) {
+        if (accountDetails.exists) {
+          state = AsyncValue.data(AppUser.fromDocument(accountDetails));
+        } else {
+          state = AsyncValue.error('No user found', StackTrace.current);
+        }
+      },
+      onError: (error) {
+        state = AsyncValue.error(error, StackTrace.current);
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -65,10 +64,6 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   }
 
   // Other methods...
-
-
-
-  
 
 // Modify attribute in Firestore document within volunteerSettings
   Future<void> modifyAccountSettingString(
@@ -87,6 +82,29 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     } catch (error) {
       print("Error toggling: $error");
       state = AsyncValue.error("Error toggling: $error", StackTrace.current);
+    }
+  }
+
+  Future<int?> getLocationTierCount(String userID) async {
+    try {
+      final data =
+          await _repository.getLocationTierCount(userID, 'locationTierCount');
+      return data;
+    } catch (error) {
+      print("Error reading locationTierCount: $error");
+      state = AsyncValue.error(
+          "Error reading locationTierCount: $error", StackTrace.current);
+      return null;
+    }
+  }
+
+  Future<void> updateLocationTierCount(String userID, int count) async {
+    try {
+      await _repository.updateLocationTierCount(userID, count);
+    } catch (error) {
+      print("Error updating locationTierCount: $error");
+      state = AsyncValue.error(
+          "Error updating locationTierCount: $error", StackTrace.current);
     }
   }
 
@@ -111,40 +129,38 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     }
   }
 
-  Future<void> saveFilterExpression(List<Map<String, dynamic>> serializedFilterElements, Map<String, String> serializedOperatorsBetween) async {
-  final authState = ref.read(authViewModelProvider);
-  if (authState.status == AuthStatus.authenticated) {
-    final userID = authState.user?.id;
-    if (userID != null) {
-      await _repository.saveFilterExpression(userID, {
-        'filterElements': serializedFilterElements,
-        'operatorsBetween': serializedOperatorsBetween,
-      });
+  Future<void> saveFilterExpression(
+      List<Map<String, dynamic>> serializedFilterElements,
+      Map<String, String> serializedOperatorsBetween) async {
+    final authState = ref.read(authViewModelProvider);
+    if (authState.status == AuthStatus.authenticated) {
+      final userID = authState.user?.id;
+      if (userID != null) {
+        await _repository.saveFilterExpression(userID, {
+          'filterElements': serializedFilterElements,
+          'operatorsBetween': serializedOperatorsBetween,
+        });
+      }
     }
   }
-}
 
-
-
- Future<Map<String, dynamic>?> loadFilterExpression() async {
-  final authState = ref.read(authViewModelProvider);
-  if (authState.status == AuthStatus.authenticated) {
-    final userID = authState.user?.id;
-    if (userID != null) {
-      final result = await _repository.loadFilterExpression(userID);
-      return result;
+  Future<Map<String, dynamic>?> loadFilterExpression() async {
+    final authState = ref.read(authViewModelProvider);
+    if (authState.status == AuthStatus.authenticated) {
+      final userID = authState.user?.id;
+      if (userID != null) {
+        final result = await _repository.loadFilterExpression(userID);
+        return result;
+      }
     }
+    return null;
   }
-  return null;
-}
-
-
-
 }
 
 // Provider to access the VolunteersViewModel
 final accountSettingsViewModelProvider =
-    StateNotifierProvider<AccountSettingsViewModel, AsyncValue<AppUser?>>((ref) {
+    StateNotifierProvider<AccountSettingsViewModel, AsyncValue<AppUser?>>(
+        (ref) {
   final repository =
       ref.watch(accountSettingsRepositoryProvider); // Access the repository
   return AccountSettingsViewModel(
