@@ -1,0 +1,122 @@
+name: Flutter Build
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: Flutter/shelter_partner
+
+      - name: Analyze project source
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos # TODO: fix warnings so that --no-fatal-warnings/--no-fatal-infos can be removed
+        working-directory: Flutter/shelter_partner
+
+      - name: Run tests
+        run: flutter test
+        working-directory: Flutter/shelter_partner
+
+      - name: Build Web
+        run: flutter build web
+        working-directory: Flutter/shelter_partner
+  build-windows:
+    # Windows build is disabled due to use of dart:html, which is not supported on Windows.
+    # To re-enable, remove dart:html imports from lib/main.dart and any other non-web files.
+    if: false
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: Flutter/shelter_partner
+
+      - name: Build Windows
+        run: flutter build windows
+        working-directory: Flutter/shelter_partner
+  build-macos:
+    # macOS build is disabled due to use of dart:html, which is not supported on macOS.
+    # To re-enable, remove dart:html imports from lib/main.dart and any other non-web files.
+    if: false
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: Flutter/shelter_partner
+
+      - name: Build macOS
+        run: flutter build macos
+        working-directory: Flutter/shelter_partner
+  build-ios:
+    # iOS build is disabled due to use of dart:html, which is not supported on iOS.
+    # To re-enable, remove dart:html imports from lib/main.dart and any other non-web files.
+    if: false
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: Flutter/shelter_partner
+
+      - name: Build iOS
+        run: flutter build ios --no-codesign
+        working-directory: Flutter/shelter_partner
+  build-website-web:
+    # Website build is disabled because the Website project does not currently compile.
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: Website
+
+      - name: Build Web
+        run: flutter build web
+        working-directory: Website
