@@ -194,7 +194,7 @@ class AccountSettings {
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,
       removeAds: data['removeAds'] ?? false,
       simplisticMode: data['simplisticMode'] ?? true,
-      locationTierCount: data['locationTierCount'] ?? 2,
+      locationTierCount: data['locationTierCount'] ?? 4,
     );
   }
 }

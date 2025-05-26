@@ -158,7 +158,7 @@ class AuthRepository {
       appendAnimalDataToURL: false,
       removeAds: true,
       simplisticMode: true,
-      locationTierCount: 2,
+      locationTierCount: 4,
     );
 
     // Create user document with account settings

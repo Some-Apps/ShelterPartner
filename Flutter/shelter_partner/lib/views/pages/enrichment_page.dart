@@ -427,7 +427,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
     selectedLocationTierCount =
-        accountSettings.value?.accountSettings?.locationTierCount ?? 2;
+        accountSettings.value?.accountSettings?.locationTierCount ??
+            selectedLocationTierCount;
 
     ref.listen<AsyncValue<List<Ad>>>(adsProvider, (previous, next) {
       next.when(
