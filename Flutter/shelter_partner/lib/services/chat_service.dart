@@ -9,7 +9,7 @@ class ChatService {
   final Ref ref;
   static const String _apiUrl = 'https://api.openai.com/v1/chat/completions';
   static const String _model = 'gpt-4o-mini';
-  static const String _apiKey = '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';
+  static const String _apiKey = 'YOUR-API-KEY';
 
   ChatService(this.ref);
 
