@@ -204,13 +204,8 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
 
     final now = DateTime.now();
-    // For testing: use 1 minute instead of 30 days
-    const testMode = true;
-    final daysSinceLastReset = testMode 
-        ? now.difference(lastReset).inMinutes  // Test with minutes
-        : now.difference(lastReset).inDays;    // Production with days
-    
-    if (testMode ? daysSinceLastReset >= 1 : daysSinceLastReset >= 30) {
+    final daysSinceLastReset = now.difference(lastReset).inDays;
+    if (daysSinceLastReset >= 30) {
       await resetTokenCount(shelterID);
     }
   }
