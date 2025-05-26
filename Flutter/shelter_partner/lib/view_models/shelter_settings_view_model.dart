@@ -228,6 +228,15 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     });
   }
 
+  Future<void> updateTokenCount(String shelterId, int newCount) async {
+    await _repository.updateTokenCount(shelterId, newCount);
+    state = AsyncData(state.value!.copyWith(
+      shelterSettings: state.value!.shelterSettings.copyWith(
+        tokenCount: newCount,
+      ),
+    ));
+  }
+
   @override
   void dispose() {
     super.dispose();

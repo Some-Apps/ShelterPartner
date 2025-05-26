@@ -21,6 +21,8 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
   bool _isLoading = false;
   bool _isError = false;
   String? _errorMessage;
+  static const int _conversationTokenLimit = 5000; // Per-conversation token limit
+  int _conversationTokensUsed = 0;
 
   @override
   void initState() {
@@ -76,10 +78,22 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
     _scrollToBottom();
 
     try {
+      // Check if we've reached the conversation limit
+      if (_conversationTokensUsed >= _conversationTokenLimit) {
+        throw Exception('Conversation limit reached. Please start a new conversation.');
+      }
+
       final response = await ref.read(chatServiceProvider).sendMessage(
             message,
             widget.animals,
           );
+
+      // Update conversation token usage (rough estimate)
+      final estimatedTokens = response.length ~/ 4;
+      if (_conversationTokensUsed + estimatedTokens > _conversationTokenLimit) {
+        throw Exception('This message would exceed the conversation limit. Please start a new conversation.');
+      }
+      _conversationTokensUsed += estimatedTokens;
 
       setState(() {
         _messages.add(ChatMessage(
@@ -104,43 +118,6 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
     _scrollToBottom();
   }
 
-  Widget _buildTokenIndicator() {
-    final shelterSettings = ref.watch(shelterSettingsViewModelProvider).value;
-    if (shelterSettings == null) {
-      return const SizedBox.shrink();
-    }
-
-    final tokenCount = shelterSettings.shelterSettings.tokenCount;
-    final tokenLimit = shelterSettings.shelterSettings.tokenLimit;
-    final tokensLeft = tokenLimit - tokenCount;
-
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      color: Colors.grey[200],
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.token, size: 16),
-          const SizedBox(width: 4),
-          Text(
-            'Tokens left: ${tokensLeft.toStringAsFixed(0)} / $tokenLimit',
-            style: const TextStyle(fontSize: 12),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: LinearProgressIndicator(
-              value: tokenCount / tokenLimit,
-              backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(
-                tokensLeft < 100000 ? Colors.red : Colors.green,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,7 +132,6 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
       ),
       body: Column(
         children: [
-          _buildTokenIndicator(),
           if (_isError && _errorMessage != null)
             Container(
               padding: const EdgeInsets.all(8.0),
@@ -189,43 +165,19 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final message = _messages[index];
-                return Align(
-                  alignment: message.isUser
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 4,
-                      horizontal: 8,
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: message.isUser
-                          ? Theme.of(context).primaryColor
-                          : message.isError
-                              ? Colors.red[100]
-                              : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      message.text,
-                      style: TextStyle(
-                        color: message.isUser
-                            ? Colors.white
-                            : message.isError
-                                ? Colors.red[900]
-                                : Colors.black,
-                      ),
-                    ),
-                  ),
-                );
+                return _buildMessageBubble(message);
               },
             ),
           ),
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircularProgressIndicator(),
+          if (_conversationTokensUsed >= _conversationTokenLimit)
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              color: Colors.orange[100],
+              child: const Text(
+                'Conversation limit reached. Please start a new conversation.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -238,18 +190,42 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
                       hintText: 'Type a message...',
                       border: OutlineInputBorder(),
                     ),
-                    onSubmitted: (_) => _sendMessage(),
-                    enabled: !_isLoading,
+                    enabled: !_isLoading && _conversationTokensUsed < _conversationTokenLimit,
                   ),
                 ),
+                const SizedBox(width: 8.0),
                 IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _isLoading ? null : _sendMessage,
+                  onPressed: _isLoading || _conversationTokensUsed >= _conversationTokenLimit
+                      ? null
+                      : _sendMessage,
+                  icon: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Icon(Icons.send),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMessageBubble(ChatMessage message) {
+    return Align(
+      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4.0),
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: message.isUser ? Colors.blue[100] : Colors.grey[200],
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Text(
+          message.text,
+          style: TextStyle(
+            color: message.isError ? Colors.red : Colors.black,
+          ),
+        ),
       ),
     );
   }

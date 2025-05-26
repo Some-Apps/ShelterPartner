@@ -404,6 +404,107 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 25),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 16.0),
+                              child: Text(
+                                "Visitor Privacy Settings",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            Card.outlined(
+                              child: ListView(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                children: [
+                                  ListTile(
+                                    title: SwitchToggleView(
+                                      title: "Show Species",
+                                      value: shelter?.shelterSettings.showSpecies ?? true,
+                                      onChanged: (bool newValue) {
+                                        ref.read(shelterSettingsViewModelProvider.notifier)
+                                            .toggleAttribute(shelter!.id, "showSpecies");
+                                      },
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: Colors.black.withOpacity(0.1),
+                                    height: 0,
+                                    thickness: 1,
+                                  ),
+                                  ListTile(
+                                    title: SwitchToggleView(
+                                      title: "Show Breed",
+                                      value: shelter?.shelterSettings.showBreed ?? true,
+                                      onChanged: (bool newValue) {
+                                        ref.read(shelterSettingsViewModelProvider.notifier)
+                                            .toggleAttribute(shelter!.id, "showBreed");
+                                      },
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: Colors.black.withOpacity(0.1),
+                                    height: 0,
+                                    thickness: 1,
+                                  ),
+                                  ListTile(
+                                    title: SwitchToggleView(
+                                      title: "Show Description",
+                                      value: shelter?.shelterSettings.showDescription ?? true,
+                                      onChanged: (bool newValue) {
+                                        ref.read(shelterSettingsViewModelProvider.notifier)
+                                            .toggleAttribute(shelter!.id, "showDescription");
+                                      },
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: Colors.black.withOpacity(0.1),
+                                    height: 0,
+                                    thickness: 1,
+                                  ),
+                                  ListTile(
+                                    title: SwitchToggleView(
+                                      title: "Show Location",
+                                      value: shelter?.shelterSettings.showLocation ?? true,
+                                      onChanged: (bool newValue) {
+                                        ref.read(shelterSettingsViewModelProvider.notifier)
+                                            .toggleAttribute(shelter!.id, "showLocation");
+                                      },
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: Colors.black.withOpacity(0.1),
+                                    height: 0,
+                                    thickness: 1,
+                                  ),
+                                  ListTile(
+                                    title: SwitchToggleView(
+                                      title: "Show Medical Info",
+                                      value: shelter?.shelterSettings.showMedicalInfo ?? false,
+                                      onChanged: (bool newValue) {
+                                        ref.read(shelterSettingsViewModelProvider.notifier)
+                                            .toggleAttribute(shelter!.id, "showMedicalInfo");
+                                      },
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: Colors.black.withOpacity(0.1),
+                                    height: 0,
+                                    thickness: 1,
+                                  ),
+                                  ListTile(
+                                    title: SwitchToggleView(
+                                      title: "Show Behavior Info",
+                                      value: shelter?.shelterSettings.showBehaviorInfo ?? true,
+                                      onChanged: (bool newValue) {
+                                        ref.read(shelterSettingsViewModelProvider.notifier)
+                                            .toggleAttribute(shelter!.id, "showBehaviorInfo");
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),

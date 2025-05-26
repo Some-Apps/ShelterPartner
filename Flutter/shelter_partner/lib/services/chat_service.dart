@@ -8,8 +8,8 @@ import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 class ChatService {
   final Ref ref;
   static const String _apiUrl = 'https://api.openai.com/v1/chat/completions';
-  static const String _model = 'gpt-4-turbo-preview';
-  static const String _apiKey = 'YOUR_API_KEY_HERE';
+  static const String _model = 'gpt-4o-mini';
+  static const String _apiKey = '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';
 
   ChatService(this.ref);
 
@@ -39,22 +39,33 @@ class ChatService {
       }
 
       // Prepare the system message with animal context
-      final animalContext = animals.map((animal) => '''
-        Name: ${animal.name}
-        Species: ${animal.species}
-        Breed: ${animal.breed}
-        Description: ${animal.description}
-        Location: ${animal.location}
-      ''').join('\n');
+      // Limit to 20 animals for context if the list is long
+      final maxAnimals = 20;
+      final animalsToShow = animals.length > maxAnimals ? animals.sublist(0, maxAnimals) : animals;
+      final animalContext = animalsToShow.map((animal) {
+        final settings = shelterSettings.shelterSettings;
+        final List<String> animalInfo = ['Name: ${animal.name}'];
+        if (settings.showSpecies) animalInfo.add('Species: ${animal.species}');
+        if (settings.showBreed) animalInfo.add('Breed: ${animal.breed}');
+        if (settings.showDescription) animalInfo.add('Description: ${animal.description}');
+        if (settings.showLocation) animalInfo.add('Location: ${animal.location}');
+        if (settings.showMedicalInfo) animalInfo.add('Medical Category: ${animal.medicalCategory}');
+        if (settings.showBehaviorInfo) animalInfo.add('Behavior Category: ${animal.behaviorCategory}');
+        return animalInfo.join(', ');
+      }).join('\n');
+      final moreText = animals.length > maxAnimals ? '\n...and more animals available.' : '';
 
       final systemMessage = '''
-        You are a helpful assistant for a pet shelter. You can only discuss the animals listed below.
-        Please keep your responses concise and focused on these animals.
-        If asked about animals not in the list, politely explain that you can only discuss the animals shown.
-        
-        Available animals:
-        $animalContext
-      ''';
+You are a helpful assistant for a pet shelter. You can only discuss the animals listed below. If a user asks for a list of all available animals, provide a concise list of their names and brief details. If asked about animals not in the list, politely explain that you can only discuss the animals shown.
+
+If the user asks for a list, respond with the names and brief details of all available animals you know about (up to 20 at a time). If there are more, say so.
+
+Available animals:\n$animalContext$moreText
+''';
+
+      // Update token count
+      final newTokenCount = tokenCount + 1;
+      await ref.read(shelterSettingsViewModelProvider.notifier).updateTokenCount(shelterId, newTokenCount);
 
       final response = await http.post(
         Uri.parse(_apiUrl),
@@ -69,9 +80,9 @@ class ChatService {
             {'role': 'user', 'content': message},
           ],
           'temperature': 0.7,
-          'max_tokens': 500,
-          'presence_penalty': 0.6,
-          'frequency_penalty': 0.3,
+          'max_tokens': 1000,
+          'presence_penalty': 0.0,
+          'frequency_penalty': 0.0,
         }),
       ).timeout(
         const Duration(seconds: 30),
