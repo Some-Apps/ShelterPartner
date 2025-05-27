@@ -63,9 +63,6 @@ If the user asks for a list, respond with the names and brief details of all ava
 Available animals:\n$animalContext$moreText
 ''';
 
-      // Update token count
-      final newTokenCount = tokenCount + 1;
-      await ref.read(shelterSettingsViewModelProvider.notifier).updateTokenCount(shelterId, newTokenCount);
 
       final response = await http.post(
         Uri.parse(_apiUrl),
