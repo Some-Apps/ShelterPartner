@@ -39,8 +39,8 @@ class ChatService {
       }
 
       // Prepare the system message with animal context
-      // Limit to 20 animals for context if the list is long
-      final maxAnimals = 20;
+      // Limit to 100 animals for context if the list is long
+      final maxAnimals = 100;
       final animalsToShow = animals.length > maxAnimals ? animals.sublist(0, maxAnimals) : animals;
       final animalContext = animalsToShow.map((animal) {
         final settings = shelterSettings.shelterSettings;
