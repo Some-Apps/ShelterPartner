@@ -90,9 +90,6 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
 
       // Update conversation token usage (rough estimate)
       final estimatedTokens = response.length ~/ 4;
-      if (_conversationTokensUsed + estimatedTokens > _conversationTokenLimit) {
-        throw Exception('This message would exceed the conversation limit. Please start a new conversation.');
-      }
       _conversationTokensUsed += estimatedTokens;
 
       setState(() {

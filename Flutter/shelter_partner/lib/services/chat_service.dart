@@ -63,10 +63,6 @@ If the user asks for a list, respond with the names and brief details of all ava
 Available animals:\n$animalContext$moreText
 ''';
 
-      // Update token count
-      final newTokenCount = tokenCount + 1;
-      await ref.read(shelterSettingsViewModelProvider.notifier).updateTokenCount(shelterId, newTokenCount);
-
       final response = await http.post(
         Uri.parse(_apiUrl),
         headers: {
@@ -94,11 +90,6 @@ Available animals:\n$animalContext$moreText
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final tokens = data['usage']['total_tokens'] as int;
-        
-        // Check if adding these tokens would exceed the limit
-        if (tokenCount + tokens > tokenLimit) {
-          throw Exception('This message would exceed your monthly token limit. Please try a shorter message.');
-        }
 
         // Update token count in Firestore
         await ref.read(shelterSettingsViewModelProvider.notifier)
