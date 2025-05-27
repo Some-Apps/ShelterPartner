@@ -191,6 +191,7 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
                       border: OutlineInputBorder(),
                     ),
                     enabled: !_isLoading && _conversationTokensUsed < _conversationTokenLimit,
+                    onSubmitted: (_) => _isLoading || _conversationTokensUsed >= _conversationTokenLimit ? null : _sendMessage(),
                   ),
                 ),
                 const SizedBox(width: 8.0),
