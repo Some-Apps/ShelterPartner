@@ -1,10 +1,9 @@
 name: Sync Public Repo with Deployment Repo
 
 on:
-    push:
+  push:
     branches:
       - main  # Change to your main branch if different
-    
 
 jobs:
   sync-repo:
