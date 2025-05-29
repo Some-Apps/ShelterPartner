@@ -291,7 +291,7 @@ exports.scheduledReport = async (req, res) => {
                 htmlContent += `<h3>${animal.name}</h3>`;
 
                 //Display formatted tags if available
-                if( animal.tags && animal.tags.length > 0) {
+                if (animal.tags && animal.tags.length > 0) {
                     htmlContent += `<p><strong>Tags:</strong>`;
                     htmlContent += animal.tags.map(tag => `(${tag.name} : ${tag.count})`).join(', ');
                     htmlContent += '</p>';
@@ -317,7 +317,7 @@ exports.scheduledReport = async (req, res) => {
                 htmlContent += `<h3>${animal.name}</h3>`;
 
                 //Display formatted tags if available
-                if( animal.tags && animal.tags.length > 0) {
+                if (animal.tags && animal.tags.length > 0) {
                     htmlContent += `<p><strong>Tags:</strong>`;
                     htmlContent += animal.tags.map(tag => `(${tag.name} : ${tag.count})`).join(', ');
                     htmlContent += '</p>';
@@ -407,10 +407,17 @@ function fetchAnimalData(doc, species, startDate, endDate) {
 
     console.log(`Filtered Logs for ${species} ID: ${doc.id}: ${filteredLogs.length}`);
 
-    // Filter photos within the date range
+    // Filter photos within the date range and uploaded from the app
     const filteredPhotos = photos.filter(photo => {
         if (!photo.timestamp) {
             console.warn(`Photo without timestamp for ${species} ID: ${doc.id}`);
+            return false;
+        }
+
+        // Check if the photo was uploaded from the app
+        const isFromApp = !photo.url?.includes('shelterluv');
+        if (!isFromApp) {
+            console.log(`Photo not uploaded from app for ${species} ID: ${doc.id}`);
             return false;
         }
         const photoDate = moment(photo.timestamp.toDate()).tz('America/Chicago');
