@@ -101,21 +101,24 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                     const Text("Reset Password",
                         style: TextStyle(
                             fontSize: 35, fontWeight: FontWeight.normal)),
-                            const SizedBox(height: 25),
+                    const SizedBox(height: 25),
                     MyTextField(
                       controller: emailController,
                       hintText: 'Email',
                       obscureText: false,
                     ),
                     const SizedBox(height: 25),
-                    ElevatedButton(onPressed: resetPassword, child: const Text("Reset Password")),
-                    
+                    ElevatedButton(
+                        onPressed: resetPassword,
+                        child: const Text("Reset Password")),
                     const SizedBox(height: 50),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text('Remember your password?'),
-                        const SizedBox(width: 4),
+                        const Text(
+                          'Remember your password?',
+                        ),
+                        const SizedBox(height: 4),
                         MouseRegion(
                           cursor: SystemMouseCursors.click,
                           child: GestureDetector(

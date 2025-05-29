@@ -1,14 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shelter_partner/views/auth/login_page.dart';
 import 'package:shelter_partner/repositories/auth_repository.dart';
+import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
 
-@GenerateMocks([AuthRepository, UserCredential, User])
+@GenerateMocks([AuthRepository, UserCredential, User, AuthViewModel])
+
 import 'login_page_test.mocks.dart';
 
 void main() {
@@ -17,6 +21,10 @@ void main() {
 
     setUp(() {
       mockAuthRepository = MockAuthRepository();
+
+      // Mock the auth repository methods to return immediately
+      when(mockAuthRepository.getCurrentUser()).thenReturn(null);
+
       when(mockAuthRepository.signInWithEmailAndPassword(any, any))
           .thenAnswer((_) async {
         final mockUserCredential = MockUserCredential();
@@ -87,12 +95,15 @@ void main() {
 
       // Act
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       await tester.enterText(emailField(), 'user@example.com');
       await tester.enterText(passwordField(), 'mypassword');
+      await tester.pump(); // Allow text to update
+
       await tester.tap(loginButton());
-      await tester.pumpAndSettle();
+      await tester.pump(); // Allow tap to register
+
 
       // Assert
       verify(mockAuthRepository.signInWithEmailAndPassword(
@@ -117,7 +128,8 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+
 
       await tester.tap(find.text('Forgot Password?'));
       await tester.pump();
@@ -143,7 +155,8 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+
 
       await tester.tap(find.text('Create Shelter'));
       await tester.pump();
@@ -158,14 +171,17 @@ void main() {
 
       // Act
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       await tester.enterText(emailField(), 'user@example.com');
       await tester.enterText(passwordField(), 'mypassword');
+      await tester.pump(); // Allow text to update
+
       await tester.tap(emailField());
       await tester.pump();
       await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pumpAndSettle();
+      await tester.pump();
+
 
       // Assert
       verify(mockAuthRepository.signInWithEmailAndPassword(
@@ -179,14 +195,16 @@ void main() {
 
       // Act
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
+
 
       await tester.enterText(emailField(), 'user@example.com');
       await tester.enterText(passwordField(), 'mypassword');
       await tester.tap(passwordField());
       await tester.pump();
       await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pumpAndSettle();
+      await tester.pump();
+
 
       // Assert
       verify(mockAuthRepository.signInWithEmailAndPassword(

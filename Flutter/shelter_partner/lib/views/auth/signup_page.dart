@@ -152,6 +152,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       controller: shelterAddressController,
                       hintText: 'Shelter Address',
                       obscureText: false,
+                      onSubmitted: (_) => signup(),
                     ),
                     const SizedBox(height: 35),
                     Padding(
