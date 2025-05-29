@@ -44,9 +44,10 @@ All international payments will be made via PayPal so make sure you have an acco
 
 <details>
    
-   <summary>Vedant Vijay: $40</summary>
+   <summary>Vedant Vijay: $100</summary>
   
   - Issue #420: Create a bunch of tests ($40)
+  - Issue #415: Create ai chat on visitors page ($60)
 
 </details>
 
