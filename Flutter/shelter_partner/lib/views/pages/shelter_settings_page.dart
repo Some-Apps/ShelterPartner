@@ -408,7 +408,7 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                             const Padding(
                               padding: EdgeInsets.only(left: 16.0),
                               child: Text(
-                                "Visitor Privacy Settings",
+                                "Visitor Chat Privacy Settings",
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ),

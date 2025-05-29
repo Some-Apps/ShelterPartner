@@ -507,15 +507,11 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ),
                           ]),
                         ),
-                        Divider(
-                          color: Colors.black.withOpacity(0.1),
-                          height: 0,
-                          thickness: 1,
-                        ),
+                    
                         const Padding(
-                          padding: EdgeInsets.only(left: 16.0),
+                          padding: EdgeInsets.only(top: 16.0, left: 16.0),
                           child: Text(
-                            "API Settings",
+                            "Chat API Settings",
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),

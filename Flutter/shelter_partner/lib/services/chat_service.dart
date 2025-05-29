@@ -9,7 +9,7 @@ class ChatService {
   final Ref ref;
   static const String _apiUrl = 'https://api.openai.com/v1/chat/completions';
   static const String _model = 'gpt-4o-mini';
-  static const String _apiKey = 'YOUR-API-KEY';
+  static const String _apiKey = 'API_KEY_HERE';
 
   ChatService(this.ref);
 
@@ -40,11 +40,17 @@ class ChatService {
 
       // Prepare the system message with animal context
       // Limit to 100 animals for context if the list is long
-      final maxAnimals = 100;
+      final maxAnimals = 250;
       final animalsToShow = animals.length > maxAnimals ? animals.sublist(0, maxAnimals) : animals;
       final animalContext = animalsToShow.map((animal) {
         final settings = shelterSettings.shelterSettings;
         final List<String> animalInfo = ['Name: ${animal.name}'];
+        if (animal.notes != null && animal.notes.isNotEmpty) {
+          final notesText = animal.notes.map((note) => note.note).join(', ');
+          animalInfo.add('Notes: $notesText');
+        }
+        animalInfo.add('Age: ${animal.monthsOld} months old');
+        animalInfo.add('Other Info: $animal');
         if (settings.showSpecies) animalInfo.add('Species: ${animal.species}');
         if (settings.showBreed) animalInfo.add('Breed: ${animal.breed}');
         if (settings.showDescription) animalInfo.add('Description: ${animal.description}');
@@ -56,9 +62,8 @@ class ChatService {
       final moreText = animals.length > maxAnimals ? '\n...and more animals available.' : '';
 
       final systemMessage = '''
-You are a helpful assistant for a pet shelter. You can only discuss the animals listed below. If a user asks for a list of all available animals, provide a concise list of their names and brief details. If asked about animals not in the list, politely explain that you can only discuss the animals shown.
+You are a helpful assistant for a pet shelter. You can only discuss the animals listed below. If a user asks for a list of all available animals, provide a concise list of their names and brief details.
 
-If the user asks for a list, respond with the names and brief details of all available animals you know about (up to 20 at a time). If there are more, say so.
 
 Available animals:\n$animalContext$moreText
 ''';
