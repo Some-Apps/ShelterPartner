@@ -3,12 +3,14 @@ import 'package:shelter_partner/repositories/shelter_settings_repository.dart';
 import 'package:shelter_partner/repositories/volunteers_repository.dart';
 import '../models/shelter.dart';
 import 'auth_view_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   final ShelterSettingsRepository _repository;
   final Ref ref;
+  final FirebaseFirestore _firestore;
 
-  ShelterSettingsViewModel(this._repository, this.ref)
+  ShelterSettingsViewModel(this._repository, this.ref, this._firestore)
       : super(const AsyncValue.loading()) {
     _initialize(); // Start the initialization process to fetch account details
   }
@@ -178,7 +180,62 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
+  // Method to reset token count
+  Future<void> resetTokenCount(String shelterID) async {
+    final docRef = _firestore.collection('shelters').doc(shelterID);
+    return docRef.update({
+      'shelterSettings.tokenCount': 0,
+      'shelterSettings.lastTokenReset': DateTime.now().toIso8601String(),
+    }).catchError((error) {
+      throw Exception("Failed to reset token count: $error");
+    });
+  }
 
+  // Method to check if tokens need to be reset
+  Future<void> checkAndResetTokens(String shelterID) async {
+    final shelterSettings = state.value?.shelterSettings;
+    if (shelterSettings == null) return;
+
+    final lastReset = shelterSettings.lastTokenReset;
+    if (lastReset == null) {
+      // If no last reset date, set it to now and reset tokens
+      await resetTokenCount(shelterID);
+      return;
+    }
+
+    final now = DateTime.now();
+    final daysSinceLastReset = now.difference(lastReset).inDays;
+    if (daysSinceLastReset >= 30) {
+      await resetTokenCount(shelterID);
+    }
+  }
+
+  // Method to increment token count
+  Future<void> incrementTokenCount(String shelterID, int tokens) async {
+    // Check if tokens need to be reset before incrementing
+    await checkAndResetTokens(shelterID);
+
+    final docRef = _firestore.collection('shelters').doc(shelterID);
+    return docRef.update({
+      'shelterSettings.tokenCount': FieldValue.increment(tokens),
+    }).catchError((error) {
+      throw Exception("Failed to increment token count: $error");
+    });
+  }
+
+  Future<void> updateTokenCount(String shelterId, int newCount) async {
+    await _repository.updateTokenCount(shelterId, newCount);
+    state = AsyncData(state.value!.copyWith(
+      shelterSettings: state.value!.shelterSettings.copyWith(
+        tokenCount: newCount,
+      ),
+    ));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
 
 // Provider to access the ShelterSettingsViewModel
@@ -187,6 +244,7 @@ final shelterSettingsViewModelProvider =
         (ref) {
   final repository =
       ref.watch(shelterSettingsRepositoryProvider); // Access the repository
+  final firestore = FirebaseFirestore.instance;
   return ShelterSettingsViewModel(
-      repository, ref); // Pass the repository and ref
+      repository, ref, firestore); // Pass the repository, ref, and firestore
 });

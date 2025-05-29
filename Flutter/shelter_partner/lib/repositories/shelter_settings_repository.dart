@@ -144,6 +144,12 @@ class ShelterSettingsRepository {
     });
   }
 
+  Future<void> updateTokenCount(String shelterId, int newCount) async {
+    await _firestore.collection('shelters').doc(shelterId).update({
+      'tokenCount': newCount,
+    });
+  }
+
 }
 
 // Provider to access the ShelterSettingsRepository

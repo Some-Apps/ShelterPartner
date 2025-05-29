@@ -40,4 +40,26 @@ class Shelter {
       volunteers: [], // Initialize with an empty list
     );
   }
+
+  Shelter copyWith({
+    String? id,
+    String? name,
+    String? address,
+    Timestamp? createdAt,
+    String? managementSoftware,
+    ShelterSettings? shelterSettings,
+    VolunteerSettings? volunteerSettings,
+    List<Volunteer>? volunteers,
+  }) {
+    return Shelter(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      createdAt: createdAt ?? this.createdAt,
+      managementSoftware: managementSoftware ?? this.managementSoftware,
+      shelterSettings: shelterSettings ?? this.shelterSettings,
+      volunteerSettings: volunteerSettings ?? this.volunteerSettings,
+      volunteers: volunteers ?? this.volunteers,
+    );
+  }
 }

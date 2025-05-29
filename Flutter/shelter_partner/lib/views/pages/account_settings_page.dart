@@ -8,6 +8,7 @@ import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
+import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
   const AccountSettingsPage({super.key});
@@ -506,6 +507,64 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ),
                           ]),
                         ),
+                    
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16.0, left: 16.0),
+                          child: Text(
+                            "Chat API Settings",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        Card.outlined(
+                          child: Consumer(
+                            builder: (context, ref, child) {
+                              final shelterSettings = ref.watch(shelterSettingsViewModelProvider).value;
+                              if (shelterSettings == null) return const SizedBox.shrink();
+                              
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "API Token Usage",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          "Monthly Usage: ${shelterSettings.shelterSettings.tokenCount} / ${shelterSettings.shelterSettings.tokenLimit} tokens",
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        LinearProgressIndicator(
+                                          value: shelterSettings.shelterSettings.tokenCount / shelterSettings.shelterSettings.tokenLimit,
+                                          backgroundColor: Colors.grey[300],
+                                          valueColor: AlwaysStoppedAnimation<Color>(
+                                            shelterSettings.shelterSettings.tokenCount > shelterSettings.shelterSettings.tokenLimit * 0.9
+                                                ? Colors.red
+                                                : Colors.green,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          "Last Reset: ${shelterSettings.shelterSettings.lastTokenReset != null ? DateTime.parse(shelterSettings.shelterSettings.lastTokenReset.toString()).toLocal().toString().split('.')[0] : 'Never'}",
+                                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 25.0),
                       ],
                     ),
                   ),
