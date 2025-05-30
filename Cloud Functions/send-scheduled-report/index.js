@@ -222,12 +222,56 @@ exports.scheduledReport = async (req, res) => {
             return;
         }
 
-        // Generate HTML content for email body
+        // ----------------------------------------------------------------------------
+        //  FILTERING & HTML GENERATION
+        // ----------------------------------------------------------------------------
+
+        // 1. Filter out invalid notes/photos, remove animals with no valid content
+        const catsData = animalsData
+            .filter(animal => animal.species === 'Cat')
+            .map(animal => {
+                // Remove invalid notes
+                const validNotes = (animal.notes || []).filter(
+                    note => note.note !== 'Added animal to the app'
+                );
+                // Remove invalid photos
+                const validPhotos = (animal.photos || []).filter(
+                    photo => !photo.url.includes('amazonaws') || !photo.url.includes('shelterluv')
+
+
+                );
+                return {
+                    ...animal,
+                    notes: validNotes,
+                    photos: validPhotos
+                };
+            })
+            // Keep only animals that have at least 1 valid note or photo
+            .filter(animal => animal.notes.length > 0 || animal.photos.length > 0);
+
+        const dogsData = animalsData
+            .filter(animal => animal.species === 'Dog')
+            .map(animal => {
+                // Remove invalid notes
+                const validNotes = (animal.notes || []).filter(
+                    note => note.note !== 'Added animal to the app'
+                );
+                // Remove invalid photos
+                const validPhotos = (animal.photos || []).filter(
+                    photo => !photo.url.includes('amazonaws')
+                );
+                return {
+                    ...animal,
+                    notes: validNotes,
+                    photos: validPhotos
+                };
+            })
+            // Keep only animals that have at least 1 valid note or photo
+            .filter(animal => animal.notes.length > 0 || animal.photos.length > 0);
+
+        // 2. Generate HTML
         let htmlContent = '<h1>Animal Activity Report</h1>';
         htmlContent += '<p>See attachment for a more detailed report</p>';
-
-        const catsData = animalsData.filter(animal => animal.species === 'Cat' && (animal.notes.length > 0 || animal.photos.length > 0));
-        const dogsData = animalsData.filter(animal => animal.species === 'Dog' && (animal.notes.length > 0 || animal.photos.length > 0));
 
         // Process Cats for HTML content
         if (catsData.length > 0) {
@@ -236,10 +280,12 @@ exports.scheduledReport = async (req, res) => {
                 htmlContent += `<h3>${animal.name}</h3>`;
                 htmlContent += '<ul>';
 
+                // Only valid notes remain
                 animal.notes.forEach(note => {
                     htmlContent += `<li>${note.note}</li>`;
                 });
 
+                // Only valid photos remain
                 animal.photos.forEach(photo => {
                     htmlContent += `<li><a href="${photo.url}">${photo.url}</a></li>`;
                 });
@@ -255,10 +301,12 @@ exports.scheduledReport = async (req, res) => {
                 htmlContent += `<h3>${animal.name}</h3>`;
                 htmlContent += '<ul>';
 
+                // Only valid notes remain
                 animal.notes.forEach(note => {
                     htmlContent += `<li>${note.note}</li>`;
                 });
 
+                // Only valid photos remain
                 animal.photos.forEach(photo => {
                     htmlContent += `<li><a href="${photo.url}">${photo.url}</a></li>`;
                 });
@@ -267,7 +315,10 @@ exports.scheduledReport = async (req, res) => {
             });
         }
 
-        // Send email with CSV attachment and HTML content
+        // ----------------------------------------------------------------------------
+        //  SEND EMAIL
+        // ----------------------------------------------------------------------------
+
         console.log(`Sending email to: ${email}`);
         try {
             await sendEmailWithAttachment(email, csvFilePath, startDate, today, htmlContent);
