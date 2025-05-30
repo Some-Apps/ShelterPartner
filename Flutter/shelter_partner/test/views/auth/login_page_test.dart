@@ -2,55 +2,47 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shelter_partner/views/auth/login_page.dart';
 import 'package:shelter_partner/repositories/auth_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
-
-@GenerateMocks([AuthRepository, UserCredential, User, AuthViewModel])
-
-import 'login_page_test.mocks.dart';
+import '../../helpers/firebase_test_overrides.dart';
+import '../../helpers/mock_file_loader.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 void main() {
   group('LoginPage Widget Tests', () {
-    late MockAuthRepository mockAuthRepository;
-
     setUp(() {
-      mockAuthRepository = MockAuthRepository();
-
-      // Mock the auth repository methods to return immediately
-      when(mockAuthRepository.getCurrentUser()).thenReturn(null);
-
-      when(mockAuthRepository.signInWithEmailAndPassword(any, any))
-          .thenAnswer((_) async {
-        final mockUserCredential = MockUserCredential();
-        final mockUser = MockUser();
-        when(mockUser.uid).thenReturn('test-uid');
-        when(mockUserCredential.user).thenReturn(mockUser);
-        return mockUserCredential;
-      });
-
-      when(mockAuthRepository.getUserById(any)).thenAnswer((_) async => null);
+      FirebaseTestOverrides.initialize();
     });
 
-    tearDown(() {
-      reset(mockAuthRepository);
-    });
-
-    Widget createTestWidget({List<Override>? providerOverrides}) {
-      return ProviderScope(
-        overrides: providerOverrides ??
-            [
-              authRepositoryProvider.overrideWithValue(mockAuthRepository),
-            ],
-        child: const MaterialApp(
-          home: LoginPage(),
+    Future<({Widget widget, ProviderContainer container})> createTestWidget(
+        WidgetTester tester) async {
+      final key = GlobalKey();
+      final widget = ProviderScope(
+        overrides: [
+          ...FirebaseTestOverrides.overrides,
+          authRepositoryProvider.overrideWith((ref) {
+            final firestore = ref.watch(firestoreProvider);
+            final firebaseAuth = ref.watch(firebaseAuthProvider);
+            return AuthRepository(
+              firestore: firestore,
+              firebaseAuth: firebaseAuth,
+              fileLoader: MockFileLoader(),
+            );
+          }),
+        ],
+        child: MaterialApp(
+          home: LoginPage(key: key),
         ),
       );
+      await tester.pumpWidget(widget);
+      await tester.pump(); // Ensure widget is mounted
+      final context = key.currentContext!;
+      final container = ProviderScope.containerOf(context);
+      return (widget: widget, container: container);
     }
 
     void setupTestViewport(WidgetTester tester) {
@@ -70,15 +62,20 @@ void main() {
         );
 
     Finder loginButton() => find.widgetWithText(ElevatedButton, 'Log In');
+
     testWidgets('should display all UI elements correctly',
         (WidgetTester tester) async {
       // Arrange
       setupTestViewport(tester);
-
-      // Act
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc('test-uid')
+          .set({
+        'firstName': 'Test',
+        'lastName': 'User',
+        'email': 'user@example.com'
+      });
+      await createTestWidget(tester);
       // Assert
       expect(find.text('Welcome Back!'), findsOneWidget);
       expect(emailField(), findsOneWidget);
@@ -87,28 +84,32 @@ void main() {
       expect(find.text('Forgot Password?'), findsOneWidget);
       expect(find.text('Create Shelter'), findsOneWidget);
     });
-    testWidgets(
-        'should call signInWithEmailAndPassword when login button tapped',
+
+    testWidgets('should authenticate user when login button tapped',
         (WidgetTester tester) async {
       // Arrange
       setupTestViewport(tester);
-
+      final container = (await createTestWidget(tester)).container;
+      final authViewModel = container.read(authViewModelProvider.notifier);
+      await authViewModel.signup(
+        email: 'tapSignup@example.com',
+        password: 'mypassword',
+        firstName: 'Test',
+        lastName: 'User',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
       // Act
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-
-      await tester.enterText(emailField(), 'user@example.com');
+      await tester.enterText(emailField(), 'tapSignup@example.com');
       await tester.enterText(passwordField(), 'mypassword');
       await tester.pump(); // Allow text to update
-
       await tester.tap(loginButton());
       await tester.pump(); // Allow tap to register
-
-
       // Assert
-      verify(mockAuthRepository.signInWithEmailAndPassword(
-              'user@example.com', 'mypassword'))
-          .called(1);
+      final authState = container.read(authViewModelProvider);
+      expect(authState.status, AuthStatus.authenticated,
+          reason: 'User should be authenticated after login');
     });
 
     testWidgets('should call onTapForgotPassword when forgot password tapped',
@@ -116,24 +117,18 @@ void main() {
       // Arrange
       setupTestViewport(tester);
       var tapped = false;
-
       // Act
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            authRepositoryProvider.overrideWithValue(mockAuthRepository),
-          ],
+          overrides: FirebaseTestOverrides.overrides,
           child: MaterialApp(
             home: LoginPage(onTapForgotPassword: () => tapped = true),
           ),
         ),
       );
       await tester.pump();
-
-
       await tester.tap(find.text('Forgot Password?'));
       await tester.pump();
-
       // Assert
       expect(tapped, isTrue);
     });
@@ -143,73 +138,77 @@ void main() {
       // Arrange
       setupTestViewport(tester);
       var tapped = false;
-
       // Act
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            authRepositoryProvider.overrideWithValue(mockAuthRepository)
-          ],
+          overrides: FirebaseTestOverrides.overrides,
           child: MaterialApp(
             home: LoginPage(onTapSignup: () => tapped = true),
           ),
         ),
       );
       await tester.pump();
-
-
       await tester.tap(find.text('Create Shelter'));
       await tester.pump();
-
       // Assert
       expect(tapped, isTrue);
     });
-    testWidgets('should trigger login when enter pressed in email field',
+
+    testWidgets('should authenticate user when enter pressed in email field',
         (WidgetTester tester) async {
       // Arrange
       setupTestViewport(tester);
-
+      final container = (await createTestWidget(tester)).container;
+      final authViewModel = container.read(authViewModelProvider.notifier);
+      await authViewModel.signup(
+        email: 'enterInEmailField@example.com',
+        password: 'mypassword',
+        firstName: 'Test',
+        lastName: 'User',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
       // Act
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-
-      await tester.enterText(emailField(), 'user@example.com');
+      await tester.enterText(emailField(), 'enterInEmailField@example.com');
       await tester.enterText(passwordField(), 'mypassword');
       await tester.pump(); // Allow text to update
-
       await tester.tap(emailField());
       await tester.pump();
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
-
-
       // Assert
-      verify(mockAuthRepository.signInWithEmailAndPassword(
-              'user@example.com', 'mypassword'))
-          .called(1);
+      final authState = container.read(authViewModelProvider);
+      expect(authState.status, AuthStatus.authenticated,
+          reason: 'User should be authenticated after login');
     });
-    testWidgets('should trigger login when enter pressed in password field',
+
+    testWidgets('should authenticate user when enter pressed in password field',
         (WidgetTester tester) async {
       // Arrange
       setupTestViewport(tester);
-
+      final container = (await createTestWidget(tester)).container;
+      final authViewModel = container.read(authViewModelProvider.notifier);
+      await authViewModel.signup(
+        email: 'enterInPasswordField@example.com',
+        password: 'mypassword',
+        firstName: 'Test',
+        lastName: 'User',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
       // Act
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-
-
-      await tester.enterText(emailField(), 'user@example.com');
+      await tester.enterText(emailField(), 'enterInPasswordField@example.com');
       await tester.enterText(passwordField(), 'mypassword');
       await tester.tap(passwordField());
       await tester.pump();
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
-
-
       // Assert
-      verify(mockAuthRepository.signInWithEmailAndPassword(
-              'user@example.com', 'mypassword'))
-          .called(1);
+      final authState = container.read(authViewModelProvider);
+      expect(authState.status, AuthStatus.authenticated,
+          reason: 'User should be authenticated after login');
     });
   });
 }

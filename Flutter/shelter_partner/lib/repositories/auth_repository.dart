@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qonversion_flutter/qonversion_flutter.dart';
+import 'package:shelter_partner/helpers/file_loader.dart';
 import 'package:shelter_partner/models/account_settings.dart';
 import 'package:shelter_partner/models/geofence.dart';
 import 'package:shelter_partner/models/shelter.dart';
@@ -14,29 +14,34 @@ import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/models/volunteer_settings.dart';
 import 'package:uuid/uuid.dart';
 import '../models/app_user.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository();
+  final firestore = ref.watch(firestoreProvider);
+  final firebaseAuth = ref.watch(firebaseAuthProvider);
+  return AuthRepository(firestore: firestore, firebaseAuth: firebaseAuth);
 });
 
 class AuthRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
-
+  final FileLoader _fileLoader;
   AuthRepository({
-    FirebaseFirestore? firestore,
-    FirebaseAuth? firebaseAuth,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+    required FirebaseFirestore firestore,
+    required FirebaseAuth firebaseAuth,
+    FileLoader? fileLoader,
+  })  : _firestore = firestore,
+        _firebaseAuth = firebaseAuth,
+        _fileLoader = fileLoader ?? DefaultFileLoader();
 
   // Fetch user by ID
   Future<AppUser?> getUserById(String userId) async {
     final doc = await _firestore.collection('users').doc(userId).get();
     if (doc.exists) {
-      Qonversion.getSharedInstance().setUserProperty(
-          QUserPropertyKey.customUserId, AppUser.fromDocument(doc).id);
-      print("User ID: ${AppUser.fromDocument(doc).id}");
       try {
+        Qonversion.getSharedInstance().setUserProperty(
+            QUserPropertyKey.customUserId, AppUser.fromDocument(doc).id);
+        print("User ID: ${AppUser.fromDocument(doc).id}");
         final userInfo = await Qonversion.getSharedInstance()
             .identify(AppUser.fromDocument(doc).id);
         // use userInfo if necessary
@@ -441,11 +446,10 @@ class AuthRepository {
   Future<List<Map<String, dynamic>>> loadCsvData(String filename) async {
     print('Attempting to load CSV data from $filename');
     try {
-      // Load CSV file as a string
-      final csvString = await rootBundle.loadString(filename);
-      print(
-          'Raw CSV string: $csvString'); // Debugging: print the entire raw string
-
+      // Load CSV file as a string using the injected FileLoader
+      final csvString = await _fileLoader.loadString(filename);
+      print('Raw CSV string: ' +
+          csvString); // Debugging: print the entire raw string
       // Parse the CSV string
       final List<List<dynamic>> csvRows =
           const CsvToListConverter(eol: '\n').convert(csvString);
