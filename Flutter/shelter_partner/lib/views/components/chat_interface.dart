@@ -21,7 +21,8 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
   bool _isLoading = false;
   bool _isError = false;
   String? _errorMessage;
-  static const int _conversationTokenLimit = 5000; // Per-conversation token limit
+  static const int _conversationTokenLimit =
+      5000; // Per-conversation token limit
   int _conversationTokensUsed = 0;
 
   @override
@@ -31,7 +32,8 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
     if (widget.animals.isNotEmpty) {
       final species = widget.animals.first.species;
       _messages.add(ChatMessage(
-        text: 'Hello! I can help you learn about our ${species}s. How can I assist you today?',
+        text:
+            'Hello! I can help you learn about our ${species}s. How can I assist you today?',
         isUser: false,
       ));
     } else {
@@ -80,7 +82,8 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
     try {
       // Check if we've reached the conversation limit
       if (_conversationTokensUsed >= _conversationTokenLimit) {
-        throw Exception('Conversation limit reached. Please start a new conversation.');
+        throw Exception(
+            'Conversation limit reached. Please start a new conversation.');
       }
 
       final response = await ref.read(chatServiceProvider).sendMessage(
@@ -187,13 +190,18 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
                       hintText: 'Type a message...',
                       border: OutlineInputBorder(),
                     ),
-                    enabled: !_isLoading && _conversationTokensUsed < _conversationTokenLimit,
-                    onSubmitted: (_) => _isLoading || _conversationTokensUsed >= _conversationTokenLimit ? null : _sendMessage(),
+                    enabled: !_isLoading &&
+                        _conversationTokensUsed < _conversationTokenLimit,
+                    onSubmitted: (_) => _isLoading ||
+                            _conversationTokensUsed >= _conversationTokenLimit
+                        ? null
+                        : _sendMessage(),
                   ),
                 ),
                 const SizedBox(width: 8.0),
                 IconButton(
-                  onPressed: _isLoading || _conversationTokensUsed >= _conversationTokenLimit
+                  onPressed: _isLoading ||
+                          _conversationTokensUsed >= _conversationTokenLimit
                       ? null
                       : _sendMessage,
                   icon: _isLoading
@@ -239,4 +247,4 @@ class ChatMessage {
     required this.isUser,
     this.isError = false,
   });
-} 
+}

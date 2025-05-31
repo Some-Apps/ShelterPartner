@@ -72,7 +72,6 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
             ),
           ),
           const SizedBox(height: 16),
-          
           if (_selectedImage != null)
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
@@ -96,7 +95,6 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
                 },
               ),
             ),
-          
           Consumer(
             builder: (context, watch, child) {
               final tags = widget.animal.species == 'dog'
@@ -105,25 +103,25 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
               if (tags == null || tags.isEmpty) {
                 return Container(); // Empty container if no tags
               }
-                return Wrap(
+              return Wrap(
                 spacing: 8.0,
                 runSpacing: 8.0, // Add vertical spacing
                 children: tags.map((tag) {
                   return FilterChip(
-                  label: Text(tag),
-                  selected: _selectedTags.contains(tag),
-                  onSelected: (isSelected) {
-                    setState(() {
-                    if (isSelected) {
-                      _selectedTags.add(tag);
-                    } else {
-                      _selectedTags.remove(tag);
-                    }
-                    });
-                  },
+                    label: Text(tag),
+                    selected: _selectedTags.contains(tag),
+                    onSelected: (isSelected) {
+                      setState(() {
+                        if (isSelected) {
+                          _selectedTags.add(tag);
+                        } else {
+                          _selectedTags.remove(tag);
+                        }
+                      });
+                    },
                   );
                 }).toList(),
-                );
+              );
             },
           ),
           const SizedBox(height: 16),
@@ -136,60 +134,65 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
       actions: [
         TextButton(
           onPressed: () {
-        Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () async {
-        Note note = Note(
-          id: const Uuid().v4().toString(),
-          note: _noteController.text,
-          author: userDetails!.firstName,
-          authorID: userDetails.id,
-          timestamp: Timestamp.now(),
-          // You may need to add a way to store _selectedImage if you plan to save it
-        );
-        if (note.note.isNotEmpty) {
-          debugPrint("adding a note");
-          ref
-          .read(addNoteViewModelProvider(widget.animal).notifier)
-          .addNoteToAnimal(widget.animal, note);
-        }
-        if (_selectedTags.isNotEmpty) {
-          debugPrint(_selectedTags.toString());
-          ref
-          .read(addNoteViewModelProvider(widget.animal).notifier)
-          .updateAnimalTags(widget.animal, _selectedTags.toList());
-        }
+            Note note = Note(
+              id: const Uuid().v4().toString(),
+              note: _noteController.text,
+              author: userDetails!.firstName,
+              authorID: userDetails.id,
+              timestamp: Timestamp.now(),
+              // You may need to add a way to store _selectedImage if you plan to save it
+            );
+            if (note.note.isNotEmpty) {
+              debugPrint("adding a note");
+              ref
+                  .read(addNoteViewModelProvider(widget.animal).notifier)
+                  .addNoteToAnimal(widget.animal, note);
+            }
+            if (_selectedTags.isNotEmpty) {
+              debugPrint(_selectedTags.toString());
+              ref
+                  .read(addNoteViewModelProvider(widget.animal).notifier)
+                  .updateAnimalTags(widget.animal, _selectedTags.toList());
+            }
 
-        if (_selectedImage != null) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-            },
-          );
+            if (_selectedImage != null) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              );
 
-          await ref
-          .read(addNoteViewModelProvider(widget.animal).notifier)
-          .uploadImageToAnimal(widget.animal, _selectedImage!, ref)
-          .then((_) {
-            if (mounted) {
-              ref.read(updateVolunteerRepositoryProvider).modifyVolunteerLastActivity(userDetails.id, Timestamp.now());
-              Navigator.of(context).pop(); // Close the loading indicator
+              await ref
+                  .read(addNoteViewModelProvider(widget.animal).notifier)
+                  .uploadImageToAnimal(widget.animal, _selectedImage!, ref)
+                  .then((_) {
+                if (mounted) {
+                  ref
+                      .read(updateVolunteerRepositoryProvider)
+                      .modifyVolunteerLastActivity(
+                          userDetails.id, Timestamp.now());
+                  Navigator.of(context).pop(); // Close the loading indicator
+                  Navigator.of(context).pop(note);
+                  ref.read(noteAddedProvider.notifier).state = true;
+                }
+              });
+            } else {
+              ref
+                  .read(updateVolunteerRepositoryProvider)
+                  .modifyVolunteerLastActivity(userDetails.id, Timestamp.now());
               Navigator.of(context).pop(note);
               ref.read(noteAddedProvider.notifier).state = true;
             }
-          });
-        } else {
-          ref.read(updateVolunteerRepositoryProvider).modifyVolunteerLastActivity(userDetails.id, Timestamp.now());
-          Navigator.of(context).pop(note);
-          ref.read(noteAddedProvider.notifier).state = true;
-        }
           },
           child: const Text('Save'),
         ),

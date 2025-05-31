@@ -10,18 +10,15 @@ class UpdateVolunteerViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   UpdateVolunteerViewModel(this._repository, this.ref)
       : super(const AsyncValue.loading());
 
-
-
-  Future<void> modifyVolunteerLastActivityString(
-      String userID, String volunteerId, String field, Timestamp newValue) async {
+  Future<void> modifyVolunteerLastActivityString(String userID,
+      String volunteerId, String field, Timestamp newValue) async {
     try {
-      await _repository.modifyVolunteerLastActivity(userID, newValue); 
+      await _repository.modifyVolunteerLastActivity(userID, newValue);
     } catch (error) {
       print("Error modifying: $error");
       state = AsyncValue.error("Error modifying: $error", StackTrace.current);
     }
   }
-
 }
 
 final shelterSettingsViewModelProvider =

@@ -56,8 +56,6 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-  
-
   // Increment attribute in Firestore document within volunteerSettings
   Future<void> incrementAttribute(String shelterID, String field) async {
     try {
@@ -131,4 +129,3 @@ final volunteersViewModelProvider =
       ref.watch(volunteersRepositoryProvider); // Access the repository
   return VolunteersViewModel(repository, ref); // Pass the repository and ref
 });
-

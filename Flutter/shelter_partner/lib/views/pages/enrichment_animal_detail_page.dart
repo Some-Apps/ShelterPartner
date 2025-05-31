@@ -54,9 +54,12 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                   },
                   child: Center(
                     child: CachedNetworkImage(
-                      imageUrl: 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(imageUrl)}',
-                      placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      imageUrl:
+                          'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(imageUrl)}',
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -86,19 +89,20 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
         }
 
         String formatAge(int monthsOld) {
-  int years = monthsOld ~/ 12;
-  int months = monthsOld % 12;
+          int years = monthsOld ~/ 12;
+          int months = monthsOld % 12;
 
-  String yearsText = years > 0 ? '$years year${years > 1 ? 's' : ''}' : '';
-  String monthsText = months > 0 ? '$months month${months > 1 ? 's' : ''}' : '';
+          String yearsText =
+              years > 0 ? '$years year${years > 1 ? 's' : ''}' : '';
+          String monthsText =
+              months > 0 ? '$months month${months > 1 ? 's' : ''}' : '';
 
-  if (yearsText.isNotEmpty && monthsText.isNotEmpty) {
-    return '$yearsText and $monthsText';
-  } else {
-    return yearsText.isNotEmpty ? yearsText : monthsText;
-  }
-}
-
+          if (yearsText.isNotEmpty && monthsText.isNotEmpty) {
+            return '$yearsText and $monthsText';
+          } else {
+            return yearsText.isNotEmpty ? yearsText : monthsText;
+          }
+        }
 
         return Scaffold(
           appBar: AppBar(
@@ -133,9 +137,10 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                             onPhotoTap: (index) {
                               showFullScreenGallery(
                                 context,
-                                (animal.photos ?? []).map((photo) =>
-                                  'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(photo.url)}'
-                                ).toList(),
+                                (animal.photos ?? [])
+                                    .map((photo) =>
+                                        'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(photo.url)}')
+                                    .toList(),
                                 index,
                               );
                             },
@@ -383,7 +388,8 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
               },
               itemBuilder: (context, index) {
                 return PhotoView(
-                  imageProvider: CachedNetworkImageProvider(widget.imageUrls[index]),
+                  imageProvider:
+                      CachedNetworkImageProvider(widget.imageUrls[index]),
                   backgroundDecoration:
                       const BoxDecoration(color: Colors.black),
                 );
@@ -521,7 +527,8 @@ class PhotoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final proxyUrl = 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(photo.url)}';
+    final proxyUrl =
+        'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(photo.url)}';
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -549,8 +556,12 @@ class PhotoItem extends StatelessWidget {
                     imageUrl: proxyUrl,
                     cacheKey: photo.url,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(color: Colors.grey[200], child: const Center(child: CircularProgressIndicator())),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    placeholder: (context, url) => Container(
+                        color: Colors.grey[200],
+                        child:
+                            const Center(child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
                 ),
               ),

@@ -39,55 +39,65 @@ class VisitorAnimalDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-      title: Text(animal.name), // Display the animal's name at the top
+        title: Text(animal.name), // Display the animal's name at the top
       ),
       body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-        // Photos in a horizontal scrollable slideshow view
-        SizedBox(
-          height: 200.0, // Adjust the height as needed
-          child: animal.photos?.isNotEmpty ?? false
-          ? ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: animal.photos?.length ?? 0,
-              itemBuilder: (context, index) {
-                final originalPhoto = animal.photos![index];
-                final proxyUrl = 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(originalPhoto.url)}';
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    onTap: () => showFullScreenImage(context, originalPhoto.url),
-                    child: Image.network(
-                      proxyUrl,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Photos in a horizontal scrollable slideshow view
+            SizedBox(
+              height: 200.0, // Adjust the height as needed
+              child: animal.photos?.isNotEmpty ?? false
+                  ? ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: animal.photos?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final originalPhoto = animal.photos![index];
+                        final proxyUrl =
+                            'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(originalPhoto.url)}';
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GestureDetector(
+                            onTap: () =>
+                                showFullScreenImage(context, originalPhoto.url),
+                            child: Image.network(
+                              proxyUrl,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  (loadingProgress
+                                                          .expectedTotalBytes ??
+                                                      1)
+                                              : null,
+                                    ),
+                                  );
+                                }
+                              },
                             ),
-                          );
-                        }
+                          ),
+                        );
                       },
+                    )
+                  : const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('No photos available'),
+                      ),
                     ),
-                  ),
-                );
-              },
-            )
-          : const Center(
-            child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text('No photos available'),
             ),
-          ),
-        ),
-        const SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
 
             // Animal details section
             Padding(

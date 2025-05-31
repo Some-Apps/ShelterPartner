@@ -62,7 +62,8 @@ class AnimalCardViewModel extends StateNotifier<AsyncValue<void>> {
 
   bool _hasBeenOutLongerThanAutomaticPutBackHours(Animal animal) {
     final lastLog = animal.logs.last;
-    final timeOut = DateTime.now().difference(lastLog.startTime.toDate()).inHours;
+    final timeOut =
+        DateTime.now().difference(lastLog.startTime.toDate()).inHours;
     return timeOut >= shelterSettings.automaticPutBackHours;
   }
 }

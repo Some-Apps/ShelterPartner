@@ -35,7 +35,7 @@ class FirebaseTestOverrides {
 }
 
 /// Example usage in tests:
-/// 
+///
 /// ```dart
 /// void main() {
 ///   group('Repository Tests', () {

@@ -29,7 +29,8 @@ class _GeorestrictionSettingsPageState
   List<AddressSuggestion> _addressSuggestions = [];
 
   // Replace with your actual API URL
-  final String placesApiUrl = 'https://places-api-222422545919.us-central1.run.app';
+  final String placesApiUrl =
+      'https://places-api-222422545919.us-central1.run.app';
 
   final TextEditingController _addressController = TextEditingController();
   final FocusNode _addressFocusNode = FocusNode(); // Create a FocusNode
@@ -73,37 +74,36 @@ class _GeorestrictionSettingsPageState
   }
 
   // Fetch place details using the Cloud Function API
-Future<void> _getPlaceDetails(String placeId) async {
-  final url = Uri.parse(
-    'https://places-api-details-222422545919.us-central1.run.app?place_id=$placeId',
-  );
+  Future<void> _getPlaceDetails(String placeId) async {
+    final url = Uri.parse(
+      'https://places-api-details-222422545919.us-central1.run.app?place_id=$placeId',
+    );
 
-  try {
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['status'] == 'OK') {
-        final location = data['result']['geometry']['location'];
-        final LatLng placeLocation = LatLng(location['lat'], location['lng']);
-        setState(() {
-          _center = placeLocation;
-          _mapController?.animateCamera(
-            CameraUpdate.newLatLngZoom(_center!, _zoomLevel),
-          );
-          _updateCircle();
-        });
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK') {
+          final location = data['result']['geometry']['location'];
+          final LatLng placeLocation = LatLng(location['lat'], location['lng']);
+          setState(() {
+            _center = placeLocation;
+            _mapController?.animateCamera(
+              CameraUpdate.newLatLngZoom(_center!, _zoomLevel),
+            );
+            _updateCircle();
+          });
+        } else {
+          _showErrorMessage('Unable to get location details.');
+        }
       } else {
         _showErrorMessage('Unable to get location details.');
       }
-    } else {
-      _showErrorMessage('Unable to get location details.');
+    } catch (e) {
+      _showErrorMessage('Error: $e');
     }
-  } catch (e) {
-    _showErrorMessage('Error: $e');
   }
-}
-
 
   // Center the map on the user's current location
   Future<void> _centerOnUserLocation() async {
@@ -225,7 +225,7 @@ Future<void> _getPlaceDetails(String placeId) async {
                 _radius,
                 _zoomLevel,
               );
-              Navigator.of(context).pop();
+          Navigator.of(context).pop();
           print('Save changes pressed');
         } else {
           _showErrorMessage('Center location is not set.');

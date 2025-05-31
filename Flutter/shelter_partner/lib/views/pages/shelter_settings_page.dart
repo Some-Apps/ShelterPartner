@@ -335,7 +335,6 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                   ),
                                 ),
                               ),
-
                               Card.outlined(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -382,8 +381,10 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                     ),
                                   ),
                                   const ListTile(
-                                    title: Text("How to set up the scheduled report"),
-                                    subtitle: Text("Only send information on animals. Check all available fields and set the report to send daily at 5AM CST to reports@shelterpartner.org. Give it 24 hours and Shelter Partner will automatically start using the new information. This is meant to be used in conjunction with the API, not as a replacement."),
+                                    title: Text(
+                                        "How to set up the scheduled report"),
+                                    subtitle: Text(
+                                        "Only send information on animals. Check all available fields and set the report to send daily at 5AM CST to reports@shelterpartner.org. Give it 24 hours and Shelter Partner will automatically start using the new information. This is meant to be used in conjunction with the API, not as a replacement."),
                                   ),
                                   ListTile(
                                     title: const Text(
@@ -420,10 +421,16 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                   ListTile(
                                     title: SwitchToggleView(
                                       title: "Show Species",
-                                      value: shelter?.shelterSettings.showSpecies ?? true,
+                                      value: shelter
+                                              ?.shelterSettings.showSpecies ??
+                                          true,
                                       onChanged: (bool newValue) {
-                                        ref.read(shelterSettingsViewModelProvider.notifier)
-                                            .toggleAttribute(shelter!.id, "showSpecies");
+                                        ref
+                                            .read(
+                                                shelterSettingsViewModelProvider
+                                                    .notifier)
+                                            .toggleAttribute(
+                                                shelter!.id, "showSpecies");
                                       },
                                     ),
                                   ),
@@ -435,10 +442,16 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                   ListTile(
                                     title: SwitchToggleView(
                                       title: "Show Breed",
-                                      value: shelter?.shelterSettings.showBreed ?? true,
+                                      value:
+                                          shelter?.shelterSettings.showBreed ??
+                                              true,
                                       onChanged: (bool newValue) {
-                                        ref.read(shelterSettingsViewModelProvider.notifier)
-                                            .toggleAttribute(shelter!.id, "showBreed");
+                                        ref
+                                            .read(
+                                                shelterSettingsViewModelProvider
+                                                    .notifier)
+                                            .toggleAttribute(
+                                                shelter!.id, "showBreed");
                                       },
                                     ),
                                   ),
@@ -450,10 +463,16 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                   ListTile(
                                     title: SwitchToggleView(
                                       title: "Show Description",
-                                      value: shelter?.shelterSettings.showDescription ?? true,
+                                      value: shelter?.shelterSettings
+                                              .showDescription ??
+                                          true,
                                       onChanged: (bool newValue) {
-                                        ref.read(shelterSettingsViewModelProvider.notifier)
-                                            .toggleAttribute(shelter!.id, "showDescription");
+                                        ref
+                                            .read(
+                                                shelterSettingsViewModelProvider
+                                                    .notifier)
+                                            .toggleAttribute(
+                                                shelter!.id, "showDescription");
                                       },
                                     ),
                                   ),
@@ -465,10 +484,16 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                   ListTile(
                                     title: SwitchToggleView(
                                       title: "Show Location",
-                                      value: shelter?.shelterSettings.showLocation ?? true,
+                                      value: shelter
+                                              ?.shelterSettings.showLocation ??
+                                          true,
                                       onChanged: (bool newValue) {
-                                        ref.read(shelterSettingsViewModelProvider.notifier)
-                                            .toggleAttribute(shelter!.id, "showLocation");
+                                        ref
+                                            .read(
+                                                shelterSettingsViewModelProvider
+                                                    .notifier)
+                                            .toggleAttribute(
+                                                shelter!.id, "showLocation");
                                       },
                                     ),
                                   ),
@@ -480,10 +505,16 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                   ListTile(
                                     title: SwitchToggleView(
                                       title: "Show Medical Info",
-                                      value: shelter?.shelterSettings.showMedicalInfo ?? false,
+                                      value: shelter?.shelterSettings
+                                              .showMedicalInfo ??
+                                          false,
                                       onChanged: (bool newValue) {
-                                        ref.read(shelterSettingsViewModelProvider.notifier)
-                                            .toggleAttribute(shelter!.id, "showMedicalInfo");
+                                        ref
+                                            .read(
+                                                shelterSettingsViewModelProvider
+                                                    .notifier)
+                                            .toggleAttribute(
+                                                shelter!.id, "showMedicalInfo");
                                       },
                                     ),
                                   ),
@@ -495,10 +526,16 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                   ListTile(
                                     title: SwitchToggleView(
                                       title: "Show Behavior Info",
-                                      value: shelter?.shelterSettings.showBehaviorInfo ?? true,
+                                      value: shelter?.shelterSettings
+                                              .showBehaviorInfo ??
+                                          true,
                                       onChanged: (bool newValue) {
-                                        ref.read(shelterSettingsViewModelProvider.notifier)
-                                            .toggleAttribute(shelter!.id, "showBehaviorInfo");
+                                        ref
+                                            .read(
+                                                shelterSettingsViewModelProvider
+                                                    .notifier)
+                                            .toggleAttribute(shelter!.id,
+                                                "showBehaviorInfo");
                                       },
                                     ),
                                   ),

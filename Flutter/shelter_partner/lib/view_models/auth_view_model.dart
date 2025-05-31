@@ -180,7 +180,6 @@ class AuthState {
       AuthState(status: AuthStatus.error, errorMessage: message);
 }
 
-
 class AuthStateChangeNotifier extends ChangeNotifier {
   late final ProviderSubscription _subscription;
 

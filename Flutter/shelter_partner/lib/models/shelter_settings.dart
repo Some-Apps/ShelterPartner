@@ -96,7 +96,8 @@ class ShelterSettings {
       'requestCount': requestCount,
       'requestLimit': requestLimit,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
-      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
+      'ignoreVisitWhenAutomaticallyPutBack':
+          ignoreVisitWhenAutomaticallyPutBack,
       'automaticPutBackHours': automaticPutBackHours,
       'shortUUID': shortUUID,
       'tokenCount': tokenCount,
@@ -149,12 +150,13 @@ class ShelterSettings {
       requestCount: data['requestCount'] ?? 0,
       requestLimit: data['requestLimit'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
-      ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
+      ignoreVisitWhenAutomaticallyPutBack:
+          data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
       automaticPutBackHours: data['automaticPutBackHours'] ?? 12,
       shortUUID: data['shortUUID'] ?? '',
       tokenCount: data['tokenCount'] ?? 0,
       tokenLimit: data['tokenLimit'] ?? 1000000,
-      lastTokenReset: data['lastTokenReset'] != null 
+      lastTokenReset: data['lastTokenReset'] != null
           ? DateTime.parse(data['lastTokenReset'])
           : null,
       showSpecies: data['showSpecies'] ?? true,
@@ -206,9 +208,13 @@ class ShelterSettings {
       asmAccountNumber: asmAccountNumber ?? this.asmAccountNumber,
       requestCount: requestCount ?? this.requestCount,
       requestLimit: requestLimit ?? this.requestLimit,
-      automaticallyPutBackAnimals: automaticallyPutBackAnimals ?? this.automaticallyPutBackAnimals,
-      ignoreVisitWhenAutomaticallyPutBack: ignoreVisitWhenAutomaticallyPutBack ?? this.ignoreVisitWhenAutomaticallyPutBack,
-      automaticPutBackHours: automaticPutBackHours ?? this.automaticPutBackHours,
+      automaticallyPutBackAnimals:
+          automaticallyPutBackAnimals ?? this.automaticallyPutBackAnimals,
+      ignoreVisitWhenAutomaticallyPutBack:
+          ignoreVisitWhenAutomaticallyPutBack ??
+              this.ignoreVisitWhenAutomaticallyPutBack,
+      automaticPutBackHours:
+          automaticPutBackHours ?? this.automaticPutBackHours,
       shortUUID: shortUUID ?? this.shortUUID,
       showSpecies: showSpecies ?? this.showSpecies,
       showBreed: showBreed ?? this.showBreed,

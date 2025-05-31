@@ -62,13 +62,13 @@ class LogsWidget extends StatelessWidget {
                                 'Are you sure you want to delete this log?'),
                             actions: [
                               TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false), // Do not delete
+                                onPressed: () => Navigator.of(context)
+                                    .pop(false), // Do not delete
                                 child: const Text('Cancel'),
                               ),
                               TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true), // Proceed to delete
+                                onPressed: () => Navigator.of(context)
+                                    .pop(true), // Proceed to delete
                                 child: const Text('Delete'),
                               ),
                             ],

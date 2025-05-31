@@ -58,7 +58,8 @@ class VolunteerDetailPage extends ConsumerWidget {
                       const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () {
-                          _showEditNameDialog(context, ref, viewModelState.volunteer);
+                          _showEditNameDialog(
+                              context, ref, viewModelState.volunteer);
                         },
                         child: Icon(
                           Icons.edit,
@@ -95,7 +96,8 @@ class VolunteerDetailPage extends ConsumerWidget {
   }
 }
 
-void _showEditNameDialog(BuildContext context, WidgetRef ref, Volunteer volunteer) {
+void _showEditNameDialog(
+    BuildContext context, WidgetRef ref, Volunteer volunteer) {
   String newFirstName = volunteer.firstName;
   String newLastName = volunteer.lastName;
 

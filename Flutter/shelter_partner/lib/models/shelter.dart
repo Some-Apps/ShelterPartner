@@ -36,7 +36,8 @@ class Shelter {
       createdAt: data['createdAt'] ?? Timestamp.now(),
       managementSoftware: data['managementSoftware'] ?? 'Unknown Software',
       shelterSettings: ShelterSettings.fromMap(data['shelterSettings'] ?? {}),
-      volunteerSettings: VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
+      volunteerSettings:
+          VolunteerSettings.fromMap(data['volunteerSettings'] ?? {}),
       volunteers: [], // Initialize with an empty list
     );
   }

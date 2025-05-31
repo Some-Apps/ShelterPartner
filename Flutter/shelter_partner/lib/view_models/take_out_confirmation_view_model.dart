@@ -17,13 +17,11 @@ class TakeOutConfirmationViewModel extends StateNotifier<Animal> {
   Future<void> takeOutAnimal(Animal animal, Log log) async {
     print(log.toMap());
     // Get shelter ID from shelterDetailsViewModelProvider
-    final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);  
+    final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
     final enrichmentViewModel = ref.read(enrichmentViewModelProvider.notifier);
 
     enrichmentViewModel.updateAnimalOptimistically(
-        animal.copyWith(inKennel: false, 
-        logs: [...animal.logs, log]
-        ));    
+        animal.copyWith(inKennel: false, logs: [...animal.logs, log]));
 
     try {
       await _repository.takeOutAnimal(

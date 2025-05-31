@@ -6,7 +6,8 @@ import 'package:shelter_partner/models/animal.dart';
 class AnimalRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> updateAnimal(String shelterId, String animalType, Animal animal) async {
+  Future<void> updateAnimal(
+      String shelterId, String animalType, Animal animal) async {
     await _firestore
         .collection('shelters')
         .doc(shelterId)
@@ -15,7 +16,8 @@ class AnimalRepository {
         .set(animal.toMap(), SetOptions(merge: true));
   }
 
-  Future<void> deleteLastLog(String shelterId, String animalType, String animalId) async {
+  Future<void> deleteLastLog(
+      String shelterId, String animalType, String animalId) async {
     DocumentReference animalDocRef = _firestore
         .collection('shelters')
         .doc(shelterId)
@@ -24,7 +26,8 @@ class AnimalRepository {
 
     DocumentSnapshot animalSnapshot = await animalDocRef.get();
     if (animalSnapshot.exists) {
-      List<dynamic> logs = (animalSnapshot.data() as Map<String, dynamic>)['logs'];
+      List<dynamic> logs =
+          (animalSnapshot.data() as Map<String, dynamic>)['logs'];
       if (logs.isNotEmpty) {
         logs.removeLast();
         await animalDocRef.update({'logs': logs});

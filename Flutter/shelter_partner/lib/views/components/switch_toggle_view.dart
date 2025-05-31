@@ -23,7 +23,7 @@ class SwitchToggleView extends StatelessWidget {
             child: Text(
               title,
               style: const TextStyle(
-          fontSize: 16.0,
+                fontSize: 16.0,
               ),
             ),
           ),

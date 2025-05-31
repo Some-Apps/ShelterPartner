@@ -17,19 +17,20 @@ class PickerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(title: Text(title),
-    trailing: DropdownButton<String>(
-      value: value, // The currently selected value
-      hint: const Text(
-          "Select an option"), // Placeholder text when no value is selected
-      onChanged: onChanged, // Handle value change
-      items: options.map<DropdownMenuItem<String>>((String option) {
-        return DropdownMenuItem<String>(
-          value: option,
-          child: Text(option),
-        );
-      }).toList(),
-    ),
+    return ListTile(
+      title: Text(title),
+      trailing: DropdownButton<String>(
+        value: value, // The currently selected value
+        hint: const Text(
+            "Select an option"), // Placeholder text when no value is selected
+        onChanged: onChanged, // Handle value change
+        items: options.map<DropdownMenuItem<String>>((String option) {
+          return DropdownMenuItem<String>(
+            value: option,
+            child: Text(option),
+          );
+        }).toList(),
+      ),
     );
   }
 }

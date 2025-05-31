@@ -13,7 +13,8 @@ class SwitchToAdminPage extends ConsumerWidget {
     final appUser = ref.watch(appUserProvider);
     final TextEditingController passwordController = TextEditingController();
 
-    Future<void> switchToAdmin(BuildContext context, WidgetRef ref, String password) async {
+    Future<void> switchToAdmin(
+        BuildContext context, WidgetRef ref, String password) async {
       try {
         // Reauthenticate the user with the provided password
         final user = FirebaseAuth.instance.currentUser;
@@ -73,7 +74,8 @@ class SwitchToAdminPage extends ConsumerWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () => switchToAdmin(context, ref, passwordController.text),
+              onPressed: () =>
+                  switchToAdmin(context, ref, passwordController.text),
               child: const Text('Switch to admin'),
             ),
           ],

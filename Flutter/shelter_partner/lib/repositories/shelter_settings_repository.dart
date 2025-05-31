@@ -21,7 +21,6 @@ class ShelterSettingsRepository {
     });
   }
 
-
   // Method to add a map to an array within shelterSettings attribute
   Future<void> addMapToShelterSettingsArray(
       String shelterID, String field, Map<String, dynamic> value) async {
@@ -55,7 +54,6 @@ class ShelterSettingsRepository {
       throw Exception("Failed to remove string from array: $error");
     });
   }
-
 
   // Method to reorder items in an array of maps within shelterSettings attribute
   Future<void> reorderMapArrayInShelterSettings(String shelterID, String field,
@@ -149,7 +147,6 @@ class ShelterSettingsRepository {
       'tokenCount': newCount,
     });
   }
-
 }
 
 // Provider to access the ShelterSettingsRepository

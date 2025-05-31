@@ -41,7 +41,8 @@ class FilterRepository {
     final parts = fieldPath.split('.');
     dynamic currentData = data;
     for (final part in parts) {
-      if (currentData is Map<String, dynamic> && currentData.containsKey(part)) {
+      if (currentData is Map<String, dynamic> &&
+          currentData.containsKey(part)) {
         currentData = currentData[part];
       } else {
         return null;
@@ -51,8 +52,6 @@ class FilterRepository {
   }
 }
 
-
-final filterRepositoryProvider =
-    Provider<FilterRepository>((ref) {
+final filterRepositoryProvider = Provider<FilterRepository>((ref) {
   return FilterRepository();
 });

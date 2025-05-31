@@ -26,13 +26,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _getSubscriptionStatus(ref);
     _fetchVersion();
   }
-   Future<void> _fetchVersion() async {
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  setState(() {
-    _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
-  });
-}
 
+  Future<void> _fetchVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
+    });
+  }
 
   Future<void> _getSubscriptionStatus(WidgetRef ref) async {
     final entitlements =
@@ -209,7 +209,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                             
+
                               ListTile(
                                 leading: const Icon(Icons.delete_outline),
                                 title: const Text("Delete Account"),
@@ -222,7 +222,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                           "To delete your account and all data associated with it, please email jared@shelterpartner.org"),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(context).pop(),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
                                           child: const Text("OK"),
                                         ),
                                       ],
@@ -355,19 +356,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               //           },
                               //   )
                               // else
-                                // ListTile(
-                                //   leading: const Icon(Icons.favorite_border),
-                                //   title: Text(
-                                //     subscriptionStatus == "Active"
-                                //         ? "Thank you for supporting us!"
-                                //         : "Support us and remove ads",
-                                //   ),
-                                //   subtitle: Text(
-                                //     subscriptionStatus == "Active"
-                                //         ? "You can manage your subscription on the mobile app"
-                                //         : "Remove ads and support the developer by subscribing on the mobile app",
-                                //   ),
-                                // ),
+                              // ListTile(
+                              //   leading: const Icon(Icons.favorite_border),
+                              //   title: Text(
+                              //     subscriptionStatus == "Active"
+                              //         ? "Thank you for supporting us!"
+                              //         : "Support us and remove ads",
+                              //   ),
+                              //   subtitle: Text(
+                              //     subscriptionStatus == "Active"
+                              //         ? "You can manage your subscription on the mobile app"
+                              //         : "Remove ads and support the developer by subscribing on the mobile app",
+                              //   ),
+                              // ),
                               Divider(
                                 color: Colors.black.withOpacity(0.1),
                                 height: 0,
@@ -401,7 +402,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               ListTile(
-                                leading: const Icon(Icons.numbers, color: Colors.grey),
+                                leading: const Icon(Icons.numbers,
+                                    color: Colors.grey),
                                 title: Text(
                                   _version, // Dynamically fetched version
                                   style: const TextStyle(color: Colors.grey),
