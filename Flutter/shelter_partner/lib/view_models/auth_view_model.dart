@@ -7,11 +7,11 @@ import 'package:uuid/uuid.dart';
 
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
 
-final authViewModelProvider = StateNotifierProvider<AuthViewModel, AuthState>((ref) {
+final authViewModelProvider =
+    StateNotifierProvider<AuthViewModel, AuthState>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return AuthViewModel(authRepository, ref);
 });
-
 
 class AuthViewModel extends StateNotifier<AuthState> {
   final AuthRepository _authRepository;
