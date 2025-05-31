@@ -1,6 +1,6 @@
 # Welcome To [Shelter Partner](https://shelterpartner.org)!
 
-I will be out of town from May 25 - 28 and will respond to any messages when I get back.
+I will be out of town from May 30 - 31 and June 2 - 5 and will respond to any messages when I get back.
 
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
