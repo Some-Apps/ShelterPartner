@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class TakeOutConfirmationRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  TakeOutConfirmationRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Future<void> takeOutAnimal(Animal animal, String shelterID, Log log) async {
     try {
@@ -43,5 +46,6 @@ class TakeOutConfirmationRepository {
 // Provider for AddNoteRepository
 final takeOutConfirmationRepositoryProvider =
     Provider<TakeOutConfirmationRepository>((ref) {
-  return TakeOutConfirmationRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return TakeOutConfirmationRepository(firestore: firestore);
 });

@@ -8,9 +8,9 @@ import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/volunteer_settings.dart';
 import 'package:shelter_partner/repositories/enrichment_repository.dart';
+import 'package:shelter_partner/utils/clock.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
-import 'package:shelter_partner/view_models/update_volunteer_view_model.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';
@@ -18,11 +18,13 @@ import 'package:rxdart/rxdart.dart';
 class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
   final EnrichmentRepository _repository;
   final Ref ref;
+  final Clock _clock;
 
   StreamSubscription<void>? _animalsSubscription;
 
   EnrichmentViewModel(this._repository, this.ref)
-      : super({'cats': [], 'dogs': []}) {
+      : _clock = ref.read(clockProvider),
+        super({'cats': [], 'dogs': []}) {
     ref.listen<AuthState>(
       authViewModelProvider,
       (previous, next) {
@@ -126,7 +128,7 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
             filteredAnimals.where((animal) => animal.species == 'dog').toList();
 
         if (_ignoreFirestoreUpdatesUntil != null &&
-            DateTime.now().isBefore(_ignoreFirestoreUpdatesUntil!)) {
+            _clock.now().isBefore(_ignoreFirestoreUpdatesUntil!)) {
           // Ignore this update - just return without changing state
           print("Ignoring Firestore update due to recent optimistic update.");
           return;
@@ -161,8 +163,7 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
       'cats': currentCats,
       'dogs': currentDogs,
     };
-    _ignoreFirestoreUpdatesUntil =
-        DateTime.now().add(const Duration(seconds: 3));
+    _ignoreFirestoreUpdatesUntil = _clock.now().add(const Duration(seconds: 3));
 
     state = newState; // This will trigger a rebuild only where it's needed
   }

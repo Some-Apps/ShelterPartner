@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class AccountSettingsRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  AccountSettingsRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   // Method to fetch account details for a specific user ID
   Stream<DocumentSnapshot> fetchUserDetails(String userID) {
@@ -138,5 +141,6 @@ class AccountSettingsRepository {
 
 final accountSettingsRepositoryProvider =
     Provider<AccountSettingsRepository>((ref) {
-  return AccountSettingsRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return AccountSettingsRepository(firestore: firestore);
 });

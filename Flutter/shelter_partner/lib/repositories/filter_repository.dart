@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class FilterRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  FilterRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Future<void> saveFilterExpression(
     String collection,
@@ -41,7 +44,8 @@ class FilterRepository {
     final parts = fieldPath.split('.');
     dynamic currentData = data;
     for (final part in parts) {
-      if (currentData is Map<String, dynamic> && currentData.containsKey(part)) {
+      if (currentData is Map<String, dynamic> &&
+          currentData.containsKey(part)) {
         currentData = currentData[part];
       } else {
         return null;
@@ -51,8 +55,7 @@ class FilterRepository {
   }
 }
 
-
-final filterRepositoryProvider =
-    Provider<FilterRepository>((ref) {
-  return FilterRepository();
+final filterRepositoryProvider = Provider<FilterRepository>((ref) {
+  final firestore = ref.watch(firestoreProvider);
+  return FilterRepository(firestore: firestore);
 });

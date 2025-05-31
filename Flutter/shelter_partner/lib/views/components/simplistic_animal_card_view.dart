@@ -64,19 +64,17 @@ class _SimplisticAnimalCardViewState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_automaticPutBackHandled) {
         final shelterDetails = ref.read(shelterDetailsViewModelProvider).value;
-
         if (shelterDetails != null) {
           final shelterSettings = shelterDetails.shelterSettings;
           final shelterId = shelterDetails.id;
           final animalType = widget.animal.species;
-
+          final repository = ref.read(animalRepositoryProvider);
           final viewModel = AnimalCardViewModel(
-            repository: AnimalRepository(),
+            repository: repository,
             shelterId: shelterId,
             animalType: animalType,
             shelterSettings: shelterSettings,
           );
-
           viewModel.handleAutomaticPutBack(widget.animal);
         }
         _automaticPutBackHandled = true;
@@ -101,23 +99,29 @@ class _SimplisticAnimalCardViewState
         final currentAnimal = widget.animal;
         print("DEBUG: currentAnimal.inKennel: ${currentAnimal.inKennel}");
         if (currentAnimal.inKennel) {
-          final accountDetails = ref.read(accountSettingsViewModelProvider).value;
+          final accountDetails =
+              ref.read(accountSettingsViewModelProvider).value;
           print("DEBUG: accountDetails: $accountDetails");
           if (accountDetails != null) {
             final appUser = ref.read(appUserProvider);
             print("DEBUG: appUser: $appUser");
-            final shelterSettings = ref.read(shelterDetailsViewModelProvider).value;
+            final shelterSettings =
+                ref.read(shelterDetailsViewModelProvider).value;
             print("DEBUG: shelterSettings: $shelterSettings");
             bool requireName;
             bool requireLetOutType;
             if (appUser?.type == "admin") {
               requireName = accountDetails.accountSettings!.requireName;
-              requireLetOutType = accountDetails.accountSettings!.requireLetOutType;
-              print("DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+              requireLetOutType =
+                  accountDetails.accountSettings!.requireLetOutType;
+              print(
+                  "DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType");
             } else {
               requireName = shelterSettings!.volunteerSettings.requireName;
-              requireLetOutType = shelterSettings.volunteerSettings.requireLetOutType;
-              print("DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+              requireLetOutType =
+                  shelterSettings.volunteerSettings.requireLetOutType;
+              print(
+                  "DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType");
             }
             if (requireName || requireLetOutType) {
               print("DEBUG: Showing take out confirmation dialog");
@@ -125,7 +129,8 @@ class _SimplisticAnimalCardViewState
             } else {
               print("DEBUG: Directly taking out animal");
               ref
-                  .read(takeOutConfirmationViewModelProvider(widget.animal).notifier)
+                  .read(takeOutConfirmationViewModelProvider(widget.animal)
+                      .notifier)
                   .takeOutAnimal(
                     widget.animal,
                     Log(
@@ -143,7 +148,8 @@ class _SimplisticAnimalCardViewState
             print("DEBUG: accountDetails is null");
           }
         } else {
-          print("DEBUG: Animal not in kennel, showing put back confirmation dialog");
+          print(
+              "DEBUG: Animal not in kennel, showing put back confirmation dialog");
           _showPutBackConfirmationDialog();
         }
       }
@@ -374,29 +380,29 @@ class _SimplisticAnimalCardViewState
                         ],
                       ),
                       // Location
-                      
-                        Row(
+
+                      Row(
                         children: [
                           Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                            return FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                              animal.location,
-                              style: TextStyle(
-                                fontFamily: 'CabinBold',
-                                fontSize: 25,
-                                color: Colors.grey.shade800,
-                              ),
-                              ),
-                            );
-                            },
-                          ),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    animal.location,
+                                    style: TextStyle(
+                                      fontFamily: 'CabinBold',
+                                      fontSize: 25,
+                                      color: Colors.grey.shade800,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ],
-                        ),
+                      ),
 
                       // Last Let out
                       Row(

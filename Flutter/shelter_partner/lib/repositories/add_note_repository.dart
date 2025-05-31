@@ -12,9 +12,12 @@ import 'package:shelter_partner/models/photo.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class AddNoteRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  AddNoteRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Future<void> updateAnimalTags(
     Animal animal,
@@ -22,9 +25,8 @@ class AddNoteRepository {
     String tagName,
   ) async {
     final collection = animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
-    final docRef = _firestore
-        .collection('shelters/$shelterID/$collection')
-        .doc(animal.id);
+    final docRef =
+        _firestore.collection('shelters/$shelterID/$collection').doc(animal.id);
     final appUser = appUserProvider.read;
 
     await _firestore.runTransaction((transaction) async {
@@ -71,8 +73,8 @@ class AddNoteRepository {
         .collection('shelters/$shelterID/$collection')
         .doc(animal.id)
         .update({
-          'notes': FieldValue.arrayUnion([note.toMap()]),
-        });
+      'notes': FieldValue.arrayUnion([note.toMap()]),
+    });
   }
 
   Future<void> uploadImageToAnimal(
@@ -83,8 +85,8 @@ class AddNoteRepository {
   ) async {
     final photoId = const Uuid().v4().toString(); // Generate UUID once
     final storageRef = FirebaseStorage.instance.ref().child(
-      '$shelterID/${animal.id}/$photoId',
-    );
+          '$shelterID/${animal.id}/$photoId',
+        );
 
     // Determine the upload task based on the platform
     UploadTask uploadTask;
@@ -123,12 +125,13 @@ class AddNoteRepository {
         .collection('shelters/$shelterID/$collection')
         .doc(animal.id)
         .update({
-          'photos': FieldValue.arrayUnion([photo.toMap()]),
-        });
+      'photos': FieldValue.arrayUnion([photo.toMap()]),
+    });
   }
 }
 
 // Provider for AddNoteRepository
 final addNoteRepositoryProvider = Provider<AddNoteRepository>((ref) {
-  return AddNoteRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return AddNoteRepository(firestore: firestore);
 });
