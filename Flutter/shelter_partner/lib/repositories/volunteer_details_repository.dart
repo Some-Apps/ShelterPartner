@@ -3,18 +3,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/volunteer.dart';
-
-
-
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class VolunteerDetailsRepository {
+  final FirebaseFirestore _firestore;
+  VolunteerDetailsRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
-  Future<void> updateVolunteerName(String shelterID, String volunteerID, String firstName, String lastName) async {
+  Future<void> updateVolunteerName(String shelterID, String volunteerID,
+      String firstName, String lastName) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(volunteerID)
-          .update({
+      await _firestore.collection('users').doc(volunteerID).update({
         'firstName': firstName,
         'lastName': lastName,
       });
@@ -24,7 +23,8 @@ class VolunteerDetailsRepository {
     }
   }
 
-  Future<Map<String, dynamic>> fetchLogsAndComputeStats(Volunteer volunteer) async {
+  Future<Map<String, dynamic>> fetchLogsAndComputeStats(
+      Volunteer volunteer) async {
     try {
       // Get the shelterID from the volunteer model
       String shelterID = volunteer.shelterID;
@@ -34,15 +34,11 @@ class VolunteerDetailsRepository {
       int logCount = 0;
 
       // References to cats and dogs collections
-      CollectionReference catsRef = FirebaseFirestore.instance
-          .collection('shelters')
-          .doc(shelterID)
-          .collection('cats');
+      CollectionReference catsRef =
+          _firestore.collection('shelters').doc(shelterID).collection('cats');
 
-      CollectionReference dogsRef = FirebaseFirestore.instance
-          .collection('shelters')
-          .doc(shelterID)
-          .collection('dogs');
+      CollectionReference dogsRef =
+          _firestore.collection('shelters').doc(shelterID).collection('dogs');
 
       // Fetch all cats and dogs
       QuerySnapshot catsSnapshot = await catsRef.get();
@@ -84,9 +80,8 @@ class VolunteerDetailsRepository {
       }
 
       // Compute average log duration
-      double averageLogDuration = logCount > 0
-          ? totalLogDurationInMinutes / logCount.toDouble()
-          : 0.0;
+      double averageLogDuration =
+          logCount > 0 ? totalLogDurationInMinutes / logCount.toDouble() : 0.0;
 
       // Return the computed values
       return {
@@ -101,7 +96,8 @@ class VolunteerDetailsRepository {
   }
 }
 
-
-final volunteerRepositoryProvider = Provider<VolunteerDetailsRepository>((ref) {
-  return VolunteerDetailsRepository();
+final volunteerDetailsRepositoryProvider =
+    Provider<VolunteerDetailsRepository>((ref) {
+  final firestore = ref.watch(firestoreProvider);
+  return VolunteerDetailsRepository(firestore: firestore);
 });

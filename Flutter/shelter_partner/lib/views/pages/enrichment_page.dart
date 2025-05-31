@@ -27,6 +27,7 @@ import 'package:shelter_partner/views/components/take_out_confirmation_view.dart
 import 'package:shelter_partner/views/pages/main_page.dart';
 import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class EnrichmentPage extends ConsumerStatefulWidget {
   const EnrichmentPage({super.key});
@@ -1038,9 +1039,9 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
 }
 
 final adsProvider = StreamProvider<List<Ad>>((ref) {
-  return FirebaseFirestore.instance.collection('ads').snapshots().map(
-      (snapshot) =>
-          snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
+  final firestore = ref.watch(firestoreProvider);
+  return firestore.collection('ads').snapshots().map((snapshot) =>
+      snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
 });
 
 final noteAddedProvider = StateProvider<bool>((ref) => false);

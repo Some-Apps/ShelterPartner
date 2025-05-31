@@ -4,6 +4,7 @@ import 'package:shelter_partner/repositories/volunteers_repository.dart';
 import '../models/shelter.dart';
 import 'auth_view_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   final ShelterSettingsRepository _repository;
@@ -144,8 +145,6 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-
-
 // Remove map from array within shelterSettings attribute
   Future<void> removeMapFromShelterSettingsArray(
       String shelterID, String field, Map<String, dynamic> value) async {
@@ -244,7 +243,7 @@ final shelterSettingsViewModelProvider =
         (ref) {
   final repository =
       ref.watch(shelterSettingsRepositoryProvider); // Access the repository
-  final firestore = FirebaseFirestore.instance;
+  final firestore = ref.watch(firestoreProvider);
   return ShelterSettingsViewModel(
       repository, ref, firestore); // Pass the repository, ref, and firestore
 });
