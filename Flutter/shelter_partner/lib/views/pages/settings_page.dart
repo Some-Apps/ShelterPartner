@@ -8,10 +8,10 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/github_release.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/views/components/release_notes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qonversion_flutter/qonversion_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -414,12 +414,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               ListTile(
-                                leading: Icon(
+                                leading: const Icon(
                                   Icons.numbers,
-                                  color: Theme.of(context).iconTheme.color,
+                                  color: Colors.grey,
                                 ),
                                 title: Text(
                                   _version,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                               Divider(
@@ -428,9 +431,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               const ListTile(
-                                leading: Icon(Icons.pets),
+                                leading: Icon(Icons.pets, color: Colors.grey),
                                 title: Text(
                                   "Dedicated to Aslan",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                               Divider(
@@ -465,236 +471,33 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                       )
                                     else ...[
                                       // Show only the most recent release if not showing previous
-                                      ..._releases
-                                          .asMap()
-                                          .entries
-                                          .where((entry) =>
-                                              isVersionGreaterOrEqual(
-                                                  entry.value.version,
-                                                  '2.0.1') &&
-                                              (!_showPreviousVersions
-                                                  ? entry.key == 0
-                                                  : true))
-                                          .map(
-                                            (entry) => Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 12.0),
-                                              child: Card(
-                                                elevation: 3,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                child: InkWell(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                  onTap: () {
-                                                    setState(() {
-                                                      if (_expandedReleases
-                                                          .contains(
-                                                              entry.key)) {
-                                                        _expandedReleases
-                                                            .remove(entry.key);
-                                                      } else {
-                                                        _expandedReleases
-                                                            .add(entry.key);
-                                                      }
-                                                    });
-                                                  },
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      // Header with icon and version
-                                                      Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: entry.key == 0
-                                                              ? Colors
-                                                                  .blue.shade50
-                                                              : Colors
-                                                                  .grey.shade50,
-                                                          borderRadius:
-                                                              const BorderRadius
-                                                                  .vertical(
-                                                                  top: Radius
-                                                                      .circular(
-                                                                          12)),
-                                                        ),
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 16,
-                                                                vertical: 12),
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(
-                                                              entry.key == 0
-                                                                  ? Icons
-                                                                      .new_releases
-                                                                  : Icons
-                                                                      .history,
-                                                              color:
-                                                                  entry.key == 0
-                                                                      ? Colors
-                                                                          .blue
-                                                                      : Colors
-                                                                          .grey,
-                                                            ),
-                                                            const SizedBox(
-                                                                width: 12),
-                                                            Expanded(
-                                                              child: Text(
-                                                                entry.value
-                                                                    .version,
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .titleMedium
-                                                                    ?.copyWith(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: entry.key == 0
-                                                                          ? Colors
-                                                                              .blue
-                                                                          : Colors
-                                                                              .black87,
-                                                                    ),
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              '${entry.value.publishedAt.day}/${entry.value.publishedAt.month}/${entry.value.publishedAt.year}',
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodySmall
-                                                                  ?.copyWith(
-                                                                      color: Colors
-                                                                          .grey),
-                                                            ),
-                                                            const SizedBox(
-                                                                width: 8),
-                                                            Icon(
-                                                              _expandedReleases
-                                                                      .contains(
-                                                                          entry
-                                                                              .key)
-                                                                  ? Icons
-                                                                      .expand_less
-                                                                  : Icons
-                                                                      .expand_more,
-                                                              color:
-                                                                  Colors.grey,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      AnimatedCrossFade(
-                                                        duration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    250),
-                                                        crossFadeState:
-                                                            _expandedReleases
-                                                                    .contains(
-                                                                        entry
-                                                                            .key)
-                                                                ? CrossFadeState
-                                                                    .showSecond
-                                                                : CrossFadeState
-                                                                    .showFirst,
-                                                        firstChild:
-                                                            const SizedBox
-                                                                .shrink(),
-                                                        secondChild: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .fromLTRB(16,
-                                                                  8, 16, 16),
-                                                          child: MarkdownBody(
-                                                            data: entry
-                                                                .value.body,
-                                                            styleSheet:
-                                                                MarkdownStyleSheet
-                                                                    .fromTheme(
-                                                              Theme.of(context),
-                                                            ).copyWith(
-                                                              p: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyMedium
-                                                                  ?.copyWith(
-                                                                      color: Colors
-                                                                          .black87),
-                                                              h2: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .titleMedium
-                                                                  ?.copyWith(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                          .black87,
-                                                                      fontSize:
-                                                                          15),
-                                                            ),
-                                                            onTapLink: (text,
-                                                                href,
-                                                                title) async {
-                                                              if (href !=
-                                                                  null) {
-                                                                final uri = Uri
-                                                                    .tryParse(
-                                                                        href);
-                                                                if (uri !=
-                                                                    null) {
-                                                                  await launchUrl(
-                                                                      uri,
-                                                                      mode: LaunchMode
-                                                                          .externalApplication);
-                                                                }
-                                                              }
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                      if (_releases.length > 1)
-                                        Center(
-                                          child: TextButton.icon(
-                                            icon: Icon(
-                                              _showPreviousVersions
-                                                  ? Icons.keyboard_arrow_up
-                                                  : Icons.keyboard_arrow_down,
-                                              color: Colors.blue,
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                _showPreviousVersions =
-                                                    !_showPreviousVersions;
-                                                // If hiding previous, collapse all except latest
-                                                if (!_showPreviousVersions) {
-                                                  _expandedReleases = {0};
-                                                }
-                                              });
-                                            },
-                                            label: Text(
-                                              _showPreviousVersions
-                                                  ? 'Hide Previous Versions'
-                                                  : 'View Previous Versions',
-                                              style: const TextStyle(
-                                                  color: Colors.blue),
-                                            ),
-                                          ),
-                                        ),
+                                      ReleaseNotes(
+                                        releases: _releases,
+                                        showPreviousVersions:
+                                            _showPreviousVersions,
+                                        expandedReleases: _expandedReleases,
+                                        onToggleExpand: (index) {
+                                          setState(() {
+                                            if (_expandedReleases
+                                                .contains(index)) {
+                                              _expandedReleases.remove(index);
+                                            } else {
+                                              _expandedReleases.add(index);
+                                            }
+                                          });
+                                        },
+                                        onToggleShowPrevious: () {
+                                          setState(() {
+                                            _showPreviousVersions =
+                                                !_showPreviousVersions;
+                                            if (!_showPreviousVersions) {
+                                              _expandedReleases = {0};
+                                            }
+                                          });
+                                        },
+                                        isVersionGreaterOrEqual:
+                                            isVersionGreaterOrEqual,
+                                      ),
                                     ],
                                   ],
                                 ),
