@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shelter_partner/models/github_release.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qonversion_flutter/qonversion_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -19,20 +23,28 @@ class SettingsPage extends ConsumerStatefulWidget {
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
   String _version = "Loading...";
+  List<GitHubRelease> _releases = [];
+  bool _showPreviousVersions = false;
+  Set<int> _expandedReleases = {0}; // Only the latest is expanded by default
 
   @override
   void initState() {
     super.initState();
     _getSubscriptionStatus(ref);
     _fetchVersion();
+    fetchFilteredReleases().then((releases) {
+      setState(() {
+        _releases = releases;
+      });
+    });
   }
-   Future<void> _fetchVersion() async {
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  setState(() {
-    _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
-  });
-}
 
+  Future<void> _fetchVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
+    });
+  }
 
   Future<void> _getSubscriptionStatus(WidgetRef ref) async {
     final entitlements =
@@ -209,7 +221,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                             
+
                               ListTile(
                                 leading: const Icon(Icons.delete_outline),
                                 title: const Text("Delete Account"),
@@ -222,7 +234,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                           "To delete your account and all data associated with it, please email jared@shelterpartner.org"),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(context).pop(),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
                                           child: const Text("OK"),
                                         ),
                                       ],
@@ -355,19 +368,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               //           },
                               //   )
                               // else
-                                // ListTile(
-                                //   leading: const Icon(Icons.favorite_border),
-                                //   title: Text(
-                                //     subscriptionStatus == "Active"
-                                //         ? "Thank you for supporting us!"
-                                //         : "Support us and remove ads",
-                                //   ),
-                                //   subtitle: Text(
-                                //     subscriptionStatus == "Active"
-                                //         ? "You can manage your subscription on the mobile app"
-                                //         : "Remove ads and support the developer by subscribing on the mobile app",
-                                //   ),
-                                // ),
+                              // ListTile(
+                              //   leading: const Icon(Icons.favorite_border),
+                              //   title: Text(
+                              //     subscriptionStatus == "Active"
+                              //         ? "Thank you for supporting us!"
+                              //         : "Support us and remove ads",
+                              //   ),
+                              //   subtitle: Text(
+                              //     subscriptionStatus == "Active"
+                              //         ? "You can manage your subscription on the mobile app"
+                              //         : "Remove ads and support the developer by subscribing on the mobile app",
+                              //   ),
+                              // ),
                               Divider(
                                 color: Colors.black.withOpacity(0.1),
                                 height: 0,
@@ -401,10 +414,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               ListTile(
-                                leading: const Icon(Icons.numbers, color: Colors.grey),
+                                leading: const Icon(Icons.numbers),
                                 title: Text(
-                                  _version, // Dynamically fetched version
-                                  style: const TextStyle(color: Colors.grey),
+                                  _version,
                                 ),
                               ),
                               Divider(
@@ -413,9 +425,276 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               const ListTile(
-                                leading: Icon(Icons.pets, color: Colors.grey),
-                                title: Text("Dedicated to Aslan",
-                                    style: TextStyle(color: Colors.grey)),
+                                leading: Icon(Icons.pets),
+                                title: Text(
+                                  "Dedicated to Aslan",
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Row(
+                                      children: [
+                                        Icon(Icons.description,
+                                            color: Colors.black87),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Release Notes',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (_releases.isEmpty)
+                                      const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child:
+                                            Text("Fetching release notes..."),
+                                      )
+                                    else ...[
+                                      // Show only the most recent release if not showing previous
+                                      ..._releases
+                                          .asMap()
+                                          .entries
+                                          .where((entry) =>
+                                              isVersionGreaterOrEqual(
+                                                  entry.value.version,
+                                                  '2.0.1') &&
+                                              (!_showPreviousVersions
+                                                  ? entry.key == 0
+                                                  : true))
+                                          .map(
+                                            (entry) => Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 12.0),
+                                              child: Card(
+                                                elevation: 3,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: InkWell(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  onTap: () {
+                                                    setState(() {
+                                                      if (_expandedReleases
+                                                          .contains(
+                                                              entry.key)) {
+                                                        _expandedReleases
+                                                            .remove(entry.key);
+                                                      } else {
+                                                        _expandedReleases
+                                                            .add(entry.key);
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      // Header with icon and version
+                                                      Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: entry.key == 0
+                                                              ? Colors
+                                                                  .blue.shade50
+                                                              : Colors
+                                                                  .grey.shade50,
+                                                          borderRadius:
+                                                              const BorderRadius
+                                                                  .vertical(
+                                                                  top: Radius
+                                                                      .circular(
+                                                                          12)),
+                                                        ),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 16,
+                                                                vertical: 12),
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(
+                                                              entry.key == 0
+                                                                  ? Icons
+                                                                      .new_releases
+                                                                  : Icons
+                                                                      .history,
+                                                              color:
+                                                                  entry.key == 0
+                                                                      ? Colors
+                                                                          .blue
+                                                                      : Colors
+                                                                          .grey,
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 12),
+                                                            Expanded(
+                                                              child: Text(
+                                                                entry.value
+                                                                    .version,
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .titleMedium
+                                                                    ?.copyWith(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: entry.key == 0
+                                                                          ? Colors
+                                                                              .blue
+                                                                          : Colors
+                                                                              .black87,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              '${entry.value.publishedAt.day}/${entry.value.publishedAt.month}/${entry.value.publishedAt.year}',
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodySmall
+                                                                  ?.copyWith(
+                                                                      color: Colors
+                                                                          .grey),
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 8),
+                                                            Icon(
+                                                              _expandedReleases
+                                                                      .contains(
+                                                                          entry
+                                                                              .key)
+                                                                  ? Icons
+                                                                      .expand_less
+                                                                  : Icons
+                                                                      .expand_more,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      AnimatedCrossFade(
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    250),
+                                                        crossFadeState:
+                                                            _expandedReleases
+                                                                    .contains(
+                                                                        entry
+                                                                            .key)
+                                                                ? CrossFadeState
+                                                                    .showSecond
+                                                                : CrossFadeState
+                                                                    .showFirst,
+                                                        firstChild:
+                                                            const SizedBox
+                                                                .shrink(),
+                                                        secondChild: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .fromLTRB(16,
+                                                                  8, 16, 16),
+                                                          child: MarkdownBody(
+                                                            data: entry
+                                                                .value.body,
+                                                            styleSheet:
+                                                                MarkdownStyleSheet
+                                                                    .fromTheme(
+                                                              Theme.of(context),
+                                                            ).copyWith(
+                                                              p: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.copyWith(
+                                                                      color: Colors
+                                                                          .black87),
+                                                              h2: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .titleMedium
+                                                                  ?.copyWith(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .black87,
+                                                                      fontSize:
+                                                                          15),
+                                                            ),
+                                                            onTapLink: (text,
+                                                                href,
+                                                                title) async {
+                                                              if (href !=
+                                                                  null) {
+                                                                final uri = Uri
+                                                                    .tryParse(
+                                                                        href);
+                                                                if (uri !=
+                                                                    null) {
+                                                                  await launchUrl(
+                                                                      uri,
+                                                                      mode: LaunchMode
+                                                                          .externalApplication);
+                                                                }
+                                                              }
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      if (_releases.length > 1)
+                                        Center(
+                                          child: TextButton.icon(
+                                            icon: Icon(
+                                              _showPreviousVersions
+                                                  ? Icons.keyboard_arrow_up
+                                                  : Icons.keyboard_arrow_down,
+                                              color: Colors.blue,
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                _showPreviousVersions =
+                                                    !_showPreviousVersions;
+                                                // If hiding previous, collapse all except latest
+                                                if (!_showPreviousVersions) {
+                                                  _expandedReleases = {0};
+                                                }
+                                              });
+                                            },
+                                            label: Text(
+                                              _showPreviousVersions
+                                                  ? 'Hide Previous Versions'
+                                                  : 'View Previous Versions',
+                                              style: const TextStyle(
+                                                  color: Colors.blue),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -430,6 +709,48 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ),
       ),
     );
+  }
+}
+
+// Helper function to compare semantic versions
+bool isVersionGreaterOrEqual(String version, String minVersion) {
+  List<int> parse(String v) =>
+      v.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+  final v1 = parse(version.replaceAll(RegExp(r'[^0-9.]'), ''));
+  final v2 = parse(minVersion.replaceAll(RegExp(r'[^0-9.]'), ''));
+  for (int i = 0; i < 3; i++) {
+    if ((v1.length > i ? v1[i] : 0) > (v2.length > i ? v2[i] : 0)) return true;
+    if ((v1.length > i ? v1[i] : 0) < (v2.length > i ? v2[i] : 0)) return false;
+  }
+  return true;
+}
+
+Future<List<GitHubRelease>> fetchFilteredReleases() async {
+  final response = await http.get(
+    Uri.parse(
+        'https://api.github.com/repos/ShelterPartner/ShelterPartner/releases'),
+  );
+
+  if (response.statusCode == 200) {
+    try {
+      List<dynamic> jsonList = jsonDecode(response.body);
+      final releases = jsonList
+          .map((json) {
+            try {
+              return GitHubRelease.fromJson(json);
+            } catch (_) {
+              return null;
+            }
+          })
+          .whereType<GitHubRelease>()
+          .toList();
+      return releases..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+    } catch (e) {
+      print('Failed to decode JSON');
+      throw Exception('Invalid JSON: $e');
+    }
+  } else {
+    throw Exception('Failed to fetch releases');
   }
 }
 
