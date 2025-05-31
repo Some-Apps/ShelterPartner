@@ -40,7 +40,7 @@ All international payments will be made via PayPal so make sure you have an acco
   - Issue #388: Locations should be separated into separate parts ($100)
   - Issue #440: Animal slideshow should use all all animal photos ($10)
   - Issue #467: The number of location tiers should persist ($5)
-  - Issue #444: Add Let Out Type and Early Put Back Reasons to Filter Conditions ($25)
+  - Issue #443: Enrichment filters fix ($25)
 
 </details>
 
