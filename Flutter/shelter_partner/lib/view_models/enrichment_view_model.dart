@@ -53,7 +53,9 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
         ref.listen<AsyncValue<Shelter?>>(
           volunteersViewModelProvider,
           (previous, next) {
-            if (previous is! AsyncData && next is AsyncData && next.value != null) {
+            if (previous is! AsyncData &&
+                next is AsyncData &&
+                next.value != null) {
               fetchAnimals(shelterID: shelterID);
             }
           },
@@ -78,14 +80,16 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
     final animalsStream = _repository.fetchAnimals(shelterID);
 
     // Fetch account settings stream (filter), seeded with current value to ensure initial emission
-    final initialAppUser = ref.read(accountSettingsViewModelProvider).asData?.value;
+    final initialAppUser =
+        ref.read(accountSettingsViewModelProvider).asData?.value;
     final accountSettingsStream = ref
         .read(accountSettingsViewModelProvider.notifier)
         .stream
         .map((asyncValue) => asyncValue.asData?.value)
         .startWith(initialAppUser);
     // Fetch volunteer settings stream (filter), seeded with current value to ensure initial emission
-    final initialVolunteerSettings = ref.read(volunteersViewModelProvider).value?.volunteerSettings;
+    final initialVolunteerSettings =
+        ref.read(volunteersViewModelProvider).value?.volunteerSettings;
     final volunteerSettingsStream = ref
         .read(volunteersViewModelProvider.notifier)
         .stream
@@ -93,8 +97,8 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
         .startWith(initialVolunteerSettings);
 
     // Combine all three streams
-    _animalsSubscription =
-        CombineLatestStream.combine3<List<Animal>, AppUser?, VolunteerSettings?, void>(
+    _animalsSubscription = CombineLatestStream.combine3<List<Animal>, AppUser?,
+        VolunteerSettings?, void>(
       animalsStream,
       accountSettingsStream,
       volunteerSettingsStream,
@@ -210,23 +214,37 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
 
     if (attributeValue == null) return false;
 
+    final attrLower = conditionValue.toString().toLowerCase();
+
     switch (condition.operatorType) {
       case OperatorType.equals:
-        return attributeValue.toString().toLowerCase() ==
-            conditionValue.toString().toLowerCase();
+        if (attributeValue is List) {
+          return attributeValue
+              .any((e) => e.toString().toLowerCase() == attrLower);
+        }
+        return attributeValue.toString().toLowerCase() == attrLower;
+
       case OperatorType.notEquals:
-        return attributeValue.toString().toLowerCase() !=
-            conditionValue.toString().toLowerCase();
+        if (attributeValue is List) {
+          return attributeValue
+              .every((e) => e.toString().toLowerCase() != attrLower);
+        }
+        return attributeValue.toString().toLowerCase() != attrLower;
+
       case OperatorType.contains:
-        return attributeValue
-            .toString()
-            .toLowerCase()
-            .contains(conditionValue.toString().toLowerCase());
+        if (attributeValue is List) {
+          return attributeValue
+              .any((e) => e.toString().toLowerCase().contains(attrLower));
+        }
+        return attributeValue.toString().toLowerCase().contains(attrLower);
+
       case OperatorType.notContains:
-        return !attributeValue
-            .toString()
-            .toLowerCase()
-            .contains(conditionValue.toString().toLowerCase());
+        if (attributeValue is List) {
+          return attributeValue
+              .every((e) => !e.toString().toLowerCase().contains(attrLower));
+        }
+        return !attributeValue.toString().toLowerCase().contains(attrLower);
+
       case OperatorType.greaterThan:
         return double.tryParse(attributeValue.toString())! >
             double.tryParse(conditionValue.toString())!;
@@ -266,6 +284,10 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
         return animal.sex;
       case 'species':
         return animal.species;
+      case 'tags':
+        return animal.tags.map((tag) => tag.title.toLowerCase()).toList();
+      case 'notes':
+        return animal.notes.map((note) => note.note.toLowerCase()).toList();
       case 'breed':
         return animal.breed;
       case 'location':
