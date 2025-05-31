@@ -35,7 +35,7 @@ void main() {
           .doc(shelterId)
           .collection('dogs')
           .doc('dog1')
-          .set(testAnimalData(id: 'dog1', name: 'Sammy'));
+          .set(createTestAnimalData(id: 'dog1', name: 'Sammy'));
       // Act
       await tester.pumpWidget(
         UncontrolledProviderScope(
