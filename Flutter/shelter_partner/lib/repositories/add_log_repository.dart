@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 
-
 class AddLogRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -16,12 +15,9 @@ class AddLogRepository {
         .collection('shelters/$shelterID/$collection')
         .doc(animal.id)
         .update({
-          'logs': FieldValue.arrayUnion([log.toMap()])
-        });
+      'logs': FieldValue.arrayUnion([log.toMap()])
+    });
   }
-
-
-
 }
 
 // Provider for AddNoteRepository

@@ -50,7 +50,8 @@ class TakeOutConfirmationViewState
       final userDetails = ref.read(appUserProvider);
       final bool requireLetOutType = userDetails?.type == "admin"
           ? (accountSettings.value?.accountSettings?.requireLetOutType ?? false)
-          : (shelterSettings.value?.volunteerSettings.requireLetOutType ?? false);
+          : (shelterSettings.value?.volunteerSettings.requireLetOutType ??
+              false);
       final bool requireName = userDetails?.type == "admin"
           ? (accountSettings.value?.accountSettings?.requireName ?? false)
           : (shelterSettings.value?.volunteerSettings.requireName ?? false);
@@ -117,7 +118,9 @@ class TakeOutConfirmationViewState
                       ))
                   .toList(),
             ),
-          if (requireLetOutTypeFlag && shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty == true)
+          if (requireLetOutTypeFlag &&
+              shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty ==
+                  true)
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

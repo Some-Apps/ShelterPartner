@@ -57,7 +57,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   children: <Widget>[
                     TextFormField(
                       controller: _oldPasswordController,
-                      decoration: const InputDecoration(labelText: 'Old Password'),
+                      decoration:
+                          const InputDecoration(labelText: 'Old Password'),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -68,7 +69,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                     TextFormField(
                       controller: _passwordController,
-                      decoration: const InputDecoration(labelText: 'New Password'),
+                      decoration:
+                          const InputDecoration(labelText: 'New Password'),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -79,7 +81,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                     TextFormField(
                       controller: _confirmPasswordController,
-                      decoration: const InputDecoration(labelText: 'Confirm Password'),
+                      decoration:
+                          const InputDecoration(labelText: 'Confirm Password'),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {

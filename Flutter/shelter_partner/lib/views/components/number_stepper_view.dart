@@ -29,12 +29,16 @@ class NumberStepperView extends StatelessWidget {
         const Spacer(),
         IconButton(
           icon: const Icon(Icons.remove),
-          onPressed: value > minValue ? decrement : null, // Disable if value <= minValue
+          onPressed: value > minValue
+              ? decrement
+              : null, // Disable if value <= minValue
         ),
         Text('$value $label'), // Display the passed value
         IconButton(
           icon: const Icon(Icons.add),
-          onPressed: value < maxValue ? increment : null, // Disable if value >= maxValue
+          onPressed: value < maxValue
+              ? increment
+              : null, // Disable if value >= maxValue
         ),
       ],
     );

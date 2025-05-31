@@ -371,7 +371,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                             ),
                           if (animal.locationTiers.isNotEmpty)
                             for (var tier in animal.locationTiers.sublist(
-                              animal.locationTiers.length > widget.maxLocationTiers
+                              animal.locationTiers.length >
+                                      widget.maxLocationTiers
                                   ? animal.locationTiers.length -
                                       widget.maxLocationTiers
                                   : 0, // Clamp to 0 if not enough tiers

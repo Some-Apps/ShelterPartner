@@ -160,19 +160,20 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                     earlyReason: _selectedEarlyReason,
                   );
 
-                    await ref
+                  await ref
                       .read(addLogViewModelProvider(widget.animal).notifier)
                       .addLogToAnimal(widget.animal, log)
                       .then((_) {
-                      print('Log added');
-                      if (mounted) {
-                        print('Updating last activity');
-                        ref
+                    print('Log added');
+                    if (mounted) {
+                      print('Updating last activity');
+                      ref
                           .read(updateVolunteerRepositoryProvider)
-                          .modifyVolunteerLastActivity(userDetails.id, Timestamp.now());
-                        print('Last activity updated');
-                      }
-                      });
+                          .modifyVolunteerLastActivity(
+                              userDetails.id, Timestamp.now());
+                      print('Last activity updated');
+                    }
+                  });
 
                   Navigator.of(context).pop(log);
                 }

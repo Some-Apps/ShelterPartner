@@ -1,5 +1,3 @@
-
-
 import 'package:shelter_partner/models/filter_condition.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 
@@ -47,5 +45,3 @@ abstract class FilterElement {
     }
   }
 }
-
-

@@ -48,7 +48,8 @@ class NotesWidget extends StatelessWidget {
                       child: Stack(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+                            padding: const EdgeInsets.fromLTRB(
+                                16.0, 16.0, 16.0, 16.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -123,4 +124,3 @@ class NotesWidget extends StatelessWidget {
     );
   }
 }
-

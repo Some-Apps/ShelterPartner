@@ -4,12 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 
-
-
-
 class VolunteerDetailsRepository {
-
-  Future<void> updateVolunteerName(String shelterID, String volunteerID, String firstName, String lastName) async {
+  Future<void> updateVolunteerName(String shelterID, String volunteerID,
+      String firstName, String lastName) async {
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -24,7 +21,8 @@ class VolunteerDetailsRepository {
     }
   }
 
-  Future<Map<String, dynamic>> fetchLogsAndComputeStats(Volunteer volunteer) async {
+  Future<Map<String, dynamic>> fetchLogsAndComputeStats(
+      Volunteer volunteer) async {
     try {
       // Get the shelterID from the volunteer model
       String shelterID = volunteer.shelterID;
@@ -84,9 +82,8 @@ class VolunteerDetailsRepository {
       }
 
       // Compute average log duration
-      double averageLogDuration = logCount > 0
-          ? totalLogDurationInMinutes / logCount.toDouble()
-          : 0.0;
+      double averageLogDuration =
+          logCount > 0 ? totalLogDurationInMinutes / logCount.toDouble() : 0.0;
 
       // Return the computed values
       return {
@@ -100,7 +97,6 @@ class VolunteerDetailsRepository {
     }
   }
 }
-
 
 final volunteerRepositoryProvider = Provider<VolunteerDetailsRepository>((ref) {
   return VolunteerDetailsRepository();

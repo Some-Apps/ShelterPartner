@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UpdateVolunteerRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   // Method to modify a specific string attribute within the volunteer document
   Future<void> modifyVolunteerLastActivity(
       String volunteerId, Timestamp newValue) async {
@@ -17,6 +17,7 @@ class UpdateVolunteerRepository {
 }
 
 // Provider for AddNoteRepository
-final updateVolunteerRepositoryProvider = Provider<UpdateVolunteerRepository>((ref) {
+final updateVolunteerRepositoryProvider =
+    Provider<UpdateVolunteerRepository>((ref) {
   return UpdateVolunteerRepository();
 });

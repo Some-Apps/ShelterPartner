@@ -144,8 +144,6 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-
-
 // Remove map from array within shelterSettings attribute
   Future<void> removeMapFromShelterSettingsArray(
       String shelterID, String field, Map<String, dynamic> value) async {

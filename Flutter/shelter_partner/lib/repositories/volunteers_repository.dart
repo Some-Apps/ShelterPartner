@@ -29,7 +29,7 @@ class VolunteersRepository {
           .where('shelterID', isEqualTo: shelterID)
           .snapshots()
           .map((querySnapshot) {
-            print('Volunteers: ${querySnapshot.docs.length}');
+        print('Volunteers: ${querySnapshot.docs.length}');
         return querySnapshot.docs
             .map((doc) => Volunteer.fromDocument(doc))
             .toList();
@@ -217,12 +217,13 @@ class VolunteersRepository {
     }
   }
 
-String _generateRandomPassword() {
-  const length = 6;
-  const chars = 'abcdefghijklmnopqrstuvwxyz';
-  final rand = Random.secure();
-  return List.generate(length, (_) => chars[rand.nextInt(chars.length)]).join();
-}
+  String _generateRandomPassword() {
+    const length = 6;
+    const chars = 'abcdefghijklmnopqrstuvwxyz';
+    final rand = Random.secure();
+    return List.generate(length, (_) => chars[rand.nextInt(chars.length)])
+        .join();
+  }
 
   // Method to increment a specific field within volunteerSettings attribute
   Future<void> incrementVolunteerSetting(String shelterID, String field) async {
