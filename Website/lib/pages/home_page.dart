@@ -125,13 +125,15 @@ class HomePage extends StatelessWidget {
               IconButton(
                 icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.black),
                 onPressed: () {
-                  launchUrl(Uri.parse('https://www.facebook.com/people/Shelter-Partner/61565670425368/'));
+                  launchUrl(Uri.parse(
+                      'https://www.facebook.com/people/Shelter-Partner/61565670425368/'));
                 },
               ),
               IconButton(
                 icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.black),
                 onPressed: () {
-                  launchUrl(Uri.parse('https://www.instagram.com/shelterpartner'));
+                  launchUrl(
+                      Uri.parse('https://www.instagram.com/shelterpartner'));
                 },
               ),
             ],
@@ -151,7 +153,8 @@ class HomePage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Text(
                         "There will be an open Zoom meeting on June 6 at 6pm MST for any interested shelters. We'll go over our roadmap and get feedback from shelters.",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -161,7 +164,8 @@ class HomePage extends StatelessWidget {
                         children: const [
                           Text(
                             'Welcome',
-                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 28, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 8),
                           Text(
@@ -177,7 +181,8 @@ class HomePage extends StatelessWidget {
                         children: [
                           const Text(
                             'Version 2 Tutorial',
-                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 28, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 16),
                           const SizedBox(
