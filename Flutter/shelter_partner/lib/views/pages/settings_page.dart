@@ -414,7 +414,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               ListTile(
-                                leading: const Icon(Icons.numbers),
+                                leading: Icon(
+                                  Icons.numbers,
+                                  color: Theme.of(context).iconTheme.color,
+                                ),
                                 title: Text(
                                   _version,
                                 ),
