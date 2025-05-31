@@ -11,7 +11,7 @@ class GitHubRelease {
 
   factory GitHubRelease.fromJson(Map<String, dynamic> json) {
     return GitHubRelease(
-      version: json['tag_name'] ?? 'null',
+      version: json['tag_name'] ?? '',
       publishedAt: DateTime.parse(json['published_at']),
       body: json['body'] ?? '',
     );
