@@ -123,7 +123,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                 }
                               },
                             ),
-                          
+
                             // ListTile(
                             //   title: SwitchToggleView(
                             //     title: "Remove Ads",
@@ -507,7 +507,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             ),
                           ]),
                         ),
-                    
+
                         const Padding(
                           padding: EdgeInsets.only(top: 16.0, left: 16.0),
                           child: Text(
@@ -518,16 +518,20 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                         Card.outlined(
                           child: Consumer(
                             builder: (context, ref, child) {
-                              final shelterSettings = ref.watch(shelterSettingsViewModelProvider).value;
-                              if (shelterSettings == null) return const SizedBox.shrink();
-                              
+                              final shelterSettings = ref
+                                  .watch(shelterSettingsViewModelProvider)
+                                  .value;
+                              if (shelterSettings == null)
+                                return const SizedBox.shrink();
+
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const Text(
                                           "API Token Usage",
@@ -543,10 +547,19 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                         ),
                                         const SizedBox(height: 4),
                                         LinearProgressIndicator(
-                                          value: shelterSettings.shelterSettings.tokenCount / shelterSettings.shelterSettings.tokenLimit,
+                                          value: shelterSettings
+                                                  .shelterSettings.tokenCount /
+                                              shelterSettings
+                                                  .shelterSettings.tokenLimit,
                                           backgroundColor: Colors.grey[300],
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            shelterSettings.shelterSettings.tokenCount > shelterSettings.shelterSettings.tokenLimit * 0.9
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                            shelterSettings.shelterSettings
+                                                        .tokenCount >
+                                                    shelterSettings
+                                                            .shelterSettings
+                                                            .tokenLimit *
+                                                        0.9
                                                 ? Colors.red
                                                 : Colors.green,
                                           ),
@@ -554,7 +567,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                         const SizedBox(height: 4),
                                         Text(
                                           "Last Reset: ${shelterSettings.shelterSettings.lastTokenReset != null ? DateTime.parse(shelterSettings.shelterSettings.lastTokenReset.toString()).toLocal().toString().split('.')[0] : 'Never'}",
-                                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                          style: const TextStyle(
+                                              fontSize: 12, color: Colors.grey),
                                         ),
                                       ],
                                     ),

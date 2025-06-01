@@ -35,13 +35,16 @@ class ChatService {
       final tokenLimit = shelterSettings.shelterSettings.tokenLimit;
 
       if (tokenCount >= tokenLimit) {
-        throw Exception('Monthly token limit of $tokenLimit reached. Please try again next month.');
+        throw Exception(
+            'Monthly token limit of $tokenLimit reached. Please try again next month.');
       }
 
       // Prepare the system message with animal context
       // Limit to 100 animals for context if the list is long
       final maxAnimals = 250;
-      final animalsToShow = animals.length > maxAnimals ? animals.sublist(0, maxAnimals) : animals;
+      final animalsToShow = animals.length > maxAnimals
+          ? animals.sublist(0, maxAnimals)
+          : animals;
       final animalContext = animalsToShow.map((animal) {
         final settings = shelterSettings.shelterSettings;
         final List<String> animalInfo = ['Name: ${animal.name}'];
@@ -53,13 +56,18 @@ class ChatService {
         animalInfo.add('Other Info: $animal');
         if (settings.showSpecies) animalInfo.add('Species: ${animal.species}');
         if (settings.showBreed) animalInfo.add('Breed: ${animal.breed}');
-        if (settings.showDescription) animalInfo.add('Description: ${animal.description}');
-        if (settings.showLocation) animalInfo.add('Location: ${animal.location}');
-        if (settings.showMedicalInfo) animalInfo.add('Medical Category: ${animal.medicalCategory}');
-        if (settings.showBehaviorInfo) animalInfo.add('Behavior Category: ${animal.behaviorCategory}');
+        if (settings.showDescription)
+          animalInfo.add('Description: ${animal.description}');
+        if (settings.showLocation)
+          animalInfo.add('Location: ${animal.location}');
+        if (settings.showMedicalInfo)
+          animalInfo.add('Medical Category: ${animal.medicalCategory}');
+        if (settings.showBehaviorInfo)
+          animalInfo.add('Behavior Category: ${animal.behaviorCategory}');
         return animalInfo.join(', ');
       }).join('\n');
-      final moreText = animals.length > maxAnimals ? '\n...and more animals available.' : '';
+      final moreText =
+          animals.length > maxAnimals ? '\n...and more animals available.' : '';
 
       final systemMessage = '''
 You are a helpful assistant for a pet shelter. You can only discuss the animals listed below. If a user asks for a list of all available animals, provide a concise list of their names and brief details.
@@ -68,7 +76,8 @@ You are a helpful assistant for a pet shelter. You can only discuss the animals 
 Available animals:\n$animalContext$moreText
 ''';
 
-      final response = await http.post(
+      final response = await http
+          .post(
         Uri.parse(_apiUrl),
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +94,8 @@ Available animals:\n$animalContext$moreText
           'presence_penalty': 0.0,
           'frequency_penalty': 0.0,
         }),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
           throw Exception('Request timed out. Please try again.');
@@ -97,17 +107,20 @@ Available animals:\n$animalContext$moreText
         final tokens = data['usage']['total_tokens'] as int;
 
         // Update token count in Firestore
-        await ref.read(shelterSettingsViewModelProvider.notifier)
+        await ref
+            .read(shelterSettingsViewModelProvider.notifier)
             .incrementTokenCount(shelterId, tokens);
 
         return data['choices'][0]['message']['content'];
       } else if (response.statusCode == 401) {
         throw Exception('Invalid API key. Please contact support.');
       } else if (response.statusCode == 429) {
-        throw Exception('Rate limit exceeded. Please try again in a few moments.');
+        throw Exception(
+            'Rate limit exceeded. Please try again in a few moments.');
       } else {
         final errorData = jsonDecode(response.body);
-        throw Exception('API Error: ${errorData['error']?['message'] ?? response.body}');
+        throw Exception(
+            'API Error: ${errorData['error']?['message'] ?? response.body}');
       }
     } catch (e) {
       if (e is Exception) {
@@ -118,4 +131,4 @@ Available animals:\n$animalContext$moreText
   }
 }
 
-final chatServiceProvider = Provider((ref) => ChatService(ref)); 
+final chatServiceProvider = Provider((ref) => ChatService(ref));

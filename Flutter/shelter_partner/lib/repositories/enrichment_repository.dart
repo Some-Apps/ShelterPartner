@@ -21,7 +21,6 @@ class EnrichmentRepository {
       return allAnimals;
     });
   }
-
 }
 
 final enrichmentRepositoryProvider = Provider<EnrichmentRepository>((ref) {
