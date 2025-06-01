@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class ShelterSettingsRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  ShelterSettingsRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   // Method to fetch account details for a specific shelter ID
   Stream<DocumentSnapshot> fetchShelterDetails(String shelterID) {
@@ -20,7 +23,6 @@ class ShelterSettingsRepository {
       throw Exception("Failed to add string to array: $error");
     });
   }
-
 
   // Method to add a map to an array within shelterSettings attribute
   Future<void> addMapToShelterSettingsArray(
@@ -55,7 +57,6 @@ class ShelterSettingsRepository {
       throw Exception("Failed to remove string from array: $error");
     });
   }
-
 
   // Method to reorder items in an array of maps within shelterSettings attribute
   Future<void> reorderMapArrayInShelterSettings(String shelterID, String field,
@@ -149,11 +150,11 @@ class ShelterSettingsRepository {
       'tokenCount': newCount,
     });
   }
-
 }
 
 // Provider to access the ShelterSettingsRepository
 final shelterSettingsRepositoryProvider =
     Provider<ShelterSettingsRepository>((ref) {
-  return ShelterSettingsRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return ShelterSettingsRepository(firestore: firestore);
 });

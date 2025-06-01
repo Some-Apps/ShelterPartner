@@ -76,8 +76,10 @@ class VolunteerSettings {
     }
 
     FilterElement? enrichmentFilter;
-    if (data.containsKey('enrichmentFilter') && data['enrichmentFilter'] != null) {
-      final enrichmentFilterData = data['enrichmentFilter'] as Map<String, dynamic>;
+    if (data.containsKey('enrichmentFilter') &&
+        data['enrichmentFilter'] != null) {
+      final enrichmentFilterData =
+          data['enrichmentFilter'] as Map<String, dynamic>;
       enrichmentFilter = reconstructFilterGroup(enrichmentFilterData);
     } else {
       enrichmentFilter = null;
@@ -92,7 +94,8 @@ class VolunteerSettings {
       requireLetOutType: data['requireLetOutType'] ?? false,
       requireEarlyPutBackReason: data['requireEarlyPutBackReason'] ?? false,
       requireName: data['requireName'] ?? false,
-      createLogsWhenUnderMinimumDuration: data['createLogsWhenUnderMinimumDuration'] ?? false,
+      createLogsWhenUnderMinimumDuration:
+          data['createLogsWhenUnderMinimumDuration'] ?? false,
       showCustomForm: data['showCustomForm'] ?? false,
       customFormURL: data['customFormURL'] ?? "",
       appendAnimalDataToURL: data['appendAnimalDataToURL'] ?? false,

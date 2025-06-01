@@ -4,7 +4,8 @@ publish_to: 'none'
 version: 2.0.3
 
 environment:
-  sdk: ^3.5.3
+  sdk: '>=3.8.0 <3.9.0'
+  flutter: '>=3.32.0 <3.33.0'
 
 dependencies:
   flutter:
@@ -38,7 +39,6 @@ dependencies:
   package_info_plus: ^8.1.0
   infinite_scroll_pagination: ^4.0.0
   cupertino_icons: ^1.0.8
-  qonversion_flutter: ^9.1.5
   auto_size_text: ^3.0.0
   icon_decoration: ^2.1.0
   fl_chart: ^0.69.2

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +11,7 @@ import 'package:shelter_partner/views/components/release_notes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qonversion_flutter/qonversion_flutter.dart';
 import 'package:http/http.dart' as http;
+
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -30,7 +30,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    _getSubscriptionStatus(ref);
     _fetchVersion();
     fetchFilteredReleases().then((releases) {
       setState(() {
@@ -46,15 +45,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     });
   }
 
-  Future<void> _getSubscriptionStatus(WidgetRef ref) async {
-    final entitlements =
-        await Qonversion.getSharedInstance().checkEntitlements();
-    print("Number of entitlement entries: ${entitlements.entries.length}");
-    final isActive = entitlements.entries.any((entry) =>
-        entry.value.isActive &&
-        entry.value.expirationDate?.isAfter(DateTime.now()) == true);
-    ref.read(subscriptionStatusProvider.notifier).state =
-        isActive ? "Active" : "Inactive";
+
+  Future<void> _fetchVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
+    });
   }
 
   @override
@@ -66,7 +62,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final shelterAsyncValue = ref.watch(shelterDetailsViewModelProvider);
     final appUser = ref.watch(appUserProvider);
-    final subscriptionStatus = ref.watch(subscriptionStatusProvider);
 
     return shelterAsyncValue.when(
       loading: () => const Scaffold(
@@ -418,6 +413,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   Icons.numbers,
                                   color: Colors.grey,
                                 ),
+
                                 title: Text(
                                   _version,
                                   style: const TextStyle(
@@ -719,3 +715,4 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
 }
 
 final subscriptionStatusProvider = StateProvider<String>((ref) => "Inactive");
+

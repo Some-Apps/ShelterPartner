@@ -50,5 +50,5 @@ class Integration {
       username: username ?? this.username,
       password: password ?? this.password,
     );
-}
+  }
 }

@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qonversion_flutter/qonversion_flutter.dart';
 import 'package:shelter_partner/helpers/file_loader.dart';
 import 'package:shelter_partner/models/account_settings.dart';
 import 'package:shelter_partner/models/geofence.dart';
@@ -38,16 +37,6 @@ class AuthRepository {
   Future<AppUser?> getUserById(String userId) async {
     final doc = await _firestore.collection('users').doc(userId).get();
     if (doc.exists) {
-      try {
-        Qonversion.getSharedInstance().setUserProperty(
-            QUserPropertyKey.customUserId, AppUser.fromDocument(doc).id);
-        print("User ID: ${AppUser.fromDocument(doc).id}");
-        final userInfo = await Qonversion.getSharedInstance()
-            .identify(AppUser.fromDocument(doc).id);
-        // use userInfo if necessary
-      } catch (e) {
-        // handle error here
-      }
       return AppUser.fromDocument(doc);
     }
 

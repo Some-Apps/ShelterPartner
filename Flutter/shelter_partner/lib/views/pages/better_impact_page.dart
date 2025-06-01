@@ -14,8 +14,10 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 // Providers
-final usersWithEmailProvider = StateProvider<List<Map<String, dynamic>>>((ref) => []);
-final usersToAddProvider = StateProvider<List<Map<String, dynamic>>>((ref) => []);
+final usersWithEmailProvider =
+    StateProvider<List<Map<String, dynamic>>>((ref) => []);
+final usersToAddProvider =
+    StateProvider<List<Map<String, dynamic>>>((ref) => []);
 final usersToRemoveProvider = StateProvider<List<Volunteer>>((ref) => []);
 
 class BetterImpactPage extends ConsumerStatefulWidget {
@@ -99,7 +101,8 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         // Proceed with your existing logic
         final usersWithEmail = users
             .where((user) =>
-                user['email_address'] != null && user['email_address'].isNotEmpty)
+                user['email_address'] != null &&
+                user['email_address'].isNotEmpty)
             .map((user) => {
                   'first_name': user['first_name'],
                   'last_name': user['last_name'],
@@ -145,8 +148,8 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         } else if (volunteersState is AsyncError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content:
-                    Text('Error loading volunteer data: ${volunteersState.error}')),
+                content: Text(
+                    'Error loading volunteer data: ${volunteersState.error}')),
           );
           setState(() {
             isLoading = false;
@@ -171,13 +174,13 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               .map((user) => user['email_address'] as String)
               .toSet();
 
-          final Set<String> volunteerEmails = existingVolunteers
-              .map((volunteer) => volunteer.email)
-              .toSet();
+          final Set<String> volunteerEmails =
+              existingVolunteers.map((volunteer) => volunteer.email).toSet();
 
           // Determine emails to add and remove
           final Set<String> emailsToAdd = apiEmails.difference(volunteerEmails);
-          final Set<String> emailsToRemove = volunteerEmails.difference(apiEmails);
+          final Set<String> emailsToRemove =
+              volunteerEmails.difference(apiEmails);
 
           // Get users to add
           final List<Map<String, dynamic>> usersToAdd = usersWithEmail
@@ -206,7 +209,8 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               // Convert usersToAdd to List<Volunteer>
               final volunteersToAdd = usersToAdd.map((user) {
                 return Volunteer(
-                  id: const Uuid().v4(), // Assign an appropriate ID if necessary
+                  id: const Uuid()
+                      .v4(), // Assign an appropriate ID if necessary
                   firstName: user['first_name'],
                   lastName: user['last_name'],
                   email: user['email_address'],
@@ -221,8 +225,8 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               for (var volunteer in volunteersToAdd) {
                 await ref
                     .read(volunteersViewModelProvider.notifier)
-                    .sendVolunteerInvite(volunteer.firstName, volunteer.lastName,
-                        volunteer.email, shelterID);
+                    .sendVolunteerInvite(volunteer.firstName,
+                        volunteer.lastName, volunteer.email, shelterID);
               }
 
               // Remove volunteers
@@ -344,11 +348,13 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
                           const SizedBox(height: 20),
                           TextField(
                             controller: usernameController,
-                            decoration: const InputDecoration(labelText: 'Username'),
+                            decoration:
+                                const InputDecoration(labelText: 'Username'),
                           ),
                           TextField(
                             controller: passwordController,
-                            decoration: const InputDecoration(labelText: 'Password'),
+                            decoration:
+                                const InputDecoration(labelText: 'Password'),
                             obscureText: true,
                           ),
                           const SizedBox(height: 20),
@@ -461,5 +467,3 @@ class SyncDialog extends ConsumerWidget {
     );
   }
 }
-
-

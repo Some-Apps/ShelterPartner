@@ -3,13 +3,11 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart'; // Import kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:qonversion_flutter/qonversion_flutter.dart';
 
 import 'package:shelter_partner/models/ad.dart';
 import 'package:shelter_partner/models/animal.dart';
@@ -25,8 +23,8 @@ import 'package:shelter_partner/views/components/simplistic_animal_card_view.dar
 import 'package:shelter_partner/views/components/switch_toggle_view.dart';
 import 'package:shelter_partner/views/components/take_out_confirmation_view.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
-import 'package:shelter_partner/views/pages/settings_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class EnrichmentPage extends ConsumerStatefulWidget {
   const EnrichmentPage({super.key});
@@ -84,10 +82,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     PaintingBinding.instance.imageCache.maximumSizeBytes = 100 * 1024 * 1024;
 
     _scrollController = ScrollController();
-
-    if (!kIsWeb && !Platform.isWindows) {
-      _getSubscriptionStatus(ref);
-    }
 
     _tabController = TabController(length: 2, vsync: this);
 
@@ -211,23 +205,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     }
 
     return groupedAnimals;
-  }
-
-  Future<void> _getSubscriptionStatus(WidgetRef ref) async {
-    final entitlements =
-        await Qonversion.getSharedInstance().checkEntitlements();
-    print("Number of entitlement entries: ${entitlements.entries.length}");
-    final isActive = entitlements.entries.any((entry) =>
-        entry.value.isActive &&
-        entry.value.expirationDate?.isAfter(DateTime.now()) == true);
-    for (var entry in entitlements.entries) {
-      print('Entry ID: ${entry.key}');
-      print('Is Active: ${entry.value.isActive}');
-      print('Expiration Date: ${entry.value.expirationDate}');
-      print('Product Identifier: ${entry.value.productId}');
-    }
-    ref.read(subscriptionStatusProvider.notifier).state =
-        isActive ? "Active" : "Inactive";
   }
 
   Future<void> _fetchPage({
@@ -1038,9 +1015,9 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
 }
 
 final adsProvider = StreamProvider<List<Ad>>((ref) {
-  return FirebaseFirestore.instance.collection('ads').snapshots().map(
-      (snapshot) =>
-          snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
+  final firestore = ref.watch(firestoreProvider);
+  return firestore.collection('ads').snapshots().map((snapshot) =>
+      snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
 });
 
 final noteAddedProvider = StateProvider<bool>((ref) => false);
