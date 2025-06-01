@@ -7,20 +7,20 @@ import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 class PutBackConfirmationViewModel extends StateNotifier<Animal> {
   final PutBackConfirmationRepository _repository;
   final Ref ref;
-  
 
-  PutBackConfirmationViewModel(this._repository, this.ref, Animal animal) : super(animal);
-
+  PutBackConfirmationViewModel(this._repository, this.ref, Animal animal)
+      : super(animal);
 
   Future<void> putBackAnimal(Animal animal, Log log) async {
     print(log.toMap());
-        // Get shelter ID from shelterDetailsViewModelProvider
+    // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
     // final enrichmentViewModel = ref.read(enrichmentViewModelProvider.notifier);
 
     // enrichmentViewModel.updateAnimalOptimistically(animal.copyWith(inKennel: true));
     try {
-      await _repository.putBackAnimal(animal, shelterDetailsAsync.value!.id, log);
+      await _repository.putBackAnimal(
+          animal, shelterDetailsAsync.value!.id, log);
       // Optionally, update the state if needed
     } catch (e) {
       // Handle error
@@ -31,7 +31,7 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
   Future<void> deleteLastLog(Animal animal) async {
     // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
-    
+
     try {
       await _repository.deleteLastLog(animal, shelterDetailsAsync.value!.id);
       // Optionally, update the state if needed
@@ -40,7 +40,6 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
       print('Failed to add note: $e');
     }
   }
-  
 }
 
 // Provider for AddNoteViewModel

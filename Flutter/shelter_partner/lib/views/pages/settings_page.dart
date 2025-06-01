@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shelter_partner/models/github_release.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/views/components/release_notes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qonversion_flutter/qonversion_flutter.dart';
+import 'package:http/http.dart' as http;
+
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -19,30 +23,34 @@ class SettingsPage extends ConsumerStatefulWidget {
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
   String _version = "Loading...";
+  List<GitHubRelease> _releases = [];
+  bool _showPreviousVersions = false;
+  Set<int> _expandedReleases = {0}; // Only the latest is expanded by default
 
   @override
   void initState() {
     super.initState();
-    _getSubscriptionStatus(ref);
     _fetchVersion();
+    fetchFilteredReleases().then((releases) {
+      setState(() {
+        _releases = releases;
+      });
+    });
   }
-   Future<void> _fetchVersion() async {
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  setState(() {
-    _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
-  });
-}
+
+  Future<void> _fetchVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
+    });
+  }
 
 
-  Future<void> _getSubscriptionStatus(WidgetRef ref) async {
-    final entitlements =
-        await Qonversion.getSharedInstance().checkEntitlements();
-    print("Number of entitlement entries: ${entitlements.entries.length}");
-    final isActive = entitlements.entries.any((entry) =>
-        entry.value.isActive &&
-        entry.value.expirationDate?.isAfter(DateTime.now()) == true);
-    ref.read(subscriptionStatusProvider.notifier).state =
-        isActive ? "Active" : "Inactive";
+  Future<void> _fetchVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
+    });
   }
 
   @override
@@ -54,7 +62,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final shelterAsyncValue = ref.watch(shelterDetailsViewModelProvider);
     final appUser = ref.watch(appUserProvider);
-    final subscriptionStatus = ref.watch(subscriptionStatusProvider);
 
     return shelterAsyncValue.when(
       loading: () => const Scaffold(
@@ -209,7 +216,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                             
+
                               ListTile(
                                 leading: const Icon(Icons.delete_outline),
                                 title: const Text("Delete Account"),
@@ -222,7 +229,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                           "To delete your account and all data associated with it, please email jared@shelterpartner.org"),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(context).pop(),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
                                           child: const Text("OK"),
                                         ),
                                       ],
@@ -355,19 +363,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               //           },
                               //   )
                               // else
-                                // ListTile(
-                                //   leading: const Icon(Icons.favorite_border),
-                                //   title: Text(
-                                //     subscriptionStatus == "Active"
-                                //         ? "Thank you for supporting us!"
-                                //         : "Support us and remove ads",
-                                //   ),
-                                //   subtitle: Text(
-                                //     subscriptionStatus == "Active"
-                                //         ? "You can manage your subscription on the mobile app"
-                                //         : "Remove ads and support the developer by subscribing on the mobile app",
-                                //   ),
-                                // ),
+                              // ListTile(
+                              //   leading: const Icon(Icons.favorite_border),
+                              //   title: Text(
+                              //     subscriptionStatus == "Active"
+                              //         ? "Thank you for supporting us!"
+                              //         : "Support us and remove ads",
+                              //   ),
+                              //   subtitle: Text(
+                              //     subscriptionStatus == "Active"
+                              //         ? "You can manage your subscription on the mobile app"
+                              //         : "Remove ads and support the developer by subscribing on the mobile app",
+                              //   ),
+                              // ),
                               Divider(
                                 color: Colors.black.withOpacity(0.1),
                                 height: 0,
@@ -401,10 +409,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               ListTile(
-                                leading: const Icon(Icons.numbers, color: Colors.grey),
+                                leading: const Icon(
+                                  Icons.numbers,
+                                  color: Colors.grey,
+                                ),
+
                                 title: Text(
-                                  _version, // Dynamically fetched version
-                                  style: const TextStyle(color: Colors.grey),
+                                  _version,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                               Divider(
@@ -414,8 +428,75 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               ),
                               const ListTile(
                                 leading: Icon(Icons.pets, color: Colors.grey),
-                                title: Text("Dedicated to Aslan",
-                                    style: TextStyle(color: Colors.grey)),
+                                title: Text(
+                                  "Dedicated to Aslan",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Row(
+                                      children: [
+                                        Icon(Icons.description,
+                                            color: Colors.black87),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Release Notes',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (_releases.isEmpty)
+                                      const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child:
+                                            Text("Fetching release notes..."),
+                                      )
+                                    else ...[
+                                      // Show only the most recent release if not showing previous
+                                      ReleaseNotes(
+                                        releases: _releases,
+                                        showPreviousVersions:
+                                            _showPreviousVersions,
+                                        expandedReleases: _expandedReleases,
+                                        onToggleExpand: (index) {
+                                          setState(() {
+                                            if (_expandedReleases
+                                                .contains(index)) {
+                                              _expandedReleases.remove(index);
+                                            } else {
+                                              _expandedReleases.add(index);
+                                            }
+                                          });
+                                        },
+                                        onToggleShowPrevious: () {
+                                          setState(() {
+                                            _showPreviousVersions =
+                                                !_showPreviousVersions;
+                                            if (!_showPreviousVersions) {
+                                              _expandedReleases = {0};
+                                            }
+                                          });
+                                        },
+                                        isVersionGreaterOrEqual:
+                                            isVersionGreaterOrEqual,
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -430,6 +511,48 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ),
       ),
     );
+  }
+}
+
+// Helper function to compare semantic versions
+bool isVersionGreaterOrEqual(String version, String minVersion) {
+  List<int> parse(String v) =>
+      v.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+  final v1 = parse(version.replaceAll(RegExp(r'[^0-9.]'), ''));
+  final v2 = parse(minVersion.replaceAll(RegExp(r'[^0-9.]'), ''));
+  for (int i = 0; i < 3; i++) {
+    if ((v1.length > i ? v1[i] : 0) > (v2.length > i ? v2[i] : 0)) return true;
+    if ((v1.length > i ? v1[i] : 0) < (v2.length > i ? v2[i] : 0)) return false;
+  }
+  return true;
+}
+
+Future<List<GitHubRelease>> fetchFilteredReleases() async {
+  final response = await http.get(
+    Uri.parse(
+        'https://api.github.com/repos/ShelterPartner/ShelterPartner/releases'),
+  );
+
+  if (response.statusCode == 200) {
+    try {
+      List<dynamic> jsonList = jsonDecode(response.body);
+      final releases = jsonList
+          .map((json) {
+            try {
+              return GitHubRelease.fromJson(json);
+            } catch (_) {
+              return null;
+            }
+          })
+          .whereType<GitHubRelease>()
+          .toList();
+      return releases..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+    } catch (e) {
+      print('Failed to decode JSON');
+      throw Exception('Invalid JSON: $e');
+    }
+  } else {
+    throw Exception('Failed to fetch releases');
   }
 }
 
@@ -592,3 +715,4 @@ Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
 }
 
 final subscriptionStatusProvider = StateProvider<String>((ref) => "Inactive");
+

@@ -21,9 +21,7 @@ class AppUser {
     required this.firstName,
     required this.lastName,
     required this.email,
-
     required this.lastActivity,
-
     required this.type,
     required this.shelterId,
     required this.accountSettings,

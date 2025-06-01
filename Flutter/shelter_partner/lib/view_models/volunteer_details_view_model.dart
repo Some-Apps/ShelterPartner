@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/repositories/volunteer_details_repository.dart';
 
-
 class VolunteerDetailState {
   final String averageLogDurationText;
   final String totalTimeLoggedWithAnimalsText;
@@ -34,7 +33,8 @@ class VolunteerDetailState {
     Volunteer? volunteer,
   }) {
     return VolunteerDetailState(
-      averageLogDurationText: averageLogDurationText ?? this.averageLogDurationText,
+      averageLogDurationText:
+          averageLogDurationText ?? this.averageLogDurationText,
       totalTimeLoggedWithAnimalsText:
           totalTimeLoggedWithAnimalsText ?? this.totalTimeLoggedWithAnimalsText,
       isLoading: isLoading ?? this.isLoading,
@@ -42,7 +42,6 @@ class VolunteerDetailState {
     );
   }
 }
-
 
 // Define the ViewModel using StateNotifier
 class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
@@ -58,7 +57,7 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
     //   _fetchLogsAndComputeStats();
     // });
 
-       Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       _fetchLogsAndComputeStats();
     });
   }
@@ -66,7 +65,8 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
   Future<void> updateVolunteerName(String firstName, String lastName) async {
     state = state.copyWith(isLoading: true);
     try {
-      await repository.updateVolunteerName(volunteer.shelterID, volunteer.id, firstName, lastName);
+      await repository.updateVolunteerName(
+          volunteer.shelterID, volunteer.id, firstName, lastName);
 
       Volunteer updatedVolunteer = volunteer.copyWith(
         firstName: firstName,
@@ -145,7 +145,7 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
 final volunteerDetailViewModelProvider = StateNotifierProvider.autoDispose
     .family<VolunteerDetailViewModel, VolunteerDetailState, Volunteer>(
   (ref, volunteer) {
-    final repository = ref.watch(volunteerRepositoryProvider);
+    final repository = ref.watch(volunteerDetailsRepositoryProvider);
     return VolunteerDetailViewModel(
       volunteer: volunteer,
       repository: repository,

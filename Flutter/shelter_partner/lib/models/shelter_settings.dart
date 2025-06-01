@@ -18,6 +18,15 @@ class ShelterSettings {
   final bool ignoreVisitWhenAutomaticallyPutBack;
   final int automaticPutBackHours;
   final String shortUUID;
+  final int tokenCount;
+  final int tokenLimit;
+  final DateTime? lastTokenReset;
+  final bool showSpecies;
+  final bool showBreed;
+  final bool showDescription;
+  final bool showLocation;
+  final bool showMedicalInfo;
+  final bool showBehaviorInfo;
 
   ShelterSettings({
     required this.scheduledReports,
@@ -36,6 +45,15 @@ class ShelterSettings {
     this.ignoreVisitWhenAutomaticallyPutBack = false,
     this.automaticPutBackHours = 12,
     required this.shortUUID,
+    this.tokenCount = 0,
+    this.tokenLimit = 1000000,
+    this.lastTokenReset,
+    this.showSpecies = true,
+    this.showBreed = true,
+    this.showDescription = true,
+    this.showLocation = true,
+    this.showMedicalInfo = false,
+    this.showBehaviorInfo = true,
   });
 
   // Method to dynamically return a list based on the key
@@ -78,9 +96,19 @@ class ShelterSettings {
       'requestCount': requestCount,
       'requestLimit': requestLimit,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
-      'ignoreVisitWhenAutomaticallyPutBack': ignoreVisitWhenAutomaticallyPutBack,
+      'ignoreVisitWhenAutomaticallyPutBack':
+          ignoreVisitWhenAutomaticallyPutBack,
       'automaticPutBackHours': automaticPutBackHours,
       'shortUUID': shortUUID,
+      'tokenCount': tokenCount,
+      'tokenLimit': tokenLimit,
+      'lastTokenReset': lastTokenReset?.toIso8601String(),
+      'showSpecies': showSpecies,
+      'showBreed': showBreed,
+      'showDescription': showDescription,
+      'showLocation': showLocation,
+      'showMedicalInfo': showMedicalInfo,
+      'showBehaviorInfo': showBehaviorInfo,
     };
   }
 
@@ -122,9 +150,81 @@ class ShelterSettings {
       requestCount: data['requestCount'] ?? 0,
       requestLimit: data['requestLimit'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
-      ignoreVisitWhenAutomaticallyPutBack: data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
+      ignoreVisitWhenAutomaticallyPutBack:
+          data['ignoreVisitWhenAutomaticallyPutBack'] ?? false,
       automaticPutBackHours: data['automaticPutBackHours'] ?? 12,
       shortUUID: data['shortUUID'] ?? '',
+      tokenCount: data['tokenCount'] ?? 0,
+      tokenLimit: data['tokenLimit'] ?? 1000000,
+      lastTokenReset: data['lastTokenReset'] != null
+          ? DateTime.parse(data['lastTokenReset'])
+          : null,
+      showSpecies: data['showSpecies'] ?? true,
+      showBreed: data['showBreed'] ?? true,
+      showDescription: data['showDescription'] ?? true,
+      showLocation: data['showLocation'] ?? true,
+      showMedicalInfo: data['showMedicalInfo'] ?? false,
+      showBehaviorInfo: data['showBehaviorInfo'] ?? true,
+    );
+  }
+
+  ShelterSettings copyWith({
+    List<ScheduledReport>? scheduledReports,
+    List<String>? catTags,
+    List<String>? dogTags,
+    List<String>? earlyPutBackReasons,
+    List<String>? letOutTypes,
+    List<APIKey>? apiKeys,
+    String? apiKey,
+    String? asmUsername,
+    String? asmPassword,
+    String? asmAccountNumber,
+    int? requestCount,
+    int? requestLimit,
+    bool? automaticallyPutBackAnimals,
+    bool? ignoreVisitWhenAutomaticallyPutBack,
+    int? automaticPutBackHours,
+    String? shortUUID,
+    bool? showSpecies,
+    bool? showBreed,
+    bool? showDescription,
+    bool? showLocation,
+    bool? showMedicalInfo,
+    bool? showBehaviorInfo,
+    int? tokenCount,
+    int? tokenLimit,
+    DateTime? lastTokenReset,
+  }) {
+    return ShelterSettings(
+      scheduledReports: scheduledReports ?? this.scheduledReports,
+      catTags: catTags ?? this.catTags,
+      dogTags: dogTags ?? this.dogTags,
+      earlyPutBackReasons: earlyPutBackReasons ?? this.earlyPutBackReasons,
+      letOutTypes: letOutTypes ?? this.letOutTypes,
+      apiKeys: apiKeys ?? this.apiKeys,
+      apiKey: apiKey ?? this.apiKey,
+      asmUsername: asmUsername ?? this.asmUsername,
+      asmPassword: asmPassword ?? this.asmPassword,
+      asmAccountNumber: asmAccountNumber ?? this.asmAccountNumber,
+      requestCount: requestCount ?? this.requestCount,
+      requestLimit: requestLimit ?? this.requestLimit,
+      automaticallyPutBackAnimals:
+          automaticallyPutBackAnimals ?? this.automaticallyPutBackAnimals,
+      ignoreVisitWhenAutomaticallyPutBack:
+          ignoreVisitWhenAutomaticallyPutBack ??
+              this.ignoreVisitWhenAutomaticallyPutBack,
+      automaticPutBackHours:
+          automaticPutBackHours ?? this.automaticPutBackHours,
+      shortUUID: shortUUID ?? this.shortUUID,
+      showSpecies: showSpecies ?? this.showSpecies,
+      showBreed: showBreed ?? this.showBreed,
+      showDescription: showDescription ?? this.showDescription,
+      showLocation: showLocation ?? this.showLocation,
+      showMedicalInfo: showMedicalInfo ?? this.showMedicalInfo,
+      showBehaviorInfo: showBehaviorInfo ?? this.showBehaviorInfo,
+      tokenCount: tokenCount ?? this.tokenCount,
+      tokenLimit: tokenLimit ?? this.tokenLimit,
+      lastTokenReset: lastTokenReset ?? this.lastTokenReset,
     );
   }
 }

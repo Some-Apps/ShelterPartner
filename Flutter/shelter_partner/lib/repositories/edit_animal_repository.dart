@@ -3,9 +3,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/photo.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class EditAnimalRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  EditAnimalRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Future<void> deleteItem(
     String shelterId,
@@ -57,15 +60,15 @@ class EditAnimalRepository {
       try {
         // Delete original photo
         final originalPhotoRef = storage.ref().child(
-          '$shelterId/$animalId/${photo.id}',
-        );
+              '$shelterId/$animalId/${photo.id}',
+            );
         await originalPhotoRef.delete();
 
         // Delete resized photos
         for (final size in sizes) {
           final resizedPhotoRef = storage.ref().child(
-            '$shelterId/$animalId/${photo.id}_$size',
-          );
+                '$shelterId/$animalId/${photo.id}_$size',
+              );
           try {
             await resizedPhotoRef.delete();
           } catch (e) {
@@ -92,5 +95,6 @@ class EditAnimalRepository {
 }
 
 final editAnimalRepositoryProvider = Provider<EditAnimalRepository>((ref) {
-  return EditAnimalRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return EditAnimalRepository(firestore: firestore);
 });

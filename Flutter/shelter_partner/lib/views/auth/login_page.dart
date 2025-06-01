@@ -40,16 +40,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     FutureBuilder(
-                      future: precacheImage(const AssetImage("assets/images/square_logo.png"), context),
+                      future: precacheImage(
+                          const AssetImage("assets/images/square_logo.png"),
+                          context),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
-                          return Image.asset("assets/images/square_logo.png", width: 250);
+                          return Image.asset("assets/images/square_logo.png",
+                              width: 250);
                         } else {
-                            return const SizedBox(
+                          return const SizedBox(
                             width: 250,
                             height: 250,
                             child: Center(child: CircularProgressIndicator()),
-                            );
+                          );
                         }
                       },
                     ),
@@ -72,7 +75,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       onSubmitted: (_) => login(),
                     ),
                     const SizedBox(height: 25),
-                    ElevatedButton(onPressed: login, child: const Text("Log In")),
+                    ElevatedButton(
+                        onPressed: login, child: const Text("Log In")),
                     // MyButton(
                     //   title: "Log In",
                     //   onTap: login,
@@ -100,20 +104,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'New to ShelterPartner?',
-                          style: TextStyle(color: Colors.grey[700]),
+                        Flexible(
+                          child: Text(
+                            'New to ShelterPartner?',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
                         ),
                         const SizedBox(width: 4),
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: widget.onTapSignup,
-                            child: const Text(
-                              'Create Shelter',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
+                        Flexible(
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: widget.onTapSignup,
+                              child: const Text(
+                                'Create Shelter',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),

@@ -152,6 +152,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       controller: shelterAddressController,
                       hintText: 'Shelter Address',
                       obscureText: false,
+                      onSubmitted: (_) => signup(),
                     ),
                     const SizedBox(height: 35),
                     Padding(
@@ -182,7 +183,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     if (widget.debugHelper.isDebugMode())
                       const SizedBox(height: 25),
                     if (widget.debugHelper.isDebugMode())
-
                       ElevatedButton(
                           onPressed: createAndLoginTestAccount,
                           child: const Text("Create Test Account")),

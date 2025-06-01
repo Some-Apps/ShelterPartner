@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
+import 'package:shelter_partner/views/components/chat_interface.dart';
 import 'dart:async';
 import 'dart:core';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -170,6 +171,17 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
               ),
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            final currentAnimals = _tabController.index == 0 ? dogs : cats;
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ChatInterface(animals: currentAnimals),
+              ),
+            );
+          },
+          child: const Icon(Icons.chat),
         ),
       ),
     );

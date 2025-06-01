@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class PutBackConfirmationRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  PutBackConfirmationRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Future<void> putBackAnimal(Animal animal, String shelterID, Log log) async {
     try {
@@ -87,5 +90,6 @@ class PutBackConfirmationRepository {
 // Provider for PutBackConfirmationRepository
 final putBackConfirmationRepositoryProvider =
     Provider<PutBackConfirmationRepository>((ref) {
-  return PutBackConfirmationRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return PutBackConfirmationRepository(firestore: firestore);
 });

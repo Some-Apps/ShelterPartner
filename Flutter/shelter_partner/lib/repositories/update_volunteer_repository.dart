@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class UpdateVolunteerRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+  final FirebaseFirestore _firestore;
+  UpdateVolunteerRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
+
   // Method to modify a specific string attribute within the volunteer document
   Future<void> modifyVolunteerLastActivity(
       String volunteerId, Timestamp newValue) async {
@@ -17,6 +20,8 @@ class UpdateVolunteerRepository {
 }
 
 // Provider for AddNoteRepository
-final updateVolunteerRepositoryProvider = Provider<UpdateVolunteerRepository>((ref) {
-  return UpdateVolunteerRepository();
+final updateVolunteerRepositoryProvider =
+    Provider<UpdateVolunteerRepository>((ref) {
+  final firestore = ref.watch(firestoreProvider);
+  return UpdateVolunteerRepository(firestore: firestore);
 });

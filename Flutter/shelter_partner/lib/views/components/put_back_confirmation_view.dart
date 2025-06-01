@@ -53,16 +53,16 @@ class _PutBackConfirmationViewState
   void _updateConfirmButtonState() {
     final accountSettings = ref.read(accountSettingsViewModelProvider);
     setState(() {
-      _isConfirmEnabled =
-          ((_selectedEarlyReason != null && _selectedEarlyReason!.isNotEmpty) ||
-              accountSettings.value?.accountSettings?.requireEarlyPutBackReason ==
-                  false ||
-              widget.animals.every((animal) =>
-                  Timestamp.now()
-                      .toDate()
-                      .difference(animal.logs.last.startTime.toDate())
-                      .inMinutes >=
-                  accountSettings.value!.accountSettings!.minimumLogMinutes));
+      _isConfirmEnabled = ((_selectedEarlyReason != null &&
+              _selectedEarlyReason!.isNotEmpty) ||
+          accountSettings.value?.accountSettings?.requireEarlyPutBackReason ==
+              false ||
+          widget.animals.every((animal) =>
+              Timestamp.now()
+                  .toDate()
+                  .difference(animal.logs.last.startTime.toDate())
+                  .inMinutes >=
+              accountSettings.value!.accountSettings!.minimumLogMinutes));
     });
   }
 
@@ -121,7 +121,8 @@ class _PutBackConfirmationViewState
                 onPressed: () async {
                   // Custom Form button pressed
                   String url =
-                      accountSettings.value?.accountSettings?.customFormURL ?? '';
+                      accountSettings.value?.accountSettings?.customFormURL ??
+                          '';
                   if (accountSettings
                           .value?.accountSettings?.appendAnimalDataToURL ==
                       true) {
@@ -303,8 +304,8 @@ class _PutBackConfirmationViewState
                                     .difference(
                                         animal.logs.last.startTime.toDate())
                                     .inMinutes <
-                                accountSettings
-                                    .value!.accountSettings!.minimumLogMinutes &&
+                                accountSettings.value!.accountSettings!
+                                    .minimumLogMinutes &&
                             appUser?.type == 'admin') ||
                         (!shelterSettings.value!.volunteerSettings
                                 .createLogsWhenUnderMinimumDuration &&

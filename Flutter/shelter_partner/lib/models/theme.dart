@@ -154,7 +154,7 @@ final ThemeData lightTheme = ThemeData(
   primaryIconTheme: const IconThemeData(
     color: Colors.white,
   ),
-  
+
   // Define your button theme
   buttonTheme: ButtonThemeData(
     height: 36,
