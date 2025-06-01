@@ -8,9 +8,12 @@ import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/volunteer.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class VolunteersRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  VolunteersRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Stream<Shelter> fetchShelterWithVolunteers(String shelterID) {
     final shelterDocRef = _firestore.collection('shelters').doc(shelterID);
@@ -250,5 +253,6 @@ class VolunteersRepository {
 
 // Provider to access the VolunteersRepository
 final volunteersRepositoryProvider = Provider<VolunteersRepository>((ref) {
-  return VolunteersRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return VolunteersRepository(firestore: firestore);
 });

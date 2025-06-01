@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class StatsRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  StatsRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Stream<List<Animal>> fetchAnimals(String shelterID) {
     final catsStream =
@@ -56,5 +59,6 @@ class StatsRepository {
 }
 
 final statsRepositoryProvider = Provider<StatsRepository>((ref) {
-  return StatsRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return StatsRepository(firestore: firestore);
 });

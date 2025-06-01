@@ -64,19 +64,17 @@ class _SimplisticAnimalCardViewState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_automaticPutBackHandled) {
         final shelterDetails = ref.read(shelterDetailsViewModelProvider).value;
-
         if (shelterDetails != null) {
           final shelterSettings = shelterDetails.shelterSettings;
           final shelterId = shelterDetails.id;
           final animalType = widget.animal.species;
-
+          final repository = ref.read(animalRepositoryProvider);
           final viewModel = AnimalCardViewModel(
-            repository: AnimalRepository(),
+            repository: repository,
             shelterId: shelterId,
             animalType: animalType,
             shelterSettings: shelterSettings,
           );
-
           viewModel.handleAutomaticPutBack(widget.animal);
         }
         _automaticPutBackHandled = true;

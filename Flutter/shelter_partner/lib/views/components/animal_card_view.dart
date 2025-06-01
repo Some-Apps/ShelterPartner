@@ -72,8 +72,9 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
           final shelterSettings = shelterDetails.shelterSettings;
           final shelterId = shelterDetails.id;
           final animalType = widget.animal.species;
+          final repository = ref.read(animalRepositoryProvider);
           final viewModel = AnimalCardViewModel(
-            repository: AnimalRepository(),
+            repository: repository,
             shelterId: shelterId,
             animalType: animalType,
             shelterSettings: shelterSettings,

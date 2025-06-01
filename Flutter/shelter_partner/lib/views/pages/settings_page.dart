@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:qonversion_flutter/qonversion_flutter.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -23,7 +21,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    _getSubscriptionStatus(ref);
     _fetchVersion();
   }
 
@@ -32,17 +29,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     setState(() {
       _version = "Version ${packageInfo.version}+${packageInfo.buildNumber}";
     });
-  }
-
-  Future<void> _getSubscriptionStatus(WidgetRef ref) async {
-    final entitlements =
-        await Qonversion.getSharedInstance().checkEntitlements();
-    print("Number of entitlement entries: ${entitlements.entries.length}");
-    final isActive = entitlements.entries.any((entry) =>
-        entry.value.isActive &&
-        entry.value.expirationDate?.isAfter(DateTime.now()) == true);
-    ref.read(subscriptionStatusProvider.notifier).state =
-        isActive ? "Active" : "Inactive";
   }
 
   @override
@@ -54,7 +40,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final shelterAsyncValue = ref.watch(shelterDetailsViewModelProvider);
     final appUser = ref.watch(appUserProvider);
-    final subscriptionStatus = ref.watch(subscriptionStatusProvider);
 
     return shelterAsyncValue.when(
       loading: () => const Scaffold(
@@ -434,163 +419,3 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 }
-
-Future<void> _showSupportUsModal(BuildContext context, WidgetRef ref) async {
-  final offerings = await Qonversion.getSharedInstance().offerings();
-  final removeAdsOffering = offerings.availableOfferings.firstWhere(
-    (offering) => offering.id == 'remove_ads',
-  );
-
-  Future<void> getSubscriptionStatus(WidgetRef ref) async {
-    final entitlements =
-        await Qonversion.getSharedInstance().checkEntitlements();
-    print("Number of entitlement entries: ${entitlements.entries.length}");
-    final isActive = entitlements.entries.any((entry) =>
-        entry.value.isActive &&
-        entry.value.expirationDate?.isAfter(DateTime.now()) == true);
-    ref.read(subscriptionStatusProvider.notifier).state =
-        isActive ? "Active" : "Inactive";
-  }
-
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    builder: (context) {
-      return Container(
-        height: 400, // Increased height for the modal
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Support Us And Remove Ads",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "Choose your price",
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: removeAdsOffering.products.map((product) {
-                    String description;
-                    switch (product.qonversionId) {
-                      case 'support1':
-                        description = "Remove ads and support the developer";
-                        break;
-                      case 'support2':
-                        description =
-                            "Remove ads and support the developer...but MORE";
-                        break;
-                      case 'support3':
-                        description =
-                            "Remove ads and support the developer...a lot...like holy cow...thanks!";
-                        break;
-                      default:
-                        description = product.skProduct?.localizedDescription ??
-                            'No Description';
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Card(
-                        elevation: 2,
-                        color: Colors.lightBlue.shade100,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: InkWell(
-                          onTap: () async {
-                            try {
-                              // Perform purchase
-                              final entitlements =
-                                  await Qonversion.getSharedInstance()
-                                      .purchaseProduct(product);
-                              print(entitlements);
-
-                              // Close the modal
-                              // Navigator.of(context).pop();
-
-                              // Refresh the subscription status
-                              await getSubscriptionStatus(ref);
-                            } on QPurchaseException catch (e) {
-                              if (e.isUserCancelled) {
-                                print('User cancelled');
-                              } else {
-                                print('Error: $e');
-                              }
-                            }
-                          },
-                          child: Container(
-                            width:
-                                225, // Adjusted width to fit multiple cards in view
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Placeholder for app icon, replace with actual icon asset or network image
-                                Center(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                        10), // Rounded square
-                                    child: Image.asset(
-                                      'assets/images/square_logo.png', // Update with actual icon path
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  defaultTargetPlatform ==
-                                          TargetPlatform.android
-                                      ? "Remove Ads" // product.storeDetails?.title. ?? 'No Title'
-                                      : product.skProduct?.localizedTitle ??
-                                          'No Title',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '${product.prettyPrice}/month' ?? 'N/A',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  description,
-                                  // maxLines: 2,
-                                  // overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-final subscriptionStatusProvider = StateProvider<String>((ref) => "Inactive");

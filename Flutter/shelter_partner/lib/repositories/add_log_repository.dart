@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class AddLogRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  AddLogRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Future<void> addLogToAnimal(Animal animal, String shelterID, Log log) async {
     // Determine the collection based on species
@@ -22,5 +25,6 @@ class AddLogRepository {
 
 // Provider for AddNoteRepository
 final addLogRepositoryProvider = Provider<AddLogRepository>((ref) {
-  return AddLogRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return AddLogRepository(firestore: firestore);
 });

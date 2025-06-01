@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class ShelterSettingsRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  ShelterSettingsRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   // Method to fetch account details for a specific shelter ID
   Stream<DocumentSnapshot> fetchShelterDetails(String shelterID) {
@@ -152,5 +155,6 @@ class ShelterSettingsRepository {
 // Provider to access the ShelterSettingsRepository
 final shelterSettingsRepositoryProvider =
     Provider<ShelterSettingsRepository>((ref) {
-  return ShelterSettingsRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return ShelterSettingsRepository(firestore: firestore);
 });

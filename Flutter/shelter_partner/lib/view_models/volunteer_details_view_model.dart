@@ -145,7 +145,7 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
 final volunteerDetailViewModelProvider = StateNotifierProvider.autoDispose
     .family<VolunteerDetailViewModel, VolunteerDetailState, Volunteer>(
   (ref, volunteer) {
-    final repository = ref.watch(volunteerRepositoryProvider);
+    final repository = ref.watch(volunteerDetailsRepositoryProvider);
     return VolunteerDetailViewModel(
       volunteer: volunteer,
       repository: repository,

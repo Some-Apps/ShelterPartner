@@ -12,9 +12,12 @@ import 'package:shelter_partner/models/photo.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class AddNoteRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  AddNoteRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Future<void> updateAnimalTags(
     Animal animal,
@@ -129,5 +132,6 @@ class AddNoteRepository {
 
 // Provider for AddNoteRepository
 final addNoteRepositoryProvider = Provider<AddNoteRepository>((ref) {
-  return AddNoteRepository();
+  final firestore = ref.watch(firestoreProvider);
+  return AddNoteRepository(firestore: firestore);
 });
