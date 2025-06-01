@@ -10,6 +10,7 @@ class VolunteerDetailsRepository {
   VolunteerDetailsRepository({required FirebaseFirestore firestore})
       : _firestore = firestore;
 
+
   Future<void> updateVolunteerName(String shelterID, String volunteerID,
       String firstName, String lastName) async {
     try {

@@ -148,7 +148,8 @@ class MainPage extends ConsumerWidget {
               // Determine the index for the 'Animals' tab
               int enrichmentBranchIndex =
                   0; // Assuming 'Animals' branch index is 0
-              int enrichmentTabIndex = visibleIndexes.indexOf(enrichmentBranchIndex);
+              int enrichmentTabIndex =
+                  visibleIndexes.indexOf(enrichmentBranchIndex);
 
               if (currentIndex == enrichmentTabIndex) {
                 // Use the geofence status to determine what to display

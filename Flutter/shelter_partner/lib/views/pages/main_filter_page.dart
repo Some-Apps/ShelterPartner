@@ -469,16 +469,16 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
         ));
       } else if (element is FilterGroup) {
         // Add opening parenthesis
-        spans.add(const TextSpan(
-            text: '(', style: TextStyle(color: Colors.black)));
+        spans.add(
+            const TextSpan(text: '(', style: TextStyle(color: Colors.black)));
 
         // Recursively build the group
         spans.add(buildExpressionSpan(element.elements,
             groupOperator: element.logicalOperator));
 
         // Add closing parenthesis
-        spans.add(const TextSpan(
-            text: ')', style: TextStyle(color: Colors.black)));
+        spans.add(
+            const TextSpan(text: ')', style: TextStyle(color: Colors.black)));
       }
     }
 
@@ -669,8 +669,7 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    List<OperatorType> operators =
-        attributeOperators[selectedAttribute] ?? [];
+    List<OperatorType> operators = attributeOperators[selectedAttribute] ?? [];
 
     return AlertDialog(
       title: const Text('Add Condition'),
@@ -750,7 +749,8 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
                 if (parsedValue == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Please enter a valid number for Months Old'),
+                      content:
+                          Text('Please enter a valid number for Months Old'),
                     ),
                   );
                   return;

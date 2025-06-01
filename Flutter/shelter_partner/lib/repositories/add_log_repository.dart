@@ -4,6 +4,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
 
+
 class AddLogRepository {
   final FirebaseFirestore _firestore;
   AddLogRepository({required FirebaseFirestore firestore})

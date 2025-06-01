@@ -120,3 +120,57 @@ jobs:
       - name: Build Web
         run: flutter build web
         working-directory: Website
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          cache: true
+      - name: Install dependencies (shelter_partner)
+        run: flutter pub get
+        working-directory: Flutter/shelter_partner
+      - name: Check Dart formatting (shelter_partner)
+        run: |
+          set +e
+          dart format --output=none --set-exit-if-changed .
+          if [ $? -ne 0 ]; then
+            echo '::error::Dart formatting issues found in Flutter/shelter_partner.'
+            echo 'To fix, run:'
+            echo '  cd Flutter/shelter_partner && dart format .'
+            echo 'cd Flutter/shelter_partner && dart format .' >> $GITHUB_WORKSPACE/format_fixes.txt
+            exit_code=1
+          fi
+          set -e
+        working-directory: Flutter/shelter_partner
+      - name: Install dependencies (website)
+        run: flutter pub get
+        working-directory: Website
+      - name: Check Dart formatting (website)
+        run: |
+          set +e
+          dart format --output=none --set-exit-if-changed .
+          if [ $? -ne 0 ]; then
+            echo '::error::Dart formatting issues found in Website.'
+            echo 'To fix, run:'
+            echo '  cd Website && dart format .'
+            echo 'cd Website && dart format .' >> $GITHUB_WORKSPACE/format_fixes.txt
+            exit_code=1
+          fi
+          set -e
+          exit ${exit_code:-0}
+        working-directory: Website
+      - name: Summary of formatting fixes
+        if: always()
+        run: |
+          if [ -f $GITHUB_WORKSPACE/format_fixes.txt ]; then
+            echo '::error::Summary of formatting issues:'
+            echo ''
+            echo 'To fix all formatting issues, run the following commands:'
+            cat $GITHUB_WORKSPACE/format_fixes.txt
+          else
+            echo 'All formatting checks passed.'
+          fi

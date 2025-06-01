@@ -62,5 +62,5 @@ class Log {
       endTime: endTime ?? this.endTime,
       earlyReason: earlyReason ?? this.earlyReason,
     );
-}
+  }
 }

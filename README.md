@@ -1,6 +1,6 @@
 # Welcome To [Shelter Partner](https://shelterpartner.org)!
 
-I will be out of town from May 25 - 28 and will respond to any messages when I get back.
+I will be out of town from May 30 - 31 and June 2 - 5 and will respond to any messages when I get back.
 
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
@@ -31,7 +31,11 @@ All international payments will be made via PayPal so make sure you have an acco
    - GitHub sponsors can increase bounties as a perk
    - The project manager can increase bounties as they see fit
 
-## Bounties To Be Paid On June 1st
+## Bounties To Be Paid On July 1st
+
+
+
+## Bounties Paid On June 1st (In Progress)
 
 <details>
    
@@ -40,7 +44,7 @@ All international payments will be made via PayPal so make sure you have an acco
   - Issue #388: Locations should be separated into separate parts ($100)
   - Issue #440: Animal slideshow should use all all animal photos ($10)
   - Issue #467: The number of location tiers should persist ($5)
-  - Issue #444: Add Let Out Type and Early Put Back Reasons to Filter Conditions ($25)
+  - Issue #443: Enrichment filters fix ($25)
 
 </details>
 

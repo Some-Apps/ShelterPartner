@@ -24,6 +24,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _fetchVersion();
   }
 
+
   Future<void> _fetchVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {

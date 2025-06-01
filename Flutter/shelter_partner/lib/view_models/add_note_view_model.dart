@@ -10,15 +10,14 @@ import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 class AddNoteViewModel extends StateNotifier<Animal> {
   final AddNoteRepository _repository;
   final Ref ref;
-  
 
   AddNoteViewModel(this._repository, this.ref, Animal animal) : super(animal);
-
 
   Future<void> updateAnimalTags(Animal animal, List<String> tags) async {
     try {
       for (var tag in tags) {
-        await _repository.updateAnimalTags(animal, ref.read(shelterDetailsViewModelProvider).value!.id, tag);
+        await _repository.updateAnimalTags(
+            animal, ref.read(shelterDetailsViewModelProvider).value!.id, tag);
       }
 
       // Optionally, update the state if needed
@@ -28,35 +27,34 @@ class AddNoteViewModel extends StateNotifier<Animal> {
     }
   }
 
-
   Future<void> addNoteToAnimal(Animal animal, Note note) async {
     print(note.toMap());
-        // Get shelter ID from shelterDetailsViewModelProvider
+    // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
     try {
-      await _repository.addNoteToAnimal(animal, shelterDetailsAsync.value!.id, note);
+      await _repository.addNoteToAnimal(
+          animal, shelterDetailsAsync.value!.id, note);
       // Optionally, update the state if needed
-
     } catch (e) {
       // Handle error
       print('Failed to add note: $e');
     }
   }
 
- Future<void> uploadImageToAnimal(Animal animal, XFile image, WidgetRef ref) async {
-  // Get shelter ID from shelterDetailsViewModelProvider
-  final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
-  try {
-    await _repository.uploadImageToAnimal(animal, shelterDetailsAsync.value!.id, image, ref);
+  Future<void> uploadImageToAnimal(
+      Animal animal, XFile image, WidgetRef ref) async {
+    // Get shelter ID from shelterDetailsViewModelProvider
+    final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
+    try {
+      await _repository.uploadImageToAnimal(
+          animal, shelterDetailsAsync.value!.id, image, ref);
 
-    // Optionally, update the state if needed
-  } catch (e) {
-    // Handle error
-    print('Failed to upload image: $e');
+      // Optionally, update the state if needed
+    } catch (e) {
+      // Handle error
+      print('Failed to upload image: $e');
+    }
   }
-}
-
-  
 }
 
 // Provider for AddNoteViewModel
