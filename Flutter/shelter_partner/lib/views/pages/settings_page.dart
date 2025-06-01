@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shelter_partner/models/github_release.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/views/components/release_notes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -17,11 +21,19 @@ class SettingsPage extends ConsumerStatefulWidget {
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
   String _version = "Loading...";
+  List<GitHubRelease> _releases = [];
+  bool _showPreviousVersions = false;
+  Set<int> _expandedReleases = {0}; // Only the latest is expanded by default
 
   @override
   void initState() {
     super.initState();
     _fetchVersion();
+    fetchFilteredReleases().then((releases) {
+      setState(() {
+        _releases = releases;
+      });
+    });
   }
 
   Future<void> _fetchVersion() async {
@@ -390,8 +402,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   color: Colors.grey,
                                 ),
                                 title: Text(
-                                  _version, // Dynamically fetched version
-                                  style: const TextStyle(color: Colors.grey),
+                                  _version,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                               Divider(
@@ -403,7 +417,70 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 leading: Icon(Icons.pets, color: Colors.grey),
                                 title: Text(
                                   "Dedicated to Aslan",
-                                  style: TextStyle(color: Colors.grey),
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Row(
+                                      children: [
+                                        Icon(Icons.description,
+                                            color: Colors.black87),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Release Notes',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (_releases.isEmpty)
+                                      const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child:
+                                            Text("Fetching release notes..."),
+                                      )
+                                    else ...[
+                                      // Show only the most recent release if not showing previous
+                                      ReleaseNotes(
+                                        releases: _releases,
+                                        showPreviousVersions:
+                                            _showPreviousVersions,
+                                        expandedReleases: _expandedReleases,
+                                        onToggleExpand: (index) {
+                                          setState(() {
+                                            if (_expandedReleases
+                                                .contains(index)) {
+                                              _expandedReleases.remove(index);
+                                            } else {
+                                              _expandedReleases.add(index);
+                                            }
+                                          });
+                                        },
+                                        onToggleShowPrevious: () {
+                                          setState(() {
+                                            _showPreviousVersions =
+                                                !_showPreviousVersions;
+                                            if (!_showPreviousVersions) {
+                                              _expandedReleases = {0};
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ),
                             ],
@@ -419,5 +496,34 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ),
       ),
     );
+  }
+}
+
+Future<List<GitHubRelease>> fetchFilteredReleases() async {
+  final response = await http.get(
+    Uri.parse(
+        'https://api.github.com/repos/ShelterPartner/ShelterPartner/releases'),
+  );
+
+  if (response.statusCode == 200) {
+    try {
+      List<dynamic> jsonList = jsonDecode(response.body);
+      final releases = jsonList
+          .map((json) {
+            try {
+              return GitHubRelease.fromJson(json);
+            } catch (_) {
+              return null;
+            }
+          })
+          .whereType<GitHubRelease>()
+          .toList();
+      return releases..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+    } catch (e) {
+      print('Failed to decode JSON');
+      throw Exception('Invalid JSON: $e');
+    }
+  } else {
+    throw Exception('Failed to fetch releases');
   }
 }
