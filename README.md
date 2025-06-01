@@ -31,7 +31,11 @@ All international payments will be made via PayPal so make sure you have an acco
    - GitHub sponsors can increase bounties as a perk
    - The project manager can increase bounties as they see fit
 
-## Bounties To Be Paid On June 1st
+## Bounties To Be Paid On July 1st
+
+
+
+## Bounties Paid On June 1st (In Progress)
 
 <details>
    
