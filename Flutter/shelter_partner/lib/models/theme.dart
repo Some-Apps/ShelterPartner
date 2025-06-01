@@ -148,21 +148,15 @@ final ThemeData lightTheme = ThemeData(
     ),
   ),
   // Define your icon theme
-  iconTheme: const IconThemeData(
-    color: Color(0xDD000000),
-  ),
-  primaryIconTheme: const IconThemeData(
-    color: Colors.white,
-  ),
+  iconTheme: const IconThemeData(color: Color(0xDD000000)),
+  primaryIconTheme: const IconThemeData(color: Colors.white),
 
   // Define your button theme
   buttonTheme: ButtonThemeData(
     height: 36,
     minWidth: 88,
     padding: const EdgeInsets.symmetric(horizontal: 16),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(2),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
     buttonColor: const Color(0xFF36618E),
     alignedDropdown: false,
     layoutBehavior: ButtonBarLayoutBehavior.padded,

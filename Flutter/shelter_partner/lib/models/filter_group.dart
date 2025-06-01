@@ -5,10 +5,7 @@ class FilterGroup extends FilterElement {
   LogicalOperator logicalOperator;
   List<FilterElement> elements;
 
-  FilterGroup({
-    required this.logicalOperator,
-    required this.elements,
-  });
+  FilterGroup({required this.logicalOperator, required this.elements});
 
   @override
   Map<String, dynamic> toJson() {
@@ -25,8 +22,9 @@ class FilterGroup extends FilterElement {
         (e) => e.toString().split('.').last == json['logicalOperator'],
       ),
       elements: (json['elements'] as List<dynamic>)
-          .map((e) =>
-              FilterElement.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map(
+            (e) => FilterElement.fromJson(Map<String, dynamic>.from(e as Map)),
+          )
           .toList(),
     );
   }

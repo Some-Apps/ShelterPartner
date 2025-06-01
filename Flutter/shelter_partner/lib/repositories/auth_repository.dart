@@ -29,9 +29,9 @@ class AuthRepository {
     required FirebaseFirestore firestore,
     required FirebaseAuth firebaseAuth,
     FileLoader? fileLoader,
-  })  : _firestore = firestore,
-        _firebaseAuth = firebaseAuth,
-        _fileLoader = fileLoader ?? DefaultFileLoader();
+  }) : _firestore = firestore,
+       _firebaseAuth = firebaseAuth,
+       _fileLoader = fileLoader ?? DefaultFileLoader();
 
   // Fetch user by ID
   Future<AppUser?> getUserById(String userId) async {
@@ -45,16 +45,24 @@ class AuthRepository {
 
   // Sign in user with email and password
   Future<UserCredential> signInWithEmailAndPassword(
-      String email, String password) async {
+    String email,
+    String password,
+  ) async {
     return await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+      email: email,
+      password: password,
+    );
   }
 
   // Sign up a new user
   Future<UserCredential> signUpWithEmailAndPassword(
-      String email, String password) async {
+    String email,
+    String password,
+  ) async {
     return await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email.trim(), password: password);
+      email: email.trim(),
+      password: password,
+    );
   }
 
   Future<void> sendPasswordResetEmail(String email) async {
@@ -166,7 +174,7 @@ class AuthRepository {
       'shelterID': shelterId,
       'type': 'admin',
       'accountSettings': defaultAccountSettings.toMap(),
-      'removeAds': true
+      'removeAds': true,
     });
 
     // Create the shelter without accountSettings
@@ -274,8 +282,9 @@ class AuthRepository {
     try {
       // Load CSV data using the loadCsvData function
       print('Loading CSV file: $filename');
-      final csvData =
-          await loadCsvData(filename); // Load CSV data from the file
+      final csvData = await loadCsvData(
+        filename,
+      ); // Load CSV data from the file
 
       if (csvData.isEmpty) {
         print('No data found in CSV file: $filename');
@@ -292,42 +301,64 @@ class AuthRepository {
         final animalId = row['id'].toString();
 
         final data = {
-          'takeOutAlert': ['', '', '', '', 'This is some sort of example alert']
-              .randomElement(),
-          'putBackAlert': ['', '', '', '', 'This is some sort of example alert']
-              .randomElement(),
+          'takeOutAlert': [
+            '',
+            '',
+            '',
+            '',
+            'This is some sort of example alert',
+          ].randomElement(),
+          'putBackAlert': [
+            '',
+            '',
+            '',
+            '',
+            'This is some sort of example alert',
+          ].randomElement(),
 
           'species': collectionName == 'dogs'
               ? 'dog'
               : collectionName == 'cats'
-                  ? 'cat'
-                  : 'Unknown',
-          'symbolColor': ['red', 'green', 'blue', 'yellow', 'orange', 'purple']
-              .randomElement(),
+              ? 'cat'
+              : 'Unknown',
+          'symbolColor': [
+            'red',
+            'green',
+            'blue',
+            'yellow',
+            'orange',
+            'purple',
+          ].randomElement(),
           'symbol': 'pets', // Example static value, adjust as needed
           'volunteerCategory': ['Red', 'Green', 'Blue'].randomElement(),
-          'locationCategory':
-              ['Building 1', 'Building 2', 'Building 3'].randomElement(),
+          'locationCategory': [
+            'Building 1',
+            'Building 2',
+            'Building 3',
+          ].randomElement(),
           'behaviorCategory': [
             'Behavior 1',
             'Behavior 2',
             'Behavior 3',
-            'Behavior 4'
+            'Behavior 4',
           ].randomElement(),
-          'medicalCategory':
-              ['Medical 1', 'Medical 2', 'Medical 3'].randomElement(),
-          'adoptionCategory':
-              ['Adoption 1', 'Adoption 2', 'Adoption 3'].randomElement(),
+          'medicalCategory': [
+            'Medical 1',
+            'Medical 2',
+            'Medical 3',
+          ].randomElement(),
+          'adoptionCategory': [
+            'Adoption 1',
+            'Adoption 2',
+            'Adoption 3',
+          ].randomElement(),
           'id': animalId,
           'inKennel': true,
           'location': row['location'] ?? '',
           'fullLocation':
-              '${row['location'] ?? 'Site 1'} > Building ${Random().nextInt(3) + 1} > Room ${[
-            'A',
-            'B',
-            'C'
-          ].randomElement()} > Kennel ${Random().nextInt(20) + 1}',
-          'name': row['name'] ??
+              '${row['location'] ?? 'Site 1'} > Building ${Random().nextInt(3) + 1} > Room ${['A', 'B', 'C'].randomElement()} > Kennel ${Random().nextInt(20) + 1}',
+          'name':
+              row['name'] ??
               'Unknown', // Default to 'Unknown' if name is missing
           'startTime':
               FieldValue.serverTimestamp(), // Add timestamps for Firestore
@@ -340,7 +371,7 @@ class AuthRepository {
                   // "https://storage.googleapis.com/production-10b3e.firebasestorage.app/${collectionName == 'dogs' ? 'Dogs' : 'Cats'}/$animalId.jpeg",
                   "https://storage.googleapis.com/development-e5282.appspot.com/${collectionName == 'dogs' ? 'Dogs' : 'Cats'}/$animalId.jpeg",
               'timestamp': Timestamp.now(),
-            }
+            },
           ], // Example placeholder for photos
           'notes': [
             {
@@ -372,7 +403,7 @@ class AuthRepository {
               'note': 'Example note 5',
               'author': 'Person 2',
               'timestamp': Timestamp.now(),
-            }
+            },
           ], // Example placeholder for notes
           'logs': [
             {
@@ -395,7 +426,7 @@ class AuthRepository {
               'author': 'Admin',
               'startTime': Timestamp.now(),
               'endTime': Timestamp.now(),
-            }
+            },
           ], // Example placeholder for logs
           'tags': [
             {
@@ -403,7 +434,7 @@ class AuthRepository {
               'title': 'Friendly',
               'count': 1,
               'timestamp': Timestamp.now(),
-            }
+            },
           ], // Example placeholder for tags
           'sex': ['m', 'f'].randomElement(),
           'monthsOld': [2, 6, 12, 24, 36].randomElement(),
@@ -413,7 +444,7 @@ class AuthRepository {
             'This animal is energetic and loves to run around. She is very playful and enjoys playing fetch. She is very loyal and protective of her family.',
             'This animal is very independent and likes to explore his surroundings. He is curious and intelligent, and enjoys solving puzzles and playing with interactive toys.',
             'This animal is very gentle and loves to cuddle. She is very affectionate and enjoys being around people. She has a calm demeanor and is very good with other animals.',
-            'This animal is very playful and loves to be the center of attention. He enjoys playing with other animals and is very social. He has a lot of energy and loves to run and play.'
+            'This animal is very playful and loves to be the center of attention. He enjoys playing with other animals and is very social. He has a lot of energy and loves to run and play.',
           ].randomElement(),
         };
 
@@ -437,11 +468,13 @@ class AuthRepository {
     try {
       // Load CSV file as a string using the injected FileLoader
       final csvString = await _fileLoader.loadString(filename);
-      print('Raw CSV string: ' +
-          csvString); // Debugging: print the entire raw string
+      print(
+        'Raw CSV string: ' + csvString,
+      ); // Debugging: print the entire raw string
       // Parse the CSV string
-      final List<List<dynamic>> csvRows =
-          const CsvToListConverter(eol: '\n').convert(csvString);
+      final List<List<dynamic>> csvRows = const CsvToListConverter(
+        eol: '\n',
+      ).convert(csvString);
       print('Parsed CSV rows: $csvRows'); // Debugging: print parsed rows
 
       if (csvRows.isEmpty) {

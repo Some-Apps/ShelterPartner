@@ -12,7 +12,7 @@ class SignupPage extends ConsumerStatefulWidget {
   DebugHelper debugHelper;
 
   SignupPage({super.key, required this.onTapLogin, DebugHelper? debugHelper})
-      : debugHelper = debugHelper ?? DebugHelper();
+    : debugHelper = debugHelper ?? DebugHelper();
   @override
   _SignupPageState createState() => _SignupPageState();
 }
@@ -49,7 +49,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       );
       return;
     }
-    await ref.read(authViewModelProvider.notifier).signup(
+    await ref
+        .read(authViewModelProvider.notifier)
+        .signup(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
           firstName: firstNameController.text.trim(),
@@ -67,7 +69,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     const uuid = Uuid();
     final testEmail = '${uuid.v4()}@example.com';
     const testPassword = 'password123';
-    await ref.read(authViewModelProvider.notifier).signup(
+    await ref
+        .read(authViewModelProvider.notifier)
+        .signup(
           email: testEmail,
           password: testPassword,
           firstName: 'Test',
@@ -108,9 +112,13 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     //     }
                     //   },
                     // ),
-                    const Text("Create Shelter Account",
-                        style: TextStyle(
-                            fontSize: 35, fontWeight: FontWeight.normal)),
+                    const Text(
+                      "Create Shelter Account",
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
                     const SizedBox(height: 35),
                     MyTextField(
                       controller: firstNameController,
@@ -178,14 +186,17 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     ),
                     const SizedBox(height: 50),
                     ElevatedButton(
-                        onPressed: signup, child: const Text("Create Shelter")),
+                      onPressed: signup,
+                      child: const Text("Create Shelter"),
+                    ),
 
                     if (widget.debugHelper.isDebugMode())
                       const SizedBox(height: 25),
                     if (widget.debugHelper.isDebugMode())
                       ElevatedButton(
-                          onPressed: createAndLoginTestAccount,
-                          child: const Text("Create Test Account")),
+                        onPressed: createAndLoginTestAccount,
+                        child: const Text("Create Test Account"),
+                      ),
 
                     const SizedBox(height: 50),
                     Row(

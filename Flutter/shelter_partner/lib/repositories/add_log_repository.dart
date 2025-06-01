@@ -7,7 +7,7 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class AddLogRepository {
   final FirebaseFirestore _firestore;
   AddLogRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   Future<void> addLogToAnimal(Animal animal, String shelterID, Log log) async {
     // Determine the collection based on species
@@ -18,8 +18,8 @@ class AddLogRepository {
         .collection('shelters/$shelterID/$collection')
         .doc(animal.id)
         .update({
-      'logs': FieldValue.arrayUnion([log.toMap()])
-    });
+          'logs': FieldValue.arrayUnion([log.toMap()]),
+        });
   }
 }
 

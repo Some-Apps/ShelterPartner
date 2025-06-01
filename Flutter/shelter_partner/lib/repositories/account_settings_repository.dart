@@ -5,7 +5,7 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class AccountSettingsRepository {
   final FirebaseFirestore _firestore;
   AccountSettingsRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   // Method to fetch account details for a specific user ID
   Stream<DocumentSnapshot> fetchUserDetails(String userID) {
@@ -51,76 +51,90 @@ class AccountSettingsRepository {
     final newValue = !currentBool;
 
     // Update the nested field using the dot notation in the field path
-    return docRef.update({
-      'accountSettings.${fieldParts.join('.')}': newValue,
-    }).catchError((error) {
-      throw Exception("Failed to toggle: $error");
-    });
+    return docRef
+        .update({'accountSettings.${fieldParts.join('.')}': newValue})
+        .catchError((error) {
+          throw Exception("Failed to toggle: $error");
+        });
   }
 
   // Method to modify a specific string attribute within volunteerSettings
   Future<void> modifyAccountSettingString(
-      String userID, String field, String newValue) async {
+    String userID,
+    String field,
+    String newValue,
+  ) async {
     final docRef = _firestore.collection('users').doc(userID);
-    return docRef.update({
-      'accountSettings.$field': newValue, // Update the string value
-    }).catchError((error) {
-      throw Exception("Failed to modify: $error");
-    });
+    return docRef
+        .update({
+          'accountSettings.$field': newValue, // Update the string value
+        })
+        .catchError((error) {
+          throw Exception("Failed to modify: $error");
+        });
   }
 
   Future<void> incrementAccountSetting(String userID, String field) async {
     final docRef = _firestore.collection('users').doc(userID);
-    return docRef.update({
-      'accountSettings.$field': FieldValue.increment(1),
-    }).catchError((error) {
-      throw Exception("Failed to increment: $error");
-    });
+    return docRef
+        .update({'accountSettings.$field': FieldValue.increment(1)})
+        .catchError((error) {
+          throw Exception("Failed to increment: $error");
+        });
   }
 
   Future<void> updateLocationTierCount(
-      String userID, int locationTierCount) async {
+    String userID,
+    int locationTierCount,
+  ) async {
     final docRef = _firestore.collection('users').doc(userID);
-    return docRef.update({
-      'accountSettings.locationTierCount': locationTierCount,
-    }).catchError((error) {
-      throw Exception("Failed to update: $error");
-    });
+    return docRef
+        .update({'accountSettings.locationTierCount': locationTierCount})
+        .catchError((error) {
+          throw Exception("Failed to update: $error");
+        });
   }
 
   Future<int?> getLocationTierCount(
-      String userID, String locationTierCount) async {
+    String userID,
+    String locationTierCount,
+  ) async {
     final docRef = _firestore.collection('users').doc(userID);
-    return docRef.get().then((snapshot) {
-      if (snapshot.exists) {
-        final data = snapshot.data();
-        if (data != null && data['accountSettings'] != null) {
-          return data['accountSettings']['locationTierCount'] as int?;
-        }
-      }
-      return null;
-    }).catchError((error) {
-      throw Exception("Failed to get location tier count: $error");
-    });
+    return docRef
+        .get()
+        .then((snapshot) {
+          if (snapshot.exists) {
+            final data = snapshot.data();
+            if (data != null && data['accountSettings'] != null) {
+              return data['accountSettings']['locationTierCount'] as int?;
+            }
+          }
+          return null;
+        })
+        .catchError((error) {
+          throw Exception("Failed to get location tier count: $error");
+        });
   }
 
   Future<void> decrementAccountSetting(String userID, String field) async {
     final docRef = _firestore.collection('users').doc(userID);
-    return docRef.update({
-      'accountSettings.$field': FieldValue.increment(-1),
-    }).catchError((error) {
-      throw Exception("Failed to decrement: $error");
-    });
+    return docRef
+        .update({'accountSettings.$field': FieldValue.increment(-1)})
+        .catchError((error) {
+          throw Exception("Failed to decrement: $error");
+        });
   }
 
   Future<void> saveFilterExpression(
-      String userID, Map<String, dynamic> filterExpression) async {
+    String userID,
+    Map<String, dynamic> filterExpression,
+  ) async {
     final docRef = _firestore.collection('users').doc(userID);
-    return docRef.update({
-      'accountSettings.enrichmentFilter': filterExpression,
-    }).catchError((error) {
-      throw Exception("Failed to save filter expression: $error");
-    });
+    return docRef
+        .update({'accountSettings.enrichmentFilter': filterExpression})
+        .catchError((error) {
+          throw Exception("Failed to save filter expression: $error");
+        });
   }
 
   Future<Map<String, dynamic>?> loadFilterExpression(String userID) async {
@@ -132,15 +146,17 @@ class AccountSettingsRepository {
           data['accountSettings'] != null &&
           data['accountSettings']['enrichmentFilter'] != null) {
         return Map<String, dynamic>.from(
-            data['accountSettings']['enrichmentFilter']);
+          data['accountSettings']['enrichmentFilter'],
+        );
       }
     }
     return null;
   }
 }
 
-final accountSettingsRepositoryProvider =
-    Provider<AccountSettingsRepository>((ref) {
+final accountSettingsRepositoryProvider = Provider<AccountSettingsRepository>((
+  ref,
+) {
   final firestore = ref.watch(firestoreProvider);
   return AccountSettingsRepository(firestore: firestore);
 });

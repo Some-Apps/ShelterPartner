@@ -7,8 +7,9 @@ import 'package:uuid/uuid.dart';
 
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
 
-final authViewModelProvider =
-    StateNotifierProvider<AuthViewModel, AuthState>((ref) {
+final authViewModelProvider = StateNotifierProvider<AuthViewModel, AuthState>((
+  ref,
+) {
   final authRepository = ref.watch(authRepositoryProvider);
   return AuthViewModel(authRepository, ref);
 });
@@ -48,10 +49,13 @@ class AuthViewModel extends StateNotifier<AuthState> {
   Future<void> login(String email, String password) async {
     state = AuthState.loading(message: "Logging in...");
     try {
-      final userCredential =
-          await _authRepository.signInWithEmailAndPassword(email, password);
-      final appUser =
-          await _authRepository.getUserById(userCredential.user!.uid);
+      final userCredential = await _authRepository.signInWithEmailAndPassword(
+        email,
+        password,
+      );
+      final appUser = await _authRepository.getUserById(
+        userCredential.user!.uid,
+      );
       if (appUser != null) {
         state = AuthState.authenticated(appUser);
         _ref.read(appUserProvider.notifier).state = appUser;
@@ -85,8 +89,10 @@ class AuthViewModel extends StateNotifier<AuthState> {
   }) async {
     state = AuthState.loading(message: "Creating Shelter...");
     try {
-      final userCredential =
-          await _authRepository.signUpWithEmailAndPassword(email, password);
+      final userCredential = await _authRepository.signUpWithEmailAndPassword(
+        email,
+        password,
+      );
       String uid = userCredential.user!.uid;
       String shelterId = const Uuid().v4();
 
@@ -116,7 +122,10 @@ class AuthViewModel extends StateNotifier<AuthState> {
 
   // Delete account method
   Future<void> deleteAccount(
-      BuildContext context, String email, String password) async {
+    BuildContext context,
+    String email,
+    String password,
+  ) async {
     state = AuthState.loading(message: "Deleting account...");
     try {
       // Delete user account from authentication provider (e.g., Firebase)

@@ -17,7 +17,10 @@ class AddNoteViewModel extends StateNotifier<Animal> {
     try {
       for (var tag in tags) {
         await _repository.updateAnimalTags(
-            animal, ref.read(shelterDetailsViewModelProvider).value!.id, tag);
+          animal,
+          ref.read(shelterDetailsViewModelProvider).value!.id,
+          tag,
+        );
       }
 
       // Optionally, update the state if needed
@@ -33,7 +36,10 @@ class AddNoteViewModel extends StateNotifier<Animal> {
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
     try {
       await _repository.addNoteToAnimal(
-          animal, shelterDetailsAsync.value!.id, note);
+        animal,
+        shelterDetailsAsync.value!.id,
+        note,
+      );
       // Optionally, update the state if needed
     } catch (e) {
       // Handle error
@@ -42,12 +48,19 @@ class AddNoteViewModel extends StateNotifier<Animal> {
   }
 
   Future<void> uploadImageToAnimal(
-      Animal animal, XFile image, WidgetRef ref) async {
+    Animal animal,
+    XFile image,
+    WidgetRef ref,
+  ) async {
     // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
     try {
       await _repository.uploadImageToAnimal(
-          animal, shelterDetailsAsync.value!.id, image, ref);
+        animal,
+        shelterDetailsAsync.value!.id,
+        image,
+        ref,
+      );
 
       // Optionally, update the state if needed
     } catch (e) {
@@ -59,9 +72,10 @@ class AddNoteViewModel extends StateNotifier<Animal> {
 
 // Provider for AddNoteViewModel
 final addNoteViewModelProvider =
-    StateNotifierProvider.family<AddNoteViewModel, Animal, Animal>(
-  (ref, animal) {
-    final repository = ref.watch(addNoteRepositoryProvider);
-    return AddNoteViewModel(repository, ref, animal);
-  },
-);
+    StateNotifierProvider.family<AddNoteViewModel, Animal, Animal>((
+      ref,
+      animal,
+    ) {
+      final repository = ref.watch(addNoteRepositoryProvider);
+      return AddNoteViewModel(repository, ref, animal);
+    });

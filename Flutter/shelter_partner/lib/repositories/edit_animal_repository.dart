@@ -8,7 +8,7 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class EditAnimalRepository {
   final FirebaseFirestore _firestore;
   EditAnimalRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   Future<void> deleteItem(
     String shelterId,
@@ -31,8 +31,9 @@ class EditAnimalRepository {
         final List<dynamic> items = data?[field] ?? [];
 
         // Filter out the item with the matching id
-        final updatedItems =
-            items.where((item) => item['id'] != itemId).toList();
+        final updatedItems = items
+            .where((item) => item['id'] != itemId)
+            .toList();
 
         // Update the field with the filtered list
         transaction.update(documentRef, {field: updatedItems});
@@ -60,15 +61,15 @@ class EditAnimalRepository {
       try {
         // Delete original photo
         final originalPhotoRef = storage.ref().child(
-              '$shelterId/$animalId/${photo.id}',
-            );
+          '$shelterId/$animalId/${photo.id}',
+        );
         await originalPhotoRef.delete();
 
         // Delete resized photos
         for (final size in sizes) {
           final resizedPhotoRef = storage.ref().child(
-                '$shelterId/$animalId/${photo.id}_$size',
-              );
+            '$shelterId/$animalId/${photo.id}_$size',
+          );
           try {
             await resizedPhotoRef.delete();
           } catch (e) {

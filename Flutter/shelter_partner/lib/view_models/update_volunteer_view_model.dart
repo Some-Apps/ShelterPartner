@@ -8,10 +8,14 @@ class UpdateVolunteerViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   final Ref ref;
 
   UpdateVolunteerViewModel(this._repository, this.ref)
-      : super(const AsyncValue.loading());
+    : super(const AsyncValue.loading());
 
-  Future<void> modifyVolunteerLastActivityString(String userID,
-      String volunteerId, String field, Timestamp newValue) async {
+  Future<void> modifyVolunteerLastActivityString(
+    String userID,
+    String volunteerId,
+    String field,
+    Timestamp newValue,
+  ) async {
     try {
       await _repository.modifyVolunteerLastActivity(userID, newValue);
     } catch (error) {
@@ -22,10 +26,14 @@ class UpdateVolunteerViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 }
 
 final shelterSettingsViewModelProvider =
-    StateNotifierProvider<UpdateVolunteerViewModel, AsyncValue<Shelter?>>(
-        (ref) {
-  final repository =
-      ref.watch(updateVolunteerRepositoryProvider); // Access the repository
-  return UpdateVolunteerViewModel(
-      repository, ref); // Pass the repository and ref
-});
+    StateNotifierProvider<UpdateVolunteerViewModel, AsyncValue<Shelter?>>((
+      ref,
+    ) {
+      final repository = ref.watch(
+        updateVolunteerRepositoryProvider,
+      ); // Access the repository
+      return UpdateVolunteerViewModel(
+        repository,
+        ref,
+      ); // Pass the repository and ref
+    });

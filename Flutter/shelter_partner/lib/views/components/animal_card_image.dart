@@ -79,10 +79,16 @@ class AnimalCardImage extends StatelessWidget {
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => Icon(Icons.pets,
-                              size: 50, color: Colors.grey.shade400),
-                          errorWidget: (context, url, error) => Icon(Icons.pets,
-                              size: 50, color: Colors.grey.shade400),
+                          placeholder: (context, url) => Icon(
+                            Icons.pets,
+                            size: 50,
+                            color: Colors.grey.shade400,
+                          ),
+                          errorWidget: (context, url, error) => Icon(
+                            Icons.pets,
+                            size: 50,
+                            color: Colors.grey.shade400,
+                          ),
                         )
                       : Icon(Icons.pets, size: 50, color: Colors.grey.shade400),
                 ),

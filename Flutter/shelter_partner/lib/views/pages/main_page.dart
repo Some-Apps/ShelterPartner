@@ -8,10 +8,7 @@ import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 class MainPage extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
-  const MainPage({
-    super.key,
-    required this.navigationShell,
-  });
+  const MainPage({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,9 +19,7 @@ class MainPage extends ConsumerWidget {
     if (authState.status == AuthStatus.loading ||
         volunteerSettingsAsyncValue.isLoading) {
       // Show a loading indicator while checking authentication status or loading volunteer settings
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     } else if (authState.status == AuthStatus.unauthenticated) {
       // If the user is not authenticated, redirect to the login page
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -43,8 +38,10 @@ class MainPage extends ConsumerWidget {
       if (volunteerSettingsAsyncValue.hasError) {
         return Scaffold(
           body: Center(
-              child: Text(
-                  'Error: ${volunteerSettingsAsyncValue.error.toString()}')),
+            child: Text(
+              'Error: ${volunteerSettingsAsyncValue.error.toString()}',
+            ),
+          ),
         );
       }
 
@@ -54,7 +51,7 @@ class MainPage extends ConsumerWidget {
       Set<String> volunteerModes = {
         'Enrichment',
         'Visitor',
-        'Enrichment & Visitor'
+        'Enrichment & Visitor',
       };
 
       // Define the navigation items and visible indexes
@@ -65,51 +62,74 @@ class MainPage extends ConsumerWidget {
         if (appUser.accountSettings?.mode == 'Admin') {
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.pets), label: 'Enrichment'),
+              icon: Icon(Icons.pets),
+              label: 'Enrichment',
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.people), label: 'Visitors'),
+              icon: Icon(Icons.people),
+              label: 'Visitors',
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.volunteer_activism), label: 'Volunteers'),
+              icon: Icon(Icons.volunteer_activism),
+              label: 'Volunteers',
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'Settings'),
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
           ];
           visibleIndexes = [0, 1, 2, 3];
         } else if (appUser.accountSettings?.mode == 'Enrichment') {
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.pets), label: 'Enrichment'),
+              icon: Icon(Icons.pets),
+              label: 'Enrichment',
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.door_front_door_outlined),
-                label: 'Switch To Admin'),
+              icon: Icon(Icons.door_front_door_outlined),
+              label: 'Switch To Admin',
+            ),
           ];
           visibleIndexes = [0, 4]; // Indexes corresponding to the branches
         } else if (appUser.accountSettings?.mode == 'Visitor') {
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.people), label: 'Visitors'),
+              icon: Icon(Icons.people),
+              label: 'Visitors',
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.door_front_door_outlined),
-                label: 'Switch To Admin'),
+              icon: Icon(Icons.door_front_door_outlined),
+              label: 'Switch To Admin',
+            ),
           ];
           visibleIndexes = [1, 4];
         } else if (appUser.accountSettings?.mode == 'Enrichment & Visitor') {
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.pets), label: 'Enrichment'),
+              icon: Icon(Icons.pets),
+              label: 'Enrichment',
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.people), label: 'Visitors'),
+              icon: Icon(Icons.people),
+              label: 'Visitors',
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.door_front_door_outlined),
-                label: 'Switch To Admin'),
+              icon: Icon(Icons.door_front_door_outlined),
+              label: 'Switch To Admin',
+            ),
           ];
           visibleIndexes = [0, 1, 4];
         } else {
           // Default to volunteer items
           items = [
             const BottomNavigationBarItem(
-                icon: Icon(Icons.pets), label: 'Enrichment'),
+              icon: Icon(Icons.pets),
+              label: 'Enrichment',
+            ),
             const BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'Settings'),
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
           ];
           visibleIndexes = [0, 3];
         }
@@ -117,9 +137,13 @@ class MainPage extends ConsumerWidget {
         // Non-admin users (e.g., volunteers) can access 'Animals' and 'Settings'
         items = [
           const BottomNavigationBarItem(
-              icon: Icon(Icons.pets), label: 'Enrichment'),
+            icon: Icon(Icons.pets),
+            label: 'Enrichment',
+          ),
           const BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'Settings'),
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ];
         visibleIndexes = [0, 3];
       }
@@ -148,8 +172,9 @@ class MainPage extends ConsumerWidget {
               // Determine the index for the 'Animals' tab
               int enrichmentBranchIndex =
                   0; // Assuming 'Animals' branch index is 0
-              int enrichmentTabIndex =
-                  visibleIndexes.indexOf(enrichmentBranchIndex);
+              int enrichmentTabIndex = visibleIndexes.indexOf(
+                enrichmentBranchIndex,
+              );
 
               if (currentIndex == enrichmentTabIndex) {
                 // Use the geofence status to determine what to display
@@ -171,9 +196,8 @@ class MainPage extends ConsumerWidget {
                   },
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => Center(
-                    child: Text('Error: ${err.toString()}'),
-                  ),
+                  error: (err, stack) =>
+                      Center(child: Text('Error: ${err.toString()}')),
                 );
               } else {
                 // For other tabs, show the normal content
@@ -188,17 +212,15 @@ class MainPage extends ConsumerWidget {
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Theme.of(context).colorScheme.surface,
           selectedItemColor: Theme.of(context).colorScheme.primary,
-          unselectedItemColor:
-              Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          unselectedItemColor: Theme.of(
+            context,
+          ).colorScheme.onSurface.withOpacity(0.6),
           currentIndex: currentIndex,
           onTap: (index) {
             int branchIndex = visibleIndexes[index];
             if (navigationShell.currentIndex == branchIndex) {
               // User tapped the current tab again; reset navigation stack
-              navigationShell.goBranch(
-                branchIndex,
-                initialLocation: true,
-              );
+              navigationShell.goBranch(branchIndex, initialLocation: true);
 
               // If the Enrichment tab is tapped again
               if (branchIndex == 0) {
@@ -334,8 +356,9 @@ final geofenceStatusProvider = StreamProvider.autoDispose<bool>((ref) async* {
     distanceFilter: 5,
   );
 
-  final positionStream =
-      Geolocator.getPositionStream(locationSettings: locationSettings);
+  final positionStream = Geolocator.getPositionStream(
+    locationSettings: locationSettings,
+  );
 
   await for (final position in positionStream) {
     // Calculate distance to geofence center

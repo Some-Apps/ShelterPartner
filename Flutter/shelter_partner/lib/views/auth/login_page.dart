@@ -19,10 +19,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final passwordController = TextEditingController();
 
   void login() async {
-    await ref.read(authViewModelProvider.notifier).login(
-          emailController.text.trim(),
-          passwordController.text.trim(),
-        );
+    await ref
+        .read(authViewModelProvider.notifier)
+        .login(emailController.text.trim(), passwordController.text.trim());
   }
 
   @override
@@ -41,12 +40,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   children: [
                     FutureBuilder(
                       future: precacheImage(
-                          const AssetImage("assets/images/square_logo.png"),
-                          context),
+                        const AssetImage("assets/images/square_logo.png"),
+                        context,
+                      ),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
-                          return Image.asset("assets/images/square_logo.png",
-                              width: 250);
+                          return Image.asset(
+                            "assets/images/square_logo.png",
+                            width: 250,
+                          );
                         } else {
                           return const SizedBox(
                             width: 250,
@@ -56,9 +58,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         }
                       },
                     ),
-                    const Text("Welcome Back!",
-                        style: TextStyle(
-                            fontSize: 50, fontWeight: FontWeight.normal)),
+                    const Text(
+                      "Welcome Back!",
+                      style: TextStyle(
+                        fontSize: 50,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
                     const SizedBox(height: 25),
 
                     MyTextField(
@@ -76,7 +82,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     const SizedBox(height: 25),
                     ElevatedButton(
-                        onPressed: login, child: const Text("Log In")),
+                      onPressed: login,
+                      child: const Text("Log In"),
+                    ),
                     // MyButton(
                     //   title: "Log In",
                     //   onTap: login,

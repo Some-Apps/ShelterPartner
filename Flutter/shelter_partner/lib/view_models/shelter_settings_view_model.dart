@@ -12,7 +12,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   final FirebaseFirestore _firestore;
 
   ShelterSettingsViewModel(this._repository, this.ref, this._firestore)
-      : super(const AsyncValue.loading()) {
+    : super(const AsyncValue.loading()) {
     _initialize(); // Start the initialization process to fetch account details
   }
 
@@ -35,20 +35,31 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 
   // Method to fetch account details from the repository
   void fetchShelterDetails({required String shelterID}) {
-    _repository.fetchShelterDetails(shelterID).listen((accountDetails) {
-      if (accountDetails.exists) {
-        state = AsyncValue.data(Shelter.fromDocument(
-            accountDetails)); // Update state with Shelter object
-      } else {
-        state = AsyncValue.error('No shelter found',
-            StackTrace.current); // Handle case where no shelter is found
-      }
-    }, onError: (error) {
-      state = AsyncValue.error(error, StackTrace.current); // Handle any errors
-    });
+    _repository
+        .fetchShelterDetails(shelterID)
+        .listen(
+          (accountDetails) {
+            if (accountDetails.exists) {
+              state = AsyncValue.data(
+                Shelter.fromDocument(accountDetails),
+              ); // Update state with Shelter object
+            } else {
+              state = AsyncValue.error(
+                'No shelter found',
+                StackTrace.current,
+              ); // Handle case where no shelter is found
+            }
+          },
+          onError: (error) {
+            state = AsyncValue.error(
+              error,
+              StackTrace.current,
+            ); // Handle any errors
+          },
+        );
   }
 
-// Toggle attribute in Firestore document within volunteerSettings
+  // Toggle attribute in Firestore document within volunteerSettings
   Future<void> toggleAttribute(String shelterID, String field) async {
     try {
       await _repository.toggleShelterSetting(shelterID, field);
@@ -59,7 +70,11 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   }
 
   Future<void> sendVolunteerInvite(
-      String firstName, String lastName, String email, String shelterID) async {
+    String firstName,
+    String lastName,
+    String email,
+    String shelterID,
+  ) async {
     state = const AsyncLoading();
 
     try {
@@ -74,57 +89,89 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 
   // Add string to array within shelterSettings attribute
   Future<void> addStringToShelterSettingsArray(
-      String shelterID, String field, String value) async {
+    String shelterID,
+    String field,
+    String value,
+  ) async {
     try {
       await _repository.addStringToShelterSettingsArray(
-          shelterID, field, value);
+        shelterID,
+        field,
+        value,
+      );
     } catch (error) {
       print("Error adding string to array: $error");
       state = AsyncValue.error(
-          "Error adding string to array: $error", StackTrace.current);
+        "Error adding string to array: $error",
+        StackTrace.current,
+      );
     }
   }
 
-// Add map to array within shelterSettings attribute
+  // Add map to array within shelterSettings attribute
   Future<void> addMapToShelterSettingsArray(
-      String shelterID, String field, Map<String, dynamic> value) async {
+    String shelterID,
+    String field,
+    Map<String, dynamic> value,
+  ) async {
     try {
       await _repository.addMapToShelterSettingsArray(shelterID, field, value);
     } catch (error) {
       print("Error adding map to array: $error");
       state = AsyncValue.error(
-          "Error adding map to array: $error", StackTrace.current);
+        "Error adding map to array: $error",
+        StackTrace.current,
+      );
     }
   }
 
-// Remove string from array within shelterSettings attribute
+  // Remove string from array within shelterSettings attribute
   Future<void> removeStringFromShelterSettingsArray(
-      String shelterID, String field, String value) async {
+    String shelterID,
+    String field,
+    String value,
+  ) async {
     try {
       await _repository.removeStringFromShelterSettingsArray(
-          shelterID, field, value);
+        shelterID,
+        field,
+        value,
+      );
     } catch (error) {
       print("Error removing string from array: $error");
       state = AsyncValue.error(
-          "Error removing string from array: $error", StackTrace.current);
+        "Error removing string from array: $error",
+        StackTrace.current,
+      );
     }
   }
 
-// Reorder items in array of maps within shelterSettings attribute
-  Future<void> reorderMapArrayInShelterSettings(String shelterID, String field,
-      List<Map<String, dynamic>> newOrder) async {
+  // Reorder items in array of maps within shelterSettings attribute
+  Future<void> reorderMapArrayInShelterSettings(
+    String shelterID,
+    String field,
+    List<Map<String, dynamic>> newOrder,
+  ) async {
     try {
       await _repository.reorderMapArrayInShelterSettings(
-          shelterID, field, newOrder);
+        shelterID,
+        field,
+        newOrder,
+      );
     } catch (error) {
       print("Error reordering map array: $error");
       state = AsyncValue.error(
-          "Error reordering map array: $error", StackTrace.current);
+        "Error reordering map array: $error",
+        StackTrace.current,
+      );
     }
   }
 
   Future<void> modifyShelterSettingString(
-      String userID, String field, String newValue) async {
+    String userID,
+    String field,
+    String newValue,
+  ) async {
     try {
       await _repository.modifyShelterSettingString(userID, field, newValue);
     } catch (error) {
@@ -133,39 +180,54 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-// Reorder items in array within shelterSettings attribute
+  // Reorder items in array within shelterSettings attribute
   Future<void> reorderShelterSettingsArray(
-      String shelterID, String field, List<String> newOrder) async {
+    String shelterID,
+    String field,
+    List<String> newOrder,
+  ) async {
     try {
       await _repository.reorderShelterSettingsArray(shelterID, field, newOrder);
     } catch (error) {
       print("Error reordering array: $error");
       state = AsyncValue.error(
-          "Error reordering array: $error", StackTrace.current);
+        "Error reordering array: $error",
+        StackTrace.current,
+      );
     }
   }
 
-// Remove map from array within shelterSettings attribute
+  // Remove map from array within shelterSettings attribute
   Future<void> removeMapFromShelterSettingsArray(
-      String shelterID, String field, Map<String, dynamic> value) async {
+    String shelterID,
+    String field,
+    Map<String, dynamic> value,
+  ) async {
     try {
       await _repository.removeMapFromShelterSettingsArray(
-          shelterID, field, value);
+        shelterID,
+        field,
+        value,
+      );
     } catch (error) {
       print("Error removing map from array: $error");
       state = AsyncValue.error(
-          "Error removing map from array: $error", StackTrace.current);
+        "Error removing map from array: $error",
+        StackTrace.current,
+      );
     }
   }
 
-// Increment attribute in Firestore document within volunteerSettings
+  // Increment attribute in Firestore document within volunteerSettings
   Future<void> incrementAttribute(String userID, String field) async {
     try {
       await _repository.incrementShelterSetting(userID, field);
     } catch (error) {
       print("Error incrementing: $error");
-      state =
-          AsyncValue.error("Error incrementing: $error", StackTrace.current);
+      state = AsyncValue.error(
+        "Error incrementing: $error",
+        StackTrace.current,
+      );
     }
   }
 
@@ -174,20 +236,24 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
       await _repository.decrementShelterSetting(userID, field);
     } catch (error) {
       print("Error decrementing: $error");
-      state =
-          AsyncValue.error("Error decrementing: $error", StackTrace.current);
+      state = AsyncValue.error(
+        "Error decrementing: $error",
+        StackTrace.current,
+      );
     }
   }
 
   // Method to reset token count
   Future<void> resetTokenCount(String shelterID) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'shelterSettings.tokenCount': 0,
-      'shelterSettings.lastTokenReset': DateTime.now().toIso8601String(),
-    }).catchError((error) {
-      throw Exception("Failed to reset token count: $error");
-    });
+    return docRef
+        .update({
+          'shelterSettings.tokenCount': 0,
+          'shelterSettings.lastTokenReset': DateTime.now().toIso8601String(),
+        })
+        .catchError((error) {
+          throw Exception("Failed to reset token count: $error");
+        });
   }
 
   // Method to check if tokens need to be reset
@@ -215,20 +281,22 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     await checkAndResetTokens(shelterID);
 
     final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'shelterSettings.tokenCount': FieldValue.increment(tokens),
-    }).catchError((error) {
-      throw Exception("Failed to increment token count: $error");
-    });
+    return docRef
+        .update({'shelterSettings.tokenCount': FieldValue.increment(tokens)})
+        .catchError((error) {
+          throw Exception("Failed to increment token count: $error");
+        });
   }
 
   Future<void> updateTokenCount(String shelterId, int newCount) async {
     await _repository.updateTokenCount(shelterId, newCount);
-    state = AsyncData(state.value!.copyWith(
-      shelterSettings: state.value!.shelterSettings.copyWith(
-        tokenCount: newCount,
+    state = AsyncData(
+      state.value!.copyWith(
+        shelterSettings: state.value!.shelterSettings.copyWith(
+          tokenCount: newCount,
+        ),
       ),
-    ));
+    );
   }
 
   @override
@@ -239,11 +307,16 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 
 // Provider to access the ShelterSettingsViewModel
 final shelterSettingsViewModelProvider =
-    StateNotifierProvider<ShelterSettingsViewModel, AsyncValue<Shelter?>>(
-        (ref) {
-  final repository =
-      ref.watch(shelterSettingsRepositoryProvider); // Access the repository
-  final firestore = ref.watch(firestoreProvider);
-  return ShelterSettingsViewModel(
-      repository, ref, firestore); // Pass the repository, ref, and firestore
-});
+    StateNotifierProvider<ShelterSettingsViewModel, AsyncValue<Shelter?>>((
+      ref,
+    ) {
+      final repository = ref.watch(
+        shelterSettingsRepositoryProvider,
+      ); // Access the repository
+      final firestore = ref.watch(firestoreProvider);
+      return ShelterSettingsViewModel(
+        repository,
+        ref,
+        firestore,
+      ); // Pass the repository, ref, and firestore
+    });

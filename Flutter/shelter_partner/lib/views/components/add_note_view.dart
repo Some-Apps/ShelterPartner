@@ -41,9 +41,9 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
       }
     } catch (e) {
       print('Error picking image: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
     }
   }
 
@@ -166,9 +166,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
                 context: context,
                 barrierDismissible: false,
                 builder: (BuildContext context) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 },
               );
 
@@ -176,16 +174,20 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
                   .read(addNoteViewModelProvider(widget.animal).notifier)
                   .uploadImageToAnimal(widget.animal, _selectedImage!, ref)
                   .then((_) {
-                if (mounted) {
-                  ref
-                      .read(updateVolunteerRepositoryProvider)
-                      .modifyVolunteerLastActivity(
-                          userDetails.id, Timestamp.now());
-                  Navigator.of(context).pop(); // Close the loading indicator
-                  Navigator.of(context).pop(note);
-                  ref.read(noteAddedProvider.notifier).state = true;
-                }
-              });
+                    if (mounted) {
+                      ref
+                          .read(updateVolunteerRepositoryProvider)
+                          .modifyVolunteerLastActivity(
+                            userDetails.id,
+                            Timestamp.now(),
+                          );
+                      Navigator.of(
+                        context,
+                      ).pop(); // Close the loading indicator
+                      Navigator.of(context).pop(note);
+                      ref.read(noteAddedProvider.notifier).state = true;
+                    }
+                  });
             } else {
               ref
                   .read(updateVolunteerRepositoryProvider)

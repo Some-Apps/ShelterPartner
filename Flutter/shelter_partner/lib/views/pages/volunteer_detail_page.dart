@@ -38,9 +38,7 @@ class VolunteerDetailPage extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Volunteer Details"),
-      ),
+      appBar: AppBar(title: const Text("Volunteer Details")),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 750),
@@ -59,7 +57,10 @@ class VolunteerDetailPage extends ConsumerWidget {
                       GestureDetector(
                         onTap: () {
                           _showEditNameDialog(
-                              context, ref, viewModelState.volunteer);
+                            context,
+                            ref,
+                            viewModelState.volunteer,
+                          );
                         },
                         child: Icon(
                           Icons.edit,
@@ -97,7 +98,10 @@ class VolunteerDetailPage extends ConsumerWidget {
 }
 
 void _showEditNameDialog(
-    BuildContext context, WidgetRef ref, Volunteer volunteer) {
+  BuildContext context,
+  WidgetRef ref,
+  Volunteer volunteer,
+) {
   String newFirstName = volunteer.firstName;
   String newLastName = volunteer.lastName;
 

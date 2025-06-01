@@ -14,10 +14,12 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 // Providers
-final usersWithEmailProvider =
-    StateProvider<List<Map<String, dynamic>>>((ref) => []);
-final usersToAddProvider =
-    StateProvider<List<Map<String, dynamic>>>((ref) => []);
+final usersWithEmailProvider = StateProvider<List<Map<String, dynamic>>>(
+  (ref) => [],
+);
+final usersToAddProvider = StateProvider<List<Map<String, dynamic>>>(
+  (ref) => [],
+);
 final usersToRemoveProvider = StateProvider<List<Volunteer>>((ref) => []);
 
 class BetterImpactPage extends ConsumerStatefulWidget {
@@ -87,10 +89,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
           'Content-Type': 'application/json',
           // 'Authorization': 'Bearer $idToken',
         },
-        body: jsonEncode({
-          'username': username,
-          'password': password,
-        }),
+        body: jsonEncode({'username': username, 'password': password}),
       );
 
       if (response.statusCode == 200) {
@@ -100,14 +99,18 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
 
         // Proceed with your existing logic
         final usersWithEmail = users
-            .where((user) =>
-                user['email_address'] != null &&
-                user['email_address'].isNotEmpty)
-            .map((user) => {
-                  'first_name': user['first_name'],
-                  'last_name': user['last_name'],
-                  'email_address': user['email_address']
-                })
+            .where(
+              (user) =>
+                  user['email_address'] != null &&
+                  user['email_address'].isNotEmpty,
+            )
+            .map(
+              (user) => {
+                'first_name': user['first_name'],
+                'last_name': user['last_name'],
+                'email_address': user['email_address'],
+              },
+            )
             .toList();
 
         ref.read(usersWithEmailProvider.notifier).state = usersWithEmail;
@@ -139,7 +142,8 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         if (volunteersState is AsyncLoading) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text('Volunteer data is loading. Please try again.')),
+              content: Text('Volunteer data is loading. Please try again.'),
+            ),
           );
           setState(() {
             isLoading = false;
@@ -148,8 +152,10 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         } else if (volunteersState is AsyncError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(
-                    'Error loading volunteer data: ${volunteersState.error}')),
+              content: Text(
+                'Error loading volunteer data: ${volunteersState.error}',
+              ),
+            ),
           );
           setState(() {
             isLoading = false;
@@ -174,13 +180,15 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               .map((user) => user['email_address'] as String)
               .toSet();
 
-          final Set<String> volunteerEmails =
-              existingVolunteers.map((volunteer) => volunteer.email).toSet();
+          final Set<String> volunteerEmails = existingVolunteers
+              .map((volunteer) => volunteer.email)
+              .toSet();
 
           // Determine emails to add and remove
           final Set<String> emailsToAdd = apiEmails.difference(volunteerEmails);
-          final Set<String> emailsToRemove =
-              volunteerEmails.difference(apiEmails);
+          final Set<String> emailsToRemove = volunteerEmails.difference(
+            apiEmails,
+          );
 
           // Get users to add
           final List<Map<String, dynamic>> usersToAdd = usersWithEmail
@@ -225,8 +233,12 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               for (var volunteer in volunteersToAdd) {
                 await ref
                     .read(volunteersViewModelProvider.notifier)
-                    .sendVolunteerInvite(volunteer.firstName,
-                        volunteer.lastName, volunteer.email, shelterID);
+                    .sendVolunteerInvite(
+                      volunteer.firstName,
+                      volunteer.lastName,
+                      volunteer.email,
+                      shelterID,
+                    );
               }
 
               // Remove volunteers
@@ -258,9 +270,9 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               context.go('/volunteers');
             } catch (e) {
               // Handle any errors
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error during sync: $e')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Error during sync: $e')));
             }
           }
         } else {
@@ -281,9 +293,9 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
       }
     } catch (e) {
       // Handle exceptions
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error during sync: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error during sync: $e')));
     } finally {
       setState(() {
         isLoading = false; // Hide loading indicator
@@ -294,9 +306,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Better Impact Sync'),
-      ),
+      appBar: AppBar(title: const Text('Better Impact Sync')),
       body: Stack(
         children: [
           AbsorbPointer(
@@ -322,10 +332,12 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
                           ),
                           const SizedBox(height: 20),
                           const Text(
-                              "This will add new users who are volunteers in Better Impact and whose status is \"Accepted\" and remove users who are no longer in Better Impact or whose status is no longer \"Accepted\"."),
+                            "This will add new users who are volunteers in Better Impact and whose status is \"Accepted\" and remove users who are no longer in Better Impact or whose status is no longer \"Accepted\".",
+                          ),
                           const SizedBox(height: 20),
                           const Text(
-                              "Because of privacy laws, volunteers will not stay up to date automatically. You will have to come back here whenever you want to resync the volunteers. The username and password are NOT your normal login. They are generated by following the link below. Make sure to only select the \"Volunteer\" checkbox when creating the key. The username and password will not be saved anywhere and will only be used to sync your volunteers."),
+                            "Because of privacy laws, volunteers will not stay up to date automatically. You will have to come back here whenever you want to resync the volunteers. The username and password are NOT your normal login. They are generated by following the link below. Make sure to only select the \"Volunteer\" checkbox when creating the key. The username and password will not be saved anywhere and will only be used to sync your volunteers.",
+                          ),
                           const SizedBox(height: 20),
                           InkWell(
                             onTap: () async {
@@ -348,13 +360,15 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
                           const SizedBox(height: 20),
                           TextField(
                             controller: usernameController,
-                            decoration:
-                                const InputDecoration(labelText: 'Username'),
+                            decoration: const InputDecoration(
+                              labelText: 'Username',
+                            ),
                           ),
                           TextField(
                             controller: passwordController,
-                            decoration:
-                                const InputDecoration(labelText: 'Password'),
+                            decoration: const InputDecoration(
+                              labelText: 'Password',
+                            ),
                             obscureText: true,
                           ),
                           const SizedBox(height: 20),
@@ -370,10 +384,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               ),
             ),
           ),
-          if (isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
+          if (isLoading) const Center(child: CircularProgressIndicator()),
         ],
       ),
     );
@@ -398,8 +409,10 @@ class SyncDialog extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (usersToAdd.isNotEmpty) ...[
-                const Text('Add:',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text(
+                  'Add:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -408,7 +421,8 @@ class SyncDialog extends ConsumerWidget {
                     final user = usersToAdd[index];
                     return ListTile(
                       title: Text(
-                          '${user['first_name']} ${user['last_name']}: ${user['email_address']}'),
+                        '${user['first_name']} ${user['last_name']}: ${user['email_address']}',
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
@@ -422,8 +436,10 @@ class SyncDialog extends ConsumerWidget {
               ],
               if (usersToRemove.isNotEmpty) ...[
                 const SizedBox(height: 20),
-                const Text('Remove:',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text(
+                  'Remove:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -432,14 +448,16 @@ class SyncDialog extends ConsumerWidget {
                     final volunteer = usersToRemove[index];
                     return ListTile(
                       title: Text(
-                          '${volunteer.firstName} ${volunteer.lastName}: ${volunteer.email}'),
+                        '${volunteer.firstName} ${volunteer.lastName}: ${volunteer.email}',
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
-                          ref.read(usersToRemoveProvider.notifier).state =
-                              usersToRemove
-                                  .where((v) => v != volunteer)
-                                  .toList();
+                          ref
+                              .read(usersToRemoveProvider.notifier)
+                              .state = usersToRemove
+                              .where((v) => v != volunteer)
+                              .toList();
                         },
                       ),
                     );

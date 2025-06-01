@@ -16,9 +16,9 @@ class FirebaseTestOverrides {
 
   /// Get provider overrides for testing
   static List<Override> get overrides => [
-        firestoreProvider.overrideWithValue(_fakeFirestore),
-        firebaseAuthProvider.overrideWithValue(_mockFirebaseAuth),
-      ];
+    firestoreProvider.overrideWithValue(_fakeFirestore),
+    firebaseAuthProvider.overrideWithValue(_mockFirebaseAuth),
+  ];
 
   /// Access to the fake Firestore instance for test setup
   static FakeFirebaseFirestore get fakeFirestore => _fakeFirestore;

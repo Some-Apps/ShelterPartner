@@ -9,11 +9,7 @@ class ApiKeysPage extends ConsumerStatefulWidget {
   final String title;
   final String arrayKey;
 
-  const ApiKeysPage({
-    required this.title,
-    required this.arrayKey,
-    super.key,
-  });
+  const ApiKeysPage({required this.title, required this.arrayKey, super.key});
 
   @override
   _ApiKeysPageState createState() => _ApiKeysPageState();
@@ -36,20 +32,12 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
 
     return shelterAsyncValue.when(
       loading: () => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text(widget.title)),
+        body: const Center(child: CircularProgressIndicator()),
       ),
       error: (error, stack) => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Center(
-          child: Text('Error: $error'),
-        ),
+        appBar: AppBar(title: Text(widget.title)),
+        body: Center(child: Text('Error: $error')),
       ),
       data: (shelter) {
         if (_arrayItems.isEmpty) {
@@ -57,9 +45,7 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-          ),
+          appBar: AppBar(title: Text(widget.title)),
           body: GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
@@ -90,12 +76,17 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                           if (_formKey.currentState?.validate() ?? false) {
                             final itemName = _itemController.text;
                             final newKey = const Uuid().v4();
-                            final newApiKey =
-                                APIKey(name: itemName, key: newKey);
+                            final newApiKey = APIKey(
+                              name: itemName,
+                              key: newKey,
+                            );
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
                                 .addMapToShelterSettingsArray(
-                                    shelter!.id, "apiKeys", newApiKey.toMap());
+                                  shelter!.id,
+                                  "apiKeys",
+                                  newApiKey.toMap(),
+                                );
                             setState(() {
                               _arrayItems.add(newApiKey);
                             });
@@ -105,17 +96,22 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                               builder: (context) => AlertDialog(
                                 title: const Text('API Key Created'),
                                 content: Text(
-                                    'Your new API key is $newKey. Please copy and store it safely. You won\'t be able to access it after dismissing this alert.'),
+                                  'Your new API key is $newKey. Please copy and store it safely. You won\'t be able to access it after dismissing this alert.',
+                                ),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
                                       Clipboard.setData(
-                                          ClipboardData(text: newKey));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                        ClipboardData(text: newKey),
+                                      );
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                            content: Text(
-                                                'API key copied to clipboard')),
+                                          content: Text(
+                                            'API key copied to clipboard',
+                                          ),
+                                        ),
                                       );
                                       Navigator.of(context).pop();
                                     },
@@ -130,16 +126,21 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                       ),
                       const SizedBox(height: 20.0),
                       Text(
-                          "${shelter?.shelterSettings.requestCount}/${shelter?.shelterSettings.requestLimit} requests made in the last 30 days"),
+                        "${shelter?.shelterSettings.requestCount}/${shelter?.shelterSettings.requestLimit} requests made in the last 30 days",
+                      ),
                       const SizedBox(height: 20.0),
                       GestureDetector(
                         onTap: () {
-                          Clipboard.setData(ClipboardData(
+                          Clipboard.setData(
+                            ClipboardData(
                               text:
-                                  'https://api-222422545919.us-central1.run.app?shelterId=${shelter!.id}&apiKey=YOUR-API-KEY-HERE&species=cats'));
+                                  'https://api-222422545919.us-central1.run.app?shelterId=${shelter!.id}&apiKey=YOUR-API-KEY-HERE&species=cats',
+                            ),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Copied to clipboard')),
+                              content: Text('Copied to clipboard'),
+                            ),
                           );
                         },
                         child: const Text(
@@ -152,12 +153,16 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Clipboard.setData(ClipboardData(
+                          Clipboard.setData(
+                            ClipboardData(
                               text:
-                                  'https://api-222422545919.us-central1.run.app?shelterId=${shelter!.id}&apiKey=YOUR-API-KEY-HERE&species=dogs'));
+                                  'https://api-222422545919.us-central1.run.app?shelterId=${shelter!.id}&apiKey=YOUR-API-KEY-HERE&species=dogs',
+                            ),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Copied to clipboard')),
+                              content: Text('Copied to clipboard'),
+                            ),
                           );
                         },
                         child: const Text(
@@ -191,12 +196,17 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                           ref
                               .read(shelterSettingsViewModelProvider.notifier)
                               .reorderMapArrayInShelterSettings(
-                                  shelter!.id, widget.arrayKey, arrayItemsMap);
+                                shelter!.id,
+                                widget.arrayKey,
+                                arrayItemsMap,
+                              );
                         },
                         children: [
-                          for (int index = 0;
-                              index < _arrayItems.length;
-                              index++)
+                          for (
+                            int index = 0;
+                            index < _arrayItems.length;
+                            index++
+                          )
                             Dismissible(
                               key: ValueKey(_arrayItems[index]),
                               direction: DismissDirection.endToStart,
@@ -206,8 +216,9 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                                   _arrayItems.removeAt(index);
                                 });
                                 ref
-                                    .read(shelterSettingsViewModelProvider
-                                        .notifier)
+                                    .read(
+                                      shelterSettingsViewModelProvider.notifier,
+                                    )
                                     .removeMapFromShelterSettingsArray(
                                       shelter!.id,
                                       widget.arrayKey,
@@ -218,7 +229,8 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                                 color: Colors.red,
                                 alignment: Alignment.centerRight,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0),
+                                  horizontal: 20.0,
+                                ),
                                 child: const Icon(
                                   Icons.delete,
                                   color: Colors.white,

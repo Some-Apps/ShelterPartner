@@ -90,7 +90,8 @@ class AccountSettings {
       requireEarlyPutBackReason:
           requireEarlyPutBackReason ?? this.requireEarlyPutBackReason,
       requireName: requireName ?? this.requireName,
-      createLogsWhenUnderMinimumDuration: createLogsWhenUnderMinimumDuration ??
+      createLogsWhenUnderMinimumDuration:
+          createLogsWhenUnderMinimumDuration ??
           this.createLogsWhenUnderMinimumDuration,
       showCustomForm: showCustomForm ?? this.showCustomForm,
       customFormURL: customFormURL ?? this.customFormURL,
@@ -148,10 +149,7 @@ class AccountSettings {
         logicalOperator = LogicalOperator.or;
       }
 
-      return FilterGroup(
-        logicalOperator: logicalOperator,
-        elements: elements,
-      );
+      return FilterGroup(logicalOperator: logicalOperator, elements: elements);
     }
 
     FilterElement? enrichmentFilter;

@@ -93,8 +93,8 @@ class Animal {
       intakeDate: data['intakeDate'],
       photos: (data['photos'] is List)
           ? (data['photos'] as List)
-              .map((photo) => Photo.fromMap(photo))
-              .toList()
+                .map((photo) => Photo.fromMap(photo))
+                .toList()
           : [],
       notes: (data['notes'] is List)
           ? (data['notes'] as List).map((note) => Note.fromMap(note)).toList()

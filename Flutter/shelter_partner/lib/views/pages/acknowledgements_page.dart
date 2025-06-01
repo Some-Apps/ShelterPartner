@@ -6,9 +6,7 @@ class AcknowledgementsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Acknowledgements'),
-      ),
+      appBar: AppBar(title: const Text('Acknowledgements')),
       body: SingleChildScrollView(
         child: Center(
           child: ConstrainedBox(
@@ -26,7 +24,9 @@ class AcknowledgementsPage extends StatelessWidget {
                           child: Text(
                             'GitHub',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         // Add your GitHub ListTiles here
@@ -34,11 +34,9 @@ class AcknowledgementsPage extends StatelessWidget {
                         ListTile(title: Text("Shivam Kumar")),
                         ListTile(title: Text("Renee Jones")),
                         ListTile(title: Text("Sehaj Bansal")),
-                        ListTile(
-                          title: Text("Kate O'Connor"),
-                        ),
+                        ListTile(title: Text("Kate O'Connor")),
                         ListTile(title: Text("Jacob Jones")),
-                        ListTile(title: Text("Ian Fife"))
+                        ListTile(title: Text("Ian Fife")),
                       ],
                     ),
                   ),
@@ -52,7 +50,9 @@ class AcknowledgementsPage extends StatelessWidget {
                           child: Text(
                             'Donations',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         ListTile(title: Text("Ben Jones")),
@@ -71,19 +71,23 @@ class AcknowledgementsPage extends StatelessWidget {
                           child: Text(
                             'Other',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         // Add your Other ListTiles here
                         ListTile(
                           title: Text("The Humane Society of Marathon County"),
                           subtitle: Text(
-                              "First shelter to use the app. Was willing to try something new. Helped spread the word. Several volunteers helped shoot a commercial."),
+                            "First shelter to use the app. Was willing to try something new. Helped spread the word. Several volunteers helped shoot a commercial.",
+                          ),
                         ),
                         ListTile(
                           title: Text("Lisa Leittermann"),
                           subtitle: Text(
-                              "Encouraged me to make the app available for other shelters."),
+                            "Encouraged me to make the app available for other shelters.",
+                          ),
                         ),
                         // ListTile(
                         //   title: Text("John Russell Seal"),
@@ -93,7 +97,8 @@ class AcknowledgementsPage extends StatelessWidget {
                         ListTile(
                           title: Text("Early Adopters"),
                           subtitle: Text(
-                              "A lot of shelters were willing to try the app when it was new and unproven and helped guide the direction of the app."),
+                            "A lot of shelters were willing to try the app when it was new and unproven and helped guide the direction of the app.",
+                          ),
                         ),
                       ],
                     ),

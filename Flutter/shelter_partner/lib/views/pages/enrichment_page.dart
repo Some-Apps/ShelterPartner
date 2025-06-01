@@ -65,10 +65,12 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   };
 
   // PagingControllers for infinite scrolling
-  final PagingController<int, dynamic> _dogsPagingController =
-      PagingController(firstPageKey: 0);
-  final PagingController<int, dynamic> _catsPagingController =
-      PagingController(firstPageKey: 0);
+  final PagingController<int, dynamic> _dogsPagingController = PagingController(
+    firstPageKey: 0,
+  );
+  final PagingController<int, dynamic> _catsPagingController = PagingController(
+    firstPageKey: 0,
+  );
 
   static const int _pageSize = 500;
 
@@ -173,7 +175,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   }
 
   Map<String, List<Animal>> _groupAnimalsByCategory(
-      List<Animal> animals, String category) {
+    List<Animal> animals,
+    String category,
+  ) {
     SplayTreeMap<String, List<Animal>> groupedAnimals = SplayTreeMap();
 
     for (var animal in animals) {
@@ -255,8 +259,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   }
 
   Widget _buildAnimalGridView(String animalType, String category) {
-    final pagingController =
-        animalType == 'dogs' ? _dogsPagingController : _catsPagingController;
+    final pagingController = animalType == 'dogs'
+        ? _dogsPagingController
+        : _catsPagingController;
 
     final animalsMap = ref.watch(enrichmentViewModelProvider);
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
@@ -270,12 +275,12 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
           builder: (context, constraints) {
             final double minWidth =
                 accountSettings.value!.accountSettings!.simplisticMode
-                    ? 600.0
-                    : 625.0;
+                ? 600.0
+                : 625.0;
             final double itemHeight =
                 accountSettings.value!.accountSettings!.simplisticMode
-                    ? 160.0
-                    : 235.0;
+                ? 160.0
+                : 235.0;
             return PagedGridView<int, dynamic>(
               pagingController: pagingController,
               scrollController: _scrollController,
@@ -284,13 +289,16 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                 itemBuilder: (context, item, index) {
                   if (item is Animal) {
                     if (accountSettings
-                            .value!.accountSettings?.simplisticMode ??
+                            .value!
+                            .accountSettings
+                            ?.simplisticMode ??
                         true) {
                       return SimplisticAnimalCardView(animal: item);
                     } else {
                       return AnimalCardView(
-                          animal: item,
-                          maxLocationTiers: selectedLocationTierCount);
+                        animal: item,
+                        maxLocationTiers: selectedLocationTierCount,
+                      );
                     }
                   } else if (item is Ad) {
                     return CustomAffiliateAd(ad: item);
@@ -319,8 +327,10 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       List<Animal> allAnimals = List.from(animalsMap[animalType]!);
       List<Animal> filteredAnimals = _filterAnimals(allAnimals);
 
-      Map<String, List<Animal>> groupedAnimals =
-          _groupAnimalsByCategory(filteredAnimals, category);
+      Map<String, List<Animal>> groupedAnimals = _groupAnimalsByCategory(
+        filteredAnimals,
+        category,
+      );
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -352,7 +362,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                         thickness: 2,
                         color: Color.fromARGB(222, 158, 158, 158),
                       ),
-                      const SizedBox(height: 3)
+                      const SizedBox(height: 3),
                     ],
                   ),
                 ),
@@ -364,12 +374,12 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent:
                         accountSettings.value!.accountSettings!.simplisticMode
-                            ? 600.0
-                            : 625.0,
+                        ? 600.0
+                        : 625.0,
                     mainAxisExtent:
                         accountSettings.value!.accountSettings!.simplisticMode
-                            ? 160.0
-                            : 235.0,
+                        ? 160.0
+                        : 235.0,
                     crossAxisSpacing: 8.0,
                     mainAxisSpacing: 8.0,
                   ),
@@ -378,12 +388,15 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                     Animal animal = sectionAnimals[itemIndex];
 
                     return accountSettings
-                                .value!.accountSettings?.simplisticMode ??
+                                .value!
+                                .accountSettings
+                                ?.simplisticMode ??
                             true
                         ? SimplisticAnimalCardView(animal: animal)
                         : AnimalCardView(
                             animal: animal,
-                            maxLocationTiers: selectedLocationTierCount);
+                            maxLocationTiers: selectedLocationTierCount,
+                          );
                   },
                 ),
               ],
@@ -405,7 +418,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
     selectedLocationTierCount =
         accountSettings.value?.accountSettings?.locationTierCount ??
-            selectedLocationTierCount;
+        selectedLocationTierCount;
 
     ref.listen<AsyncValue<List<Ad>>>(adsProvider, (previous, next) {
       next.when(
@@ -423,8 +436,10 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
       return const Center(child: CircularProgressIndicator());
     }
 
-    ref.listen<Map<String, List<Animal>>>(enrichmentViewModelProvider,
-        (previous, next) {
+    ref.listen<Map<String, List<Animal>>>(enrichmentViewModelProvider, (
+      previous,
+      next,
+    ) {
       // Refresh the paging controllers when the data changes
       _dogsPagingController.refresh();
       _catsPagingController.refresh();
@@ -434,10 +449,11 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     ref.listen<bool>(noteAddedProvider, (previous, next) {
       if (next == true) {
         Fluttertoast.showToast(
-            msg: 'Note added',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-            backgroundColor: Colors.green);
+          msg: 'Note added',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.green,
+        );
         // Reset the provider
         ref.read(noteAddedProvider.notifier).state = false;
       }
@@ -447,10 +463,11 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     ref.listen<bool>(logAddedProvider, (previous, next) {
       if (next == true) {
         Fluttertoast.showToast(
-            msg: 'Log added',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-            backgroundColor: Colors.green);
+          msg: 'Log added',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.green,
+        );
         // Reset the provider
         ref.read(logAddedProvider.notifier).state = false;
       }
@@ -479,7 +496,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     return SafeArea(
       child: Scaffold(
         // backgroundColor: Colors.grey[200],
-
         body: GestureDetector(
           onTap: () {
             FocusScope.of(context).unfocus();
@@ -492,20 +508,26 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 8.0),
+                      horizontal: 8.0,
+                      vertical: 8.0,
+                    ),
                     child: Column(
                       children: [
                         SwitchToggleView(
                           title: "Simplistic Mode",
-                          value: accountSettings
-                                  .value?.accountSettings?.simplisticMode ??
+                          value:
+                              accountSettings
+                                  .value
+                                  ?.accountSettings
+                                  ?.simplisticMode ??
                               true,
                           onChanged: (bool newValue) {
                             final user = ref.read(appUserProvider);
                             if (user != null) {
                               ref
                                   .read(
-                                      accountSettingsViewModelProvider.notifier)
+                                    accountSettingsViewModelProvider.notifier,
+                                  )
                                   .toggleAttribute(user.id, "simplisticMode");
                             }
                           },
@@ -549,11 +571,12 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                               },
                               items: attributeDisplayNames.keys
                                   .map<DropdownMenuItem<String>>((String key) {
-                                return DropdownMenuItem<String>(
-                                  value: key,
-                                  child: Text(key),
-                                );
-                              }).toList(),
+                                    return DropdownMenuItem<String>(
+                                      value: key,
+                                      child: Text(key),
+                                    );
+                                  })
+                                  .toList(),
                             ),
                           ],
                         ),
@@ -563,7 +586,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                             const Text(
                               'No. of location tiers shown:',
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
@@ -571,12 +596,15 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                 decoration: const BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                        color: Colors.grey, width: 1.5),
+                                      color: Colors.grey,
+                                      width: 1.5,
+                                    ),
                                   ),
                                 ),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<int>(
-                                    value: accountSettings
+                                    value:
+                                        accountSettings
                                             .value
                                             ?.accountSettings
                                             ?.locationTierCount ??
@@ -587,10 +615,13 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                       if (newValue != null && user != null) {
                                         await ref
                                             .read(
-                                                accountSettingsViewModelProvider
-                                                    .notifier)
+                                              accountSettingsViewModelProvider
+                                                  .notifier,
+                                            )
                                             .updateLocationTierCount(
-                                                user.id, newValue);
+                                              user.id,
+                                              newValue,
+                                            );
                                         setState(() {
                                           selectedLocationTierCount = newValue;
                                           _dogsPagingController.refresh();
@@ -599,16 +630,21 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                       }
                                     },
                                     style: const TextStyle(
-                                        fontSize: 16, color: Colors.black),
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    ),
                                     items: locationTierOptions
-                                        .map<DropdownMenuItem<int>>(
-                                            (int value) {
-                                      return DropdownMenuItem<int>(
-                                        value: value,
-                                        child: Text(
-                                            'Last $value tier${value > 1 ? 's' : ''}'),
-                                      );
-                                    }).toList(),
+                                        .map<DropdownMenuItem<int>>((
+                                          int value,
+                                        ) {
+                                          return DropdownMenuItem<int>(
+                                            value: value,
+                                            child: Text(
+                                              'Last $value tier${value > 1 ? 's' : ''}',
+                                            ),
+                                          );
+                                        })
+                                        .toList(),
                                   ),
                                 ),
                               ),
@@ -619,21 +655,28 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                         const SizedBox(height: 8),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 8.0),
+                            horizontal: 8.0,
+                            vertical: 8.0,
+                          ),
                           child: Row(
                             children: [
                               const Text(
                                 'Group by :',
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Container(
                                   decoration: const BoxDecoration(
                                     border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.grey, width: 1.5)),
+                                      bottom: BorderSide(
+                                        color: Colors.grey,
+                                        width: 1.5,
+                                      ),
+                                    ),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
@@ -645,21 +688,25 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                                         });
                                       },
                                       style: const TextStyle(
-                                          fontSize: 16, color: Colors.black),
-                                      items: [
-                                        'None',
-                                        'Adoption Category',
-                                        'Behavior Category',
-                                        // 'Location Category',
-                                        'Medical Category',
-                                        'Volunteer Category'
-                                      ].map<DropdownMenuItem<String>>(
-                                          (String category) {
-                                        return DropdownMenuItem<String>(
-                                          value: category,
-                                          child: Text(category),
-                                        );
-                                      }).toList(),
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                      ),
+                                      items:
+                                          [
+                                            'None',
+                                            'Adoption Category',
+                                            'Behavior Category',
+                                            // 'Location Category',
+                                            'Medical Category',
+                                            'Volunteer Category',
+                                          ].map<DropdownMenuItem<String>>((
+                                            String category,
+                                          ) {
+                                            return DropdownMenuItem<String>(
+                                              value: category,
+                                              child: Text(category),
+                                            );
+                                          }).toList(),
                                     ),
                                   ),
                                 ),
@@ -686,12 +733,15 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                           ElevatedButton(
                             onPressed: () {
                               // Determine the animal type based on available data
-                              final animalsMap =
-                                  ref.read(enrichmentViewModelProvider);
+                              final animalsMap = ref.read(
+                                enrichmentViewModelProvider,
+                              );
 
                               final availableAnimalTypes = ['dogs', 'cats']
-                                  .where((type) =>
-                                      (animalsMap[type]?.isNotEmpty ?? false))
+                                  .where(
+                                    (type) =>
+                                        (animalsMap[type]?.isNotEmpty ?? false),
+                                  )
                                   .toList();
 
                               if (availableAnimalTypes.isEmpty) {
@@ -705,12 +755,15 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                               }
 
                               // Safely determine the animal type
-                              final animalType = availableAnimalTypes[
-                                  availableAnimalTypes.length == 1
+                              final animalType =
+                                  availableAnimalTypes[availableAnimalTypes
+                                              .length ==
+                                          1
                                       ? 0
                                       : _tabController.index];
-                              final animals =
-                                  _filterAnimals(animalsMap[animalType] ?? []);
+                              final animals = _filterAnimals(
+                                animalsMap[animalType] ?? [],
+                              );
 
                               if (animals.isEmpty) {
                                 Fluttertoast.showToast(
@@ -752,30 +805,38 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                             },
                             child: Consumer(
                               builder: (context, watch, child) {
-                                final animalsMap =
-                                    ref.watch(enrichmentViewModelProvider);
+                                final animalsMap = ref.watch(
+                                  enrichmentViewModelProvider,
+                                );
 
                                 final availableAnimalTypes = ['dogs', 'cats']
-                                    .where((type) =>
-                                        (animalsMap[type]?.isNotEmpty ?? false))
+                                    .where(
+                                      (type) =>
+                                          (animalsMap[type]?.isNotEmpty ??
+                                          false),
+                                    )
                                     .toList();
 
                                 if (availableAnimalTypes.isEmpty) {
                                   return const Text('No animals available');
                                 }
 
-                                final animalType = availableAnimalTypes[
-                                    availableAnimalTypes.length == 1
+                                final animalType =
+                                    availableAnimalTypes[availableAnimalTypes
+                                                .length ==
+                                            1
                                         ? 0
                                         : _tabController.index];
                                 final animals = _filterAnimals(
-                                    animalsMap[animalType] ?? []);
+                                  animalsMap[animalType] ?? [],
+                                );
 
                                 return Text(
                                   animals.isNotEmpty &&
                                           animals
-                                                  .where((animal) =>
-                                                      animal.inKennel)
+                                                  .where(
+                                                    (animal) => animal.inKennel,
+                                                  )
                                                   .length >
                                               (animals.length / 2)
                                       ? "Take Out All Visible ${animalType == 'dogs' ? 'Dogs' : 'Cats'}"
@@ -844,9 +905,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
               // Show a message if there are no animals
               else
                 const Expanded(
-                  child: Center(
-                    child: Text('No animals available'),
-                  ),
+                  child: Center(child: Text('No animals available')),
                 ),
             ],
           ),
@@ -859,10 +918,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
 class CustomAffiliateAd extends StatefulWidget {
   final Ad ad;
 
-  const CustomAffiliateAd({
-    super.key,
-    required this.ad,
-  });
+  const CustomAffiliateAd({super.key, required this.ad});
 
   @override
   _CustomAffiliateAdState createState() => _CustomAffiliateAdState();
@@ -884,7 +940,7 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
     _imageUrls = [
       ...widget.ad.imageUrls,
       ...widget.ad.imageUrls,
-      ...widget.ad.imageUrls
+      ...widget.ad.imageUrls,
     ];
 
     // Set the initial scroll position to the start of the second set of images
@@ -896,23 +952,26 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
     });
 
     // Set up the AnimationController
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 10), // Adjust the duration as needed
-    )..addListener(() {
-        if (_scrollController.hasClients) {
-          double maxScrollExtent = _scrollController.position.maxScrollExtent;
-          double currentScroll = _scrollController.position.pixels;
-          double delta = _scrollSpeed; // Adjust scroll speed here
+    _animationController =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(
+            seconds: 10,
+          ), // Adjust the duration as needed
+        )..addListener(() {
+          if (_scrollController.hasClients) {
+            double maxScrollExtent = _scrollController.position.maxScrollExtent;
+            double currentScroll = _scrollController.position.pixels;
+            double delta = _scrollSpeed; // Adjust scroll speed here
 
-          if (currentScroll + delta >= maxScrollExtent) {
-            double resetPosition = maxScrollExtent / 3;
-            _scrollController.jumpTo(resetPosition);
-          } else {
-            _scrollController.jumpTo(currentScroll + delta);
+            if (currentScroll + delta >= maxScrollExtent) {
+              double resetPosition = maxScrollExtent / 3;
+              _scrollController.jumpTo(resetPosition);
+            } else {
+              _scrollController.jumpTo(currentScroll + delta);
+            }
           }
-        }
-      });
+        });
 
     // Repeat the animation indefinitely
     _animationController.repeat();
@@ -992,7 +1051,9 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
                 child: Text(
                   widget.ad.productName,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               // Buy Now button
@@ -1016,8 +1077,13 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
 
 final adsProvider = StreamProvider<List<Ad>>((ref) {
   final firestore = ref.watch(firestoreProvider);
-  return firestore.collection('ads').snapshots().map((snapshot) =>
-      snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList());
+  return firestore
+      .collection('ads')
+      .snapshots()
+      .map(
+        (snapshot) =>
+            snapshot.docs.map((doc) => Ad.fromMap(doc.data(), doc.id)).toList(),
+      );
 });
 
 final noteAddedProvider = StateProvider<bool>((ref) => false);

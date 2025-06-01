@@ -32,30 +32,21 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
 
     return shelterAsyncValue.when(
       loading: () => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text(widget.title)),
+        body: const Center(child: CircularProgressIndicator()),
       ),
       error: (error, stack) => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Center(
-          child: Text('Error: $error'),
-        ),
+        appBar: AppBar(title: Text(widget.title)),
+        body: Center(child: Text('Error: $error')),
       ),
       // ...existing code...
       data: (shelter) {
-        final List arrayItems =
-            shelter!.shelterSettings.getArray(widget.arrayKey);
+        final List arrayItems = shelter!.shelterSettings.getArray(
+          widget.arrayKey,
+        );
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-          ),
+          appBar: AppBar(title: Text(widget.title)),
           body: GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
@@ -89,9 +80,13 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                               final itemName = _itemController.text;
                               ref
                                   .read(
-                                      shelterSettingsViewModelProvider.notifier)
+                                    shelterSettingsViewModelProvider.notifier,
+                                  )
                                   .addStringToShelterSettingsArray(
-                                      shelter.id, widget.arrayKey, itemName);
+                                    shelter.id,
+                                    widget.arrayKey,
+                                    itemName,
+                                  );
                               _itemController.clear();
                             }
                           },
@@ -114,8 +109,11 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                         });
                         ref
                             .read(shelterSettingsViewModelProvider.notifier)
-                            .reorderShelterSettingsArray(shelter.id,
-                                widget.arrayKey, arrayItems.cast<String>());
+                            .reorderShelterSettingsArray(
+                              shelter.id,
+                              widget.arrayKey,
+                              arrayItems.cast<String>(),
+                            );
                       },
                       children: [
                         for (int index = 0; index < arrayItems.length; index++)
@@ -129,15 +127,20 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                               });
                               ref
                                   .read(
-                                      shelterSettingsViewModelProvider.notifier)
+                                    shelterSettingsViewModelProvider.notifier,
+                                  )
                                   .removeStringFromShelterSettingsArray(
-                                      shelter.id, widget.arrayKey, removedItem);
+                                    shelter.id,
+                                    widget.arrayKey,
+                                    removedItem,
+                                  );
                             },
                             background: Container(
                               color: Colors.red,
                               alignment: Alignment.centerRight,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.white,
@@ -145,7 +148,9 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 2.0, horizontal: 16.0),
+                                vertical: 2.0,
+                                horizontal: 16.0,
+                              ),
                               child: Text(
                                 arrayItems[index],
                                 style: Theme.of(context).textTheme.bodyLarge,

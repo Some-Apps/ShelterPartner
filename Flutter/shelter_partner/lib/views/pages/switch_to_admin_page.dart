@@ -14,7 +14,10 @@ class SwitchToAdminPage extends ConsumerWidget {
     final TextEditingController passwordController = TextEditingController();
 
     Future<void> switchToAdmin(
-        BuildContext context, WidgetRef ref, String password) async {
+      BuildContext context,
+      WidgetRef ref,
+      String password,
+    ) async {
       try {
         // Reauthenticate the user with the provided password
         final user = FirebaseAuth.instance.currentUser;
@@ -44,14 +47,14 @@ class SwitchToAdminPage extends ConsumerWidget {
         }
 
         // Provide feedback or navigation if needed
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Switched to Admin mode')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Switched to Admin mode')));
       } catch (e) {
         // Handle error (e.g., show a snackbar with an error message)
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Incorrect password')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Incorrect password')));
       }
     }
 

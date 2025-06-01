@@ -31,16 +31,17 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
     // Add welcome message
     if (widget.animals.isNotEmpty) {
       final species = widget.animals.first.species;
-      _messages.add(ChatMessage(
-        text:
-            'Hello! I can help you learn about our ${species}s. How can I assist you today?',
-        isUser: false,
-      ));
+      _messages.add(
+        ChatMessage(
+          text:
+              'Hello! I can help you learn about our ${species}s. How can I assist you today?',
+          isUser: false,
+        ),
+      );
     } else {
-      _messages.add(ChatMessage(
-        text: 'Hello! How can I assist you today?',
-        isUser: false,
-      ));
+      _messages.add(
+        ChatMessage(text: 'Hello! How can I assist you today?', isUser: false),
+      );
     }
   }
 
@@ -68,10 +69,7 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
     _messageController.clear();
 
     setState(() {
-      _messages.add(ChatMessage(
-        text: message,
-        isUser: true,
-      ));
+      _messages.add(ChatMessage(text: message, isUser: true));
       _isLoading = true;
       _isError = false;
       _errorMessage = null;
@@ -83,23 +81,20 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
       // Check if we've reached the conversation limit
       if (_conversationTokensUsed >= _conversationTokenLimit) {
         throw Exception(
-            'Conversation limit reached. Please start a new conversation.');
+          'Conversation limit reached. Please start a new conversation.',
+        );
       }
 
-      final response = await ref.read(chatServiceProvider).sendMessage(
-            message,
-            widget.animals,
-          );
+      final response = await ref
+          .read(chatServiceProvider)
+          .sendMessage(message, widget.animals);
 
       // Update conversation token usage (rough estimate)
       final estimatedTokens = response.length ~/ 4;
       _conversationTokensUsed += estimatedTokens;
 
       setState(() {
-        _messages.add(ChatMessage(
-          text: response,
-          isUser: false,
-        ));
+        _messages.add(ChatMessage(text: response, isUser: false));
         _isLoading = false;
       });
     } catch (e) {
@@ -107,11 +102,13 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
         _errorMessage = e.toString().replaceAll('Exception: ', '');
         _isError = true;
         _isLoading = false;
-        _messages.add(ChatMessage(
-          text: 'Error: $_errorMessage',
-          isUser: false,
-          isError: true,
-        ));
+        _messages.add(
+          ChatMessage(
+            text: 'Error: $_errorMessage',
+            isUser: false,
+            isError: true,
+          ),
+        );
       });
     }
 
@@ -190,9 +187,11 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
                       hintText: 'Type a message...',
                       border: OutlineInputBorder(),
                     ),
-                    enabled: !_isLoading &&
+                    enabled:
+                        !_isLoading &&
                         _conversationTokensUsed < _conversationTokenLimit,
-                    onSubmitted: (_) => _isLoading ||
+                    onSubmitted: (_) =>
+                        _isLoading ||
                             _conversationTokensUsed >= _conversationTokenLimit
                         ? null
                         : _sendMessage(),
@@ -200,7 +199,8 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
                 ),
                 const SizedBox(width: 8.0),
                 IconButton(
-                  onPressed: _isLoading ||
+                  onPressed:
+                      _isLoading ||
                           _conversationTokensUsed >= _conversationTokenLimit
                       ? null
                       : _sendMessage,
@@ -228,9 +228,7 @@ class _ChatInterfaceState extends ConsumerState<ChatInterface> {
         ),
         child: Text(
           message.text,
-          style: TextStyle(
-            color: message.isError ? Colors.red : Colors.black,
-          ),
+          style: TextStyle(color: message.isError ? Colors.red : Colors.black),
         ),
       ),
     );
@@ -242,9 +240,5 @@ class ChatMessage {
   final bool isUser;
   final bool isError;
 
-  ChatMessage({
-    required this.text,
-    required this.isUser,
-    this.isError = false,
-  });
+  ChatMessage({required this.text, required this.isUser, this.isError = false});
 }

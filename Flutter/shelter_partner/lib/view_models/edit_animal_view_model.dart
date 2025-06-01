@@ -12,10 +12,15 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
   final Ref ref;
 
   EditAnimalViewModel(this._repository, this.ref, Animal animal)
-      : super(animal);
+    : super(animal);
 
-  Future<void> deleteItemOptimistically(String shelterId, String animalType,
-      String animalId, String field, String itemId) async {
+  Future<void> deleteItemOptimistically(
+    String shelterId,
+    String animalType,
+    String animalId,
+    String field,
+    String itemId,
+  ) async {
     dynamic itemToDelete;
 
     // Capture the item to delete before updating the state
@@ -32,8 +37,9 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
         state = state.copyWith(notes: updatedNotes);
       }
     } else if (field == 'photos') {
-      itemToDelete =
-          state.photos?.firstWhereOrNull((photo) => photo.id == itemId);
+      itemToDelete = state.photos?.firstWhereOrNull(
+        (photo) => photo.id == itemId,
+      );
       if (itemToDelete != null) {
         List<Photo> updatedPhotos = List.from(state.photos ?? [])
           ..remove(itemToDelete);
@@ -58,13 +64,22 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
 
     try {
       await _repository.deleteItem(
-          shelterId, animalType, animalId, field, itemId);
+        shelterId,
+        animalType,
+        animalId,
+        field,
+        itemId,
+      );
 
       // If the item being deleted is a photo, delete it from Firebase Storage
       if (field == 'photos') {
         final photo = itemToDelete as Photo;
         await _repository.deletePhotoFromStorage(
-            shelterId, animalId, photo, photo.id);
+          shelterId,
+          animalId,
+          photo,
+          photo.id,
+        );
       }
     } catch (e) {
       // Rollback if deletion fails
@@ -88,9 +103,10 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
 }
 
 final editAnimalViewModelProvider =
-    StateNotifierProvider.family<EditAnimalViewModel, Animal, Animal>(
-  (ref, animal) {
-    final repository = ref.watch(editAnimalRepositoryProvider);
-    return EditAnimalViewModel(repository, ref, animal);
-  },
-);
+    StateNotifierProvider.family<EditAnimalViewModel, Animal, Animal>((
+      ref,
+      animal,
+    ) {
+      final repository = ref.watch(editAnimalRepositoryProvider);
+      return EditAnimalViewModel(repository, ref, animal);
+    });

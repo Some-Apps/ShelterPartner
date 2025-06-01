@@ -25,7 +25,8 @@ class _TextFieldViewState extends State<TextFieldView> {
   void initState() {
     super.initState();
     _controller = TextEditingController(
-        text: widget.value); // Initialize the controller with the initial value
+      text: widget.value,
+    ); // Initialize the controller with the initial value
   }
 
   @override
@@ -58,8 +59,9 @@ class _TextFieldViewState extends State<TextFieldView> {
             const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () {
-                widget.onSaved(_controller
-                    .text); // Call the callback with the current value
+                widget.onSaved(
+                  _controller.text,
+                ); // Call the callback with the current value
                 FocusScope.of(context).unfocus(); // Unfocus the text field
               },
               child: const Text('Save'),

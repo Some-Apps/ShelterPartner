@@ -13,7 +13,7 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class VolunteersRepository {
   final FirebaseFirestore _firestore;
   VolunteersRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   Stream<Shelter> fetchShelterWithVolunteers(String shelterID) {
     final shelterDocRef = _firestore.collection('shelters').doc(shelterID);
@@ -32,11 +32,11 @@ class VolunteersRepository {
           .where('shelterID', isEqualTo: shelterID)
           .snapshots()
           .map((querySnapshot) {
-        print('Volunteers: ${querySnapshot.docs.length}');
-        return querySnapshot.docs
-            .map((doc) => Volunteer.fromDocument(doc))
-            .toList();
-      });
+            print('Volunteers: ${querySnapshot.docs.length}');
+            return querySnapshot.docs
+                .map((doc) => Volunteer.fromDocument(doc))
+                .toList();
+          });
 
       // Combine the shelter and volunteers
       return volunteersStream.map((volunteers) {
@@ -72,12 +72,14 @@ class VolunteersRepository {
 
     // Ensure the currentValue exists and is a boolean before toggling
     if (currentValue != null && currentValue[lastField] is bool) {
-      return docRef.update({
-        'volunteerSettings.${fieldParts.join('.')}':
-            !currentValue[lastField], // Toggle the boolean value
-      }).catchError((error) {
-        throw Exception("Failed to toggle: $error");
-      });
+      return docRef
+          .update({
+            'volunteerSettings.${fieldParts.join('.')}':
+                !currentValue[lastField], // Toggle the boolean value
+          })
+          .catchError((error) {
+            throw Exception("Failed to toggle: $error");
+          });
     } else {
       throw Exception("Field is not a boolean or doesn't exist");
     }
@@ -85,30 +87,45 @@ class VolunteersRepository {
 
   // Method to modify a specific string attribute within volunteerSettings
   Future<void> modifyVolunteerSettingString(
-      String shelterID, String field, String newValue) async {
+    String shelterID,
+    String field,
+    String newValue,
+  ) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'volunteerSettings.$field': newValue, // Update the string value
-    }).catchError((error) {
-      throw Exception("Failed to modify: $error");
-    });
+    return docRef
+        .update({
+          'volunteerSettings.$field': newValue, // Update the string value
+        })
+        .catchError((error) {
+          throw Exception("Failed to modify: $error");
+        });
   }
 
   // Method to increment a specific field within volunteerSettings attribute
   Future<void> changeGeofence(
-      String shelterID, GeoPoint locaiton, double radius, double zoom) async {
+    String shelterID,
+    GeoPoint locaiton,
+    double radius,
+    double zoom,
+  ) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'volunteerSettings.geofence.location': locaiton,
-      'volunteerSettings.geofence.radius': radius,
-      'volunteerSettings.geofence.zoom': zoom,
-    }).catchError((error) {
-      throw Exception("Failed to increment: $error");
-    });
+    return docRef
+        .update({
+          'volunteerSettings.geofence.location': locaiton,
+          'volunteerSettings.geofence.radius': radius,
+          'volunteerSettings.geofence.zoom': zoom,
+        })
+        .catchError((error) {
+          throw Exception("Failed to increment: $error");
+        });
   }
 
   Future<void> sendVolunteerInvite(
-      String firstName, String lastName, String email, String shelterID) async {
+    String firstName,
+    String lastName,
+    String email,
+    String shelterID,
+  ) async {
     // Generate a random password
     String password = _generateRandomPassword();
 
@@ -118,7 +135,7 @@ class VolunteersRepository {
       'lastName': lastName,
       'email': email,
       'password': password,
-      'shelterID': shelterID
+      'shelterID': shelterID,
     };
 
     try {
@@ -224,30 +241,38 @@ class VolunteersRepository {
     const length = 6;
     const chars = 'abcdefghijklmnopqrstuvwxyz';
     final rand = Random.secure();
-    return List.generate(length, (_) => chars[rand.nextInt(chars.length)])
-        .join();
+    return List.generate(
+      length,
+      (_) => chars[rand.nextInt(chars.length)],
+    ).join();
   }
 
   // Method to increment a specific field within volunteerSettings attribute
   Future<void> incrementVolunteerSetting(String shelterID, String field) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'volunteerSettings.$field':
-          FieldValue.increment(1), // Access nested volunteerSettings field
-    }).catchError((error) {
-      throw Exception("Failed to increment: $error");
-    });
+    return docRef
+        .update({
+          'volunteerSettings.$field': FieldValue.increment(
+            1,
+          ), // Access nested volunteerSettings field
+        })
+        .catchError((error) {
+          throw Exception("Failed to increment: $error");
+        });
   }
 
   // Method to decrement a specific field within volunteerSettings attribute
   Future<void> decrementVolunteerSetting(String shelterID, String field) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
-    return docRef.update({
-      'volunteerSettings.$field':
-          FieldValue.increment(-1), // Access nested volunteerSettings field
-    }).catchError((error) {
-      throw Exception("Failed to decrement: $error");
-    });
+    return docRef
+        .update({
+          'volunteerSettings.$field': FieldValue.increment(
+            -1,
+          ), // Access nested volunteerSettings field
+        })
+        .catchError((error) {
+          throw Exception("Failed to decrement: $error");
+        });
   }
 }
 

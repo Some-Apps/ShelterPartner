@@ -83,22 +83,17 @@ class HomePage extends StatelessWidget {
               // ),
               TextButton(
                 onPressed: () {
-                  launchUrl(Uri(
-                    scheme: 'https',
-                    host: 'app.shelterpartner.org',
-                  ));
+                  launchUrl(
+                    Uri(scheme: 'https', host: 'app.shelterpartner.org'),
+                  );
                 },
-                child: const Text(
-                  'App',
-                  style: TextStyle(color: Colors.black),
-                ),
+                child: const Text('App', style: TextStyle(color: Colors.black)),
               ),
               TextButton(
                 onPressed: () {
-                  launchUrl(Uri(
-                    scheme: 'https',
-                    host: 'wiki.shelterpartner.org',
-                  ));
+                  launchUrl(
+                    Uri(scheme: 'https', host: 'wiki.shelterpartner.org'),
+                  );
                 },
                 child: const Text(
                   'Wiki',
@@ -107,11 +102,13 @@ class HomePage extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  launchUrl(Uri(
-                    scheme: 'https',
-                    host: 'github.com',
-                    path: '/ShelterPartner/ShelterPartner',
-                  ));
+                  launchUrl(
+                    Uri(
+                      scheme: 'https',
+                      host: 'github.com',
+                      path: '/ShelterPartner/ShelterPartner',
+                    ),
+                  );
                 },
                 child: const Text(
                   'GitHub',
@@ -125,15 +122,19 @@ class HomePage extends StatelessWidget {
               IconButton(
                 icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.black),
                 onPressed: () {
-                  launchUrl(Uri.parse(
-                      'https://www.facebook.com/people/Shelter-Partner/61565670425368/'));
+                  launchUrl(
+                    Uri.parse(
+                      'https://www.facebook.com/people/Shelter-Partner/61565670425368/',
+                    ),
+                  );
                 },
               ),
               IconButton(
                 icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.black),
                 onPressed: () {
                   launchUrl(
-                      Uri.parse('https://www.instagram.com/shelterpartner'));
+                    Uri.parse('https://www.instagram.com/shelterpartner'),
+                  );
                 },
               ),
             ],
@@ -154,7 +155,9 @@ class HomePage extends StatelessWidget {
                       child: Text(
                         "There will be an open Zoom meeting on June 6 at 6pm MST for any interested shelters. We'll go over our roadmap and get feedback from shelters.",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -165,7 +168,9 @@ class HomePage extends StatelessWidget {
                           Text(
                             'Welcome',
                             style: TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.bold),
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 8),
                           Text(
@@ -182,7 +187,9 @@ class HomePage extends StatelessWidget {
                           const Text(
                             'Version 2 Tutorial',
                             style: TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.bold),
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 16),
                           const SizedBox(
@@ -193,12 +200,14 @@ class HomePage extends StatelessWidget {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
-                              launchUrl(Uri(
-                                scheme: 'https',
-                                host: 'www.youtube.com',
-                                path: '/watch',
-                                queryParameters: {'v': 'phDOgusydnk'},
-                              ));
+                              launchUrl(
+                                Uri(
+                                  scheme: 'https',
+                                  host: 'www.youtube.com',
+                                  path: '/watch',
+                                  queryParameters: {'v': 'phDOgusydnk'},
+                                ),
+                              );
                             },
                             child: const Text('Watch Full Screen on YouTube'),
                           ),
@@ -237,9 +246,7 @@ class SponsorButton extends StatelessWidget {
     return const SizedBox(
       width: 114,
       height: 32,
-      child: HtmlElementView(
-        viewType: 'iframeElement',
-      ),
+      child: HtmlElementView(viewType: 'iframeElement'),
     );
   }
 }
@@ -260,16 +267,18 @@ class SponsorsWidget extends StatelessWidget {
       },
     );
 
-    final lessThan25 =
-        sponsors.where((s) => (s['amount'] as int) < 25).toList();
+    final lessThan25 = sponsors
+        .where((s) => (s['amount'] as int) < 25)
+        .toList();
     final between25And100 = sponsors
         .where((s) => (s['amount'] as int) >= 25 && (s['amount'] as int) < 100)
         .toList();
     final between100And250 = sponsors
         .where((s) => (s['amount'] as int) >= 100 && (s['amount'] as int) < 250)
         .toList();
-    final above250 =
-        sponsors.where((s) => (s['amount'] as int) >= 250).toList();
+    final above250 = sponsors
+        .where((s) => (s['amount'] as int) >= 250)
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,19 +287,21 @@ class SponsorsWidget extends StatelessWidget {
           const Text('Gold Sponsors'),
           Column(
             children: above250
-                .map((s) => Card(
-                      child: ListTile(
-                        leading: Image.asset(
-                          s['photoUrl'] as String? ?? 'assets/logo.png',
-                          width: 100,
-                          height: 100,
-                        ),
-                        title: Text(
-                          s['name']! as String,
-                          style: const TextStyle(fontSize: 20),
-                        ),
+                .map(
+                  (s) => Card(
+                    child: ListTile(
+                      leading: Image.asset(
+                        s['photoUrl'] as String? ?? 'assets/logo.png',
+                        width: 100,
+                        height: 100,
                       ),
-                    ))
+                      title: Text(
+                        s['name']! as String,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 16),
@@ -302,20 +313,22 @@ class SponsorsWidget extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: between100And250
-                .map((s) => Column(
-                      children: [
-                        Image.asset(
-                          s['photoUrl'] as String? ?? 'assets/logo.png',
-                          width: 100,
-                          height: 100,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          s['name']! as String,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ))
+                .map(
+                  (s) => Column(
+                    children: [
+                      Image.asset(
+                        s['photoUrl'] as String? ?? 'assets/logo.png',
+                        width: 100,
+                        height: 100,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        s['name']! as String,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 16),
@@ -327,17 +340,19 @@ class SponsorsWidget extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: between25And100
-                .map((s) => Column(
-                      children: [
-                        Image.asset(
-                          s['photoUrl'] as String? ?? 'assets/logo.png',
-                          width: 50,
-                          height: 50,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(s['name']! as String),
-                      ],
-                    ))
+                .map(
+                  (s) => Column(
+                    children: [
+                      Image.asset(
+                        s['photoUrl'] as String? ?? 'assets/logo.png',
+                        width: 50,
+                        height: 50,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(s['name']! as String),
+                    ],
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 16),
@@ -346,10 +361,12 @@ class SponsorsWidget extends StatelessWidget {
           const Text('Supporters'),
           Wrap(
             children: lessThan25
-                .map((s) => Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(s['name']! as String),
-                    ))
+                .map(
+                  (s) => Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(s['name']! as String),
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 16),

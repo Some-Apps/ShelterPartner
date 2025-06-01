@@ -12,9 +12,7 @@ void main() {
     Widget createTestWidget({List<Override>? overrides}) {
       return ProviderScope(
         overrides: overrides ?? const [],
-        child: const MaterialApp(
-          home: Scaffold(body: LoginOrSignup()),
-        ),
+        child: const MaterialApp(home: Scaffold(body: LoginOrSignup())),
       );
     }
 
@@ -26,12 +24,18 @@ void main() {
       expect(find.byType(ForgotPasswordPage), findsNothing);
     });
 
-    testWidgets('shows SignupPage when authPageProvider is signup',
-        (tester) async {
-      await tester.pumpWidget(createTestWidget(overrides: [
-        authPageProvider.overrideWith(
-            (ref) => AuthPageNotifier()..setPage(AuthPageType.signup)),
-      ]));
+    testWidgets('shows SignupPage when authPageProvider is signup', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          overrides: [
+            authPageProvider.overrideWith(
+              (ref) => AuthPageNotifier()..setPage(AuthPageType.signup),
+            ),
+          ],
+        ),
+      );
       await tester.pump();
       expect(find.byType(SignupPage), findsOneWidget);
       expect(find.byType(LoginPage), findsNothing);
@@ -39,20 +43,28 @@ void main() {
     });
 
     testWidgets(
-        'shows ForgotPasswordPage when authPageProvider is forgotPassword',
-        (tester) async {
-      await tester.pumpWidget(createTestWidget(overrides: [
-        authPageProvider.overrideWith(
-            (ref) => AuthPageNotifier()..setPage(AuthPageType.forgotPassword)),
-      ]));
-      await tester.pump();
-      expect(find.byType(ForgotPasswordPage), findsOneWidget);
-      expect(find.byType(LoginPage), findsNothing);
-      expect(find.byType(SignupPage), findsNothing);
-    });
+      'shows ForgotPasswordPage when authPageProvider is forgotPassword',
+      (tester) async {
+        await tester.pumpWidget(
+          createTestWidget(
+            overrides: [
+              authPageProvider.overrideWith(
+                (ref) =>
+                    AuthPageNotifier()..setPage(AuthPageType.forgotPassword),
+              ),
+            ],
+          ),
+        );
+        await tester.pump();
+        expect(find.byType(ForgotPasswordPage), findsOneWidget);
+        expect(find.byType(LoginPage), findsNothing);
+        expect(find.byType(SignupPage), findsNothing);
+      },
+    );
 
-    testWidgets('navigates to SignupPage when onTapSignup is called',
-        (tester) async {
+    testWidgets('navigates to SignupPage when onTapSignup is called', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1600, 1800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
@@ -68,30 +80,36 @@ void main() {
     });
 
     testWidgets(
-        'navigates to ForgotPasswordPage when onTapForgotPassword is called',
-        (tester) async {
-      tester.view.physicalSize = const Size(1600, 1800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-      await tester.pumpWidget(createTestWidget());
-      await tester.pump();
-      // Tap the Forgot Password? text
-      final forgotPassword = find.text('Forgot Password?');
-      expect(forgotPassword, findsOneWidget);
-      await tester.tap(forgotPassword);
-      await tester.pumpAndSettle();
-      // Should now show ForgotPasswordPage
-      expect(find.byType(ForgotPasswordPage), findsOneWidget);
-    });
+      'navigates to ForgotPasswordPage when onTapForgotPassword is called',
+      (tester) async {
+        tester.view.physicalSize = const Size(1600, 1800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
+        await tester.pumpWidget(createTestWidget());
+        await tester.pump();
+        // Tap the Forgot Password? text
+        final forgotPassword = find.text('Forgot Password?');
+        expect(forgotPassword, findsOneWidget);
+        await tester.tap(forgotPassword);
+        await tester.pumpAndSettle();
+        // Should now show ForgotPasswordPage
+        expect(find.byType(ForgotPasswordPage), findsOneWidget);
+      },
+    );
 
     testWidgets('navigates back to LoginPage from SignupPage', (tester) async {
       tester.view.physicalSize = const Size(1600, 1800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
-      await tester.pumpWidget(createTestWidget(overrides: [
-        authPageProvider.overrideWith(
-            (ref) => AuthPageNotifier()..setPage(AuthPageType.signup)),
-      ]));
+      await tester.pumpWidget(
+        createTestWidget(
+          overrides: [
+            authPageProvider.overrideWith(
+              (ref) => AuthPageNotifier()..setPage(AuthPageType.signup),
+            ),
+          ],
+        ),
+      );
       await tester.pump();
       // Tap the Login Here text
       final loginHere = find.text('Login Here');

@@ -19,14 +19,11 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
   StreamSubscription<void>? _animalsSubscription;
 
   VisitorsViewModel(this._repository, this.ref)
-      : super({'cats': [], 'dogs': []}) {
+    : super({'cats': [], 'dogs': []}) {
     // Listen to authentication state changes
-    ref.listen<AuthState>(
-      authViewModelProvider,
-      (previous, next) {
-        _onAuthStateChanged(next);
-      },
-    );
+    ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+      _onAuthStateChanged(next);
+    });
 
     // Immediately check the current auth state
     final authState = ref.watch(authViewModelProvider);
@@ -61,42 +58,47 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
         .watch(accountSettingsViewModelProvider.notifier)
         .stream
         .map((asyncValue) {
-      return asyncValue.asData?.value;
-    }).startWith(null); // Ensure the stream emits an initial value
+          return asyncValue.asData?.value;
+        })
+        .startWith(null); // Ensure the stream emits an initial value
 
     // Combine both streams
     _animalsSubscription =
         CombineLatestStream.combine2<List<Animal>, AppUser?, void>(
-      animalsStream,
-      accountSettingsStream,
-      (animals, appUser) {
-        _enrichmentFilter = appUser?.accountSettings?.visitorFilter;
+          animalsStream,
+          accountSettingsStream,
+          (animals, appUser) {
+            _enrichmentFilter = appUser?.accountSettings?.visitorFilter;
 
-        // Apply the filter
-        final filteredAnimals = animals.where((animal) {
-          if (_enrichmentFilter != null) {
-            return evaluateFilter(_enrichmentFilter!, animal);
-          } else {
-            return true; // No filter applied
-          }
-        }).toList();
+            // Apply the filter
+            final filteredAnimals = animals.where((animal) {
+              if (_enrichmentFilter != null) {
+                return evaluateFilter(_enrichmentFilter!, animal);
+              } else {
+                return true; // No filter applied
+              }
+            }).toList();
 
-        final cats =
-            filteredAnimals.where((animal) => animal.species == 'cat').toList();
-        final dogs =
-            filteredAnimals.where((animal) => animal.species == 'dog').toList();
+            final cats = filteredAnimals
+                .where((animal) => animal.species == 'cat')
+                .toList();
+            final dogs = filteredAnimals
+                .where((animal) => animal.species == 'dog')
+                .toList();
 
-        state = {'cats': cats, 'dogs': dogs};
+            state = {'cats': cats, 'dogs': dogs};
 
-        // Sort the animals after fetching and filtering
-        _sortAnimals();
-      },
-    ).listen((_) {});
+            // Sort the animals after fetching and filtering
+            _sortAnimals();
+          },
+        ).listen((_) {});
   }
 
   void _sortAnimals() {
-    final accountSettings =
-        ref.read(accountSettingsViewModelProvider).asData?.value;
+    final accountSettings = ref
+        .read(accountSettingsViewModelProvider)
+        .asData
+        ?.value;
 
     final visitorSort =
         accountSettings?.accountSettings?.visitorSort ?? 'Alphabetical';
@@ -109,8 +111,11 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
       if (visitorSort == 'Alphabetical') {
         sortedList.sort((a, b) => a.name.compareTo(b.name));
       } else if (visitorSort == 'Intake Date') {
-        sortedList.sort((a, b) => (a.intakeDate ?? Timestamp(0, 0))
-            .compareTo(b.intakeDate ?? Timestamp(0, 0)));
+        sortedList.sort(
+          (a, b) => (a.intakeDate ?? Timestamp(0, 0)).compareTo(
+            b.intakeDate ?? Timestamp(0, 0),
+          ),
+        );
       }
 
       sortedState[species] = sortedList;
@@ -143,15 +148,13 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
         return attributeValue.toString().toLowerCase() !=
             conditionValue.toString().toLowerCase();
       case OperatorType.contains:
-        return attributeValue
-            .toString()
-            .toLowerCase()
-            .contains(conditionValue.toString().toLowerCase());
+        return attributeValue.toString().toLowerCase().contains(
+          conditionValue.toString().toLowerCase(),
+        );
       case OperatorType.notContains:
-        return !attributeValue
-            .toString()
-            .toLowerCase()
-            .contains(conditionValue.toString().toLowerCase());
+        return !attributeValue.toString().toLowerCase().contains(
+          conditionValue.toString().toLowerCase(),
+        );
       case OperatorType.greaterThan:
         return double.tryParse(attributeValue.toString())! >
             double.tryParse(conditionValue.toString())!;
@@ -232,7 +235,8 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
 // Create a provider for the VisitorsViewModel
 final visitorsViewModelProvider =
     StateNotifierProvider<VisitorsViewModel, Map<String, List<Animal>>>((ref) {
-  final repository =
-      ref.watch(visitorsRepositoryProvider); // Access the repository
-  return VisitorsViewModel(repository, ref); // Pass the repository and ref
-});
+      final repository = ref.watch(
+        visitorsRepositoryProvider,
+      ); // Access the repository
+      return VisitorsViewModel(repository, ref); // Pass the repository and ref
+    });

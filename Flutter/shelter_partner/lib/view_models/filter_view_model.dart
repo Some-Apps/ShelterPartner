@@ -7,7 +7,7 @@ class FilterViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   final Ref ref;
 
   FilterViewModel(this._repository, this.ref)
-      : super(const AsyncValue.data(null));
+    : super(const AsyncValue.data(null));
 
   Future<void> saveFilterExpression(
     List<Map<String, dynamic>> serializedFilterElements,
@@ -16,15 +16,10 @@ class FilterViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     String documentID,
     String filterFieldPath,
   ) async {
-    await _repository.saveFilterExpression(
-      collection,
-      documentID,
-      {
-        'filterElements': serializedFilterElements,
-        'operatorsBetween': serializedOperatorsBetween,
-      },
-      filterFieldPath,
-    );
+    await _repository.saveFilterExpression(collection, documentID, {
+      'filterElements': serializedFilterElements,
+      'operatorsBetween': serializedOperatorsBetween,
+    }, filterFieldPath);
   }
 
   Future<Map<String, dynamic>?> loadFilterExpression(
@@ -44,7 +39,8 @@ class FilterViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 
 final filterViewModelProvider =
     StateNotifierProvider<FilterViewModel, AsyncValue<AppUser?>>((ref) {
-  final repository =
-      ref.watch(filterRepositoryProvider); // Access the repository
-  return FilterViewModel(repository, ref); // Pass the repository and ref
-});
+      final repository = ref.watch(
+        filterRepositoryProvider,
+      ); // Access the repository
+      return FilterViewModel(repository, ref); // Pass the repository and ref
+    });

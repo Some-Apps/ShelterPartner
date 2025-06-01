@@ -62,20 +62,22 @@ void main() async {
       // 2) Fallback: if not installed, wait ~0.5s and open the App Store
       Future.delayed(const Duration(milliseconds: 500), () {
         html.window.location.assign(
-            "https://apps.apple.com/us/app/6449749673" // Your iOS App Store link
-            );
+          "https://apps.apple.com/us/app/6449749673", // Your iOS App Store link
+        );
       });
       return; // Don’t proceed to runApp
     } else if (isAndroidWeb()) {
       // 1) Try to open via Android Intent URI scheme
       //    Replace "com.mycompany.myapp" with your package name
       html.window.location.assign(
-          "intent://myapp/#Intent;scheme=myapp;package=me.jareddanieljones.HumaneSociety;end");
+        "intent://myapp/#Intent;scheme=myapp;package=me.jareddanieljones.HumaneSociety;end",
+      );
 
       // 2) Fallback: if not installed, open Google Play Store
       Future.delayed(const Duration(milliseconds: 500), () {
         html.window.location.assign(
-            "https://play.google.com/store/apps/details?id=me.jareddanieljones.HumaneSociety");
+          "https://play.google.com/store/apps/details?id=me.jareddanieljones.HumaneSociety",
+        );
       });
       return; // Don’t proceed to runApp
     }
@@ -90,19 +92,13 @@ void main() async {
     FlutterError.dumpErrorToConsole(details);
   };
 
-  runApp(ProviderScope(
-      child: MyApp(
-    theme: theme,
-  )));
+  runApp(ProviderScope(child: MyApp(theme: theme)));
 }
 
 class MyApp extends ConsumerWidget {
   final ThemeData theme;
 
-  const MyApp({
-    super.key,
-    required this.theme,
-  });
+  const MyApp({super.key, required this.theme});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -164,15 +160,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const AuthPage(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const AuthPage()),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          return MainPage(
-            navigationShell: navigationShell,
-          );
+          return MainPage(navigationShell: navigationShell);
         },
         branches: [
           // Branch for the 'Enrichment' tab
@@ -187,7 +178,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) {
                       final animal = state.extra as Animal;
                       return EnrichmentAnimalDetailPage(
-                          initialAnimal: animal, visitorPage: false);
+                        initialAnimal: animal,
+                        visitorPage: false,
+                      );
                     },
                   ),
                   GoRoute(
@@ -221,7 +214,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) {
                       final animal = state.extra as Animal;
                       return EnrichmentAnimalDetailPage(
-                          initialAnimal: animal, visitorPage: true);
+                        initialAnimal: animal,
+                        visitorPage: true,
+                      );
                     },
                   ),
                 ],
@@ -266,7 +261,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: "better-impact",
                     builder: (context, state) => const BetterImpactPage(),
-                  )
+                  ),
                 ],
               ),
             ],
@@ -297,42 +292,52 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'scheduled-reports',
                         builder: (context, state) => const ScheduledReportsPage(
-                            title: 'Scheduled Reports',
-                            arrayKey: 'scheduledReports'),
+                          title: 'Scheduled Reports',
+                          arrayKey: 'scheduledReports',
+                        ),
                       ),
                       GoRoute(
                         path: 'cat-tags',
                         builder: (context, state) {
                           return const ArrayModifierPage(
-                              title: 'Cat Tags', arrayKey: 'catTags');
+                            title: 'Cat Tags',
+                            arrayKey: 'catTags',
+                          );
                         },
                       ),
                       GoRoute(
                         path: 'dog-tags',
                         builder: (context, state) {
                           return const ArrayModifierPage(
-                              title: 'Dog Tags', arrayKey: 'dogTags');
+                            title: 'Dog Tags',
+                            arrayKey: 'dogTags',
+                          );
                         },
                       ),
                       GoRoute(
                         path: 'early-put-back-reasons',
                         builder: (context, state) {
                           return const ArrayModifierPage(
-                              title: 'Early Put Back Reasons',
-                              arrayKey: 'earlyPutBackReasons');
+                            title: 'Early Put Back Reasons',
+                            arrayKey: 'earlyPutBackReasons',
+                          );
                         },
                       ),
                       GoRoute(
                         path: 'let-out-types',
                         builder: (context, state) {
                           return const ArrayModifierPage(
-                              title: 'Let Out Types', arrayKey: 'letOutTypes');
+                            title: 'Let Out Types',
+                            arrayKey: 'letOutTypes',
+                          );
                         },
                       ),
                       GoRoute(
                         path: 'api-keys',
                         builder: (context, state) => const ApiKeysPage(
-                            title: 'API Keys', arrayKey: 'apiKeys'),
+                          title: 'API Keys',
+                          arrayKey: 'apiKeys',
+                        ),
                       ),
                     ],
                   ),

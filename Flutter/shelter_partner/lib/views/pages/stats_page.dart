@@ -55,23 +55,20 @@ class StatsPage extends ConsumerWidget {
 
     if (allStats.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Shelter Stats'),
-        ),
+        appBar: AppBar(title: const Text('Shelter Stats')),
         body: const Center(child: Text('No data available')),
       );
     }
 
     if (MediaQuery.of(context).size.width < 500) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Shelter Stats'),
-        ),
+        appBar: AppBar(title: const Text('Shelter Stats')),
         body: const Center(
           child: Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
-                'View stats on a larger screen or rotate your phone to landscape'),
+              'View stats on a larger screen or rotate your phone to landscape',
+            ),
           ),
         ),
       );
@@ -80,8 +77,8 @@ class StatsPage extends ConsumerWidget {
     final categoryKey = selectedCategory == 'Species'
         ? 'Species'
         : selectedCategory == 'Color'
-            ? 'Color'
-            : 'Species';
+        ? 'Color'
+        : 'Species';
 
     final stats = allStats[categoryKey]!;
     final allKeys = _extractAllKeys(stats);
@@ -114,8 +111,11 @@ class StatsPage extends ConsumerWidget {
                         // Sync status row
                         Row(
                           children: [
-                            const Icon(Icons.sync,
-                                size: 20, color: Colors.blue),
+                            const Icon(
+                              Icons.sync,
+                              size: 20,
+                              color: Colors.blue,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Column(
@@ -156,14 +156,18 @@ class StatsPage extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: recentChanges.map((change) {
                               return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6,
+                                ),
                                 child: Row(
                                   children: [
                                     const Padding(
                                       padding: EdgeInsets.only(top: 2),
-                                      child: Icon(Icons.circle,
-                                          size: 8, color: Colors.blue),
+                                      child: Icon(
+                                        Icons.circle,
+                                        size: 8,
+                                        color: Colors.blue,
+                                      ),
                                     ),
                                     const SizedBox(width: 8),
                                     Expanded(
@@ -189,8 +193,9 @@ class StatsPage extends ConsumerWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   childAspectRatio: 2 / 1,
-                  crossAxisCount:
-                      MediaQuery.of(context).size.width > 1200 ? 2 : 1,
+                  crossAxisCount: MediaQuery.of(context).size.width > 1200
+                      ? 2
+                      : 1,
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
                 ),
@@ -207,19 +212,25 @@ class StatsPage extends ConsumerWidget {
                               const Text(
                                 'Time Since Animals Were Let Out',
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               const Spacer(),
-                              const Text('Group By: ',
-                                  overflow: TextOverflow.ellipsis),
+                              const Text(
+                                'Group By: ',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               DropdownButton<String?>(
                                 value: selectedCategory,
                                 hint: const Text('Select'),
                                 items: [null, 'Species', 'Color']
-                                    .map((category) => DropdownMenuItem(
-                                          value: category,
-                                          child: Text(category ?? 'None'),
-                                        ))
+                                    .map(
+                                      (category) => DropdownMenuItem(
+                                        value: category,
+                                        child: Text(category ?? 'None'),
+                                      ),
+                                    )
                                     .toList(),
                                 onChanged: (value) {
                                   ref.read(categoryProvider.notifier).state =
@@ -232,8 +243,10 @@ class StatsPage extends ConsumerWidget {
                           Expanded(
                             child: BarChart(
                               BarChartData(
-                                barGroups:
-                                    _generateBarGroups(stats, selectedCategory),
+                                barGroups: _generateBarGroups(
+                                  stats,
+                                  selectedCategory,
+                                ),
                                 titlesData: FlTitlesData(
                                   leftTitles: const AxisTitles(
                                     sideTitles: SideTitles(showTitles: false),
@@ -244,12 +257,13 @@ class StatsPage extends ConsumerWidget {
                                       reservedSize: 30,
                                       getTitlesWidget:
                                           (double value, TitleMeta meta) {
-                                        return SideTitleWidget(
-                                          axisSide: meta.axisSide,
-                                          child: Text(
-                                              _mapXToInterval(value.toInt())),
-                                        );
-                                      },
+                                            return SideTitleWidget(
+                                              axisSide: meta.axisSide,
+                                              child: Text(
+                                                _mapXToInterval(value.toInt()),
+                                              ),
+                                            );
+                                          },
                                     ),
                                   ),
                                   topTitles: const AxisTitles(
@@ -303,7 +317,10 @@ class StatsPage extends ConsumerWidget {
   }
 
   Widget _buildSyncStatusIndicator(
-      DateTime? lastSync, String? lastEmailSync, BuildContext context) {
+    DateTime? lastSync,
+    String? lastEmailSync,
+    BuildContext context,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(right: 16),
       child: Tooltip(
@@ -319,10 +336,7 @@ class StatsPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 6),
-            Text(
-              'Sync',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text('Sync', style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ),
@@ -341,7 +355,11 @@ class StatsPage extends ConsumerWidget {
   }
 
   Widget _buildSyncRow(
-      String label, dynamic value, IconData icon, Color color) {
+    String label,
+    dynamic value,
+    IconData icon,
+    Color color,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -431,24 +449,14 @@ class StatsPage extends ConsumerWidget {
         final total = categoryCounts.values.isNotEmpty
             ? categoryCounts.values.reduce((a, b) => a + b).toDouble()
             : 0.0;
-        barRods = [
-          BarChartRodData(
-            toY: total,
-            width: 20,
-            color: Colors.black,
-          ),
-        ];
+        barRods = [BarChartRodData(toY: total, width: 20, color: Colors.black)];
       } else if (category == 'Species') {
         // Show each species separately
         barRods = categoryCounts.entries.map((entry) {
           final name = entry.key;
           final value = entry.value.toDouble();
           final color = speciesColorMap.putIfAbsent(name, () => Colors.blue);
-          return BarChartRodData(
-            toY: value,
-            width: 20,
-            color: color,
-          );
+          return BarChartRodData(toY: value, width: 20, color: color);
         }).toList();
       } else if (category == 'Color') {
         // Show each color separately
@@ -456,20 +464,18 @@ class StatsPage extends ConsumerWidget {
           final colorName = entry.key;
           final value = entry.value.toDouble();
           final barColor = _parseColor(colorName);
-          return BarChartRodData(
-            toY: value,
-            width: 20,
-            color: barColor,
-          );
+          return BarChartRodData(toY: value, width: 20, color: barColor);
         }).toList();
       } else {
         // Other categories if added in the future
         barRods = categoryCounts.entries
-            .map((entry) => BarChartRodData(
-                  toY: entry.value.toDouble(),
-                  width: 20,
-                  color: Colors.red,
-                ))
+            .map(
+              (entry) => BarChartRodData(
+                toY: entry.value.toDouble(),
+                width: 20,
+                color: Colors.red,
+              ),
+            )
             .toList();
       }
 

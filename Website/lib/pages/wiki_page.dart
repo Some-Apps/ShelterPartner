@@ -33,10 +33,7 @@ class WikiPage extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(context, '/wiki');
               },
-              child: const Text(
-                'Wiki',
-                style: TextStyle(color: Colors.black),
-              ),
+              child: const Text('Wiki', style: TextStyle(color: Colors.black)),
             ),
           ],
         ),

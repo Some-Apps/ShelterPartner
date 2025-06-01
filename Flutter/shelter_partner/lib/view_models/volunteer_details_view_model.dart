@@ -48,10 +48,8 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
   final Volunteer volunteer;
   final VolunteerDetailsRepository repository; // Updated class name
 
-  VolunteerDetailViewModel({
-    required this.volunteer,
-    required this.repository,
-  }) : super(VolunteerDetailState.initial(volunteer)) {
+  VolunteerDetailViewModel({required this.volunteer, required this.repository})
+    : super(VolunteerDetailState.initial(volunteer)) {
     // Delay the data fetching until after the first frame
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   _fetchLogsAndComputeStats();
@@ -66,17 +64,18 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
     state = state.copyWith(isLoading: true);
     try {
       await repository.updateVolunteerName(
-          volunteer.shelterID, volunteer.id, firstName, lastName);
+        volunteer.shelterID,
+        volunteer.id,
+        firstName,
+        lastName,
+      );
 
       Volunteer updatedVolunteer = volunteer.copyWith(
         firstName: firstName,
         lastName: lastName,
       );
 
-      state = state.copyWith(
-        isLoading: false,
-        volunteer: updatedVolunteer,
-      );
+      state = state.copyWith(isLoading: false, volunteer: updatedVolunteer);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
@@ -84,8 +83,9 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
 
   Future<void> _fetchLogsAndComputeStats() async {
     try {
-      Map<String, dynamic> stats =
-          await repository.fetchLogsAndComputeStats(volunteer);
+      Map<String, dynamic> stats = await repository.fetchLogsAndComputeStats(
+        volunteer,
+      );
 
       // Format the durations into strings
       String averageLogDurationText = _formatDuration(
@@ -143,12 +143,13 @@ class VolunteerDetailViewModel extends StateNotifier<VolunteerDetailState> {
 
 // Provider for the VolunteerDetailViewModel
 final volunteerDetailViewModelProvider = StateNotifierProvider.autoDispose
-    .family<VolunteerDetailViewModel, VolunteerDetailState, Volunteer>(
-  (ref, volunteer) {
-    final repository = ref.watch(volunteerDetailsRepositoryProvider);
-    return VolunteerDetailViewModel(
-      volunteer: volunteer,
-      repository: repository,
-    );
-  },
-);
+    .family<VolunteerDetailViewModel, VolunteerDetailState, Volunteer>((
+      ref,
+      volunteer,
+    ) {
+      final repository = ref.watch(volunteerDetailsRepositoryProvider);
+      return VolunteerDetailViewModel(
+        volunteer: volunteer,
+        repository: repository,
+      );
+    });

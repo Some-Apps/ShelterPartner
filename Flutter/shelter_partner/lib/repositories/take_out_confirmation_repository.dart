@@ -7,15 +7,16 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class TakeOutConfirmationRepository {
   final FirebaseFirestore _firestore;
   TakeOutConfirmationRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   Future<void> takeOutAnimal(Animal animal, String shelterID, Log log) async {
     try {
       print('Starting takeOutAnimal for ${animal.id} in shelter $shelterID');
 
       // Determine the collection based on species
-      final collection =
-          animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
+      final collection = animal.species.toLowerCase() == 'cat'
+          ? 'cats'
+          : 'dogs';
       print('Determined collection: $collection');
 
       // Add the note to the notes attribute in Firestore
@@ -24,8 +25,8 @@ class TakeOutConfirmationRepository {
             .collection('shelters/$shelterID/$collection')
             .doc(animal.id)
             .update({
-          'logs': FieldValue.arrayUnion([log.toMap()])
-        });
+              'logs': FieldValue.arrayUnion([log.toMap()]),
+            });
       }
 
       print('Updated logs for ${animal.id}');
@@ -46,6 +47,6 @@ class TakeOutConfirmationRepository {
 // Provider for AddNoteRepository
 final takeOutConfirmationRepositoryProvider =
     Provider<TakeOutConfirmationRepository>((ref) {
-  final firestore = ref.watch(firestoreProvider);
-  return TakeOutConfirmationRepository(firestore: firestore);
-});
+      final firestore = ref.watch(firestoreProvider);
+      return TakeOutConfirmationRepository(firestore: firestore);
+    });

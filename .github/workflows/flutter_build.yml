@@ -163,6 +163,18 @@ jobs:
           set -e
           exit ${exit_code:-0}
         working-directory: Website
+      - name: Generate formatting patch
+        if: always()
+        run: |
+          dart format Flutter/shelter_partner Website
+          git diff HEAD > format.patch || true
+          git checkout -- .
+      - name: Upload formatting patch artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: formatting-patch
+          path: format.patch
       - name: Summary of formatting fixes
         if: always()
         run: |

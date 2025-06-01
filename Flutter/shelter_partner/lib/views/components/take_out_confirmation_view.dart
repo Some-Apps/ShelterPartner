@@ -13,10 +13,7 @@ import 'package:uuid/uuid.dart';
 class TakeOutConfirmationView extends ConsumerStatefulWidget {
   final List<Animal> animals; // Accepts a list of animals
 
-  const TakeOutConfirmationView({
-    super.key,
-    required this.animals,
-  });
+  const TakeOutConfirmationView({super.key, required this.animals});
 
   @override
   TakeOutConfirmationViewState createState() => TakeOutConfirmationViewState();
@@ -51,12 +48,13 @@ class TakeOutConfirmationViewState
       final bool requireLetOutType = userDetails?.type == "admin"
           ? (accountSettings.value?.accountSettings?.requireLetOutType ?? false)
           : (shelterSettings.value?.volunteerSettings.requireLetOutType ??
-              false);
+                false);
       final bool requireName = userDetails?.type == "admin"
           ? (accountSettings.value?.accountSettings?.requireName ?? false)
           : (shelterSettings.value?.volunteerSettings.requireName ?? false);
 
-      _isConfirmEnabled = (!requireLetOutType ||
+      _isConfirmEnabled =
+          (!requireLetOutType ||
                   (_selectedLetOutType != null &&
                       _selectedLetOutType!.isNotEmpty)) &&
               (!requireName || _nameController.text.isNotEmpty) ||
@@ -77,7 +75,8 @@ class TakeOutConfirmationViewState
         : (shelterSettings.value?.volunteerSettings.requireName ?? false);
 
     final takeOutViewModel = ref.read(
-        takeOutConfirmationViewModelProvider(widget.animals.first).notifier);
+      takeOutConfirmationViewModelProvider(widget.animals.first).notifier,
+    );
 
     return AlertDialog(
       title: Center(
@@ -100,22 +99,25 @@ class TakeOutConfirmationViewState
             Column(
               children: widget.animals
                   .where((animal) => animal.takeOutAlert.isNotEmpty)
-                  .map((animal) => RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Alert for ${animal.name}: ',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
+                  .map(
+                    (animal) => RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Alert for ${animal.name}: ',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
-                            TextSpan(
-                              text: animal.takeOutAlert,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          ],
-                        ),
-                      ))
+                          ),
+                          TextSpan(
+                            text: animal.takeOutAlert,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           if (requireLetOutTypeFlag &&
@@ -137,20 +139,19 @@ class TakeOutConfirmationViewState
                   },
                   items: shelterSettings.value!.shelterSettings.letOutTypes
                       .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      })
+                      .toList(),
                 ),
               ],
             ),
           if (requireNameFlag)
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Volunteer Name',
-              ),
+              decoration: const InputDecoration(labelText: 'Volunteer Name'),
             ),
         ],
       ),
@@ -175,9 +176,7 @@ class TakeOutConfirmationViewState
                     context: currentContext,
                     barrierDismissible: false,
                     builder: (BuildContext context) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return const Center(child: CircularProgressIndicator());
                     },
                   );
 
@@ -185,30 +184,33 @@ class TakeOutConfirmationViewState
                   for (final animal in widget.animals) {
                     await takeOutViewModel
                         .takeOutAnimal(
-                      animal,
-                      Log(
-                        id: const Uuid().v4().toString(),
-                        type: _selectedLetOutType ?? '',
-                        author: _nameController.text,
-                        authorID: userDetails!.id,
-                        earlyReason: '',
-                        startTime: Timestamp.now(),
-                        endTime: animal.logs.last.endTime,
-                      ),
-                    )
+                          animal,
+                          Log(
+                            id: const Uuid().v4().toString(),
+                            type: _selectedLetOutType ?? '',
+                            author: _nameController.text,
+                            authorID: userDetails!.id,
+                            earlyReason: '',
+                            startTime: Timestamp.now(),
+                            endTime: animal.logs.last.endTime,
+                          ),
+                        )
                         .then((_) {
-                      if (mounted) {
-                        ref
-                            .read(updateVolunteerRepositoryProvider)
-                            .modifyVolunteerLastActivity(
-                                userDetails.id, Timestamp.now());
-                      }
-                    });
+                          if (mounted) {
+                            ref
+                                .read(updateVolunteerRepositoryProvider)
+                                .modifyVolunteerLastActivity(
+                                  userDetails.id,
+                                  Timestamp.now(),
+                                );
+                          }
+                        });
                   }
 
                   if (mounted) {
-                    Navigator.of(currentContext)
-                        .pop(); // Close the loading indicator
+                    Navigator.of(
+                      currentContext,
+                    ).pop(); // Close the loading indicator
                     Navigator.of(currentContext).pop(true); // User confirmed
                   }
                 }

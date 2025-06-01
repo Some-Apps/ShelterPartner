@@ -38,10 +38,7 @@ void main() {
       final shelterId = user?.shelterId as String;
       expect(shelterId, isNotNull, reason: 'Shelter ID should not be null');
       // Add a test animal to Firestore
-      final animal = createTestAnimal(
-        id: 'dog1',
-        name: 'TestDog',
-      );
+      final animal = createTestAnimal(id: 'dog1', name: 'TestDog');
       await addAnimalToFirestore(
         firestore: FirebaseTestOverrides.fakeFirestore,
         shelterId: shelterId,
@@ -94,8 +91,11 @@ void main() {
           .doc(animal.id)
           .get();
       final data = doc.data()!;
-      expect(data['inKennel'], isFalse,
-          reason: 'Animal should be taken out after long press');
+      expect(
+        data['inKennel'],
+        isFalse,
+        reason: 'Animal should be taken out after long press',
+      );
 
       // Rebuild the widget with the updated animal from Firestore
       final updatedAnimal = Animal.fromFirestore(data, animal.id);
@@ -114,14 +114,21 @@ void main() {
       // Check that the card background color is orange and '0 minutes' appears
       final cardFinder = find.byType(Card);
       final cardWidget = tester.widget<Card>(cardFinder.first);
-      expect(cardWidget.color, equals(Colors.orange.shade100),
-          reason: 'Card background should be orange when taken out');
-      expect(find.textContaining('0 minutes'), findsOneWidget,
-          reason: 'Should show 0 minutes when taken out');
+      expect(
+        cardWidget.color,
+        equals(Colors.orange.shade100),
+        reason: 'Card background should be orange when taken out',
+      );
+      expect(
+        find.textContaining('0 minutes'),
+        findsOneWidget,
+        reason: 'Should show 0 minutes when taken out',
+      );
     });
 
-    testWidgets("allows putting an animal back in the kennel",
-        (WidgetTester tester) async {
+    testWidgets("allows putting an animal back in the kennel", (
+      WidgetTester tester,
+    ) async {
       // Arrange: Create test user and shelter
       final container = await createTestUserAndLogin(
         email: 'animalcarduser1@example.com',
@@ -181,8 +188,11 @@ void main() {
           .doc(animal.id)
           .get();
       final data = doc.data()!;
-      expect(data['inKennel'], isTrue,
-          reason: 'Animal should be put back in kennel after long press');
+      expect(
+        data['inKennel'],
+        isTrue,
+        reason: 'Animal should be put back in kennel after long press',
+      );
 
       // Rebuild the widget with the updated animal from Firestore
       final updatedAnimal = Animal.fromFirestore(data, animal.id);
@@ -201,13 +211,16 @@ void main() {
       // Optionally, check that the card background color is light blue again
       final cardFinder = find.byType(Card);
       final cardWidget = tester.widget<Card>(cardFinder.first);
-      expect(cardWidget.color, equals(Colors.lightBlue.shade100),
-          reason:
-              'Card background should be light blue when put back in kennel');
+      expect(
+        cardWidget.color,
+        equals(Colors.lightBlue.shade100),
+        reason: 'Card background should be light blue when put back in kennel',
+      );
     });
 
-    testWidgets('displays all expected animal fields',
-        (WidgetTester tester) async {
+    testWidgets('displays all expected animal fields', (
+      WidgetTester tester,
+    ) async {
       // Arrange: Create test user and shelter
       final container = await createTestUserAndLogin(
         email: 'animalcarduser2@example.com',
@@ -289,12 +302,14 @@ void main() {
       expect(find.text('Tag5'), findsNothing);
       // Time since last log (should contain 'minute', 'hour', 'day', or 'week')
       expect(
-        find.byWidgetPredicate((widget) =>
-            widget is Text &&
-            (widget.data?.contains('minute') == true ||
-                widget.data?.contains('hour') == true ||
-                widget.data?.contains('day') == true ||
-                widget.data?.contains('week') == true)),
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Text &&
+              (widget.data?.contains('minute') == true ||
+                  widget.data?.contains('hour') == true ||
+                  widget.data?.contains('day') == true ||
+                  widget.data?.contains('week') == true),
+        ),
         findsWidgets,
       );
       // Author of last log
