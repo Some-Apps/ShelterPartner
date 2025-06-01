@@ -7,7 +7,6 @@ class UpdateVolunteerRepository {
   UpdateVolunteerRepository({required FirebaseFirestore firestore})
       : _firestore = firestore;
 
-
   // Method to modify a specific string attribute within the volunteer document
   Future<void> modifyVolunteerLastActivity(
       String volunteerId, Timestamp newValue) async {

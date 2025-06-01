@@ -6,7 +6,8 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class EnrichmentRepository {
   final FirebaseFirestore _firestore;
-  EnrichmentRepository({required FirebaseFirestore firestore}) : _firestore = firestore;
+  EnrichmentRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   Stream<List<Animal>> fetchAnimals(String shelterID) {
     final catsStream =
