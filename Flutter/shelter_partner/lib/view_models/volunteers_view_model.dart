@@ -12,7 +12,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   StreamSubscription<Shelter>? _shelterSubscription;
 
   VolunteersViewModel(this._repository, this.ref)
-      : super(const AsyncValue.loading()) {
+    : super(const AsyncValue.loading()) {
     _initialize();
   }
 
@@ -21,15 +21,16 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     if (authState.status == AuthStatus.authenticated) {
       final shelterID = authState.user?.shelterId;
       if (shelterID != null) {
-        _shelterSubscription =
-            _repository.fetchShelterWithVolunteers(shelterID).listen(
-          (shelter) {
-            state = AsyncValue.data(shelter);
-          },
-          onError: (error) {
-            state = AsyncValue.error(error, StackTrace.current);
-          },
-        );
+        _shelterSubscription = _repository
+            .fetchShelterWithVolunteers(shelterID)
+            .listen(
+              (shelter) {
+                state = AsyncValue.data(shelter);
+              },
+              onError: (error) {
+                state = AsyncValue.error(error, StackTrace.current);
+              },
+            );
       } else {
         state = AsyncValue.error('Shelter ID is null', StackTrace.current);
       }
@@ -46,13 +47,19 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 
   // Method to change geofence settings in Firestore document within volunteerSettings
   Future<void> changeGeofence(
-      String shelterID, GeoPoint location, double radius, double zoom) async {
+    String shelterID,
+    GeoPoint location,
+    double radius,
+    double zoom,
+  ) async {
     try {
       await _repository.changeGeofence(shelterID, location, radius, zoom);
     } catch (error) {
       print("Error changing geofence: $error");
       state = AsyncValue.error(
-          "Error changing geofence: $error", StackTrace.current);
+        "Error changing geofence: $error",
+        StackTrace.current,
+      );
     }
   }
 
@@ -62,24 +69,32 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
       await _repository.incrementVolunteerSetting(shelterID, field);
     } catch (error) {
       print("Error incrementing: $error");
-      state =
-          AsyncValue.error("Error incrementing: $error", StackTrace.current);
+      state = AsyncValue.error(
+        "Error incrementing: $error",
+        StackTrace.current,
+      );
     }
   }
 
-// Modify attribute in Firestore document within volunteerSettings
+  // Modify attribute in Firestore document within volunteerSettings
   Future<void> modifyVolunteerSettingString(
-      String shelterID, String field, String newValue) async {
+    String shelterID,
+    String field,
+    String newValue,
+  ) async {
     try {
       await _repository.modifyVolunteerSettingString(
-          shelterID, field, newValue);
+        shelterID,
+        field,
+        newValue,
+      );
     } catch (error) {
       print("Error modifying: $error");
       state = AsyncValue.error("Error modifying: $error", StackTrace.current);
     }
   }
 
-// Toggle attribute in Firestore document within volunteerSettings
+  // Toggle attribute in Firestore document within volunteerSettings
   Future<void> toggleAttribute(String shelterID, String field) async {
     try {
       await _repository.toggleVolunteerSetting(shelterID, field);
@@ -90,7 +105,11 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   }
 
   Future<void> sendVolunteerInvite(
-      String firstName, String lastName, String email, String shelterID) async {
+    String firstName,
+    String lastName,
+    String email,
+    String shelterID,
+  ) async {
     try {
       await ref
           .read(volunteersRepositoryProvider)
@@ -110,14 +129,16 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     }
   }
 
-// Decrement attribute in Firestore document within volunteerSettings
+  // Decrement attribute in Firestore document within volunteerSettings
   Future<void> decrementAttribute(String shelterID, String field) async {
     try {
       await _repository.decrementVolunteerSetting(shelterID, field);
     } catch (error) {
       print("Error decrementing: $error");
-      state =
-          AsyncValue.error("Error decrementing: $error", StackTrace.current);
+      state = AsyncValue.error(
+        "Error decrementing: $error",
+        StackTrace.current,
+      );
     }
   }
 }
@@ -125,7 +146,11 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
 // Provider to access the VolunteersViewModel
 final volunteersViewModelProvider =
     StateNotifierProvider<VolunteersViewModel, AsyncValue<Shelter?>>((ref) {
-  final repository =
-      ref.watch(volunteersRepositoryProvider); // Access the repository
-  return VolunteersViewModel(repository, ref); // Pass the repository and ref
-});
+      final repository = ref.watch(
+        volunteersRepositoryProvider,
+      ); // Access the repository
+      return VolunteersViewModel(
+        repository,
+        ref,
+      ); // Pass the repository and ref
+    });

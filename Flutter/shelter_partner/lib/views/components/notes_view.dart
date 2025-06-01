@@ -25,10 +25,7 @@ class NotesWidget extends StatelessWidget {
         // Notes section
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            'Notes',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          child: Text('Notes', style: Theme.of(context).textTheme.titleLarge),
         ),
         const Divider(),
         notes.isNotEmpty
@@ -40,8 +37,9 @@ class NotesWidget extends StatelessWidget {
                   crossAxisSpacing: 8.0,
                   children: List.generate(notes.length, (int index) {
                     final note = notes[index];
-                    final formattedDate =
-                        DateFormat('MMM d').format(note.timestamp.toDate());
+                    final formattedDate = DateFormat(
+                      'MMM d',
+                    ).format(note.timestamp.toDate());
 
                     return Card(
                       elevation: 1,
@@ -49,7 +47,11 @@ class NotesWidget extends StatelessWidget {
                         children: [
                           Padding(
                             padding: const EdgeInsets.fromLTRB(
-                                16.0, 16.0, 16.0, 16.0),
+                              16.0,
+                              16.0,
+                              16.0,
+                              16.0,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -88,16 +90,19 @@ class NotesWidget extends StatelessWidget {
                                     builder: (context) => AlertDialog(
                                       title: const Text('Confirm Delete'),
                                       content: const Text(
-                                          'Are you sure you want to delete this note?'),
+                                        'Are you sure you want to delete this note?',
+                                      ),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(context)
-                                              .pop(false), // Do not delete
+                                          onPressed: () => Navigator.of(
+                                            context,
+                                          ).pop(false), // Do not delete
                                           child: const Text('Cancel'),
                                         ),
                                         TextButton(
-                                          onPressed: () => Navigator.of(context)
-                                              .pop(true), // Proceed to delete
+                                          onPressed: () => Navigator.of(
+                                            context,
+                                          ).pop(true), // Proceed to delete
                                           child: const Text('Delete'),
                                         ),
                                       ],

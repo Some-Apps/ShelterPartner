@@ -29,7 +29,9 @@ class Geofence {
       location: (data['location'] != null
           ? data['location'] as GeoPoint
           : const GeoPoint(
-              43.0722, -89.4008)), // Default to GeoPoint(0.0, 0.0) if null
+              43.0722,
+              -89.4008,
+            )), // Default to GeoPoint(0.0, 0.0) if null
       radius: (data['radius'] != null
           ? (data['radius'] as num).toDouble()
           : 500.0), // Default to 1000.0 if null

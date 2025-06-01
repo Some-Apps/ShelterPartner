@@ -32,9 +32,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           Navigator.pop(context);
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -42,9 +42,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
-      ),
+      appBar: AppBar(title: const Text('Change Password')),
       body: SingleChildScrollView(
         child: Center(
           child: ConstrainedBox(
@@ -57,8 +55,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   children: <Widget>[
                     TextFormField(
                       controller: _oldPasswordController,
-                      decoration:
-                          const InputDecoration(labelText: 'Old Password'),
+                      decoration: const InputDecoration(
+                        labelText: 'Old Password',
+                      ),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -69,8 +68,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                     TextFormField(
                       controller: _passwordController,
-                      decoration:
-                          const InputDecoration(labelText: 'New Password'),
+                      decoration: const InputDecoration(
+                        labelText: 'New Password',
+                      ),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -81,8 +81,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                     TextFormField(
                       controller: _confirmPasswordController,
-                      decoration:
-                          const InputDecoration(labelText: 'Confirm Password'),
+                      decoration: const InputDecoration(
+                        labelText: 'Confirm Password',
+                      ),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {

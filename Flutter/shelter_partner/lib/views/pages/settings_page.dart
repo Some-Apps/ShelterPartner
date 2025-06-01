@@ -42,16 +42,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final appUser = ref.watch(appUserProvider);
 
     return shelterAsyncValue.when(
-      loading: () => const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-      error: (error, stack) => Scaffold(
-        body: Center(
-          child: Text('Error: $error'),
-        ),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) =>
+          Scaffold(body: Center(child: Text('Error: $error'))),
       data: (shelter) => Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -204,7 +198,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     builder: (context) => AlertDialog(
                                       title: const Text("Delete Account"),
                                       content: const Text(
-                                          "To delete your account and all data associated with it, please email jared@shelterpartner.org"),
+                                        "To delete your account and all data associated with it, please email jared@shelterpartner.org",
+                                      ),
                                       actions: [
                                         TextButton(
                                           onPressed: () =>
@@ -364,8 +359,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 title: const Text("Wiki"),
                                 trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
-                                  launchUrl(Uri.parse(
-                                      'https://wiki.shelterpartner.org'));
+                                  launchUrl(
+                                    Uri.parse(
+                                      'https://wiki.shelterpartner.org',
+                                    ),
+                                  );
                                 },
                               ),
                               Divider(
@@ -387,8 +385,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 thickness: 1,
                               ),
                               ListTile(
-                                leading: const Icon(Icons.numbers,
-                                    color: Colors.grey),
+                                leading: const Icon(
+                                  Icons.numbers,
+                                  color: Colors.grey,
+                                ),
                                 title: Text(
                                   _version, // Dynamically fetched version
                                   style: const TextStyle(color: Colors.grey),
@@ -401,8 +401,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               ),
                               const ListTile(
                                 leading: Icon(Icons.pets, color: Colors.grey),
-                                title: Text("Dedicated to Aslan",
-                                    style: TextStyle(color: Colors.grey)),
+                                title: Text(
+                                  "Dedicated to Aslan",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                               ),
                             ],
                           ),

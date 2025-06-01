@@ -44,28 +44,18 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
       },
       child: shelterAsyncValue.when(
         loading: () => Scaffold(
-          appBar: AppBar(
-            title: const Text("Account Settings"),
-          ),
-          body: const Center(
-            child: CircularProgressIndicator(),
-          ),
+          appBar: AppBar(title: const Text("Account Settings")),
+          body: const Center(child: CircularProgressIndicator()),
         ),
         error: (error, stack) => Scaffold(
-          appBar: AppBar(
-            title: const Text("Account Settings"),
-          ),
-          body: Center(
-            child: Text('Error: $error'),
-          ),
+          appBar: AppBar(title: const Text("Account Settings")),
+          body: Center(child: Text('Error: $error')),
         ),
         data: (user) {
           _customFormURLController.text =
               user?.accountSettings?.customFormURL ?? "";
           return Scaffold(
-            appBar: AppBar(
-              title: const Text("Account Settings"),
-            ),
+            appBar: AppBar(title: const Text("Account Settings")),
             body: SingleChildScrollView(
               child: Center(
                 child: ConstrainedBox(
@@ -84,63 +74,70 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                           ),
                         ),
                         Card.outlined(
-                            child: Column(
-                          children: [
-                            PickerView(
-                              title: "Mode",
-                              options: const [
-                                "Admin",
-                                "Enrichment",
-                                "Visitor",
-                                "Enrichment & Visitor"
-                              ],
-                              value: user?.accountSettings?.mode ?? "Admin",
-                              onChanged: (String? newValue) {
-                                if (newValue != null && newValue.isNotEmpty) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .modifyAccountSettingString(
-                                          user!.id, "mode", newValue);
+                          child: Column(
+                            children: [
+                              PickerView(
+                                title: "Mode",
+                                options: const [
+                                  "Admin",
+                                  "Enrichment",
+                                  "Visitor",
+                                  "Enrichment & Visitor",
+                                ],
+                                value: user?.accountSettings?.mode ?? "Admin",
+                                onChanged: (String? newValue) {
+                                  if (newValue != null && newValue.isNotEmpty) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .modifyAccountSettingString(
+                                          user!.id,
+                                          "mode",
+                                          newValue,
+                                        );
 
-                                  final appUser =
-                                      ref.read(appUserProvider.notifier).state;
-                                  final updatedAppUser = appUser!.copyWith(
-                                    accountSettings: appUser.accountSettings
-                                        ?.copyWith(mode: newValue),
-                                  );
+                                    final appUser = ref
+                                        .read(appUserProvider.notifier)
+                                        .state;
+                                    final updatedAppUser = appUser!.copyWith(
+                                      accountSettings: appUser.accountSettings
+                                          ?.copyWith(mode: newValue),
+                                    );
 
-                                  if (context.mounted &&
-                                      newValue != 'Visitor') {
-                                    context.go('/enrichment');
-                                  } else {
-                                    context.go('/visitors');
+                                    if (context.mounted &&
+                                        newValue != 'Visitor') {
+                                      context.go('/enrichment');
+                                    } else {
+                                      context.go('/visitors');
+                                    }
+
+                                    // Update the provider with the new state
+                                    ref.read(appUserProvider.notifier).state =
+                                        updatedAppUser;
                                   }
+                                },
+                              ),
 
-                                  // Update the provider with the new state
-                                  ref.read(appUserProvider.notifier).state =
-                                      updatedAppUser;
-                                }
-                              },
-                            ),
-
-                            // ListTile(
-                            //   title: SwitchToggleView(
-                            //     title: "Remove Ads",
-                            //     value:
-                            //         user?.accountSettings?.removeAds ?? false,
-                            //     onChanged: (bool newValue) {
-                            //       ref
-                            //           .read(accountSettingsViewModelProvider
-                            //               .notifier)
-                            //           .toggleAttribute(user!.id, "removeAds");
-                            //     },
-                            //   ),
-                            //   subtitle: const Text(
-                            //       "Just for testing. Not in final app."),
-                            // ),
-                          ],
-                        )),
+                              // ListTile(
+                              //   title: SwitchToggleView(
+                              //     title: "Remove Ads",
+                              //     value:
+                              //         user?.accountSettings?.removeAds ?? false,
+                              //     onChanged: (bool newValue) {
+                              //       ref
+                              //           .read(accountSettingsViewModelProvider
+                              //               .notifier)
+                              //           .toggleAttribute(user!.id, "removeAds");
+                              //     },
+                              //   ),
+                              //   subtitle: const Text(
+                              //       "Just for testing. Not in final app."),
+                              // ),
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 25.0),
                         // Enrichment
                         const Padding(
@@ -151,252 +148,319 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                           ),
                         ),
                         Card.outlined(
-                            child: Column(
-                          children: [
-                            PickerView(
-                              title: "Enrichment Sort",
-                              options: const ["Last Let Out", "Alphabetical"],
-                              value: user?.accountSettings?.enrichmentSort ??
-                                  "Last Let Out",
-                              onChanged: (String? newValue) {
-                                if (newValue != null && newValue.isNotEmpty) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .modifyAccountSettingString(
-                                          user!.id, "enrichmentSort", newValue);
-                                }
-                              },
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            NavigationButton(
-                              title: "Enrichment Filter",
-                              route: '/settings/account-settings/main-filter',
-                              extra: FilterParameters(
-                                title: "Account Enrichment Filter",
-                                collection: 'users',
-                                documentID: shelterAsyncValue.value!.id,
-                                filterFieldPath:
-                                    'accountSettings.enrichmentFilter',
+                          child: Column(
+                            children: [
+                              PickerView(
+                                title: "Enrichment Sort",
+                                options: const ["Last Let Out", "Alphabetical"],
+                                value:
+                                    user?.accountSettings?.enrichmentSort ??
+                                    "Last Let Out",
+                                onChanged: (String? newValue) {
+                                  if (newValue != null && newValue.isNotEmpty) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .modifyAccountSettingString(
+                                          user!.id,
+                                          "enrichmentSort",
+                                          newValue,
+                                        );
+                                  }
+                                },
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                decoration: const InputDecoration(
-                                  labelText: "Custom Form URL",
-                                  hintText: "Custom Form URL",
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              NavigationButton(
+                                title: "Enrichment Filter",
+                                route: '/settings/account-settings/main-filter',
+                                extra: FilterParameters(
+                                  title: "Account Enrichment Filter",
+                                  collection: 'users',
+                                  documentID: shelterAsyncValue.value!.id,
+                                  filterFieldPath:
+                                      'accountSettings.enrichmentFilter',
                                 ),
-                                controller: _customFormURLController,
-                                focusNode: _focusNode,
-                                onChanged: (String value) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .modifyAccountSettingString(
-                                          user!.id, "customFormURL", value);
-                                },
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: NumberStepperView(
-                                title: "Minimum Duration",
-                                label: "minutes",
-                                minValue: 1,
-                                maxValue: 600,
-                                value:
-                                    user?.accountSettings?.minimumLogMinutes ??
-                                        0,
-                                increment: () {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .incrementAttribute(
-                                          user!.id, "minimumLogMinutes");
-                                },
-                                decrement: () {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .decrementAttribute(
-                                          user!.id, "minimumLogMinutes");
-                                },
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title: "Photo Uploads Allowed",
-                                value: user?.accountSettings
-                                        ?.photoUploadsAllowed ??
-                                    false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(
-                                          user!.id, "photoUploadsAllowed");
-                                },
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    labelText: "Custom Form URL",
+                                    hintText: "Custom Form URL",
+                                  ),
+                                  controller: _customFormURLController,
+                                  focusNode: _focusNode,
+                                  onChanged: (String value) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .modifyAccountSettingString(
+                                          user!.id,
+                                          "customFormURL",
+                                          value,
+                                        );
+                                  },
+                                ),
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title: "Allow Bulk Take Out",
-                                value:
-                                    user?.accountSettings?.allowBulkTakeOut ??
-                                        false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(
-                                          user!.id, "allowBulkTakeOut");
-                                },
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title: "Require Let Out Type",
-                                value:
-                                    user?.accountSettings?.requireLetOutType ??
-                                        false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(
-                                          user!.id, "requireLetOutType");
-                                },
+                              ListTile(
+                                title: NumberStepperView(
+                                  title: "Minimum Duration",
+                                  label: "minutes",
+                                  minValue: 1,
+                                  maxValue: 600,
+                                  value:
+                                      user
+                                          ?.accountSettings
+                                          ?.minimumLogMinutes ??
+                                      0,
+                                  increment: () {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .incrementAttribute(
+                                          user!.id,
+                                          "minimumLogMinutes",
+                                        );
+                                  },
+                                  decrement: () {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .decrementAttribute(
+                                          user!.id,
+                                          "minimumLogMinutes",
+                                        );
+                                  },
+                                ),
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title: "Require Early Put Back Reason",
-                                value: user?.accountSettings
-                                        ?.requireEarlyPutBackReason ??
-                                    false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(user!.id,
-                                          "requireEarlyPutBackReason");
-                                },
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title: "Require Name",
-                                value:
-                                    user?.accountSettings?.requireName ?? false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(user!.id, "requireName");
-                                },
+                              ListTile(
+                                title: SwitchToggleView(
+                                  title: "Photo Uploads Allowed",
+                                  value:
+                                      user
+                                          ?.accountSettings
+                                          ?.photoUploadsAllowed ??
+                                      false,
+                                  onChanged: (bool newValue) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .toggleAttribute(
+                                          user!.id,
+                                          "photoUploadsAllowed",
+                                        );
+                                  },
+                                ),
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title:
-                                    "Create Logs When Under Minimum Duration",
-                                value: user?.accountSettings
-                                        ?.createLogsWhenUnderMinimumDuration ??
-                                    false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(user!.id,
-                                          "createLogsWhenUnderMinimumDuration");
-                                },
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title: "Show Custom Form",
-                                value: user?.accountSettings?.showCustomForm ??
-                                    false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(
-                                          user!.id, "showCustomForm");
-                                },
+                              ListTile(
+                                title: SwitchToggleView(
+                                  title: "Allow Bulk Take Out",
+                                  value:
+                                      user?.accountSettings?.allowBulkTakeOut ??
+                                      false,
+                                  onChanged: (bool newValue) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .toggleAttribute(
+                                          user!.id,
+                                          "allowBulkTakeOut",
+                                        );
+                                  },
+                                ),
                               ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: SwitchToggleView(
-                                title: "Append Animal Data To URL",
-                                value: user?.accountSettings
-                                        ?.appendAnimalDataToURL ??
-                                    false,
-                                onChanged: (bool newValue) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .toggleAttribute(
-                                          user!.id, "appendAnimalDataToURL");
-                                },
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
                               ),
-                            ),
-                          ],
-                        )),
+                              ListTile(
+                                title: SwitchToggleView(
+                                  title: "Require Let Out Type",
+                                  value:
+                                      user
+                                          ?.accountSettings
+                                          ?.requireLetOutType ??
+                                      false,
+                                  onChanged: (bool newValue) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .toggleAttribute(
+                                          user!.id,
+                                          "requireLetOutType",
+                                        );
+                                  },
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: SwitchToggleView(
+                                  title: "Require Early Put Back Reason",
+                                  value:
+                                      user
+                                          ?.accountSettings
+                                          ?.requireEarlyPutBackReason ??
+                                      false,
+                                  onChanged: (bool newValue) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .toggleAttribute(
+                                          user!.id,
+                                          "requireEarlyPutBackReason",
+                                        );
+                                  },
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: SwitchToggleView(
+                                  title: "Require Name",
+                                  value:
+                                      user?.accountSettings?.requireName ??
+                                      false,
+                                  onChanged: (bool newValue) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .toggleAttribute(
+                                          user!.id,
+                                          "requireName",
+                                        );
+                                  },
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: SwitchToggleView(
+                                  title:
+                                      "Create Logs When Under Minimum Duration",
+                                  value:
+                                      user
+                                          ?.accountSettings
+                                          ?.createLogsWhenUnderMinimumDuration ??
+                                      false,
+                                  onChanged: (bool newValue) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .toggleAttribute(
+                                          user!.id,
+                                          "createLogsWhenUnderMinimumDuration",
+                                        );
+                                  },
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: SwitchToggleView(
+                                  title: "Show Custom Form",
+                                  value:
+                                      user?.accountSettings?.showCustomForm ??
+                                      false,
+                                  onChanged: (bool newValue) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .toggleAttribute(
+                                          user!.id,
+                                          "showCustomForm",
+                                        );
+                                  },
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: SwitchToggleView(
+                                  title: "Append Animal Data To URL",
+                                  value:
+                                      user
+                                          ?.accountSettings
+                                          ?.appendAnimalDataToURL ??
+                                      false,
+                                  onChanged: (bool newValue) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .toggleAttribute(
+                                          user!.id,
+                                          "appendAnimalDataToURL",
+                                        );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                         const SizedBox(height: 25.0),
 
@@ -408,104 +472,128 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                           ),
                         ),
                         Card.outlined(
-                          child: Column(children: [
-                            PickerView(
-                              title: "Visitor Sort",
-                              options: const ["Intake Date", "Alphabetical"],
-                              value: user?.accountSettings?.visitorSort ??
-                                  "Alphabetical",
-                              onChanged: (String? newValue) {
-                                if (newValue != null && newValue.isNotEmpty) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .modifyAccountSettingString(
-                                          user!.id, "visitorSort", newValue);
-                                }
-                              },
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            NavigationButton(
-                              title: "Visitor Filter",
-                              route:
-                                  '/settings/account-settings/visitor-filter',
-                              extra: FilterParameters(
-                                title: "Account Visitor Filter",
-                                collection: 'users',
-                                documentID: shelterAsyncValue.value!.id,
-                                filterFieldPath:
-                                    'accountSettings.visitorFilter',
-                              ),
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            PickerView(
-                              title: "Slideshow Size",
-                              options: const [
-                                "Scaled to Fit",
-                                "Scaled to Fill",
-                                "Cropped to Square"
-                              ],
-                              value: user?.accountSettings?.slideshowSize ??
-                                  "Scaled to Fit",
-                              onChanged: (String? newValue) {
-                                if (newValue != null && newValue.isNotEmpty) {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .modifyAccountSettingString(
-                                          user!.id, "slideshowSize", newValue);
-
-                                  final appUser =
-                                      ref.read(appUserProvider.notifier).state;
-                                  final updatedAppUser = appUser!.copyWith(
-                                    accountSettings: appUser.accountSettings
-                                        ?.copyWith(slideshowSize: newValue),
-                                  );
-
-                                  // Update the provider with the new state
-                                  ref.read(appUserProvider.notifier).state =
-                                      updatedAppUser;
-                                }
-                              },
-                            ),
-                            Divider(
-                              color: Colors.black.withOpacity(0.1),
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              title: NumberStepperView(
-                                title: "Slideshow Timer",
-                                label: "seconds",
-                                minValue: 5,
-                                maxValue: 600,
+                          child: Column(
+                            children: [
+                              PickerView(
+                                title: "Visitor Sort",
+                                options: const ["Intake Date", "Alphabetical"],
                                 value:
-                                    user?.accountSettings?.slideshowTimer ?? 15,
-                                increment: () {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .incrementAttribute(
-                                          user!.id, "slideshowTimer");
-                                },
-                                decrement: () {
-                                  ref
-                                      .read(accountSettingsViewModelProvider
-                                          .notifier)
-                                      .decrementAttribute(
-                                          user!.id, "slideshowTimer");
+                                    user?.accountSettings?.visitorSort ??
+                                    "Alphabetical",
+                                onChanged: (String? newValue) {
+                                  if (newValue != null && newValue.isNotEmpty) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .modifyAccountSettingString(
+                                          user!.id,
+                                          "visitorSort",
+                                          newValue,
+                                        );
+                                  }
                                 },
                               ),
-                            ),
-                          ]),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              NavigationButton(
+                                title: "Visitor Filter",
+                                route:
+                                    '/settings/account-settings/visitor-filter',
+                                extra: FilterParameters(
+                                  title: "Account Visitor Filter",
+                                  collection: 'users',
+                                  documentID: shelterAsyncValue.value!.id,
+                                  filterFieldPath:
+                                      'accountSettings.visitorFilter',
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              PickerView(
+                                title: "Slideshow Size",
+                                options: const [
+                                  "Scaled to Fit",
+                                  "Scaled to Fill",
+                                  "Cropped to Square",
+                                ],
+                                value:
+                                    user?.accountSettings?.slideshowSize ??
+                                    "Scaled to Fit",
+                                onChanged: (String? newValue) {
+                                  if (newValue != null && newValue.isNotEmpty) {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .modifyAccountSettingString(
+                                          user!.id,
+                                          "slideshowSize",
+                                          newValue,
+                                        );
+
+                                    final appUser = ref
+                                        .read(appUserProvider.notifier)
+                                        .state;
+                                    final updatedAppUser = appUser!.copyWith(
+                                      accountSettings: appUser.accountSettings
+                                          ?.copyWith(slideshowSize: newValue),
+                                    );
+
+                                    // Update the provider with the new state
+                                    ref.read(appUserProvider.notifier).state =
+                                        updatedAppUser;
+                                  }
+                                },
+                              ),
+                              Divider(
+                                color: Colors.black.withOpacity(0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                title: NumberStepperView(
+                                  title: "Slideshow Timer",
+                                  label: "seconds",
+                                  minValue: 5,
+                                  maxValue: 600,
+                                  value:
+                                      user?.accountSettings?.slideshowTimer ??
+                                      15,
+                                  increment: () {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .incrementAttribute(
+                                          user!.id,
+                                          "slideshowTimer",
+                                        );
+                                  },
+                                  decrement: () {
+                                    ref
+                                        .read(
+                                          accountSettingsViewModelProvider
+                                              .notifier,
+                                        )
+                                        .decrementAttribute(
+                                          user!.id,
+                                          "slideshowTimer",
+                                        );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
 
                         const Padding(
@@ -547,28 +635,34 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                                         ),
                                         const SizedBox(height: 4),
                                         LinearProgressIndicator(
-                                          value: shelterSettings
-                                                  .shelterSettings.tokenCount /
+                                          value:
                                               shelterSettings
-                                                  .shelterSettings.tokenLimit,
+                                                  .shelterSettings
+                                                  .tokenCount /
+                                              shelterSettings
+                                                  .shelterSettings
+                                                  .tokenLimit,
                                           backgroundColor: Colors.grey[300],
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                            shelterSettings.shelterSettings
-                                                        .tokenCount >
-                                                    shelterSettings
+                                                shelterSettings
                                                             .shelterSettings
-                                                            .tokenLimit *
-                                                        0.9
-                                                ? Colors.red
-                                                : Colors.green,
-                                          ),
+                                                            .tokenCount >
+                                                        shelterSettings
+                                                                .shelterSettings
+                                                                .tokenLimit *
+                                                            0.9
+                                                    ? Colors.red
+                                                    : Colors.green,
+                                              ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           "Last Reset: ${shelterSettings.shelterSettings.lastTokenReset != null ? DateTime.parse(shelterSettings.shelterSettings.lastTokenReset.toString()).toLocal().toString().split('.')[0] : 'Never'}",
                                           style: const TextStyle(
-                                              fontSize: 12, color: Colors.grey),
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                       ],
                                     ),

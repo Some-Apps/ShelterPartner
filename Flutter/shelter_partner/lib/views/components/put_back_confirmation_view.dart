@@ -16,10 +16,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 class PutBackConfirmationView extends ConsumerStatefulWidget {
   final List<Animal> animals; // Accepts a list of animals
 
-  const PutBackConfirmationView({
-    super.key,
-    required this.animals,
-  });
+  const PutBackConfirmationView({super.key, required this.animals});
 
   @override
   _PutBackConfirmationViewState createState() =>
@@ -53,16 +50,18 @@ class _PutBackConfirmationViewState
   void _updateConfirmButtonState() {
     final accountSettings = ref.read(accountSettingsViewModelProvider);
     setState(() {
-      _isConfirmEnabled = ((_selectedEarlyReason != null &&
-              _selectedEarlyReason!.isNotEmpty) ||
+      _isConfirmEnabled =
+          ((_selectedEarlyReason != null && _selectedEarlyReason!.isNotEmpty) ||
           accountSettings.value?.accountSettings?.requireEarlyPutBackReason ==
               false ||
-          widget.animals.every((animal) =>
-              Timestamp.now()
-                  .toDate()
-                  .difference(animal.logs.last.startTime.toDate())
-                  .inMinutes >=
-              accountSettings.value!.accountSettings!.minimumLogMinutes));
+          widget.animals.every(
+            (animal) =>
+                Timestamp.now()
+                    .toDate()
+                    .difference(animal.logs.last.startTime.toDate())
+                    .inMinutes >=
+                accountSettings.value!.accountSettings!.minimumLogMinutes,
+          ));
     });
   }
 
@@ -70,7 +69,8 @@ class _PutBackConfirmationViewState
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final putBackViewModel = ref.read(
-        putBackConfirmationViewModelProvider(widget.animals.first).notifier);
+      putBackConfirmationViewModelProvider(widget.animals.first).notifier,
+    );
     final appUser = ref.watch(appUserProvider);
     showDialog(
       context: context,
@@ -122,9 +122,11 @@ class _PutBackConfirmationViewState
                   // Custom Form button pressed
                   String url =
                       accountSettings.value?.accountSettings?.customFormURL ??
-                          '';
+                      '';
                   if (accountSettings
-                          .value?.accountSettings?.appendAnimalDataToURL ==
+                          .value
+                          ?.accountSettings
+                          ?.appendAnimalDataToURL ==
                       true) {
                     final animalData = widget.animals
                         .map((animal) => 'id=${animal.id}&name=${animal.name}')
@@ -143,12 +145,14 @@ class _PutBackConfirmationViewState
                       final controller = WebViewController()
                         ..setJavaScriptMode(JavaScriptMode.unrestricted)
                         ..loadRequest(Uri.parse(url));
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                          appBar: AppBar(title: const Text('Custom Form')),
-                          body: WebViewWidget(controller: controller),
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => Scaffold(
+                            appBar: AppBar(title: const Text('Custom Form')),
+                            body: WebViewWidget(controller: controller),
+                          ),
                         ),
-                      ));
+                      );
                     }
                   }
                 },
@@ -165,7 +169,8 @@ class _PutBackConfirmationViewState
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
     final putBackViewModel = ref.read(
-        putBackConfirmationViewModelProvider(widget.animals.first).notifier);
+      putBackConfirmationViewModelProvider(widget.animals.first).notifier,
+    );
     final appUser = ref.watch(appUserProvider);
 
     if (accountSettings.value?.accountSettings?.requireEarlyPutBackReason ==
@@ -219,12 +224,16 @@ class _PutBackConfirmationViewState
                     const TextSpan(
                       text: 'Alert for ',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                     TextSpan(
                       text: animal.name,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                     const TextSpan(
                       text: ': ',
@@ -238,17 +247,24 @@ class _PutBackConfirmationViewState
                 ),
               ),
           if (accountSettings
-                      .value?.accountSettings?.requireEarlyPutBackReason ==
+                      .value
+                      ?.accountSettings
+                      ?.requireEarlyPutBackReason ==
                   true &&
               shelterSettings
-                      .value?.shelterSettings.earlyPutBackReasons.isNotEmpty ==
+                      .value
+                      ?.shelterSettings
+                      .earlyPutBackReasons
+                      .isNotEmpty ==
                   true &&
-              widget.animals.any((animal) =>
-                  Timestamp.now()
-                      .toDate()
-                      .difference(animal.logs.last.startTime.toDate())
-                      .inMinutes <
-                  accountSettings.value!.accountSettings!.minimumLogMinutes))
+              widget.animals.any(
+                (animal) =>
+                    Timestamp.now()
+                        .toDate()
+                        .difference(animal.logs.last.startTime.toDate())
+                        .inMinutes <
+                    accountSettings.value!.accountSettings!.minimumLogMinutes,
+              ))
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -264,13 +280,16 @@ class _PutBackConfirmationViewState
                     });
                   },
                   items: shelterSettings
-                      .value!.shelterSettings.earlyPutBackReasons
+                      .value!
+                      .shelterSettings
+                      .earlyPutBackReasons
                       .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      })
+                      .toList(),
                 ),
               ],
             ),
@@ -290,31 +309,39 @@ class _PutBackConfirmationViewState
                     context: context,
                     barrierDismissible: false,
                     builder: (BuildContext context) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return const Center(child: CircularProgressIndicator());
                     },
                   );
 
                   for (var animal in widget.animals) {
-                    if ((!accountSettings.value!.accountSettings!
+                    if ((!accountSettings
+                                .value!
+                                .accountSettings!
                                 .createLogsWhenUnderMinimumDuration &&
                             Timestamp.now()
                                     .toDate()
                                     .difference(
-                                        animal.logs.last.startTime.toDate())
+                                      animal.logs.last.startTime.toDate(),
+                                    )
                                     .inMinutes <
-                                accountSettings.value!.accountSettings!
+                                accountSettings
+                                    .value!
+                                    .accountSettings!
                                     .minimumLogMinutes &&
                             appUser?.type == 'admin') ||
-                        (!shelterSettings.value!.volunteerSettings
+                        (!shelterSettings
+                                .value!
+                                .volunteerSettings
                                 .createLogsWhenUnderMinimumDuration &&
                             Timestamp.now()
                                     .toDate()
                                     .difference(
-                                        animal.logs.last.startTime.toDate())
+                                      animal.logs.last.startTime.toDate(),
+                                    )
                                     .inMinutes <
-                                shelterSettings.value!.volunteerSettings
+                                shelterSettings
+                                    .value!
+                                    .volunteerSettings
                                     .minimumLogMinutes &&
                             appUser?.type == 'volunteer')) {
                       await putBackViewModel.deleteLastLog(animal);

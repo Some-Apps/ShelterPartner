@@ -18,8 +18,8 @@ class AnimalCardViewModel extends StateNotifier<AsyncValue<void>> {
     required this.shelterId,
     required this.animalType,
     required this.shelterSettings,
-  })  : _repository = repository,
-        super(const AsyncData(null));
+  }) : _repository = repository,
+       super(const AsyncData(null));
 
   Future<void> handleAutomaticPutBack(Animal animal) async {
     if (!animal.inKennel &&
@@ -62,8 +62,9 @@ class AnimalCardViewModel extends StateNotifier<AsyncValue<void>> {
 
   bool _hasBeenOutLongerThanAutomaticPutBackHours(Animal animal) {
     final lastLog = animal.logs.last;
-    final timeOut =
-        DateTime.now().difference(lastLog.startTime.toDate()).inHours;
+    final timeOut = DateTime.now()
+        .difference(lastLog.startTime.toDate())
+        .inHours;
     return timeOut >= shelterSettings.automaticPutBackHours;
   }
 }

@@ -47,10 +47,7 @@ class AppUser {
         logicalOperator = LogicalOperator.or;
       }
 
-      return FilterGroup(
-        logicalOperator: logicalOperator,
-        elements: elements,
-      );
+      return FilterGroup(logicalOperator: logicalOperator, elements: elements);
     }
 
     // Deserialize userFilter (if it exists in Firestore)

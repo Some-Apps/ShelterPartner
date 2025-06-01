@@ -26,15 +26,22 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
   String? _selectedEarlyReason;
 
   Future<void> _selectTime(
-      BuildContext context, TextEditingController controller) async {
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
       final now = DateTime.now();
-      final selectedTime =
-          DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+      final selectedTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        picked.hour,
+        picked.minute,
+      );
       controller.text = selectedTime.toIso8601String();
     }
   }
@@ -66,8 +73,9 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                     child: Text('None'),
                   ),
                 ],
-                ...?shelterSettings.value?.shelterSettings.letOutTypes
-                    .map((String type) {
+                ...?shelterSettings.value?.shelterSettings.letOutTypes.map((
+                  String type,
+                ) {
                   return DropdownMenuItem<String>(
                     value: type,
                     child: Text(type),
@@ -96,11 +104,11 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                 ],
                 ...?shelterSettings.value?.shelterSettings.earlyPutBackReasons
                     .map((String reason) {
-                  return DropdownMenuItem<String>(
-                    value: reason,
-                    child: Text(reason),
-                  );
-                }),
+                      return DropdownMenuItem<String>(
+                        value: reason,
+                        child: Text(reason),
+                      );
+                    }),
               ],
               onChanged: (String? newValue) {
                 setState(() {
@@ -144,7 +152,8 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: (_selectedType != null &&
+          onPressed:
+              (_selectedType != null &&
                   _startTimeController.text.isNotEmpty &&
                   _endTimeController.text.isNotEmpty)
               ? () async {
@@ -154,9 +163,11 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                     author: userDetails!.firstName,
                     authorID: userDetails.id,
                     startTime: Timestamp.fromDate(
-                        DateTime.parse(_startTimeController.text)),
+                      DateTime.parse(_startTimeController.text),
+                    ),
                     endTime: Timestamp.fromDate(
-                        DateTime.parse(_endTimeController.text)),
+                      DateTime.parse(_endTimeController.text),
+                    ),
                     earlyReason: _selectedEarlyReason,
                   );
 
@@ -164,16 +175,18 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                       .read(addLogViewModelProvider(widget.animal).notifier)
                       .addLogToAnimal(widget.animal, log)
                       .then((_) {
-                    print('Log added');
-                    if (mounted) {
-                      print('Updating last activity');
-                      ref
-                          .read(updateVolunteerRepositoryProvider)
-                          .modifyVolunteerLastActivity(
-                              userDetails.id, Timestamp.now());
-                      print('Last activity updated');
-                    }
-                  });
+                        print('Log added');
+                        if (mounted) {
+                          print('Updating last activity');
+                          ref
+                              .read(updateVolunteerRepositoryProvider)
+                              .modifyVolunteerLastActivity(
+                                userDetails.id,
+                                Timestamp.now(),
+                              );
+                          print('Last activity updated');
+                        }
+                      });
 
                   Navigator.of(context).pop(log);
                 }

@@ -5,7 +5,7 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class FilterRepository {
   final FirebaseFirestore _firestore;
   FilterRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   Future<void> saveFilterExpression(
     String collection,
@@ -14,9 +14,9 @@ class FilterRepository {
     String filterFieldPath,
   ) async {
     final docRef = _firestore.collection(collection).doc(documentID);
-    return docRef.update({
-      filterFieldPath: filterExpression,
-    }).catchError((error) {
+    return docRef.update({filterFieldPath: filterExpression}).catchError((
+      error,
+    ) {
       throw Exception("Failed to save filter expression: $error");
     });
   }

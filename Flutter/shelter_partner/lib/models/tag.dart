@@ -23,11 +23,6 @@ class Tag {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'count': count,
-      'timestamp': timestamp,
-    };
+    return {'id': id, 'title': title, 'count': count, 'timestamp': timestamp};
   }
 }

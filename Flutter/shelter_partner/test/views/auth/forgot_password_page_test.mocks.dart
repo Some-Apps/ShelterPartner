@@ -26,13 +26,8 @@ import 'package:state_notifier/state_notifier.dart' as _i6;
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakeAuthState_0 extends _i1.SmartFake implements _i2.AuthState {
-  _FakeAuthState_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeAuthState_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [AuthViewModel].
@@ -45,92 +40,72 @@ class MockAuthViewModel extends _i1.Mock implements _i2.AuthViewModel {
 
   @override
   set onError(_i3.ErrorListener? _onError) => super.noSuchMethod(
-        Invocation.setter(
-          #onError,
-          _onError,
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.setter(#onError, _onError),
+    returnValueForMissingStub: null,
+  );
 
   @override
-  bool get mounted => (super.noSuchMethod(
-        Invocation.getter(#mounted),
-        returnValue: false,
-      ) as bool);
+  bool get mounted =>
+      (super.noSuchMethod(Invocation.getter(#mounted), returnValue: false)
+          as bool);
 
   @override
-  _i4.Stream<_i2.AuthState> get stream => (super.noSuchMethod(
-        Invocation.getter(#stream),
-        returnValue: _i4.Stream<_i2.AuthState>.empty(),
-      ) as _i4.Stream<_i2.AuthState>);
+  _i4.Stream<_i2.AuthState> get stream =>
+      (super.noSuchMethod(
+            Invocation.getter(#stream),
+            returnValue: _i4.Stream<_i2.AuthState>.empty(),
+          )
+          as _i4.Stream<_i2.AuthState>);
 
   @override
-  _i2.AuthState get state => (super.noSuchMethod(
-        Invocation.getter(#state),
-        returnValue: _FakeAuthState_0(
-          this,
-          Invocation.getter(#state),
-        ),
-      ) as _i2.AuthState);
+  _i2.AuthState get state =>
+      (super.noSuchMethod(
+            Invocation.getter(#state),
+            returnValue: _FakeAuthState_0(this, Invocation.getter(#state)),
+          )
+          as _i2.AuthState);
 
   @override
   set state(_i2.AuthState? value) => super.noSuchMethod(
-        Invocation.setter(
-          #state,
-          value,
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.setter(#state, value),
+    returnValueForMissingStub: null,
+  );
 
   @override
-  _i2.AuthState get debugState => (super.noSuchMethod(
-        Invocation.getter(#debugState),
-        returnValue: _FakeAuthState_0(
-          this,
-          Invocation.getter(#debugState),
-        ),
-      ) as _i2.AuthState);
+  _i2.AuthState get debugState =>
+      (super.noSuchMethod(
+            Invocation.getter(#debugState),
+            returnValue: _FakeAuthState_0(this, Invocation.getter(#debugState)),
+          )
+          as _i2.AuthState);
 
   @override
-  bool get hasListeners => (super.noSuchMethod(
-        Invocation.getter(#hasListeners),
-        returnValue: false,
-      ) as bool);
+  bool get hasListeners =>
+      (super.noSuchMethod(Invocation.getter(#hasListeners), returnValue: false)
+          as bool);
 
   @override
   void resetState() => super.noSuchMethod(
-        Invocation.method(
-          #resetState,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.method(#resetState, []),
+    returnValueForMissingStub: null,
+  );
 
   @override
-  _i4.Future<void> login(
-    String? email,
-    String? password,
-  ) =>
+  _i4.Future<void> login(String? email, String? password) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #login,
-          [
-            email,
-            password,
-          ],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#login, [email, password]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
-  _i4.Future<String?> sendPasswordReset(String? email) => (super.noSuchMethod(
-        Invocation.method(
-          #sendPasswordReset,
-          [email],
-        ),
-        returnValue: _i4.Future<String?>.value(),
-      ) as _i4.Future<String?>);
+  _i4.Future<String?> sendPasswordReset(String? email) =>
+      (super.noSuchMethod(
+            Invocation.method(#sendPasswordReset, [email]),
+            returnValue: _i4.Future<String?>.value(),
+          )
+          as _i4.Future<String?>);
 
   @override
   _i4.Future<void> signup({
@@ -143,22 +118,19 @@ class MockAuthViewModel extends _i1.Mock implements _i2.AuthViewModel {
     required String? selectedManagementSoftware,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #signup,
-          [],
-          {
-            #email: email,
-            #password: password,
-            #firstName: firstName,
-            #lastName: lastName,
-            #shelterName: shelterName,
-            #shelterAddress: shelterAddress,
-            #selectedManagementSoftware: selectedManagementSoftware,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#signup, [], {
+              #email: email,
+              #password: password,
+              #firstName: firstName,
+              #lastName: lastName,
+              #shelterName: shelterName,
+              #shelterAddress: shelterAddress,
+              #selectedManagementSoftware: selectedManagementSoftware,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   _i4.Future<void> deleteAccount(
@@ -167,43 +139,28 @@ class MockAuthViewModel extends _i1.Mock implements _i2.AuthViewModel {
     String? password,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #deleteAccount,
-          [
-            context,
-            email,
-            password,
-          ],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#deleteAccount, [context, email, password]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
-  _i4.Future<void> logout(_i5.BuildContext? context) => (super.noSuchMethod(
-        Invocation.method(
-          #logout,
-          [context],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
-
-  @override
-  bool updateShouldNotify(
-    _i2.AuthState? old,
-    _i2.AuthState? current,
-  ) =>
+  _i4.Future<void> logout(_i5.BuildContext? context) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateShouldNotify,
-          [
-            old,
-            current,
-          ],
-        ),
-        returnValue: false,
-      ) as bool);
+            Invocation.method(#logout, [context]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  bool updateShouldNotify(_i2.AuthState? old, _i2.AuthState? current) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateShouldNotify, [old, current]),
+            returnValue: false,
+          )
+          as bool);
 
   @override
   _i3.RemoveListener addListener(
@@ -211,20 +168,18 @@ class MockAuthViewModel extends _i1.Mock implements _i2.AuthViewModel {
     bool? fireImmediately = true,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #addListener,
-          [listener],
-          {#fireImmediately: fireImmediately},
-        ),
-        returnValue: () {},
-      ) as _i3.RemoveListener);
+            Invocation.method(
+              #addListener,
+              [listener],
+              {#fireImmediately: fireImmediately},
+            ),
+            returnValue: () {},
+          )
+          as _i3.RemoveListener);
 
   @override
   void dispose() => super.noSuchMethod(
-        Invocation.method(
-          #dispose,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
 }

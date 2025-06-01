@@ -12,7 +12,7 @@ class TakeOutConfirmationViewModel extends StateNotifier<Animal> {
   final Ref ref;
 
   TakeOutConfirmationViewModel(this._repository, this.ref, Animal animal)
-      : super(animal);
+    : super(animal);
 
   Future<void> takeOutAnimal(Animal animal, Log log) async {
     print(log.toMap());
@@ -21,11 +21,15 @@ class TakeOutConfirmationViewModel extends StateNotifier<Animal> {
     final enrichmentViewModel = ref.read(enrichmentViewModelProvider.notifier);
 
     enrichmentViewModel.updateAnimalOptimistically(
-        animal.copyWith(inKennel: false, logs: [...animal.logs, log]));
+      animal.copyWith(inKennel: false, logs: [...animal.logs, log]),
+    );
 
     try {
       await _repository.takeOutAnimal(
-          animal, shelterDetailsAsync.value!.id, log);
+        animal,
+        shelterDetailsAsync.value!.id,
+        log,
+      );
       // Optionally, update the state if needed
     } catch (e) {
       // Handle error
@@ -36,9 +40,10 @@ class TakeOutConfirmationViewModel extends StateNotifier<Animal> {
 
 // Provider for AddNoteViewModel
 final takeOutConfirmationViewModelProvider =
-    StateNotifierProvider.family<TakeOutConfirmationViewModel, Animal, Animal>(
-  (ref, animal) {
-    final repository = ref.watch(takeOutConfirmationRepositoryProvider);
-    return TakeOutConfirmationViewModel(repository, ref, animal);
-  },
-);
+    StateNotifierProvider.family<TakeOutConfirmationViewModel, Animal, Animal>((
+      ref,
+      animal,
+    ) {
+      final repository = ref.watch(takeOutConfirmationRepositoryProvider);
+      return TakeOutConfirmationViewModel(repository, ref, animal);
+    });

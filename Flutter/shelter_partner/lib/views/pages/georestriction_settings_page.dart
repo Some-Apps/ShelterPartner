@@ -51,9 +51,7 @@ class _GeorestrictionSettingsPageState
       return;
     }
 
-    final url = Uri.parse(
-      '$placesApiUrl?input=$input',
-    );
+    final url = Uri.parse('$placesApiUrl?input=$input');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -123,8 +121,9 @@ class _GeorestrictionSettingsPageState
       final userLocation = LatLng(position.latitude, position.longitude);
       setState(() {
         _center = userLocation;
-        _mapController
-            ?.animateCamera(CameraUpdate.newLatLngZoom(_center!, _zoomLevel));
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(_center!, _zoomLevel),
+        );
         _updateCircle();
       });
     } catch (e) {
@@ -219,7 +218,9 @@ class _GeorestrictionSettingsPageState
     return ElevatedButton(
       onPressed: () {
         if (_center != null) {
-          ref.read(volunteersViewModelProvider.notifier).changeGeofence(
+          ref
+              .read(volunteersViewModelProvider.notifier)
+              .changeGeofence(
                 shelter.id,
                 GeoPoint(_center!.latitude, _center!.longitude),
                 _radius,
@@ -241,20 +242,12 @@ class _GeorestrictionSettingsPageState
 
     return shelterAsyncValue.when(
       loading: () => Scaffold(
-        appBar: AppBar(
-          title: const Text("Georestriction Settings"),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: const Text("Georestriction Settings")),
+        body: const Center(child: CircularProgressIndicator()),
       ),
       error: (error, stack) => Scaffold(
-        appBar: AppBar(
-          title: const Text("Georestriction Settings"),
-        ),
-        body: Center(
-          child: Text('Error: $error'),
-        ),
+        appBar: AppBar(title: const Text("Georestriction Settings")),
+        body: Center(child: Text('Error: $error')),
       ),
       data: (shelter) {
         // Initialize the variables if they are not initialized yet
@@ -270,14 +263,13 @@ class _GeorestrictionSettingsPageState
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text("Georestriction Settings"),
-          ),
+          appBar: AppBar(title: const Text("Georestriction Settings")),
           body: SafeArea(
             child: GestureDetector(
               onTap: () {
-                FocusScope.of(context)
-                    .unfocus(); // Unfocus when tapping outside
+                FocusScope.of(
+                  context,
+                ).unfocus(); // Unfocus when tapping outside
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -302,7 +294,9 @@ class _GeorestrictionSettingsPageState
                             _mapController?.animateCamera(
                               CameraUpdate.newCameraPosition(
                                 CameraPosition(
-                                    target: _center!, zoom: _zoomLevel),
+                                  target: _center!,
+                                  zoom: _zoomLevel,
+                                ),
                               ),
                             );
                           },
@@ -329,22 +323,24 @@ class _GeorestrictionSettingsPageState
                           children: [
                             // Dropdown Menu
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                              ),
                               child: DropdownButtonFormField<String>(
                                 value: _locationOption,
                                 decoration: const InputDecoration(
-                                    labelText: "Geofence Center"),
-                                items: [
-                                  'Screen',
-                                  'Current Location',
-                                  'Address'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
+                                  labelText: "Geofence Center",
+                                ),
+                                items: ['Screen', 'Current Location', 'Address']
+                                    .map<DropdownMenuItem<String>>((
+                                      String value,
+                                    ) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    })
+                                    .toList(),
                                 onChanged: (String? newValue) async {
                                   if (newValue != null) {
                                     setState(() {
@@ -368,7 +364,9 @@ class _GeorestrictionSettingsPageState
                             if (_locationOption == 'Address') ...[
                               Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 10.0),
+                                  horizontal: 16.0,
+                                  vertical: 10.0,
+                                ),
                                 child: TextField(
                                   controller: _addressController,
                                   focusNode:
@@ -403,7 +401,8 @@ class _GeorestrictionSettingsPageState
                                             _addressFocusNode.unfocus();
                                           });
                                           await _getPlaceDetails(
-                                              suggestion.placeId);
+                                            suggestion.placeId,
+                                          );
                                         },
                                       );
                                     },

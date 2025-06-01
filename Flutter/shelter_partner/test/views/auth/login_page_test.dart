@@ -19,7 +19,8 @@ void main() {
     });
 
     Future<({Widget widget, ProviderContainer container})> createTestWidget(
-        WidgetTester tester) async {
+      WidgetTester tester,
+    ) async {
       final key = GlobalKey();
       final widget = ProviderScope(
         overrides: [
@@ -34,9 +35,7 @@ void main() {
             );
           }),
         ],
-        child: MaterialApp(
-          home: LoginPage(key: key),
-        ),
+        child: MaterialApp(home: LoginPage(key: key)),
       );
       await tester.pumpWidget(widget);
       await tester.pump(); // Ensure widget is mounted
@@ -52,29 +51,28 @@ void main() {
     }
 
     Finder emailField() => find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is MyTextField && widget.hintText == 'Email',
-        );
+      (Widget widget) => widget is MyTextField && widget.hintText == 'Email',
+    );
 
     Finder passwordField() => find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is MyTextField && widget.hintText == 'Password',
-        );
+      (Widget widget) => widget is MyTextField && widget.hintText == 'Password',
+    );
 
     Finder loginButton() => find.widgetWithText(ElevatedButton, 'Log In');
 
-    testWidgets('should display all UI elements correctly',
-        (WidgetTester tester) async {
+    testWidgets('should display all UI elements correctly', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       setupTestViewport(tester);
       await FirebaseTestOverrides.fakeFirestore
           .collection('users')
           .doc('test-uid')
           .set({
-        'firstName': 'Test',
-        'lastName': 'User',
-        'email': 'user@example.com'
-      });
+            'firstName': 'Test',
+            'lastName': 'User',
+            'email': 'user@example.com',
+          });
       await createTestWidget(tester);
       // Assert
       expect(find.text('Welcome Back!'), findsOneWidget);
@@ -85,8 +83,9 @@ void main() {
       expect(find.text('Create Shelter'), findsOneWidget);
     });
 
-    testWidgets('should authenticate user when login button tapped',
-        (WidgetTester tester) async {
+    testWidgets('should authenticate user when login button tapped', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       setupTestViewport(tester);
       final container = (await createTestWidget(tester)).container;
@@ -108,12 +107,16 @@ void main() {
       await tester.pump(); // Allow tap to register
       // Assert
       final authState = container.read(authViewModelProvider);
-      expect(authState.status, AuthStatus.authenticated,
-          reason: 'User should be authenticated after login');
+      expect(
+        authState.status,
+        AuthStatus.authenticated,
+        reason: 'User should be authenticated after login',
+      );
     });
 
-    testWidgets('should call onTapForgotPassword when forgot password tapped',
-        (WidgetTester tester) async {
+    testWidgets('should call onTapForgotPassword when forgot password tapped', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       setupTestViewport(tester);
       var tapped = false;
@@ -133,8 +136,9 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('should call onTapSignup when create shelter tapped',
-        (WidgetTester tester) async {
+    testWidgets('should call onTapSignup when create shelter tapped', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       setupTestViewport(tester);
       var tapped = false;
@@ -142,9 +146,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: FirebaseTestOverrides.overrides,
-          child: MaterialApp(
-            home: LoginPage(onTapSignup: () => tapped = true),
-          ),
+          child: MaterialApp(home: LoginPage(onTapSignup: () => tapped = true)),
         ),
       );
       await tester.pump();
@@ -154,8 +156,9 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('should authenticate user when enter pressed in email field',
-        (WidgetTester tester) async {
+    testWidgets('should authenticate user when enter pressed in email field', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       setupTestViewport(tester);
       final container = (await createTestWidget(tester)).container;
@@ -179,36 +182,47 @@ void main() {
       await tester.pump();
       // Assert
       final authState = container.read(authViewModelProvider);
-      expect(authState.status, AuthStatus.authenticated,
-          reason: 'User should be authenticated after login');
+      expect(
+        authState.status,
+        AuthStatus.authenticated,
+        reason: 'User should be authenticated after login',
+      );
     });
 
-    testWidgets('should authenticate user when enter pressed in password field',
-        (WidgetTester tester) async {
-      // Arrange
-      setupTestViewport(tester);
-      final container = (await createTestWidget(tester)).container;
-      final authViewModel = container.read(authViewModelProvider.notifier);
-      await authViewModel.signup(
-        email: 'enterInPasswordField@example.com',
-        password: 'mypassword',
-        firstName: 'Test',
-        lastName: 'User',
-        shelterName: 'Test Shelter',
-        shelterAddress: '123 Test St',
-        selectedManagementSoftware: 'ShelterLuv',
-      );
-      // Act
-      await tester.enterText(emailField(), 'enterInPasswordField@example.com');
-      await tester.enterText(passwordField(), 'mypassword');
-      await tester.tap(passwordField());
-      await tester.pump();
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
-      // Assert
-      final authState = container.read(authViewModelProvider);
-      expect(authState.status, AuthStatus.authenticated,
-          reason: 'User should be authenticated after login');
-    });
+    testWidgets(
+      'should authenticate user when enter pressed in password field',
+      (WidgetTester tester) async {
+        // Arrange
+        setupTestViewport(tester);
+        final container = (await createTestWidget(tester)).container;
+        final authViewModel = container.read(authViewModelProvider.notifier);
+        await authViewModel.signup(
+          email: 'enterInPasswordField@example.com',
+          password: 'mypassword',
+          firstName: 'Test',
+          lastName: 'User',
+          shelterName: 'Test Shelter',
+          shelterAddress: '123 Test St',
+          selectedManagementSoftware: 'ShelterLuv',
+        );
+        // Act
+        await tester.enterText(
+          emailField(),
+          'enterInPasswordField@example.com',
+        );
+        await tester.enterText(passwordField(), 'mypassword');
+        await tester.tap(passwordField());
+        await tester.pump();
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pump();
+        // Assert
+        final authState = container.read(authViewModelProvider);
+        expect(
+          authState.status,
+          AuthStatus.authenticated,
+          reason: 'User should be authenticated after login',
+        );
+      },
+    );
   });
 }

@@ -29,8 +29,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     );
 
     // Call the sendPasswordReset method in AuthViewModel
-    final errorMessage =
-        await ref.read(authViewModelProvider.notifier).sendPasswordReset(email);
+    final errorMessage = await ref
+        .read(authViewModelProvider.notifier)
+        .sendPasswordReset(email);
 
     // Close the loading indicator
     Navigator.of(context).pop();
@@ -42,7 +43,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         builder: (context) => AlertDialog(
           title: const Text("Success"),
           content: const Text(
-              "A password reset email has been sent. Please check your inbox."),
+            "A password reset email has been sent. Please check your inbox.",
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -98,9 +100,13 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Reset Password",
-                        style: TextStyle(
-                            fontSize: 35, fontWeight: FontWeight.normal)),
+                    const Text(
+                      "Reset Password",
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
                     const SizedBox(height: 25),
                     MyTextField(
                       controller: emailController,
@@ -109,15 +115,14 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                     ),
                     const SizedBox(height: 25),
                     ElevatedButton(
-                        onPressed: resetPassword,
-                        child: const Text("Reset Password")),
+                      onPressed: resetPassword,
+                      child: const Text("Reset Password"),
+                    ),
                     const SizedBox(height: 50),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Remember your password?',
-                        ),
+                        const Text('Remember your password?'),
                         const SizedBox(height: 4),
                         MouseRegion(
                           cursor: SystemMouseCursors.click,

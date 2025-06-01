@@ -115,32 +115,42 @@ class ShelterSettings {
   // Factory constructor to create ShelterSettings from Firestore Map
   factory ShelterSettings.fromMap(Map<String, dynamic> data) {
     return ShelterSettings(
-      scheduledReports: (data['scheduledReports'] as List<dynamic>?)
-              ?.map((reportMap) => reportMap is Map<String, dynamic>
-                  ? ScheduledReport.fromMap(reportMap)
-                  : throw Exception("Invalid ScheduledReport data"))
+      scheduledReports:
+          (data['scheduledReports'] as List<dynamic>?)
+              ?.map(
+                (reportMap) => reportMap is Map<String, dynamic>
+                    ? ScheduledReport.fromMap(reportMap)
+                    : throw Exception("Invalid ScheduledReport data"),
+              )
               .toList() ??
           [],
-      catTags: (data['catTags'] as List<dynamic>?)
+      catTags:
+          (data['catTags'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      dogTags: (data['dogTags'] as List<dynamic>?)
+      dogTags:
+          (data['dogTags'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      earlyPutBackReasons: (data['earlyPutBackReasons'] as List<dynamic>?)
+      earlyPutBackReasons:
+          (data['earlyPutBackReasons'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      letOutTypes: (data['letOutTypes'] as List<dynamic>?)
+      letOutTypes:
+          (data['letOutTypes'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      apiKeys: (data['apiKeys'] as List<dynamic>?)
-              ?.map((apiKeyMap) => apiKeyMap is Map<String, dynamic>
-                  ? APIKey.fromMap(apiKeyMap)
-                  : throw Exception("Invalid APIKey data"))
+      apiKeys:
+          (data['apiKeys'] as List<dynamic>?)
+              ?.map(
+                (apiKeyMap) => apiKeyMap is Map<String, dynamic>
+                    ? APIKey.fromMap(apiKeyMap)
+                    : throw Exception("Invalid APIKey data"),
+              )
               .toList() ??
           [],
       apiKey: data['apiKey'] ?? '',
@@ -212,7 +222,7 @@ class ShelterSettings {
           automaticallyPutBackAnimals ?? this.automaticallyPutBackAnimals,
       ignoreVisitWhenAutomaticallyPutBack:
           ignoreVisitWhenAutomaticallyPutBack ??
-              this.ignoreVisitWhenAutomaticallyPutBack,
+          this.ignoreVisitWhenAutomaticallyPutBack,
       automaticPutBackHours:
           automaticPutBackHours ?? this.automaticPutBackHours,
       shortUUID: shortUUID ?? this.shortUUID,

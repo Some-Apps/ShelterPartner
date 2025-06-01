@@ -7,13 +7,14 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class PutBackConfirmationRepository {
   final FirebaseFirestore _firestore;
   PutBackConfirmationRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   Future<void> putBackAnimal(Animal animal, String shelterID, Log log) async {
     try {
       // Determine the collection based on species
-      final collection =
-          animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
+      final collection = animal.species.toLowerCase() == 'cat'
+          ? 'cats'
+          : 'dogs';
       print('Determined collection: $collection');
 
       // Fetch the current logs
@@ -53,8 +54,9 @@ class PutBackConfirmationRepository {
   Future<void> deleteLastLog(Animal animal, String shelterID) async {
     try {
       // Determine the collection based on species
-      final collection =
-          animal.species.toLowerCase() == 'cat' ? 'cats' : 'dogs';
+      final collection = animal.species.toLowerCase() == 'cat'
+          ? 'cats'
+          : 'dogs';
       print('Determined collection: $collection');
 
       // Fetch the current logs
@@ -76,10 +78,7 @@ class PutBackConfirmationRepository {
       logs.removeLast();
 
       // Update the logs array and inKennel status in Firestore
-      await docRef.update({
-        'logs': logs,
-        'inKennel': true,
-      });
+      await docRef.update({'logs': logs, 'inKennel': true});
       print('Deleted last log and set inKennel to true for ${animal.id}');
     } catch (e) {
       print('Error in deleteLastLog: $e');
@@ -90,6 +89,6 @@ class PutBackConfirmationRepository {
 // Provider for PutBackConfirmationRepository
 final putBackConfirmationRepositoryProvider =
     Provider<PutBackConfirmationRepository>((ref) {
-  final firestore = ref.watch(firestoreProvider);
-  return PutBackConfirmationRepository(firestore: firestore);
-});
+      final firestore = ref.watch(firestoreProvider);
+      return PutBackConfirmationRepository(firestore: firestore);
+    });

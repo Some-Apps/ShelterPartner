@@ -5,13 +5,12 @@ class MockFileLoader implements FileLoader {
   final FileLoader _defaultFileLoader;
 
   MockFileLoader({FileLoader? defaultFileLoader})
-      : _defaultFileLoader = defaultFileLoader ?? DefaultFileLoader(),
-        _mockFiles = {
-          'assets/csv/cats.csv':
-              'id,name,location\n1,Whiskers,Room 1\n2,Fluffy,Room 2',
-          'assets/csv/dogs.csv':
-              'id,name,location\n1,Buddy,Room 3\n2,Max,Room 4',
-        };
+    : _defaultFileLoader = defaultFileLoader ?? DefaultFileLoader(),
+      _mockFiles = {
+        'assets/csv/cats.csv':
+            'id,name,location\n1,Whiskers,Room 1\n2,Fluffy,Room 2',
+        'assets/csv/dogs.csv': 'id,name,location\n1,Buddy,Room 3\n2,Max,Room 4',
+      };
 
   @override
   Future<String> loadString(String filename) async {

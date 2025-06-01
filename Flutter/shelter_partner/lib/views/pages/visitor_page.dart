@@ -107,10 +107,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
       final formattedUrl = formatImageUrl(originalUrl);
       if (formattedUrl.isNotEmpty) {
-        precacheImage(
-          CachedNetworkImageProvider(formattedUrl),
-          context,
-        );
+        precacheImage(CachedNetworkImageProvider(formattedUrl), context);
       }
     }
   }
@@ -145,11 +142,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
     // If no animals are available, show a message
     if (tabs.isEmpty) {
-      return const Scaffold(
-        body: Center(
-          child: Text('No animals available'),
-        ),
-      );
+      return const Scaffold(body: Center(child: Text('No animals available')));
     }
 
     return DefaultTabController(
@@ -159,10 +152,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
           child: Column(
             children: [
               if (tabs.length > 1)
-                TabBar(
-                  controller: _tabController,
-                  tabs: tabs,
-                ),
+                TabBar(controller: _tabController, tabs: tabs),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -190,7 +180,8 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   Widget _buildAnimalGrid(List<Animal> animals) {
     if (animals.isEmpty) {
       return const Center(
-          child: Icon(Icons.pets, size: 50, color: Colors.grey));
+        child: Icon(Icons.pets, size: 50, color: Colors.grey),
+      );
     }
 
     double screenWidth = MediaQuery.of(context).size.width;
@@ -204,96 +195,102 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
             maxCrossAxisExtent: maxItemExtent,
             childAspectRatio: 1.0,
           ),
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final animal = animals[index];
-              final originalUrl =
-                  (animal.photos != null && animal.photos!.isNotEmpty)
-                      ? animal.photos!.first.url
-                      : '';
-              final displayUrl = formatImageUrl(originalUrl);
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final animal = animals[index];
+            final originalUrl =
+                (animal.photos != null && animal.photos!.isNotEmpty)
+                ? animal.photos!.first.url
+                : '';
+            final displayUrl = formatImageUrl(originalUrl);
 
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: AspectRatio(
-                    aspectRatio: 1.0,
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            context.push('/visitors/details', extra: animal);
-                          },
-                          child: Container(
-                            color: Colors.grey[300],
-                            child: Stack(
-                              children: [
-                                displayUrl.isNotEmpty
-                                    ? CachedNetworkImage(
-                                        imageUrl: displayUrl,
-                                        cacheKey: originalUrl,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                        placeholder: (context, url) =>
-                                            const Center(
-                                          child: Icon(Icons.pets,
-                                              size: 50, color: Colors.grey),
-                                        ),
-                                        errorWidget: (context, url, error) =>
-                                            const Center(
-                                          child: Icon(Icons.pets,
-                                              size: 50, color: Colors.grey),
-                                        ),
-                                      )
-                                    : const Center(
-                                        child: Icon(Icons.pets,
-                                            size: 50, color: Colors.grey),
-                                      ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 0,
-                                  right: 0,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.transparent,
-                                          Colors.black.withOpacity(0.7),
-                                        ],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {},
+                child: AspectRatio(
+                  aspectRatio: 1.0,
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          context.push('/visitors/details', extra: animal);
+                        },
+                        child: Container(
+                          color: Colors.grey[300],
+                          child: Stack(
+                            children: [
+                              displayUrl.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: displayUrl,
+                                      cacheKey: originalUrl,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                            child: Icon(
+                                              Icons.pets,
+                                              size: 50,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                      errorWidget: (context, url, error) =>
+                                          const Center(
+                                            child: Icon(
+                                              Icons.pets,
+                                              size: 50,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                    )
+                                  : const Center(
+                                      child: Icon(
+                                        Icons.pets,
+                                        size: 50,
+                                        color: Colors.grey,
                                       ),
                                     ),
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      animal.name,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center,
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.black.withOpacity(0.7),
+                                      ],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
                                     ),
                                   ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    animal.name,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              );
-            },
-            childCount: animals.length,
-          ),
+              ),
+            );
+          }, childCount: animals.length),
         ),
         // "Start Slideshow" button at the end of the scroll view
         SliverToBoxAdapter(
@@ -376,8 +373,9 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   }
 
   void _startSlideshow() {
-    if (_shuffledAnimals
-        .every((animal) => animal.photos == null || animal.photos!.isEmpty)) {
+    if (_shuffledAnimals.every(
+      (animal) => animal.photos == null || animal.photos!.isEmpty,
+    )) {
       // No valid slides available
       _currentImageUrl = '';
       return;
@@ -405,8 +403,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
             _currentPhotoIndex = 0;
             _setCurrentImage();
             attempts++;
-          } while (
-              _currentImageUrl.isEmpty && attempts < _shuffledAnimals.length);
+          } while (_currentImageUrl.isEmpty &&
+              attempts < _shuffledAnimals.length);
           return;
         }
 
@@ -455,12 +453,10 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
         fit: boxFit,
         width: double.infinity,
         height: double.infinity,
-        placeholder: (context, url) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        errorWidget: (context, url, error) => const Center(
-          child: Icon(Icons.pets, color: Colors.grey, size: 50),
-        ),
+        placeholder: (context, url) =>
+            const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) =>
+            const Center(child: Icon(Icons.pets, color: Colors.grey, size: 50)),
       );
     } else {
       imageWidget = const Center(
@@ -481,10 +477,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                   alignment: Alignment.center,
                   widthFactor: 1.0,
                   heightFactor: 1.0,
-                  child: AspectRatio(
-                    aspectRatio: 1.0,
-                    child: imageWidget,
-                  ),
+                  child: AspectRatio(aspectRatio: 1.0, child: imageWidget),
                 ),
               ),
             ),

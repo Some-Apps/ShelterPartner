@@ -40,20 +40,12 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
 
     return shelterAsyncValue.when(
       loading: () => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text(widget.title)),
+        body: const Center(child: CircularProgressIndicator()),
       ),
       error: (error, stack) => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Center(
-          child: Text('Error: $error'),
-        ),
+        appBar: AppBar(title: Text(widget.title)),
+        body: Center(child: Text('Error: $error')),
       ),
       data: (shelter) {
         if (_arrayItems.isEmpty) {
@@ -62,9 +54,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-          ),
+          appBar: AppBar(title: Text(widget.title)),
           body: GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
@@ -92,9 +82,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                       const SizedBox(height: 10.0),
                       TextFormField(
                         controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                        ),
+                        decoration: const InputDecoration(labelText: 'Email'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter an email';
@@ -108,8 +96,9 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                         decoration: const InputDecoration(
                           labelText: 'Frequency',
                         ),
-                        items: <String>['Monthly', 'Weekly', 'Daily']
-                            .map((String value) {
+                        items: <String>['Monthly', 'Weekly', 'Daily'].map((
+                          String value,
+                        ) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
@@ -128,20 +117,21 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                           decoration: const InputDecoration(
                             labelText: 'Day of the Week',
                           ),
-                          items: <String>[
-                            'Monday',
-                            'Tuesday',
-                            'Wednesday',
-                            'Thursday',
-                            'Friday',
-                            'Saturday',
-                            'Sunday'
-                          ].map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                          items:
+                              <String>[
+                                'Monday',
+                                'Tuesday',
+                                'Wednesday',
+                                'Thursday',
+                                'Friday',
+                                'Saturday',
+                                'Sunday',
+                              ].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
                           onChanged: (newValue) {
                             setState(() {
                               _selectedDayOfWeek = newValue!;
@@ -154,14 +144,16 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                           decoration: const InputDecoration(
                             labelText: 'Day of the Month',
                           ),
-                          items: List<String>.generate(
-                                  31, (index) => '${index + 1}')
-                              .map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                          items:
+                              List<String>.generate(
+                                31,
+                                (index) => '${index + 1}',
+                              ).map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
                           onChanged: (newValue) {
                             setState(() {
                               _selectedDayOfMonth = newValue!;
@@ -189,12 +181,16 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                             );
                             ref
                                 .read(shelterSettingsViewModelProvider.notifier)
-                                .addMapToShelterSettingsArray(shelter!.id,
-                                    "scheduledReports", newReport.toMap());
+                                .addMapToShelterSettingsArray(
+                                  shelter!.id,
+                                  "scheduledReports",
+                                  newReport.toMap(),
+                                );
                             setState(() {
                               _arrayItems.add(newReport);
-                              _arrayItems
-                                  .sort((a, b) => a.title.compareTo(b.title));
+                              _arrayItems.sort(
+                                (a, b) => a.title.compareTo(b.title),
+                              );
                             });
                             _itemController.clear();
                             _emailController.clear();
@@ -222,7 +218,8 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                               });
                               ref
                                   .read(
-                                      shelterSettingsViewModelProvider.notifier)
+                                    shelterSettingsViewModelProvider.notifier,
+                                  )
                                   .removeMapFromShelterSettingsArray(
                                     shelter!.id,
                                     widget.arrayKey,
@@ -235,8 +232,9 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                             background: Container(
                               color: Colors.red,
                               alignment: Alignment.centerRight,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.white,
@@ -246,7 +244,11 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                               title: Text(_arrayItems[index].title),
                               subtitle: Text(
                                 '${_arrayItems[index].email}\n'
-                                '${_arrayItems[index].frequency == 'Daily' ? 'Daily' : _arrayItems[index].frequency == 'Weekly' ? _arrayItems[index].dayOfWeek : 'Every ${_arrayItems[index].dayOfMonth}'}',
+                                '${_arrayItems[index].frequency == 'Daily'
+                                    ? 'Daily'
+                                    : _arrayItems[index].frequency == 'Weekly'
+                                    ? _arrayItems[index].dayOfWeek
+                                    : 'Every ${_arrayItems[index].dayOfMonth}'}',
                               ),
                             ),
                           );

@@ -99,14 +99,16 @@ class _SimplisticAnimalCardViewState
         final currentAnimal = widget.animal;
         print("DEBUG: currentAnimal.inKennel: ${currentAnimal.inKennel}");
         if (currentAnimal.inKennel) {
-          final accountDetails =
-              ref.read(accountSettingsViewModelProvider).value;
+          final accountDetails = ref
+              .read(accountSettingsViewModelProvider)
+              .value;
           print("DEBUG: accountDetails: $accountDetails");
           if (accountDetails != null) {
             final appUser = ref.read(appUserProvider);
             print("DEBUG: appUser: $appUser");
-            final shelterSettings =
-                ref.read(shelterDetailsViewModelProvider).value;
+            final shelterSettings = ref
+                .read(shelterDetailsViewModelProvider)
+                .value;
             print("DEBUG: shelterSettings: $shelterSettings");
             bool requireName;
             bool requireLetOutType;
@@ -115,13 +117,15 @@ class _SimplisticAnimalCardViewState
               requireLetOutType =
                   accountDetails.accountSettings!.requireLetOutType;
               print(
-                  "DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+                "DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType",
+              );
             } else {
               requireName = shelterSettings!.volunteerSettings.requireName;
               requireLetOutType =
                   shelterSettings.volunteerSettings.requireLetOutType;
               print(
-                  "DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+                "DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType",
+              );
             }
             if (requireName || requireLetOutType) {
               print("DEBUG: Showing take out confirmation dialog");
@@ -129,8 +133,11 @@ class _SimplisticAnimalCardViewState
             } else {
               print("DEBUG: Directly taking out animal");
               ref
-                  .read(takeOutConfirmationViewModelProvider(widget.animal)
-                      .notifier)
+                  .read(
+                    takeOutConfirmationViewModelProvider(
+                      widget.animal,
+                    ).notifier,
+                  )
                   .takeOutAnimal(
                     widget.animal,
                     Log(
@@ -149,7 +156,8 @@ class _SimplisticAnimalCardViewState
           }
         } else {
           print(
-              "DEBUG: Animal not in kennel, showing put back confirmation dialog");
+            "DEBUG: Animal not in kennel, showing put back confirmation dialog",
+          );
           _showPutBackConfirmationDialog();
         }
       }
@@ -167,15 +175,15 @@ class _SimplisticAnimalCardViewState
     await showDialog<bool>(
       context: context,
       builder: (context) {
-        return TakeOutConfirmationView(
-          animals: [widget.animal],
-        );
+        return TakeOutConfirmationView(animals: [widget.animal]);
       },
     );
   }
 
-  Future<void> showErrorDialog(
-      {required BuildContext context, required String message}) async {
+  Future<void> showErrorDialog({
+    required BuildContext context,
+    required String message,
+  }) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -200,9 +208,7 @@ class _SimplisticAnimalCardViewState
     await showDialog<bool>(
       context: context,
       builder: (context) {
-        return PutBackConfirmationView(
-          animals: [widget.animal],
-        );
+        return PutBackConfirmationView(animals: [widget.animal]);
       },
     );
   }
@@ -281,11 +287,13 @@ class _SimplisticAnimalCardViewState
                       }
                     : null,
                 child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: AnimalCardImage(
-                        curvedAnimation: _curvedAnimation,
-                        isPressed: isPressed,
-                        animal: animal)),
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: AnimalCardImage(
+                    curvedAnimation: _curvedAnimation,
+                    isPressed: isPressed,
+                    animal: animal,
+                  ),
+                ),
               ),
               const SizedBox(width: 10),
               // Animal details
@@ -336,8 +344,10 @@ class _SimplisticAnimalCardViewState
                               // Handle menu item selection
                               switch (value) {
                                 case 'Details':
-                                  context.push('/enrichment/details',
-                                      extra: animal);
+                                  context.push(
+                                    '/enrichment/details',
+                                    extra: animal,
+                                  );
                                   break;
                                 case 'Add Note':
                                   showDialog(
@@ -348,9 +358,10 @@ class _SimplisticAnimalCardViewState
                                   break;
                                 case 'Add Log':
                                   showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          AddLogView(animal: animal));
+                                    context: context,
+                                    builder: (context) =>
+                                        AddLogView(animal: animal),
+                                  );
                                   break;
                               }
                             },
@@ -379,8 +390,8 @@ class _SimplisticAnimalCardViewState
                           ),
                         ],
                       ),
-                      // Location
 
+                      // Location
                       Row(
                         children: [
                           Expanded(
@@ -410,10 +421,11 @@ class _SimplisticAnimalCardViewState
                         children: [
                           Text(
                             _timeAgo(
-                                widget.animal.inKennel
-                                    ? animal.logs.last.endTime.toDate()
-                                    : animal.logs.last.startTime.toDate(),
-                                widget.animal.inKennel),
+                              widget.animal.inKennel
+                                  ? animal.logs.last.endTime.toDate()
+                                  : animal.logs.last.startTime.toDate(),
+                              widget.animal.inKennel,
+                            ),
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               fontFamily: 'CabinBold',
@@ -421,10 +433,13 @@ class _SimplisticAnimalCardViewState
                           ),
                           if (animal.symbol.isNotEmpty)
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child:
-                                  _buildIcon(animal.symbol, animal.symbolColor),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                              child: _buildIcon(
+                                animal.symbol,
+                                animal.symbolColor,
+                              ),
                             ),
                         ],
                       ),

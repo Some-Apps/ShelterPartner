@@ -14,8 +14,9 @@ void main() {
       FirebaseTestOverrides.initialize();
     });
 
-    testWidgets('displays animals in the list/grid',
-        (WidgetTester tester) async {
+    testWidgets('displays animals in the list/grid', (
+      WidgetTester tester,
+    ) async {
       // Arrange: Create test user and shelter, get shared container
       final container = await createTestUserAndLogin(
         email: 'enrichmentuser@example.com',
@@ -40,9 +41,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: EnrichmentPage(),
-          ),
+          child: const MaterialApp(home: EnrichmentPage()),
         ),
       );
       await tester.pumpAndSettle();

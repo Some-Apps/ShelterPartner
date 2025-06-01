@@ -40,8 +40,11 @@ class AnimalCardView extends ConsumerStatefulWidget {
   final Animal animal;
   final int maxLocationTiers;
 
-  const AnimalCardView(
-      {super.key, required this.animal, required this.maxLocationTiers});
+  const AnimalCardView({
+    super.key,
+    required this.animal,
+    required this.maxLocationTiers,
+  });
 
   @override
   _AnimalCardViewState createState() => _AnimalCardViewState();
@@ -104,14 +107,16 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
         final currentAnimal = widget.animal;
         print("DEBUG: currentAnimal.inKennel: ${currentAnimal.inKennel}");
         if (currentAnimal.inKennel) {
-          final accountDetails =
-              ref.read(accountSettingsViewModelProvider).value;
+          final accountDetails = ref
+              .read(accountSettingsViewModelProvider)
+              .value;
           print("DEBUG: accountDetails: $accountDetails");
           if (accountDetails != null) {
             final appUser = ref.read(appUserProvider);
             print("DEBUG: appUser: $appUser");
-            final shelterSettings =
-                ref.read(shelterDetailsViewModelProvider).value;
+            final shelterSettings = ref
+                .read(shelterDetailsViewModelProvider)
+                .value;
             print("DEBUG: shelterSettings: $shelterSettings");
             bool requireName;
             bool requireLetOutType;
@@ -120,13 +125,15 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
               requireLetOutType =
                   accountDetails.accountSettings!.requireLetOutType;
               print(
-                  "DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+                "DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType",
+              );
             } else {
               requireName = shelterSettings!.volunteerSettings.requireName;
               requireLetOutType =
                   shelterSettings.volunteerSettings.requireLetOutType;
               print(
-                  "DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType");
+                "DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType",
+              );
             }
             if (requireName || requireLetOutType) {
               print("DEBUG: Showing take out confirmation dialog");
@@ -134,8 +141,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
             } else {
               print("DEBUG: Directly taking out animal");
               ref
-                  .read(takeOutConfirmationViewModelProvider(widget.animal)
-                      .notifier)
+                  .read(
+                    takeOutConfirmationViewModelProvider(
+                      widget.animal,
+                    ).notifier,
+                  )
                   .takeOutAnimal(
                     widget.animal,
                     Log(
@@ -154,7 +164,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
           }
         } else {
           print(
-              "DEBUG: Animal not in kennel, showing put back confirmation dialog");
+            "DEBUG: Animal not in kennel, showing put back confirmation dialog",
+          );
           _showPutBackConfirmationDialog();
         }
       }
@@ -171,15 +182,15 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     await showDialog<bool>(
       context: context,
       builder: (context) {
-        return TakeOutConfirmationView(
-          animals: [widget.animal],
-        );
+        return TakeOutConfirmationView(animals: [widget.animal]);
       },
     );
   }
 
-  Future<void> showErrorDialog(
-      {required BuildContext context, required String message}) async {
+  Future<void> showErrorDialog({
+    required BuildContext context,
+    required String message,
+  }) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -203,9 +214,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     await showDialog<bool>(
       context: context,
       builder: (context) {
-        return PutBackConfirmationView(
-          animals: [widget.animal],
-        );
+        return PutBackConfirmationView(animals: [widget.animal]);
       },
     );
   }
@@ -230,12 +239,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     );
 
     return Card(
-      color:
-          animal.inKennel ? Colors.lightBlue.shade100 : Colors.orange.shade100,
+      color: animal.inKennel
+          ? Colors.lightBlue.shade100
+          : Colors.orange.shade100,
       elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(25),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       shadowColor: Colors.black,
       child: Container(
         padding: const EdgeInsets.all(8.0),
@@ -314,8 +322,10 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                                 onSelected: (value) {
                                   switch (value) {
                                     case 'Details':
-                                      context.push('/enrichment/details',
-                                          extra: animal);
+                                      context.push(
+                                        '/enrichment/details',
+                                        extra: animal,
+                                      );
                                       break;
                                     case 'Add Note':
                                       showDialog(
@@ -375,7 +385,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               animal.locationTiers.length >
                                       widget.maxLocationTiers
                                   ? animal.locationTiers.length -
-                                      widget.maxLocationTiers
+                                        widget.maxLocationTiers
                                   : 0, // Clamp to 0 if not enough tiers
                             ))
                               _buildInfoChip(
@@ -408,13 +418,12 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                               label: animal.volunteerCategory,
                             ),
                           // Add the top 3 tags as info chips.
-                          for (var tag in (animal.tags
-                                ..sort((a, b) => b.count.compareTo(a.count)))
-                              .take(3))
-                            _buildInfoChip(
-                              icon: Icons.label,
-                              label: tag.title,
-                            ),
+                          for (var tag
+                              in (animal.tags..sort(
+                                    (a, b) => b.count.compareTo(a.count),
+                                  ))
+                                  .take(3))
+                            _buildInfoChip(icon: Icons.label, label: tag.title),
                         ],
                       ),
                     ],
@@ -434,16 +443,14 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                     if (animal.logs.isNotEmpty)
                       Row(
                         children: [
-                          Icon(Icons.access_time,
-                              size: 16, color: Colors.grey.shade600),
+                          Icon(
+                            Icons.access_time,
+                            size: 16,
+                            color: Colors.grey.shade600,
+                          ),
                           const SizedBox(width: 4),
                           Text(
-                            "${_timeAgo(
-                              widget.animal.inKennel
-                                  ? animal.logs.last.endTime.toDate()
-                                  : animal.logs.last.startTime.toDate(),
-                              widget.animal.inKennel,
-                            )}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
+                            "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
                             style: TextStyle(color: Colors.grey.shade600),
                           ),
                         ],
@@ -452,8 +459,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                         animal.logs.last.author.isNotEmpty)
                       Row(
                         children: [
-                          Icon(Icons.person_2_outlined,
-                              size: 16, color: Colors.grey.shade600),
+                          Icon(
+                            Icons.person_2_outlined,
+                            size: 16,
+                            color: Colors.grey.shade600,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             animal.logs.last.author,
@@ -495,11 +505,7 @@ Widget _buildInfoChip({
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 12,
-            color: Colors.grey,
-          ),
+          Icon(icon, size: 12, color: Colors.grey),
           const SizedBox(width: 4),
           Flexible(
             child: FittedBox(

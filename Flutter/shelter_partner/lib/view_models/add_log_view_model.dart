@@ -17,7 +17,10 @@ class AddLogViewModel extends StateNotifier<Animal> {
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
     try {
       await _repository.addLogToAnimal(
-          animal, shelterDetailsAsync.value!.id, log);
+        animal,
+        shelterDetailsAsync.value!.id,
+        log,
+      );
       // Optionally, update the state if needed
       ref.read(logAddedProvider.notifier).state = true;
     } catch (e) {
@@ -29,9 +32,10 @@ class AddLogViewModel extends StateNotifier<Animal> {
 
 // Provider for AddNoteViewModel
 final addLogViewModelProvider =
-    StateNotifierProvider.family<AddLogViewModel, Animal, Animal>(
-  (ref, animal) {
-    final repository = ref.watch(addLogRepositoryProvider);
-    return AddLogViewModel(repository, ref, animal);
-  },
-);
+    StateNotifierProvider.family<AddLogViewModel, Animal, Animal>((
+      ref,
+      animal,
+    ) {
+      final repository = ref.watch(addLogRepositoryProvider);
+      return AddLogViewModel(repository, ref, animal);
+    });

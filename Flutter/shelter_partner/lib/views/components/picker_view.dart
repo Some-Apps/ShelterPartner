@@ -4,7 +4,7 @@ class PickerView extends StatelessWidget {
   final String title; // Title for the picker
   final List<String> options; // List of options for the picker
   final String?
-      value; // Currently selected value (nullable in case it's not in the list)
+  value; // Currently selected value (nullable in case it's not in the list)
   final ValueChanged<String?> onChanged; // Callback for handling value change
 
   const PickerView({
@@ -22,13 +22,11 @@ class PickerView extends StatelessWidget {
       trailing: DropdownButton<String>(
         value: value, // The currently selected value
         hint: const Text(
-            "Select an option"), // Placeholder text when no value is selected
+          "Select an option",
+        ), // Placeholder text when no value is selected
         onChanged: onChanged, // Handle value change
         items: options.map<DropdownMenuItem<String>>((String option) {
-          return DropdownMenuItem<String>(
-            value: option,
-            child: Text(option),
-          );
+          return DropdownMenuItem<String>(value: option, child: Text(option));
         }).toList(),
       ),
     );

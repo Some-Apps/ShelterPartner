@@ -16,22 +16,10 @@ class MainTabBarView extends StatelessWidget {
       currentIndex: currentIndex,
       onTap: onTabSelected,
       items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.pets),
-          label: 'Enrichment',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Visitor',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Volunteers',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Settings',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Enrichment'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Visitor'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Volunteers'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Settings'),
       ],
     );
   }

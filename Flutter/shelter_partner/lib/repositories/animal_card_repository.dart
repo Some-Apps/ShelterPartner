@@ -8,10 +8,13 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class AnimalRepository {
   final FirebaseFirestore _firestore;
   AnimalRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   Future<void> updateAnimal(
-      String shelterId, String animalType, Animal animal) async {
+    String shelterId,
+    String animalType,
+    Animal animal,
+  ) async {
     await _firestore
         .collection('shelters')
         .doc(shelterId)
@@ -21,7 +24,10 @@ class AnimalRepository {
   }
 
   Future<void> deleteLastLog(
-      String shelterId, String animalType, String animalId) async {
+    String shelterId,
+    String animalType,
+    String animalId,
+  ) async {
     DocumentReference animalDocRef = _firestore
         .collection('shelters')
         .doc(shelterId)

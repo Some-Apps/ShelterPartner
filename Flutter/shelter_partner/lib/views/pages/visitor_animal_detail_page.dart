@@ -64,27 +64,31 @@ class VisitorAnimalDetailPage extends StatelessWidget {
                             child: Image.network(
                               proxyUrl,
                               fit: BoxFit.cover,
-                              loadingBuilder: (BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
+                              loadingBuilder:
+                                  (
+                                    BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress,
+                                  ) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    } else {
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value:
+                                              loadingProgress
+                                                      .expectedTotalBytes !=
                                                   null
                                               ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  (loadingProgress
-                                                          .expectedTotalBytes ??
-                                                      1)
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                            .expectedTotalBytes ??
+                                                        1)
                                               : null,
-                                    ),
-                                  );
-                                }
-                              },
+                                        ),
+                                      );
+                                    }
+                                  },
                             ),
                           ),
                         );
@@ -108,19 +112,10 @@ class VisitorAnimalDetailPage extends StatelessWidget {
               ),
             ),
             const Divider(),
-            ListTile(
-              title: const Text('Name'),
-              subtitle: Text(animal.name),
-            ),
+            ListTile(title: const Text('Name'), subtitle: Text(animal.name)),
 
-            ListTile(
-              title: const Text('Sex'),
-              subtitle: Text(animal.sex),
-            ),
-            ListTile(
-              title: const Text('Breed'),
-              subtitle: Text(animal.breed),
-            ),
+            ListTile(title: const Text('Sex'), subtitle: Text(animal.sex)),
+            ListTile(title: const Text('Breed'), subtitle: Text(animal.breed)),
             ListTile(
               title: const Text('Description'),
               subtitle: Text(animal.description),
@@ -143,9 +138,7 @@ class VisitorAnimalDetailPage extends StatelessWidget {
             animal.notes.isNotEmpty
                 ? Column(
                     children: animal.notes.map((note) {
-                      return ListTile(
-                        title: Text(note.note ?? 'Note'),
-                      );
+                      return ListTile(title: Text(note.note ?? 'Note'));
                     }).toList(),
                   )
                 : const Padding(

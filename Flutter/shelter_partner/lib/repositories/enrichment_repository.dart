@@ -7,19 +7,22 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class EnrichmentRepository {
   final FirebaseFirestore _firestore;
   EnrichmentRepository({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   Stream<List<Animal>> fetchAnimals(String shelterID) {
-    final catsStream =
-        _firestore.collection('shelters/$shelterID/cats').snapshots();
-    final dogsStream =
-        _firestore.collection('shelters/$shelterID/dogs').snapshots();
+    final catsStream = _firestore
+        .collection('shelters/$shelterID/cats')
+        .snapshots();
+    final dogsStream = _firestore
+        .collection('shelters/$shelterID/dogs')
+        .snapshots();
 
     return CombineLatestStream.list([catsStream, dogsStream]).map((snapshots) {
       final allAnimals = <Animal>[];
       for (var snapshot in snapshots) {
-        allAnimals.addAll(snapshot.docs
-            .map((doc) => Animal.fromFirestore(doc.data(), doc.id)));
+        allAnimals.addAll(
+          snapshot.docs.map((doc) => Animal.fromFirestore(doc.data(), doc.id)),
+        );
       }
       return allAnimals;
     });

@@ -9,7 +9,7 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
   final Ref ref;
 
   PutBackConfirmationViewModel(this._repository, this.ref, Animal animal)
-      : super(animal);
+    : super(animal);
 
   Future<void> putBackAnimal(Animal animal, Log log) async {
     print(log.toMap());
@@ -20,7 +20,10 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
     // enrichmentViewModel.updateAnimalOptimistically(animal.copyWith(inKennel: true));
     try {
       await _repository.putBackAnimal(
-          animal, shelterDetailsAsync.value!.id, log);
+        animal,
+        shelterDetailsAsync.value!.id,
+        log,
+      );
       // Optionally, update the state if needed
     } catch (e) {
       // Handle error
@@ -44,9 +47,10 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
 
 // Provider for AddNoteViewModel
 final putBackConfirmationViewModelProvider =
-    StateNotifierProvider.family<PutBackConfirmationViewModel, Animal, Animal>(
-  (ref, animal) {
-    final repository = ref.watch(putBackConfirmationRepositoryProvider);
-    return PutBackConfirmationViewModel(repository, ref, animal);
-  },
-);
+    StateNotifierProvider.family<PutBackConfirmationViewModel, Animal, Animal>((
+      ref,
+      animal,
+    ) {
+      final repository = ref.watch(putBackConfirmationRepositoryProvider);
+      return PutBackConfirmationViewModel(repository, ref, animal);
+    });

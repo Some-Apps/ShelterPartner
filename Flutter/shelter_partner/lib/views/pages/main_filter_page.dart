@@ -85,15 +85,20 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
 
         filterElements = rawFilterElements
             .map<FilterElement>(
-                (e) => FilterElement.fromJson(Map<String, dynamic>.from(e)))
+              (e) => FilterElement.fromJson(Map<String, dynamic>.from(e)),
+            )
             .toList();
 
-        operatorsBetween =
-            rawOperatorsBetween.map<int, LogicalOperator>((key, value) {
+        operatorsBetween = rawOperatorsBetween.map<int, LogicalOperator>((
+          key,
+          value,
+        ) {
           return MapEntry(
-              int.parse(key),
-              LogicalOperator.values
-                  .firstWhere((e) => e.toString().split('.').last == value));
+            int.parse(key),
+            LogicalOperator.values.firstWhere(
+              (e) => e.toString().split('.').last == value,
+            ),
+          );
         });
       });
     }
@@ -106,30 +111,36 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
         title: Text(widget.title),
         actions: [
           IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: () async {
-                // Serialize filterElements
-                List<Map<String, dynamic>> serializedFilterElements =
-                    filterElements.map((e) => e.toJson()).toList();
+            icon: const Icon(Icons.save),
+            onPressed: () async {
+              // Serialize filterElements
+              List<Map<String, dynamic>> serializedFilterElements =
+                  filterElements.map((e) => e.toJson()).toList();
 
-                // Serialize operatorsBetween
-                Map<String, String> serializedOperatorsBetween =
-                    operatorsBetween.map((key, value) => MapEntry(
-                        key.toString(), value.toString().split('.').last));
+              // Serialize operatorsBetween
+              Map<String, String> serializedOperatorsBetween = operatorsBetween
+                  .map(
+                    (key, value) => MapEntry(
+                      key.toString(),
+                      value.toString().split('.').last,
+                    ),
+                  );
 
-                // Save to Firestore
-                final filterViewModel =
-                    ref.read(filterViewModelProvider.notifier);
-                await filterViewModel.saveFilterExpression(
-                  serializedFilterElements,
-                  serializedOperatorsBetween,
-                  widget.collection,
-                  widget.documentID,
-                  widget.filterFieldPath,
-                );
+              // Save to Firestore
+              final filterViewModel = ref.read(
+                filterViewModelProvider.notifier,
+              );
+              await filterViewModel.saveFilterExpression(
+                serializedFilterElements,
+                serializedOperatorsBetween,
+                widget.collection,
+                widget.documentID,
+                widget.filterFieldPath,
+              );
 
-                Navigator.pop(context, filterElements);
-              }),
+              Navigator.pop(context, filterElements);
+            },
+          ),
         ],
       ),
       body: Center(
@@ -140,9 +151,7 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
               // Display the expression string at the top
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: RichText(
-                  text: buildExpressionSpan(filterElements),
-                ),
+                child: RichText(text: buildExpressionSpan(filterElements)),
               ),
               Expanded(
                 child: Padding(
@@ -151,11 +160,15 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
                     itemCount: filterElements.length,
                     itemBuilder: (context, index) {
                       final element = filterElements[index];
-                      LogicalOperator? logicalOperatorBetween =
-                          index > 0 ? getOperatorBetween(index - 1) : null;
-                      return _buildFilterElementUI(element, index,
-                          indentLevel: 0,
-                          logicalOperatorBetween: logicalOperatorBetween);
+                      LogicalOperator? logicalOperatorBetween = index > 0
+                          ? getOperatorBetween(index - 1)
+                          : null;
+                      return _buildFilterElementUI(
+                        element,
+                        index,
+                        indentLevel: 0,
+                        logicalOperatorBetween: logicalOperatorBetween,
+                      );
                     },
                   ),
                 ),
@@ -179,7 +192,8 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
                           ElevatedButton(
                             onPressed: () {
                               _showAddConditionDialog(
-                                  logicalOperator: LogicalOperator.and);
+                                logicalOperator: LogicalOperator.and,
+                              );
                             },
                             child: const Text('And'),
                           ),
@@ -187,7 +201,8 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
                           ElevatedButton(
                             onPressed: () {
                               _showAddConditionDialog(
-                                  logicalOperator: LogicalOperator.or);
+                                logicalOperator: LogicalOperator.or,
+                              );
                             },
                             child: const Text('Or'),
                           ),
@@ -218,23 +233,37 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
     );
   }
 
-  Widget _buildFilterElementUI(FilterElement element, int index,
-      {int indentLevel = 0, LogicalOperator? logicalOperatorBetween}) {
+  Widget _buildFilterElementUI(
+    FilterElement element,
+    int index, {
+    int indentLevel = 0,
+    LogicalOperator? logicalOperatorBetween,
+  }) {
     if (element is FilterCondition) {
-      return _buildConditionCard(element, index,
-          indentLevel: indentLevel,
-          logicalOperatorBetween: logicalOperatorBetween);
+      return _buildConditionCard(
+        element,
+        index,
+        indentLevel: indentLevel,
+        logicalOperatorBetween: logicalOperatorBetween,
+      );
     } else if (element is FilterGroup) {
-      return _buildGroupCard(element, index,
-          indentLevel: indentLevel,
-          logicalOperatorBetween: logicalOperatorBetween);
+      return _buildGroupCard(
+        element,
+        index,
+        indentLevel: indentLevel,
+        logicalOperatorBetween: logicalOperatorBetween,
+      );
     } else {
       return const SizedBox();
     }
   }
 
-  Widget _buildConditionCard(FilterCondition condition, int index,
-      {int indentLevel = 0, LogicalOperator? logicalOperatorBetween}) {
+  Widget _buildConditionCard(
+    FilterCondition condition,
+    int index, {
+    int indentLevel = 0,
+    LogicalOperator? logicalOperatorBetween,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -242,7 +271,11 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
           _buildOperatorCard(logicalOperatorBetween, indentLevel),
         Padding(
           padding: EdgeInsets.only(
-              left: indentLevel * 16.0, right: 8.0, top: 4.0, bottom: 4.0),
+            left: indentLevel * 16.0,
+            right: 8.0,
+            top: 4.0,
+            bottom: 4.0,
+          ),
           child: Card(
             color: Colors.blue[50],
             elevation: 2,
@@ -251,7 +284,8 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
                 '${_getDisplayName(condition.attribute)} ${_operatorToString(condition.operatorType)} ${condition.value}',
                 style: const TextStyle(fontSize: 16.0),
               ),
-              trailing: indentLevel ==
+              trailing:
+                  indentLevel ==
                       0 // Only show delete button for top-level conditions
                   ? IconButton(
                       icon: const Icon(Icons.delete),
@@ -269,23 +303,30 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
     );
   }
 
-  Widget _buildGroupCard(FilterGroup group, int index,
-      {int indentLevel = 0, LogicalOperator? logicalOperatorBetween}) {
+  Widget _buildGroupCard(
+    FilterGroup group,
+    int index, {
+    int indentLevel = 0,
+    LogicalOperator? logicalOperatorBetween,
+  }) {
     List<Widget> groupWidgets = [];
 
     for (int i = 0; i < group.elements.length; i++) {
       if (i > 0) {
         // Add operator card between group elements
-        groupWidgets
-            .add(_buildOperatorCard(group.logicalOperator, indentLevel + 1));
+        groupWidgets.add(
+          _buildOperatorCard(group.logicalOperator, indentLevel + 1),
+        );
       }
-      groupWidgets.add(_buildFilterElementUI(
-        group.elements[i],
-        i,
-        indentLevel: indentLevel + 1,
-        logicalOperatorBetween:
-            null, // Operators between group elements are handled here
-      ));
+      groupWidgets.add(
+        _buildFilterElementUI(
+          group.elements[i],
+          i,
+          indentLevel: indentLevel + 1,
+          logicalOperatorBetween:
+              null, // Operators between group elements are handled here
+        ),
+      );
     }
 
     return Column(
@@ -295,7 +336,11 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
           _buildOperatorCard(logicalOperatorBetween, indentLevel),
         Padding(
           padding: EdgeInsets.only(
-              left: indentLevel * 16.0, right: 8.0, top: 4.0, bottom: 4.0),
+            left: indentLevel * 16.0,
+            right: 8.0,
+            top: 4.0,
+            bottom: 4.0,
+          ),
           child: Card(
             color: Colors.green[50],
             elevation: 2,
@@ -335,7 +380,11 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
   Widget _buildOperatorCard(LogicalOperator operator, int indentLevel) {
     return Padding(
       padding: EdgeInsets.only(
-          left: indentLevel * 16.0 + 8.0, right: 8.0, top: 4.0, bottom: 4.0),
+        left: indentLevel * 16.0 + 8.0,
+        right: 8.0,
+        top: 4.0,
+        bottom: 4.0,
+      ),
       child: Card(
         color: Colors.grey[200],
         child: Center(
@@ -344,7 +393,9 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
             child: Text(
               _logicalOperatorToString(operator).toUpperCase(),
               style: const TextStyle(
-                  color: Colors.purple, fontWeight: FontWeight.bold),
+                color: Colors.purple,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
@@ -371,8 +422,11 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
   }
 
   // Helper methods
-  void addElement(FilterElement element, LogicalOperator logicalOperator,
-      bool groupWithPrevious) {
+  void addElement(
+    FilterElement element,
+    LogicalOperator logicalOperator,
+    bool groupWithPrevious,
+  ) {
     if (groupWithPrevious && filterElements.isNotEmpty) {
       final previousElement = filterElements.removeLast();
 
@@ -436,8 +490,10 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
     return operatorsBetween[index] ?? LogicalOperator.and;
   }
 
-  InlineSpan buildExpressionSpan(List<FilterElement> elements,
-      {LogicalOperator? groupOperator}) {
+  InlineSpan buildExpressionSpan(
+    List<FilterElement> elements, {
+    LogicalOperator? groupOperator,
+  }) {
     List<InlineSpan> spans = [];
     for (int i = 0; i < elements.length; i++) {
       final element = elements[i];
@@ -445,40 +501,61 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
       if (i > 0) {
         // Determine the operator between elements
         LogicalOperator op = groupOperator ?? getOperatorBetween(i - 1);
-        spans.add(TextSpan(
-          text: ' ${_logicalOperatorToString(op)} ',
-          style: const TextStyle(
-              color: Colors.purple, fontWeight: FontWeight.bold),
-        ));
+        spans.add(
+          TextSpan(
+            text: ' ${_logicalOperatorToString(op)} ',
+            style: const TextStyle(
+              color: Colors.purple,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
       }
 
       if (element is FilterCondition) {
         // Build the condition span
-        spans.add(TextSpan(
-          children: [
-            TextSpan(
+        spans.add(
+          TextSpan(
+            children: [
+              TextSpan(
                 text: _getDisplayName(element.attribute),
-                style: const TextStyle(color: Colors.blue)),
-            TextSpan(
+                style: const TextStyle(color: Colors.blue),
+              ),
+              TextSpan(
                 text: ' ${_operatorToString(element.operatorType)} ',
-                style: const TextStyle(color: Colors.red)),
-            TextSpan(
+                style: const TextStyle(color: Colors.red),
+              ),
+              TextSpan(
                 text: '${element.value}',
-                style: const TextStyle(color: Colors.green)),
-          ],
-        ));
+                style: const TextStyle(color: Colors.green),
+              ),
+            ],
+          ),
+        );
       } else if (element is FilterGroup) {
         // Add opening parenthesis
         spans.add(
-            const TextSpan(text: '(', style: TextStyle(color: Colors.black)));
+          const TextSpan(
+            text: '(',
+            style: TextStyle(color: Colors.black),
+          ),
+        );
 
         // Recursively build the group
-        spans.add(buildExpressionSpan(element.elements,
-            groupOperator: element.logicalOperator));
+        spans.add(
+          buildExpressionSpan(
+            element.elements,
+            groupOperator: element.logicalOperator,
+          ),
+        );
 
         // Add closing parenthesis
         spans.add(
-            const TextSpan(text: ')', style: TextStyle(color: Colors.black)));
+          const TextSpan(
+            text: ')',
+            style: TextStyle(color: Colors.black),
+          ),
+        );
       }
     }
 
@@ -574,80 +651,80 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'notes': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'tags': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'sex': [OperatorType.equals, OperatorType.notEquals],
     'breed': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'location': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'description': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'takeOutAlert': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'putBackAlert': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'adoptionCategory': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'behaviorCategory': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'locationCategory': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'medicalCategory': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'volunteerCategory': [
       OperatorType.equals,
       OperatorType.notEquals,
       OperatorType.contains,
-      OperatorType.notContains
+      OperatorType.notContains,
     ],
     'monthsOld': [
       OperatorType.equals,
@@ -655,7 +732,7 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
       OperatorType.greaterThan,
       OperatorType.lessThan,
       OperatorType.greaterThanOrEqual,
-      OperatorType.lessThanOrEqual
+      OperatorType.lessThanOrEqual,
     ],
     'inKennel': [OperatorType.isTrue, OperatorType.isFalse],
     // Add other attributes and their valid operators
@@ -716,8 +793,10 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
             ),
             // Value Input
             if (selectedOperator != null &&
-                ![OperatorType.isTrue, OperatorType.isFalse]
-                    .contains(selectedOperator))
+                ![
+                  OperatorType.isTrue,
+                  OperatorType.isFalse,
+                ].contains(selectedOperator))
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Value'),
                 keyboardType: selectedAttribute == 'monthsOld'
@@ -749,8 +828,9 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
                 if (parsedValue == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content:
-                          Text('Please enter a valid number for Months Old'),
+                      content: Text(
+                        'Please enter a valid number for Months Old',
+                      ),
                     ),
                   );
                   return;

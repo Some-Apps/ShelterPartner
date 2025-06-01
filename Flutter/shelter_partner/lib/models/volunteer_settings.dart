@@ -69,10 +69,7 @@ class VolunteerSettings {
         logicalOperator = LogicalOperator.or;
       }
 
-      return FilterGroup(
-        logicalOperator: logicalOperator,
-        elements: elements,
-      );
+      return FilterGroup(logicalOperator: logicalOperator, elements: elements);
     }
 
     FilterElement? enrichmentFilter;

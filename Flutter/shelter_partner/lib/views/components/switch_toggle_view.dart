@@ -20,12 +20,7 @@ class SwitchToggleView extends StatelessWidget {
         Flexible(
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16.0,
-              ),
-            ),
+            child: Text(title, style: const TextStyle(fontSize: 16.0)),
           ),
         ),
         Padding(

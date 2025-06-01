@@ -36,7 +36,8 @@ class ChatService {
 
       if (tokenCount >= tokenLimit) {
         throw Exception(
-            'Monthly token limit of $tokenLimit reached. Please try again next month.');
+          'Monthly token limit of $tokenLimit reached. Please try again next month.',
+        );
       }
 
       // Prepare the system message with animal context
@@ -45,31 +46,38 @@ class ChatService {
       final animalsToShow = animals.length > maxAnimals
           ? animals.sublist(0, maxAnimals)
           : animals;
-      final animalContext = animalsToShow.map((animal) {
-        final settings = shelterSettings.shelterSettings;
-        final List<String> animalInfo = ['Name: ${animal.name}'];
-        if (animal.notes != null && animal.notes.isNotEmpty) {
-          final notesText = animal.notes.map((note) => note.note).join(', ');
-          animalInfo.add('Notes: $notesText');
-        }
-        animalInfo.add('Age: ${animal.monthsOld} months old');
-        animalInfo.add('Other Info: $animal');
-        if (settings.showSpecies) animalInfo.add('Species: ${animal.species}');
-        if (settings.showBreed) animalInfo.add('Breed: ${animal.breed}');
-        if (settings.showDescription)
-          animalInfo.add('Description: ${animal.description}');
-        if (settings.showLocation)
-          animalInfo.add('Location: ${animal.location}');
-        if (settings.showMedicalInfo)
-          animalInfo.add('Medical Category: ${animal.medicalCategory}');
-        if (settings.showBehaviorInfo)
-          animalInfo.add('Behavior Category: ${animal.behaviorCategory}');
-        return animalInfo.join(', ');
-      }).join('\n');
-      final moreText =
-          animals.length > maxAnimals ? '\n...and more animals available.' : '';
+      final animalContext = animalsToShow
+          .map((animal) {
+            final settings = shelterSettings.shelterSettings;
+            final List<String> animalInfo = ['Name: ${animal.name}'];
+            if (animal.notes != null && animal.notes.isNotEmpty) {
+              final notesText = animal.notes
+                  .map((note) => note.note)
+                  .join(', ');
+              animalInfo.add('Notes: $notesText');
+            }
+            animalInfo.add('Age: ${animal.monthsOld} months old');
+            animalInfo.add('Other Info: $animal');
+            if (settings.showSpecies)
+              animalInfo.add('Species: ${animal.species}');
+            if (settings.showBreed) animalInfo.add('Breed: ${animal.breed}');
+            if (settings.showDescription)
+              animalInfo.add('Description: ${animal.description}');
+            if (settings.showLocation)
+              animalInfo.add('Location: ${animal.location}');
+            if (settings.showMedicalInfo)
+              animalInfo.add('Medical Category: ${animal.medicalCategory}');
+            if (settings.showBehaviorInfo)
+              animalInfo.add('Behavior Category: ${animal.behaviorCategory}');
+            return animalInfo.join(', ');
+          })
+          .join('\n');
+      final moreText = animals.length > maxAnimals
+          ? '\n...and more animals available.'
+          : '';
 
-      final systemMessage = '''
+      final systemMessage =
+          '''
 You are a helpful assistant for a pet shelter. You can only discuss the animals listed below. If a user asks for a list of all available animals, provide a concise list of their names and brief details.
 
 
@@ -78,29 +86,29 @@ Available animals:\n$animalContext$moreText
 
       final response = await http
           .post(
-        Uri.parse(_apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_apiKey',
-        },
-        body: jsonEncode({
-          'model': _model,
-          'messages': [
-            {'role': 'system', 'content': systemMessage},
-            {'role': 'user', 'content': message},
-          ],
-          'temperature': 0.7,
-          'max_tokens': 1000,
-          'presence_penalty': 0.0,
-          'frequency_penalty': 0.0,
-        }),
-      )
+            Uri.parse(_apiUrl),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $_apiKey',
+            },
+            body: jsonEncode({
+              'model': _model,
+              'messages': [
+                {'role': 'system', 'content': systemMessage},
+                {'role': 'user', 'content': message},
+              ],
+              'temperature': 0.7,
+              'max_tokens': 1000,
+              'presence_penalty': 0.0,
+              'frequency_penalty': 0.0,
+            }),
+          )
           .timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Request timed out. Please try again.');
-        },
-      );
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw Exception('Request timed out. Please try again.');
+            },
+          );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -116,11 +124,13 @@ Available animals:\n$animalContext$moreText
         throw Exception('Invalid API key. Please contact support.');
       } else if (response.statusCode == 429) {
         throw Exception(
-            'Rate limit exceeded. Please try again in a few moments.');
+          'Rate limit exceeded. Please try again in a few moments.',
+        );
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(
-            'API Error: ${errorData['error']?['message'] ?? response.body}');
+          'API Error: ${errorData['error']?['message'] ?? response.body}',
+        );
       }
     } catch (e) {
       if (e is Exception) {

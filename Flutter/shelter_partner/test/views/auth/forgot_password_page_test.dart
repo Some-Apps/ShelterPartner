@@ -10,34 +10,40 @@ import 'forgot_password_page_test.mocks.dart';
 
 @GenerateMocks([AuthViewModel])
 void main() {
-  testWidgets('ForgotPasswordPage UI and reset flow',
-      (WidgetTester tester) async {
+  testWidgets('ForgotPasswordPage UI and reset flow', (
+    WidgetTester tester,
+  ) async {
     bool loginTapped = false;
     // Set up mock for sendPasswordReset to return a Future<String?>
     final mockAuthViewModel = MockAuthViewModel();
-    when(mockAuthViewModel.sendPasswordReset(any))
-        .thenAnswer((_) async => null);
-    final container = ProviderContainer(overrides: [
-      authViewModelProvider.overrideWith((ref) => mockAuthViewModel),
-    ]);
+    when(
+      mockAuthViewModel.sendPasswordReset(any),
+    ).thenAnswer((_) async => null);
+    final container = ProviderContainer(
+      overrides: [
+        authViewModelProvider.overrideWith((ref) => mockAuthViewModel),
+      ],
+    );
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
-          home: ForgotPasswordPage(
-            onTapLogin: () => loginTapped = true,
-          ),
+          home: ForgotPasswordPage(onTapLogin: () => loginTapped = true),
         ),
       ),
     );
 
     // UI elements
-    expect(find.text('Reset Password'),
-        findsAtLeastNWidgets(2)); // Title (and reset button)
+    expect(
+      find.text('Reset Password'),
+      findsAtLeastNWidgets(2),
+    ); // Title (and reset button)
     expect(find.byType(TextField), findsOneWidget);
     expect(find.text('Email'), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, 'Reset Password'),
-        findsOneWidget); // Button
+    expect(
+      find.widgetWithText(ElevatedButton, 'Reset Password'),
+      findsOneWidget,
+    ); // Button
     expect(find.text('Go Back to Login'), findsOneWidget);
 
     // Enter email and tap reset
@@ -54,23 +60,23 @@ void main() {
     expect(loginTapped, isTrue);
   });
 
-  testWidgets('ForgotPasswordPage shows error toast on failure',
-      (WidgetTester tester) async {
+  testWidgets('ForgotPasswordPage shows error toast on failure', (
+    WidgetTester tester,
+  ) async {
     // Set up mock for sendPasswordReset to return an error message
     final mockAuthViewModel = MockAuthViewModel();
-    when(mockAuthViewModel.sendPasswordReset(any))
-        .thenAnswer((_) async => 'Invalid email');
-    final container = ProviderContainer(overrides: [
-      authViewModelProvider.overrideWith((ref) => mockAuthViewModel),
-    ]);
+    when(
+      mockAuthViewModel.sendPasswordReset(any),
+    ).thenAnswer((_) async => 'Invalid email');
+    final container = ProviderContainer(
+      overrides: [
+        authViewModelProvider.overrideWith((ref) => mockAuthViewModel),
+      ],
+    );
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: MaterialApp(
-          home: ForgotPasswordPage(
-            onTapLogin: () {},
-          ),
-        ),
+        child: MaterialApp(home: ForgotPasswordPage(onTapLogin: () {})),
       ),
     );
 

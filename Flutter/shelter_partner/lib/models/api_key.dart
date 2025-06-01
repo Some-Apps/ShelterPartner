@@ -2,10 +2,7 @@ class APIKey {
   final String name;
   final String key;
 
-  APIKey({
-    required this.name,
-    required this.key,
-  });
+  APIKey({required this.name, required this.key});
 
   factory APIKey.fromMap(Map<String, dynamic> data) {
     return APIKey(
@@ -15,9 +12,6 @@ class APIKey {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'key': key,
-    };
+    return {'name': name, 'key': key};
   }
 }

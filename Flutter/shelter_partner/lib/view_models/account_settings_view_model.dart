@@ -12,14 +12,11 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
   AccountSettingsViewModel(this._repository, this.ref)
-      : super(const AsyncValue.loading()) {
+    : super(const AsyncValue.loading()) {
     // Listen to authentication state changes
-    ref.listen<AuthState>(
-      authViewModelProvider,
-      (previous, next) {
-        _onAuthStateChanged(next);
-      },
-    );
+    ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+      _onAuthStateChanged(next);
+    });
 
     // Immediately check the current auth state
     final authState = ref.read(authViewModelProvider);
@@ -43,18 +40,20 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 
   // Method to fetch account details from the repository
   void fetchUserDetails({required String userID}) {
-    _userSubscription = _repository.fetchUserDetails(userID).listen(
-      (accountDetails) {
-        if (accountDetails.exists) {
-          state = AsyncValue.data(AppUser.fromDocument(accountDetails));
-        } else {
-          state = AsyncValue.error('No user found', StackTrace.current);
-        }
-      },
-      onError: (error) {
-        state = AsyncValue.error(error, StackTrace.current);
-      },
-    );
+    _userSubscription = _repository
+        .fetchUserDetails(userID)
+        .listen(
+          (accountDetails) {
+            if (accountDetails.exists) {
+              state = AsyncValue.data(AppUser.fromDocument(accountDetails));
+            } else {
+              state = AsyncValue.error('No user found', StackTrace.current);
+            }
+          },
+          onError: (error) {
+            state = AsyncValue.error(error, StackTrace.current);
+          },
+        );
   }
 
   @override
@@ -65,9 +64,12 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 
   // Other methods...
 
-// Modify attribute in Firestore document within volunteerSettings
+  // Modify attribute in Firestore document within volunteerSettings
   Future<void> modifyAccountSettingString(
-      String userID, String field, String newValue) async {
+    String userID,
+    String field,
+    String newValue,
+  ) async {
     try {
       await _repository.modifyAccountSettingString(userID, field, newValue);
     } catch (error) {
@@ -87,13 +89,17 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 
   Future<int?> getLocationTierCount(String userID) async {
     try {
-      final data =
-          await _repository.getLocationTierCount(userID, 'locationTierCount');
+      final data = await _repository.getLocationTierCount(
+        userID,
+        'locationTierCount',
+      );
       return data;
     } catch (error) {
       print("Error reading locationTierCount: $error");
       state = AsyncValue.error(
-          "Error reading locationTierCount: $error", StackTrace.current);
+        "Error reading locationTierCount: $error",
+        StackTrace.current,
+      );
       return null;
     }
   }
@@ -104,7 +110,9 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     } catch (error) {
       print("Error updating locationTierCount: $error");
       state = AsyncValue.error(
-          "Error updating locationTierCount: $error", StackTrace.current);
+        "Error updating locationTierCount: $error",
+        StackTrace.current,
+      );
     }
   }
 
@@ -114,8 +122,10 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
       await _repository.incrementAccountSetting(userID, field);
     } catch (error) {
       print("Error incrementing: $error");
-      state =
-          AsyncValue.error("Error incrementing: $error", StackTrace.current);
+      state = AsyncValue.error(
+        "Error incrementing: $error",
+        StackTrace.current,
+      );
     }
   }
 
@@ -124,14 +134,17 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
       await _repository.decrementAccountSetting(userID, field);
     } catch (error) {
       print("Error decrementing: $error");
-      state =
-          AsyncValue.error("Error decrementing: $error", StackTrace.current);
+      state = AsyncValue.error(
+        "Error decrementing: $error",
+        StackTrace.current,
+      );
     }
   }
 
   Future<void> saveFilterExpression(
-      List<Map<String, dynamic>> serializedFilterElements,
-      Map<String, String> serializedOperatorsBetween) async {
+    List<Map<String, dynamic>> serializedFilterElements,
+    Map<String, String> serializedOperatorsBetween,
+  ) async {
     final authState = ref.read(authViewModelProvider);
     if (authState.status == AuthStatus.authenticated) {
       final userID = authState.user?.id;
@@ -159,10 +172,14 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
 
 // Provider to access the VolunteersViewModel
 final accountSettingsViewModelProvider =
-    StateNotifierProvider<AccountSettingsViewModel, AsyncValue<AppUser?>>(
-        (ref) {
-  final repository =
-      ref.watch(accountSettingsRepositoryProvider); // Access the repository
-  return AccountSettingsViewModel(
-      repository, ref); // Pass the repository and ref
-});
+    StateNotifierProvider<AccountSettingsViewModel, AsyncValue<AppUser?>>((
+      ref,
+    ) {
+      final repository = ref.watch(
+        accountSettingsRepositoryProvider,
+      ); // Access the repository
+      return AccountSettingsViewModel(
+        repository,
+        ref,
+      ); // Pass the repository and ref
+    });

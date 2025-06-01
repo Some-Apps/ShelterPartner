@@ -13,12 +13,9 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
   StreamSubscription<String>? _emailSyncSubscription;
 
   StatsViewModel(this._repository, this.ref) : super({}) {
-    ref.listen<AuthState>(
-      authViewModelProvider,
-      (previous, next) {
-        _onAuthStateChanged(next);
-      },
-    );
+    ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+      _onAuthStateChanged(next);
+    });
 
     final authState = ref.read(authViewModelProvider);
     _onAuthStateChanged(authState);
@@ -53,8 +50,9 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
       };
 
       ref.read(lastSyncProvider.notifier).state = DateTime.now();
-      ref.read(recentChangesProvider.notifier).state =
-          changes.map((change) => _getActivityMessage(change)).toList();
+      ref.read(recentChangesProvider.notifier).state = changes
+          .map((change) => _getActivityMessage(change))
+          .toList();
     });
   }
 
@@ -64,17 +62,15 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
     final emailSyncStream = _repository.fetchLastEmailSync(shelterID);
 
     _emailSyncSubscription = emailSyncStream.listen((emailSyncTime) {
-      state = {
-        ...state,
-        "lastEmailSyncTime": emailSyncTime,
-      };
+      state = {...state, "lastEmailSyncTime": emailSyncTime};
 
       ref.read(lastEmailSyncProvider.notifier).state = emailSyncTime;
     });
   }
 
   Map<String, Map<String, Map<String, int>>> _groupByTimeframe(
-      List<Animal> animals) {
+    List<Animal> animals,
+  ) {
     final intervals = ['<6 hours', '6-24 hours', '1-2 days', '3+ days'];
 
     // Initialize species and color maps
@@ -96,8 +92,9 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
 
     for (final animal in animals) {
       if (animal.logs.isNotEmpty) {
-        final duration =
-            now.difference(animal.logs.last.startTime.toDate()).inHours;
+        final duration = now
+            .difference(animal.logs.last.startTime.toDate())
+            .inHours;
         String interval;
         if (duration < 6) {
           interval = '<6 hours';
@@ -121,10 +118,7 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
       }
     }
 
-    return {
-      'Species': speciesData,
-      'Color': colorData,
-    };
+    return {'Species': speciesData, 'Color': colorData};
   }
 
   List<Map<String, dynamic>> _detectChanges(
@@ -202,12 +196,13 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
 
 final statsViewModelProvider =
     StateNotifierProvider<StatsViewModel, Map<String, dynamic>>((ref) {
-  final repository = ref.watch(statsRepositoryProvider);
-  return StatsViewModel(repository, ref);
-});
+      final repository = ref.watch(statsRepositoryProvider);
+      return StatsViewModel(repository, ref);
+    });
 
 final categoryProvider = StateProvider<String?>((ref) => null);
 final lastSyncProvider = StateProvider<DateTime?>((ref) => null);
 final recentChangesProvider = StateProvider<List<String>>((ref) => []);
-final lastEmailSyncProvider =
-    StateProvider<String?>((ref) => "No email sync data available");
+final lastEmailSyncProvider = StateProvider<String?>(
+  (ref) => "No email sync data available",
+);
