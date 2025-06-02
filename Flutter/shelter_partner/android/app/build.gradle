@@ -16,7 +16,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "me.jareddanieljones.HumaneSociety"
-    compileSdk 34
+    compileSdk 35
     ndkVersion "28.0.12433566"
 
     compileOptions {
