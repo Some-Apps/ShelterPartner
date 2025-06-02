@@ -33,7 +33,13 @@ All international payments will be made via PayPal so make sure you have an acco
 
 ## Bounties To Be Paid On July 1st
 
+<details>
+   
+   <summary>Shivam Kumar: $20</summary>
+  
+  - Issue #450: Add a release notes item to settings ($20)
 
+</details>
 
 ## Bounties Paid On June 1st (In Progress)
 
