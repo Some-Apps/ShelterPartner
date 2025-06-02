@@ -41,6 +41,14 @@ All international payments will be made via PayPal so make sure you have an acco
 
 </details>
 
+<details>
+   
+   <summary>Ani: $15</summary>
+  
+  - Issue #456: Scheduled reports improvements ($15)
+
+</details>
+
 ## Bounties Paid On June 1st (In Progress)
 
 <details>
