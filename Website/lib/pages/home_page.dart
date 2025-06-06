@@ -1,9 +1,8 @@
+import 'dart:ui' as ui; // ignore: avoid_web_libraries_in_flutter
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:html' as html;
-import 'dart:ui' as ui;
-// Add these two imports for social icons:
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' hide Text, Navigator;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatelessWidget {
@@ -11,17 +10,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Register the YouTube iframe element
-    // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-      'youtube-video',
-      (int viewId) => html.IFrameElement()
-        ..width = '560'
-        ..height = '315'
-        ..src =
-            'https://www.youtube.com/embed/phDOgusydnk' // Replace with your video ID
-        ..style.border = 'none',
-    );
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -115,10 +103,17 @@ class HomePage extends StatelessWidget {
                   style: TextStyle(color: Colors.black),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: SponsorButton(),
-              ), // Use the custom SponsorButton here
+              TextButton(
+                onPressed: () {
+                  launchUrl(
+                    Uri.parse('https://github.com/sponsors/Shelter-Partner'),
+                  );
+                },
+                child: const Text(
+                  'Sponsor',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
               IconButton(
                 icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.black),
                 onPressed: () {
@@ -153,8 +148,8 @@ class HomePage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Text(
-                        "There will be an open Zoom meeting on June 6 at 6pm MST for any interested shelters. We'll go over our roadmap and get feedback from shelters.",
-                        style: TextStyle(
+                        "There will be an open Zoom meeting today, June 6 at 6pm MST for any interested shelters. We'll go over our roadmap and get feedback from shelters. Here is a link to the meeting. All are welcome!",
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -162,20 +157,39 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          launchUrl(
+                            Uri.parse('https://us05web.zoom.us/j/83987575528'),
+                          );
+                        },
+                        child: const Text(
+                          'https://us05web.zoom.us/j/83987575528',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Column(
-                        children: const [
+                        children: [
                           Text(
                             'Welcome',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
-                            style: TextStyle(fontSize: 15),
+                            style: const TextStyle(fontSize: 15),
                           ),
                         ],
                       ),
@@ -192,13 +206,7 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          const SizedBox(
-                            width: 560,
-                            height: 315,
-                            child: HtmlElementView(viewType: 'youtube-video'),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
+                          TextButton(
                             onPressed: () {
                               launchUrl(
                                 Uri(
@@ -209,8 +217,28 @@ class HomePage extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: const Text('Watch Full Screen on YouTube'),
+                            child: const Text(
+                              'Watch Version 2 Tutorial on YouTube',
+                              style: TextStyle(
+                                fontSize: 16,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
                           ),
+                          // const SizedBox(height: 16),
+                          // ElevatedButton(
+                          //   onPressed: () {
+                          //     launchUrl(
+                          //       Uri(
+                          //         scheme: 'https',
+                          //         host: 'www.youtube.com',
+                          //         path: '/watch',
+                          //         queryParameters: {'v': 'phDOgusydnk'},
+                          //       ),
+                          //     );
+                          //   },
+                          //   child: const Text('Watch Full Screen on YouTube'),
+                          // ),
                         ],
                       ),
                     ),
@@ -222,31 +250,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class SponsorButton extends StatelessWidget {
-  const SponsorButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Register the iframe element
-    // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-      'iframeElement',
-      (int viewId) => html.IFrameElement()
-        ..src = 'https://github.com/sponsors/Shelter-Partner/button'
-        ..style.border = '0'
-        ..style.borderRadius = '6px'
-        ..width = '114'
-        ..height = '32',
-    );
-
-    return const SizedBox(
-      width: 114,
-      height: 32,
-      child: HtmlElementView(viewType: 'iframeElement'),
     );
   }
 }
