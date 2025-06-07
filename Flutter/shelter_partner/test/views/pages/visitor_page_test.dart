@@ -51,9 +51,7 @@ void main() {
       expect(find.text('Sammy'), findsOneWidget);
     });
 
-    testWidgets('displays cats in the cat tab', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('displays cats in the cat tab', (WidgetTester tester) async {
       // Arrange: Create test user and shelter, get shared container
       final container = await createTestUserAndLogin(
         email: 'visitoruser2@example.com',
@@ -73,7 +71,9 @@ void main() {
           .doc(shelterId)
           .collection('cats')
           .doc('cat1')
-          .set(createTestAnimalData(id: 'cat1', name: 'Mittens', species: 'cat'));
+          .set(
+            createTestAnimalData(id: 'cat1', name: 'Mittens', species: 'cat'),
+          );
       // Act
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -82,12 +82,12 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      
+
       // Verify the Cats tab is present and tap it
       expect(find.text('Cats'), findsOneWidget);
       await tester.tap(find.text('Cats'));
       await tester.pumpAndSettle();
-      
+
       // Assert
       expect(find.text('Whiskers'), findsOneWidget); // from default test data
       expect(find.text('Fluffy'), findsOneWidget); // from default test data
