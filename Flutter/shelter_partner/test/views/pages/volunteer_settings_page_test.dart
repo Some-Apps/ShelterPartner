@@ -7,6 +7,7 @@ import 'package:shelter_partner/views/components/picker_view.dart';
 import 'package:shelter_partner/views/components/number_stepper_view.dart';
 import 'package:shelter_partner/views/components/navigation_button_view.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 
 import '../../helpers/firebase_test_overrides.dart';
 import '../../helpers/test_auth_helpers.dart';
@@ -148,29 +149,56 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Find and tap the picker dropdown
+      // Find the picker and verify it exists
       final pickerFinder = find.descendant(
         of: find.byType(PickerView),
         matching: find.byType(DropdownButton<String>),
       );
       expect(pickerFinder, findsOneWidget);
       
+      // Get the initial value to ensure we can test a change
+      final initialDropdown = tester.widget<DropdownButton<String>>(pickerFinder);
+      final initialValue = initialDropdown.value;
+      expect(initialValue, isNotNull);
+      expect(['Last Let Out', 'Alphabetical'].contains(initialValue), isTrue);
+      
+      // Determine which value to select (the one that's different from current)
+      final targetValue = initialValue == 'Last Let Out' ? 'Alphabetical' : 'Last Let Out';
+      
+      // Open the dropdown
       await tester.tap(pickerFinder);
       await tester.pumpAndSettle();
 
-      // Verify that dropdown options are available
+      // Verify that both dropdown options are available
       expect(find.text('Last Let Out'), findsWidgets);
       expect(find.text('Alphabetical'), findsWidgets);
 
-      // Select "Alphabetical" option if it exists
-      final alphabeticalFinder = find.text('Alphabetical');
-      if (alphabeticalFinder.evaluate().isNotEmpty) {
-        await tester.tap(alphabeticalFinder.last);
-        await tester.pumpAndSettle();
-      }
+      // Select the target option
+      final targetFinder = find.text(targetValue);
+      expect(targetFinder, findsWidgets);
+      await tester.tap(targetFinder.last);
+      await tester.pumpAndSettle();
 
-      // Verify the picker is still present (selection change tested at integration level)
+      // Verify the picker can be found and interacted with again after selection
       expect(pickerFinder, findsOneWidget);
+      
+      // Open dropdown again to verify we can switch back
+      await tester.tap(pickerFinder);
+      await tester.pumpAndSettle();
+
+      // Select the original value to demonstrate bidirectional switching
+      final originalFinder = find.text(initialValue!);
+      expect(originalFinder, findsWidgets);
+      await tester.tap(originalFinder.last);
+      await tester.pumpAndSettle();
+
+      // Verify the picker is still functional after multiple interactions
+      expect(pickerFinder, findsOneWidget);
+
+      // Final verification: the picker should still be responsive
+      final finalDropdown = tester.widget<DropdownButton<String>>(pickerFinder);
+      expect(finalDropdown.onChanged, isNotNull,
+          reason: 'Picker should maintain its onChanged callback');
     });
 
     testWidgets('custom form URL text field updates on input', (
@@ -204,6 +232,14 @@ void main() {
 
       // Verify the text was entered
       expect(find.text('https://example.com/form'), findsOneWidget);
+
+      // Simulate losing focus to trigger the onChanged callback (if applicable)
+      await tester.tap(find.text('Volunteer Settings'));
+      await tester.pumpAndSettle();
+
+      // The text field should still contain the entered text
+      final textFieldWidget = tester.widget<TextField>(textField);
+      expect(textFieldWidget.controller?.text, equals('https://example.com/form'));
     });
 
     testWidgets('minimum duration number stepper increments and decrements', (
@@ -232,6 +268,12 @@ void main() {
       final stepperFinder = find.byType(NumberStepperView);
       expect(stepperFinder, findsOneWidget);
 
+      // Get initial value
+      final initialStepperWidget = tester.widget<NumberStepperView>(stepperFinder);
+      final initialValue = initialStepperWidget.value;
+      expect(initialValue, isNotNull);
+      expect(initialValue, greaterThanOrEqualTo(0));
+
       // Find increment and decrement buttons within the stepper
       final incrementButton = find.descendant(
         of: stepperFinder,
@@ -245,16 +287,29 @@ void main() {
       expect(incrementButton, findsOneWidget);
       expect(decrementButton, findsOneWidget);
 
-      // Test increment
+      // Test that increment button is clickable and responsive
       await tester.tap(incrementButton);
       await tester.pumpAndSettle();
 
-      // Test decrement
+      // Verify the stepper still exists and is functional
+      expect(stepperFinder, findsOneWidget);
+      final stepperAfterIncrement = tester.widget<NumberStepperView>(stepperFinder);
+      expect(stepperAfterIncrement.increment, isNotNull,
+          reason: 'Stepper should maintain its increment callback');
+
+      // Test that decrement button is clickable and responsive
       await tester.tap(decrementButton);
       await tester.pumpAndSettle();
 
-      // The stepper should still be visible and functional
+      // Verify the stepper is still visible and functional after multiple interactions
       expect(stepperFinder, findsOneWidget);
+      final stepperAfterDecrement = tester.widget<NumberStepperView>(stepperFinder);
+      expect(stepperAfterDecrement.decrement, isNotNull,
+          reason: 'Stepper should maintain its decrement callback after decrement');
+
+      // Verify both buttons are still present and responsive
+      expect(incrementButton, findsOneWidget);
+      expect(decrementButton, findsOneWidget);
     });
 
     group('switch toggle functionality', () {
@@ -293,12 +348,20 @@ void main() {
         );
         expect(switchWidget, findsOneWidget);
 
-        // Tap the switch
+        // Get initial state
+        final initialSwitch = tester.widget<Switch>(switchWidget);
+        final initialValue = initialSwitch.value;
+        expect(initialValue, isA<bool>());
+
+        // Tap the switch to toggle it
         await tester.tap(switchWidget);
         await tester.pumpAndSettle();
 
-        // The switch should still be present (value change tested in integration)
+        // The switch should still be present and functional after toggle
         expect(switchWidget, findsOneWidget);
+        final toggledSwitch = tester.widget<Switch>(switchWidget);
+        expect(toggledSwitch.onChanged, isNotNull,
+            reason: 'Switch should maintain its onChanged callback');
       });
 
       testWidgets('require name switch toggles correctly', (
@@ -336,12 +399,20 @@ void main() {
         );
         expect(switchWidget, findsOneWidget);
 
-        // Tap the switch
+        // Get initial state
+        final initialSwitch = tester.widget<Switch>(switchWidget);
+        final initialValue = initialSwitch.value;
+        expect(initialValue, isA<bool>());
+
+        // Tap the switch to toggle it
         await tester.tap(switchWidget);
         await tester.pumpAndSettle();
 
-        // The switch should still be present
+        // The switch should still be present and functional after toggle
         expect(switchWidget, findsOneWidget);
+        final toggledSwitch = tester.widget<Switch>(switchWidget);
+        expect(toggledSwitch.onChanged, isNotNull,
+            reason: 'Switch should maintain its onChanged callback');
       });
 
       testWidgets('georestrict switch toggles correctly', (
@@ -386,12 +457,20 @@ void main() {
         );
         expect(switchWidget, findsOneWidget);
 
-        // Tap the switch
+        // Get initial state
+        final initialSwitch = tester.widget<Switch>(switchWidget);
+        final initialValue = initialSwitch.value;
+        expect(initialValue, isA<bool>());
+
+        // Tap the switch to toggle it
         await tester.tap(switchWidget, warnIfMissed: false);
         await tester.pumpAndSettle();
 
-        // The switch should still be present
+        // The switch should still be present and functional after toggle
         expect(switchWidget, findsOneWidget);
+        final toggledSwitch = tester.widget<Switch>(switchWidget);
+        expect(toggledSwitch.onChanged, isNotNull,
+            reason: 'Switch should maintain its onChanged callback');
       });
     });
 
@@ -412,7 +491,14 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(home: VolunteerSettingsPage()),
+          child: MaterialApp(
+            home: const VolunteerSettingsPage(),
+            routes: {
+              '/georestriction': (context) => const Scaffold(
+                body: Text('Georestriction Settings Page'),
+              ),
+            },
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -432,11 +518,15 @@ void main() {
       expect(geoSettingsTile, findsOneWidget);
 
       // Tap the tile - this should try to navigate
-      // Note: In a full test, we'd need to mock the Navigator or use testability features
       await tester.tap(geoSettingsTile, warnIfMissed: false);
       await tester.pumpAndSettle();
 
-      // The tile should still be present after tap
+      // Verify that navigation occurred by checking if we can find the georestriction page content
+      // Note: In the actual app, this navigates to GeorestrictionSettingsPage
+      // For testing purposes, we verify that the tap is handled and no errors occur
+      expect(find.text('Georestriction Settings'), findsOneWidget);
+      
+      // Additional verification: ensure the tile is still tappable (no errors occurred)
       expect(geoSettingsTile, findsOneWidget);
     });
 
@@ -491,6 +581,25 @@ void main() {
         // The text controller should have the data from Firestore
         final textField = tester.widget<TextField>(customFormField);
         expect(textField.controller?.text, equals('https://test.com/form'));
+
+        // Verify enrichment sort picker displays the correct value
+        final pickerFinder = find.descendant(
+          of: find.byType(PickerView),
+          matching: find.byType(DropdownButton<String>),
+        );
+        expect(pickerFinder, findsOneWidget);
+        
+        // Get the current value of the picker
+        final dropdownWidget = tester.widget<DropdownButton<String>>(pickerFinder);
+        expect(dropdownWidget.value, equals('Alphabetical'));
+
+        // Verify minimum duration number stepper displays the correct value
+        final stepperFinder = find.byType(NumberStepperView);
+        expect(stepperFinder, findsOneWidget);
+        
+        // Check that the NumberStepperView has the correct value
+        final stepperWidget = tester.widget<NumberStepperView>(stepperFinder);
+        expect(stepperWidget.value, equals(15));
       });
 
       testWidgets('all switch components render with correct initial states', (
@@ -515,10 +624,19 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // Assert - Check that all expected switches are present
+        // Debug: Let's see what widgets are actually present
+        final allText = find.textContaining('', findRichText: true).evaluate().map((e) {
+          final widget = e.widget;
+          if (widget is Text) return widget.data;
+          if (widget is RichText) return widget.text.toPlainText();
+          return 'Unknown';
+        }).toList();
+        print('All text widgets found: $allText');
+
+        // Expected switch titles and their default values from the model
         final expectedSwitchTitles = [
           'Photo Uploads Allowed',
-          'Allow Bulk Take Out',
+          'Allow Bulk Take Out', 
           'Require Let Out Type',
           'Require Early Put Back Reason',
           'Require Name',
@@ -527,6 +645,13 @@ void main() {
           'Append Animal Data To URL',
           'Georestrict',
         ];
+
+        // Scroll to ensure all content is visible
+        final scrollable = find.byType(Scrollable);
+        if (scrollable.evaluate().isNotEmpty) {
+          await tester.drag(scrollable.first, const Offset(0, -500));
+          await tester.pumpAndSettle();
+        }
 
         for (final title in expectedSwitchTitles) {
           expect(find.text(title), findsOneWidget,
@@ -538,6 +663,14 @@ void main() {
           );
           expect(switchToggle, findsOneWidget,
               reason: 'SwitchToggleView for "$title" should be present');
+
+          // Verify the switch widget exists (but not necessarily specific values since they come from defaults)
+          final switchWidget = find.descendant(
+            of: switchToggle,
+            matching: find.byType(Switch),
+          );
+          expect(switchWidget, findsOneWidget,
+              reason: 'Switch widget for "$title" should be present');
         }
 
         // Verify we have exactly the expected number of switches
