@@ -149,6 +149,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // Get initial shelter data to verify the starting state
+      final volunteersViewModel = container.read(volunteersViewModelProvider);
+      final initialShelter = volunteersViewModel.value;
+      expect(initialShelter, isNotNull);
+      final initialEnrichmentSort = initialShelter!.volunteerSettings.enrichmentSort;
+
       // Find the picker and verify it exists
       final pickerFinder = find.descendant(
         of: find.byType(PickerView),
@@ -161,6 +167,7 @@ void main() {
       final initialValue = initialDropdown.value;
       expect(initialValue, isNotNull);
       expect(['Last Let Out', 'Alphabetical'].contains(initialValue), isTrue);
+      expect(initialValue, equals(initialEnrichmentSort));
       
       // Determine which value to select (the one that's different from current)
       final targetValue = initialValue == 'Last Let Out' ? 'Alphabetical' : 'Last Let Out';
@@ -179,6 +186,9 @@ void main() {
       await tester.tap(targetFinder.last);
       await tester.pumpAndSettle();
 
+      // Wait a bit for any async operations to complete
+      await tester.pump();
+
       // Verify the picker can be found and interacted with again after selection
       expect(pickerFinder, findsOneWidget);
       
@@ -191,6 +201,9 @@ void main() {
       expect(originalFinder, findsWidgets);
       await tester.tap(originalFinder.last);
       await tester.pumpAndSettle();
+
+      // Wait for any async operations to complete
+      await tester.pump();
 
       // Verify the picker is still functional after multiple interactions
       expect(pickerFinder, findsOneWidget);
@@ -223,23 +236,34 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // Get initial shelter data to verify the starting state
+      final volunteersViewModel = container.read(volunteersViewModelProvider);
+      final initialShelter = volunteersViewModel.value;
+      expect(initialShelter, isNotNull);
+      final initialCustomFormURL = initialShelter!.volunteerSettings.customFormURL;
+
       // Find the text field and enter text
       final textField = find.byType(TextField);
       expect(textField, findsOneWidget);
       
-      await tester.enterText(textField, 'https://example.com/form');
+      const testURL = 'https://example.com/form';
+      await tester.enterText(textField, testURL);
       await tester.pumpAndSettle();
 
       // Verify the text was entered
-      expect(find.text('https://example.com/form'), findsOneWidget);
+      expect(find.text(testURL), findsOneWidget);
 
-      // Simulate losing focus to trigger the onChanged callback (if applicable)
+      // Simulate losing focus to trigger the onChanged callback
       await tester.tap(find.text('Volunteer Settings'));
       await tester.pumpAndSettle();
 
       // The text field should still contain the entered text
       final textFieldWidget = tester.widget<TextField>(textField);
-      expect(textFieldWidget.controller?.text, equals('https://example.com/form'));
+      expect(textFieldWidget.controller?.text, equals(testURL));
+      
+      // Verify that the onChanged callback exists (indicating ViewModel integration)
+      expect(textFieldWidget.onChanged, isNotNull,
+          reason: 'TextField should have onChanged callback for ViewModel integration');
     });
 
     testWidgets('minimum duration number stepper increments and decrements', (
@@ -264,14 +288,20 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // Get initial shelter data to verify the starting state
+      final volunteersViewModel = container.read(volunteersViewModelProvider);
+      final initialShelter = volunteersViewModel.value;
+      expect(initialShelter, isNotNull);
+      final initialMinutes = initialShelter!.volunteerSettings.minimumLogMinutes;
+
       // Find the number stepper
       final stepperFinder = find.byType(NumberStepperView);
       expect(stepperFinder, findsOneWidget);
 
-      // Get initial value
+      // Get initial value from the stepper widget
       final initialStepperWidget = tester.widget<NumberStepperView>(stepperFinder);
       final initialValue = initialStepperWidget.value;
-      expect(initialValue, isNotNull);
+      expect(initialValue, equals(initialMinutes));
       expect(initialValue, greaterThanOrEqualTo(0));
 
       // Find increment and decrement buttons within the stepper
@@ -287,19 +317,25 @@ void main() {
       expect(incrementButton, findsOneWidget);
       expect(decrementButton, findsOneWidget);
 
-      // Test that increment button is clickable and responsive
+      // Test increment functionality
       await tester.tap(incrementButton);
       await tester.pumpAndSettle();
+      
+      // Wait for any async operations
+      await tester.pump();
 
-      // Verify the stepper still exists and is functional
+      // Verify the stepper still exists and callbacks are functional
       expect(stepperFinder, findsOneWidget);
       final stepperAfterIncrement = tester.widget<NumberStepperView>(stepperFinder);
       expect(stepperAfterIncrement.increment, isNotNull,
           reason: 'Stepper should maintain its increment callback');
 
-      // Test that decrement button is clickable and responsive
+      // Test decrement functionality
       await tester.tap(decrementButton);
       await tester.pumpAndSettle();
+      
+      // Wait for any async operations
+      await tester.pump();
 
       // Verify the stepper is still visible and functional after multiple interactions
       expect(stepperFinder, findsOneWidget);
@@ -335,6 +371,12 @@ void main() {
         );
         await tester.pumpAndSettle();
 
+        // Get initial shelter data to verify the starting state
+        final volunteersViewModel = container.read(volunteersViewModelProvider);
+        final initialShelter = volunteersViewModel.value;
+        expect(initialShelter, isNotNull);
+        final initialValue = initialShelter!.volunteerSettings.photoUploadsAllowed;
+
         // Find the specific switch for photo uploads
         final photoUploadSwitchFinder = find.ancestor(
           of: find.text('Photo Uploads Allowed'),
@@ -348,14 +390,16 @@ void main() {
         );
         expect(switchWidget, findsOneWidget);
 
-        // Get initial state
+        // Get initial state and verify it matches the data model
         final initialSwitch = tester.widget<Switch>(switchWidget);
-        final initialValue = initialSwitch.value;
-        expect(initialValue, isA<bool>());
+        expect(initialSwitch.value, equals(initialValue));
 
         // Tap the switch to toggle it
         await tester.tap(switchWidget);
         await tester.pumpAndSettle();
+        
+        // Wait for any async operations
+        await tester.pump();
 
         // The switch should still be present and functional after toggle
         expect(switchWidget, findsOneWidget);
@@ -386,6 +430,12 @@ void main() {
         );
         await tester.pumpAndSettle();
 
+        // Get initial shelter data to verify the starting state
+        final volunteersViewModel = container.read(volunteersViewModelProvider);
+        final initialShelter = volunteersViewModel.value;
+        expect(initialShelter, isNotNull);
+        final initialValue = initialShelter!.volunteerSettings.requireName;
+
         // Find the specific switch for require name
         final requireNameSwitchFinder = find.ancestor(
           of: find.text('Require Name'),
@@ -399,14 +449,16 @@ void main() {
         );
         expect(switchWidget, findsOneWidget);
 
-        // Get initial state
+        // Get initial state and verify it matches the data model
         final initialSwitch = tester.widget<Switch>(switchWidget);
-        final initialValue = initialSwitch.value;
-        expect(initialValue, isA<bool>());
+        expect(initialSwitch.value, equals(initialValue));
 
         // Tap the switch to toggle it
         await tester.tap(switchWidget);
         await tester.pumpAndSettle();
+        
+        // Wait for any async operations
+        await tester.pump();
 
         // The switch should still be present and functional after toggle
         expect(switchWidget, findsOneWidget);
@@ -437,6 +489,12 @@ void main() {
         );
         await tester.pumpAndSettle();
 
+        // Get initial shelter data to verify the starting state
+        final volunteersViewModel = container.read(volunteersViewModelProvider);
+        final initialShelter = volunteersViewModel.value;
+        expect(initialShelter, isNotNull);
+        final initialValue = initialShelter!.volunteerSettings.geofence?.isEnabled ?? false;
+
         // Scroll to ensure content is visible
         final scrollable = find.byType(Scrollable);
         if (scrollable.evaluate().isNotEmpty) {
@@ -457,14 +515,16 @@ void main() {
         );
         expect(switchWidget, findsOneWidget);
 
-        // Get initial state
+        // Get initial state and verify it matches the data model
         final initialSwitch = tester.widget<Switch>(switchWidget);
-        final initialValue = initialSwitch.value;
-        expect(initialValue, isA<bool>());
+        expect(initialSwitch.value, equals(initialValue));
 
         // Tap the switch to toggle it
         await tester.tap(switchWidget, warnIfMissed: false);
         await tester.pumpAndSettle();
+        
+        // Wait for any async operations
+        await tester.pump();
 
         // The switch should still be present and functional after toggle
         expect(switchWidget, findsOneWidget);
@@ -491,13 +551,8 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            home: const VolunteerSettingsPage(),
-            routes: {
-              '/georestriction': (context) => const Scaffold(
-                body: Text('Georestriction Settings Page'),
-              ),
-            },
+          child: const MaterialApp(
+            home: VolunteerSettingsPage(),
           ),
         ),
       );
@@ -517,16 +572,16 @@ void main() {
       );
       expect(geoSettingsTile, findsOneWidget);
 
-      // Tap the tile - this should try to navigate
+      // Verify the tile has an onTap handler (indicating navigation functionality)
+      final listTileWidget = tester.widget<ListTile>(geoSettingsTile);
+      expect(listTileWidget.onTap, isNotNull,
+          reason: 'Georestriction Settings tile should have navigation onTap handler');
+
+      // Tap the tile - this should try to navigate but will fail since we don't have the target page
       await tester.tap(geoSettingsTile, warnIfMissed: false);
       await tester.pumpAndSettle();
 
-      // Verify that navigation occurred by checking if we can find the georestriction page content
-      // Note: In the actual app, this navigates to GeorestrictionSettingsPage
-      // For testing purposes, we verify that the tap is handled and no errors occur
-      expect(find.text('Georestriction Settings'), findsOneWidget);
-      
-      // Additional verification: ensure the tile is still tappable (no errors occurred)
+      // The tile should still be present and functional after tap (no crash)
       expect(geoSettingsTile, findsOneWidget);
     });
 
@@ -624,27 +679,24 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // Debug: Let's see what widgets are actually present
-        final allText = find.textContaining('', findRichText: true).evaluate().map((e) {
-          final widget = e.widget;
-          if (widget is Text) return widget.data;
-          if (widget is RichText) return widget.text.toPlainText();
-          return 'Unknown';
-        }).toList();
-        print('All text widgets found: $allText');
+        // Get the shelter data to verify actual values
+        final volunteersViewModel = container.read(volunteersViewModelProvider);
+        final shelter = volunteersViewModel.value;
+        expect(shelter, isNotNull);
+        final volunteerSettings = shelter!.volunteerSettings;
 
-        // Expected switch titles and their default values from the model
-        final expectedSwitchTitles = [
-          'Photo Uploads Allowed',
-          'Allow Bulk Take Out', 
-          'Require Let Out Type',
-          'Require Early Put Back Reason',
-          'Require Name',
-          'Create Logs When Under Minimum Duration',
-          'Show Custom Form',
-          'Append Animal Data To URL',
-          'Georestrict',
-        ];
+        // Expected switch titles and their corresponding values from the shelter data
+        final expectedSwitches = {
+          'Photo Uploads Allowed': volunteerSettings.photoUploadsAllowed,
+          'Allow Bulk Take Out': volunteerSettings.allowBulkTakeOut,
+          'Require Let Out Type': volunteerSettings.requireLetOutType,
+          'Require Early Put Back Reason': volunteerSettings.requireEarlyPutBackReason,
+          'Require Name': volunteerSettings.requireName,
+          'Create Logs When Under Minimum Duration': volunteerSettings.createLogsWhenUnderMinimumDuration,
+          'Show Custom Form': volunteerSettings.showCustomForm,
+          'Append Animal Data To URL': volunteerSettings.appendAnimalDataToURL,
+          'Georestrict': volunteerSettings.geofence?.isEnabled ?? false,
+        };
 
         // Scroll to ensure all content is visible
         final scrollable = find.byType(Scrollable);
@@ -653,7 +705,10 @@ void main() {
           await tester.pumpAndSettle();
         }
 
-        for (final title in expectedSwitchTitles) {
+        for (final entry in expectedSwitches.entries) {
+          final title = entry.key;
+          final expectedValue = entry.value;
+          
           expect(find.text(title), findsOneWidget,
               reason: 'Switch with title "$title" should be present');
           
@@ -664,17 +719,22 @@ void main() {
           expect(switchToggle, findsOneWidget,
               reason: 'SwitchToggleView for "$title" should be present');
 
-          // Verify the switch widget exists (but not necessarily specific values since they come from defaults)
+          // Verify the switch widget exists and has the correct value
           final switchWidget = find.descendant(
             of: switchToggle,
             matching: find.byType(Switch),
           );
           expect(switchWidget, findsOneWidget,
               reason: 'Switch widget for "$title" should be present');
+              
+          // Check the actual boolean value of the switch
+          final switchWidgetInstance = tester.widget<Switch>(switchWidget);
+          expect(switchWidgetInstance.value, equals(expectedValue),
+              reason: 'Switch "$title" should have value $expectedValue');
         }
 
         // Verify we have exactly the expected number of switches
-        expect(find.byType(SwitchToggleView), findsNWidgets(expectedSwitchTitles.length));
+        expect(find.byType(SwitchToggleView), findsNWidgets(expectedSwitches.length));
       });
     });
   });
