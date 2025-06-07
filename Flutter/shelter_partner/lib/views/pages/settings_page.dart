@@ -403,9 +403,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 ),
                                 title: Text(
                                   _version,
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                  ),
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
                               ),
                               Divider(
@@ -417,9 +415,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 leading: Icon(Icons.pets, color: Colors.grey),
                                 title: Text(
                                   "Dedicated to Aslan",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
+                                  style: TextStyle(color: Colors.grey),
                                 ),
                               ),
                               Divider(
@@ -434,14 +430,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   children: [
                                     const Row(
                                       children: [
-                                        Icon(Icons.description,
-                                            color: Colors.black87),
+                                        Icon(
+                                          Icons.description,
+                                          color: Colors.black87,
+                                        ),
                                         SizedBox(width: 10),
                                         Text(
                                           'Release Notes',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                          ),
+                                          style: TextStyle(fontSize: 16),
                                         ),
                                       ],
                                     ),
@@ -449,8 +445,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     if (_releases.isEmpty)
                                       const Padding(
                                         padding: EdgeInsets.all(8.0),
-                                        child:
-                                            Text("Fetching release notes..."),
+                                        child: Text(
+                                          "Fetching release notes...",
+                                        ),
                                       )
                                     else ...[
                                       // Show only the most recent release if not showing previous
@@ -461,8 +458,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                         expandedReleases: _expandedReleases,
                                         onToggleExpand: (index) {
                                           setState(() {
-                                            if (_expandedReleases
-                                                .contains(index)) {
+                                            if (_expandedReleases.contains(
+                                              index,
+                                            )) {
                                               _expandedReleases.remove(index);
                                             } else {
                                               _expandedReleases.add(index);
@@ -502,7 +500,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 Future<List<GitHubRelease>> fetchFilteredReleases() async {
   final response = await http.get(
     Uri.parse(
-        'https://api.github.com/repos/ShelterPartner/ShelterPartner/releases'),
+      'https://api.github.com/repos/ShelterPartner/ShelterPartner/releases',
+    ),
   );
 
   if (response.statusCode == 200) {

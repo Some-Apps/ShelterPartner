@@ -3,8 +3,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shelter_partner/models/github_release.dart';
 
-typedef IsVersionGreaterOrEqual = bool Function(
-    String version, String minVersion);
+typedef IsVersionGreaterOrEqual =
+    bool Function(String version, String minVersion);
 
 class ReleaseNotes extends StatelessWidget {
   final List<GitHubRelease> releases;
@@ -53,9 +53,11 @@ class ReleaseNotes extends StatelessWidget {
           ...releases
               .asMap()
               .entries
-              .where((entry) =>
-                  isVersionGreaterOrEqual(entry.value.version, '2.0.1') &&
-                  (!showPreviousVersions ? entry.key == 0 : true))
+              .where(
+                (entry) =>
+                    isVersionGreaterOrEqual(entry.value.version, '2.0.1') &&
+                    (!showPreviousVersions ? entry.key == 0 : true),
+              )
               .map(
                 (entry) => Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
@@ -77,10 +79,13 @@ class ReleaseNotes extends StatelessWidget {
                                   ? Colors.blue.shade50
                                   : Colors.grey.shade50,
                               borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(12)),
+                                top: Radius.circular(12),
+                              ),
                             ),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                             child: Row(
                               children: [
                                 Icon(
@@ -108,9 +113,7 @@ class ReleaseNotes extends StatelessWidget {
                                 ),
                                 Text(
                                   '${entry.value.publishedAt.day}/${entry.value.publishedAt.month}/${entry.value.publishedAt.year}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
+                                  style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(color: Colors.grey),
                                 ),
                                 const SizedBox(width: 8),
@@ -133,36 +136,37 @@ class ReleaseNotes extends StatelessWidget {
                               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                               child: MarkdownBody(
                                 data: entry.value.body,
-                                styleSheet: MarkdownStyleSheet.fromTheme(
-                                  Theme.of(context),
-                                ).copyWith(
-                                  p: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(color: Colors.black87),
-                                  h1: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                        fontSize: 18,
-                                      ),
-                                  h2: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                        fontSize: 15,
-                                      ),
-                                ),
+                                styleSheet:
+                                    MarkdownStyleSheet.fromTheme(
+                                      Theme.of(context),
+                                    ).copyWith(
+                                      p: Theme.of(context).textTheme.bodyMedium
+                                          ?.copyWith(color: Colors.black87),
+                                      h1: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                            fontSize: 18,
+                                          ),
+                                      h2: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                            fontSize: 15,
+                                          ),
+                                    ),
                                 onTapLink: (text, href, title) async {
                                   if (href != null) {
                                     final uri = Uri.tryParse(href);
                                     if (uri != null) {
-                                      await launchUrl(uri,
-                                          mode: LaunchMode.externalApplication);
+                                      await launchUrl(
+                                        uri,
+                                        mode: LaunchMode.externalApplication,
+                                      );
                                     }
                                   }
                                 },

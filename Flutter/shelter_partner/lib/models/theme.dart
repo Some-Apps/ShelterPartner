@@ -162,7 +162,9 @@ final ThemeData lightTheme = ThemeData(
   // Additional theme customizations can be added here
   timePickerTheme: const TimePickerThemeData(
     hourMinuteTextStyle: TextStyle(fontSize: 36.0),
-  ), dialogTheme: const DialogThemeData(backgroundColor: Color(0xFFF8F9FF)), tabBarTheme: const TabBarThemeData(indicatorColor: Colors.white),
+  ),
+  dialogTheme: const DialogThemeData(backgroundColor: Color(0xFFF8F9FF)),
+  tabBarTheme: const TabBarThemeData(indicatorColor: Colors.white),
 );
 
 final ThemeData darkTheme = ThemeData(

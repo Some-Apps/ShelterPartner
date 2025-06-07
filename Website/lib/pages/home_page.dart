@@ -113,7 +113,10 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: const FaIcon(FontAwesomeIcons.facebook, color: Colors.black),
+                icon: const FaIcon(
+                  FontAwesomeIcons.facebook,
+                  color: Colors.black,
+                ),
                 onPressed: () {
                   launchUrl(
                     Uri.parse(
@@ -123,7 +126,10 @@ class HomePage extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: const FaIcon(FontAwesomeIcons.instagram, color: Colors.black),
+                icon: const FaIcon(
+                  FontAwesomeIcons.instagram,
+                  color: Colors.black,
+                ),
                 onPressed: () {
                   launchUrl(
                     Uri.parse('https://www.instagram.com/shelterpartner'),

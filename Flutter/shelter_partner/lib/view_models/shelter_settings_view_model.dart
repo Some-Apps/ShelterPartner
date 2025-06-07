@@ -298,7 +298,6 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
       ),
     );
   }
-
 }
 
 // Provider to access the ShelterSettingsViewModel
