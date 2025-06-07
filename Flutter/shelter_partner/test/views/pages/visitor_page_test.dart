@@ -1,3 +1,12 @@
+// Test for VisitorPage Widget to verify animals are displayed correctly
+// 
+// Test Effectiveness Validation:
+// To verify this test can fail when functionality is broken, try:
+// 1. Comment out the Text widget displaying animal.name in visitor_page.dart line 274
+// 2. Break the visitorsViewModelProvider data flow 
+// 3. Remove animal collections from Firestore setup
+// The test should fail in each case, proving it effectively tests the functionality.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
