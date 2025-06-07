@@ -349,6 +349,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
                     children: [
                       Text(
                         sectionTitle,
+                        key: ValueKey('sectionHeader_$sectionTitle'),
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
