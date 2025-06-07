@@ -6,6 +6,7 @@ import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/simplistic_animal_card_view.dart';
+import 'package:shelter_partner/views/components/navigation_button_view.dart';
 
 import '../../helpers/firebase_test_overrides.dart';
 import '../../helpers/test_animal_data.dart';
@@ -545,5 +546,205 @@ void main() {
         );
       },
     );
+
+    testWidgets('contains user filter navigation button', (
+      WidgetTester tester,
+    ) async {
+      // Arrange: Create test user
+      final container = await createTestUserAndLogin(
+        email: 'filternavuser@example.com',
+        password: 'testpassword',
+        firstName: 'FilterNav',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      // Act
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: EnrichmentPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Assert the NavigationButton component exists
+      // This tests that the UI component is present even if not visible in viewport
+      expect(find.byType(NavigationButton), findsWidgets);
+      
+      // Also check for the specific ListTile with our title
+      final listTileFinder = find.widgetWithText(ListTile, 'User Enrichment Filter');
+      expect(listTileFinder, findsOneWidget);
+    });
+
+    testWidgets('applies user filter to animal list', (
+      WidgetTester tester,
+    ) async {
+      // Arrange: Create test user with a specific user filter
+      final container = await createTestUserAndLogin(
+        email: 'filterapplyuser@example.com',
+        password: 'testpassword',
+        firstName: 'FilterApply',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      final shelterId = user?.shelterId ?? 'test-shelter';
+
+      // Add test animals with different names and breeds
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog1')
+          .set(createTestAnimalData(
+            id: 'dog1',
+            name: 'Filtered Dog',
+            breed: 'Labrador',
+          ));
+      
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog2')
+          .set(createTestAnimalData(
+            id: 'dog2',
+            name: 'Another Dog',
+            breed: 'Poodle',
+          ));
+      
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog3')
+          .set(createTestAnimalData(
+            id: 'dog3',
+            name: 'Third Dog',
+            breed: 'Beagle',
+          ));
+
+      // Create a user filter that filters for name containing "Filtered"
+      final userFilterData = {
+        'filterElements': [
+          {
+            'type': 'condition',
+            'attribute': 'name',
+            'operatorType': 'contains',
+            'value': 'Filtered',
+          }
+        ],
+        'operatorsBetween': {},
+      };
+
+      // Update the user document with the filter
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc(user!.id)
+          .update({'userFilter': userFilterData});
+
+      // Act
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: EnrichmentPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Wait a bit for the filter to be applied
+      await tester.pump(const Duration(milliseconds: 500));
+
+      // Assert: Only the filtered dog should be visible
+      expect(find.text('Filtered Dog'), findsOneWidget);
+      expect(find.text('Another Dog'), findsNothing);
+      expect(find.text('Third Dog'), findsNothing);
+    });
+
+    testWidgets('user filter works with enrichment filter together', (
+      WidgetTester tester,
+    ) async {
+      // Arrange: Create test user
+      final container = await createTestUserAndLogin(
+        email: 'combinedfilteruser@example.com',
+        password: 'testpassword',
+        firstName: 'CombinedFilter',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      final shelterId = user?.shelterId ?? 'test-shelter';
+
+      // Add test animals - use names that contain common letters
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog1')
+          .set(createTestAnimalData(
+            id: 'dog1',
+            name: 'Alpha Dog',
+            breed: 'Labrador',
+          ));
+      
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog2')
+          .set(createTestAnimalData(
+            id: 'dog2',
+            name: 'Beta Dog',
+            breed: 'Poodle',
+          ));
+
+      // Create a user filter that filters for name containing "Dog" (which all our test animals should have)
+      final userFilterData = {
+        'filterElements': [
+          {
+            'type': 'condition',
+            'attribute': 'name',
+            'operatorType': 'contains',
+            'value': 'Dog',
+          }
+        ],
+        'operatorsBetween': {},
+      };
+
+      // Update the user document with the filter
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc(user!.id)
+          .update({'userFilter': userFilterData});
+
+      // Act
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: EnrichmentPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Wait for the filter to be applied
+      await tester.pump(const Duration(milliseconds: 500));
+
+      // Assert: Only our dogs with "Dog" in the name should be visible
+      expect(find.text('Alpha Dog'), findsOneWidget);
+      expect(find.text('Beta Dog'), findsOneWidget);
+      
+      // The default test animals (Buddy, Max) should NOT be visible since they don't contain "Dog"
+      expect(find.text('Buddy'), findsNothing);
+      expect(find.text('Max'), findsNothing);
+    });
   });
 }
