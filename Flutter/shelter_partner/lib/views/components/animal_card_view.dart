@@ -251,227 +251,248 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Top Row: Image and details.
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Animal image with tap interactions.
-                GestureDetector(
-                  onTapDown: canInteract
-                      ? (_) {
-                          setState(() {
-                            isPressed = true;
-                          });
-                          _controller.forward();
-                          HapticFeedback.mediumImpact();
-                        }
-                      : null,
-                  onTapUp: canInteract
-                      ? (_) {
-                          setState(() {
-                            isPressed = false;
-                          });
-                          _controller.reverse();
-                          HapticFeedback.lightImpact();
-                        }
-                      : null,
-                  onTapCancel: canInteract
-                      ? () {
-                          setState(() {
-                            isPressed = false;
-                          });
-                          _controller.reverse();
-                          HapticFeedback.lightImpact();
-                        }
-                      : null,
-                  child: AnimalCardImage(
-                    curvedAnimation: _curvedAnimation,
-                    isPressed: isPressed,
-                    animal: animal,
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Animal image with tap interactions.
+                  GestureDetector(
+                    onTapDown: canInteract
+                        ? (_) {
+                            setState(() {
+                              isPressed = true;
+                            });
+                            _controller.forward();
+                            HapticFeedback.mediumImpact();
+                          }
+                        : null,
+                    onTapUp: canInteract
+                        ? (_) {
+                            setState(() {
+                              isPressed = false;
+                            });
+                            _controller.reverse();
+                            HapticFeedback.lightImpact();
+                          }
+                        : null,
+                    onTapCancel: canInteract
+                        ? () {
+                            setState(() {
+                              isPressed = false;
+                            });
+                            _controller.reverse();
+                            HapticFeedback.lightImpact();
+                          }
+                        : null,
+                    child: AnimalCardImage(
+                      curvedAnimation: _curvedAnimation,
+                      isPressed: isPressed,
+                      animal: animal,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                // Animal details.
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Row with name and icons.
-                      Row(
-                        children: [
-                          Expanded(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                animal.name,
-                                style: const TextStyle(
-                                  fontFamily: 'CabinBold',
-                                  fontSize: 32.0,
-                                  fontWeight: FontWeight.w800,
+                  const SizedBox(width: 10),
+                  // Animal details.
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Row with name and icons.
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  animal.name,
+                                  style: const TextStyle(
+                                    fontFamily: 'CabinBold',
+                                    fontSize: 32.0,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          // Wrap the icon and menu button in a Row that takes only its natural size.
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
+                            // Wrap the icon and menu button in a Row that takes only its natural size.
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildIcon(animal.symbol, animal.symbolColor),
+                                PopupMenuButton<String>(
+                                  offset: const Offset(0, 40),
+                                  onSelected: (value) {
+                                    switch (value) {
+                                      case 'Details':
+                                        context.push(
+                                          '/enrichment/details',
+                                          extra: animal,
+                                        );
+                                        break;
+                                      case 'Add Note':
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              AddNoteView(animal: animal),
+                                        );
+                                        break;
+                                      case 'Add Log':
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              AddLogView(animal: animal),
+                                        );
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) {
+                                    final appUser = ref.read(appUserProvider);
+                                    final accountSettings = ref
+                                        .read(accountSettingsViewModelProvider)
+                                        .value;
+                                    final menuItems = {'Details', 'Add Note'};
+                                    if (appUser?.type == "admin" &&
+                                        accountSettings!
+                                                .accountSettings
+                                                ?.mode ==
+                                            "Admin" &&
+                                        animal.inKennel) {
+                                      menuItems.add('Add Log');
+                                    }
+                                    return menuItems.map((String choice) {
+                                      return PopupMenuItem<String>(
+                                        value: choice,
+                                        child: Text(choice),
+                                      );
+                                    }).toList();
+                                  },
+                                  icon: const Icon(Icons.more_vert),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        // Info chips wrapped in a Wrap.
+                        Expanded(
+                          child: Wrap(
+                            spacing: 4,
+                            runSpacing: 4,
                             children: [
-                              _buildIcon(animal.symbol, animal.symbolColor),
-                              PopupMenuButton<String>(
-                                offset: const Offset(0, 40),
-                                onSelected: (value) {
-                                  switch (value) {
-                                    case 'Details':
-                                      context.push(
-                                        '/enrichment/details',
-                                        extra: animal,
-                                      );
-                                      break;
-                                    case 'Add Note':
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            AddNoteView(animal: animal),
-                                      );
-                                      break;
-                                    case 'Add Log':
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            AddLogView(animal: animal),
-                                      );
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) {
-                                  final appUser = ref.read(appUserProvider);
-                                  final accountSettings = ref
-                                      .read(accountSettingsViewModelProvider)
-                                      .value;
-                                  final menuItems = {'Details', 'Add Note'};
-                                  if (appUser?.type == "admin" &&
-                                      accountSettings!.accountSettings?.mode ==
-                                          "Admin" &&
-                                      animal.inKennel) {
-                                    menuItems.add('Add Log');
-                                  }
-                                  return menuItems.map((String choice) {
-                                    return PopupMenuItem<String>(
-                                      value: choice,
-                                      child: Text(choice),
-                                    );
-                                  }).toList();
-                                },
-                                icon: const Icon(Icons.more_vert),
+                              if (animal.location.isNotEmpty &&
+                                  animal.locationTiers.isEmpty)
+                                _buildInfoChip(
+                                  icon: Icons.location_on,
+                                  label: animal.location,
+                                ),
+                              if (animal.locationTiers.isNotEmpty)
+                                for (var tier in animal.locationTiers.sublist(
+                                  animal.locationTiers.length >
+                                          widget.maxLocationTiers
+                                      ? animal.locationTiers.length -
+                                            widget.maxLocationTiers
+                                      : 0, // Clamp to 0 if not enough tiers
+                                ))
+                                  _buildInfoChip(
+                                    icon: Icons.location_on,
+                                    label: tier,
+                                  ),
+                              if (animal.adoptionCategory.isNotEmpty)
+                                _buildInfoChip(
+                                  icon: Icons.shopping_bag,
+                                  label: animal.adoptionCategory,
+                                ),
+                              if (animal.behaviorCategory.isNotEmpty)
+                                _buildInfoChip(
+                                  icon: Icons.face,
+                                  label: animal.behaviorCategory,
+                                ),
+                              if (animal.locationCategory.isNotEmpty)
+                                _buildInfoChip(
+                                  icon: Icons.location_city,
+                                  label: animal.locationCategory,
+                                ),
+                              if (animal.medicalCategory.isNotEmpty)
+                                _buildInfoChip(
+                                  icon: Icons.health_and_safety,
+                                  label: animal.medicalCategory,
+                                ),
+                              if (animal.volunteerCategory.isNotEmpty)
+                                _buildInfoChip(
+                                  icon: Icons.volunteer_activism,
+                                  label: animal.volunteerCategory,
+                                ),
+                              // Add the top 3 tags as info chips.
+                              for (var tag
+                                  in (animal.tags..sort(
+                                        (a, b) => b.count.compareTo(a.count),
+                                      ))
+                                      .take(3))
+                                _buildInfoChip(
+                                  icon: Icons.label,
+                                  label: tag.title,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Use Expanded for the Spacer and bottom row so the card fills available space and avoids overflow
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      if (animal.logs.isNotEmpty)
+                        Flexible(
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.access_time,
+                                size: 16,
+                                color: Colors.grey.shade600,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      // Info chips wrapped in a Wrap.
-                      Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: [
-                          if (animal.location.isNotEmpty &&
-                              animal.locationTiers.isEmpty)
-                            _buildInfoChip(
-                              icon: Icons.location_on,
-                              label: animal.location,
-                            ),
-                          if (animal.locationTiers.isNotEmpty)
-                            for (var tier in animal.locationTiers.sublist(
-                              animal.locationTiers.length >
-                                      widget.maxLocationTiers
-                                  ? animal.locationTiers.length -
-                                        widget.maxLocationTiers
-                                  : 0, // Clamp to 0 if not enough tiers
-                            ))
-                              _buildInfoChip(
-                                icon: Icons.location_on,
-                                label: tier,
+                        ),
+                      if (animal.logs.isNotEmpty &&
+                          animal.logs.last.author.isNotEmpty)
+                        Flexible(
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.person_2_outlined,
+                                size: 16,
+                                color: Colors.grey.shade600,
                               ),
-                          if (animal.adoptionCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.shopping_bag,
-                              label: animal.adoptionCategory,
-                            ),
-                          if (animal.behaviorCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.face,
-                              label: animal.behaviorCategory,
-                            ),
-                          if (animal.locationCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.location_city,
-                              label: animal.locationCategory,
-                            ),
-                          if (animal.medicalCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.health_and_safety,
-                              label: animal.medicalCategory,
-                            ),
-                          if (animal.volunteerCategory.isNotEmpty)
-                            _buildInfoChip(
-                              icon: Icons.volunteer_activism,
-                              label: animal.volunteerCategory,
-                            ),
-                          // Add the top 3 tags as info chips.
-                          for (var tag
-                              in (animal.tags..sort(
-                                    (a, b) => b.count.compareTo(a.count),
-                                  ))
-                                  .take(3))
-                            _buildInfoChip(icon: Icons.label, label: tag.title),
-                        ],
-                      ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  animal.logs.last.author,
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            // Bottom row: Time and author information.
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    if (animal.logs.isNotEmpty)
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                        ],
-                      ),
-                    if (animal.logs.isNotEmpty &&
-                        animal.logs.last.author.isNotEmpty)
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.person_2_outlined,
-                            size: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            animal.logs.last.author,
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                        ],
-                      ),
-                  ],
                 ),
               ),
             ),
