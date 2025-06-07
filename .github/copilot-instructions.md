@@ -5,6 +5,7 @@ This is a Flutter-based application for animal shelter management built with Fir
 ## Code Standards
 
 ### Required Before Each Commit
+- Run `dart fix --apply` before formatting to apply automatic fixes
 - Run `dart format .` in both `Flutter/shelter_partner/` and `Website/` directories to ensure proper code formatting
 - Ensure all tests pass with `flutter test` from the project directory
 - Verify code analysis passes without blocking errors using `flutter analyze`
@@ -12,7 +13,7 @@ This is a Flutter-based application for animal shelter management built with Fir
 ### Development Flow
 - **Setup**: `cd Flutter/shelter_partner && flutter pub get` to install dependencies
 - **Build**: `flutter build web` (primary target platform)
-- **Test**: `flutter test` (29 tests must pass)
+- **Test**: `flutter test` (all tests must pass)
 - **Analyze**: `flutter analyze` (warnings are acceptable, errors are not)
 - **Format**: `dart format .` (required by CI)
 
@@ -24,7 +25,7 @@ This is a Flutter-based application for animal shelter management built with Fir
   - `lib/views/`: UI components (pages and reusable components)
   - `lib/providers/`: Riverpod provider definitions
   - `test/`: Test files mirroring the lib structure with `_test.dart` suffix
-- `Website/`: Flutter web application (currently not building)
+- `Website/`: Flutter web application
 - `Cloud Functions/`: Firebase Cloud Functions
 - `Documentation/`: Project documentation and user guides
 - `.github/workflows/`: CI/CD configuration
@@ -89,7 +90,6 @@ flutter doctor                          # Check Flutter setup
 - **State management**: Riverpod 2.5.1+ with code generation
 - **Backend**: Firebase (Firestore, Auth, Storage, Functions)
 - **Testing**: Mock Firebase services using `fake_cloud_firestore` and `firebase_auth_mocks`
-- **Test accounts**: Password is `password123` for all test accounts
 
 ## Specific to This Codebase
 
