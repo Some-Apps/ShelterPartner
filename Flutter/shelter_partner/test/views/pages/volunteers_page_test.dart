@@ -2,19 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'package:shelter_partner/views/pages/volunteers_page.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/repositories/volunteers_repository.dart';
-import 'package:shelter_partner/view_models/volunteers_view_model.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 import '../../helpers/firebase_test_overrides.dart';
 import '../../helpers/test_auth_helpers.dart';
 import '../../helpers/test_volunteer_data.dart';
-
-@GenerateMocks([VolunteersRepository])
-import 'volunteers_page_test.mocks.dart';
+import '../../helpers/mock_network_client.dart';
 
 void main() {
   group('VolunteersPage Widget Tests', () {
@@ -394,41 +390,42 @@ void main() {
       final user = container.read(appUserProvider);
       final shelterId = user?.shelterId ?? 'test-shelter';
 
-      // Create mock repository and set up successful response
-      final mockRepository = MockVolunteersRepository();
-      when(mockRepository.sendVolunteerInvite(
-        any,
-        any,
-        any,
-        any,
-      )).thenAnswer((_) async {});
+      // Create mock network client and set up successful response
+      final mockNetworkClient = MockNetworkClient();
+      mockNetworkClient.setResponse(
+        'https://invite-volunteer-222422545919.us-central1.run.app',
+        200,
+        '{"status": "success"}',
+      );
 
-      // Mock the fetchShelterWithVolunteers to return a shelter with the admin user
-      // This ensures the widget displays correctly while we test the invite functionality
-      when(mockRepository.fetchShelterWithVolunteers(any))
-          .thenAnswer((_) => Stream.value(
-                createTestShelterWithVolunteers(
-                  shelterId: shelterId,
-                  volunteers: [
-                    createTestVolunteer(
-                      id: 'admin-user',
-                      firstName: 'InviteSuccess',
-                      lastName: 'Tester',
-                      email: 'invitesuccessuser@example.com',
-                      shelterID: shelterId,
-                    ),
-                  ],
-                ),
-              ));
+      // Add test volunteers to Firestore to ensure widget displays correctly
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc('admin-user')
+          .set(createTestVolunteerData(
+            id: 'admin-user',
+            firstName: 'InviteSuccess',
+            lastName: 'Tester',
+            email: 'invitesuccessuser@example.com',
+            shelterID: shelterId,
+          ));
 
-      // Act: Build the widget with mocked repository
+      // Act: Build the widget with mocked network client
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             ...FirebaseTestOverrides.overrides,
             authViewModelProvider.overrideWith((ref) =>
                 container.read(authViewModelProvider.notifier)),
-            volunteersRepositoryProvider.overrideWithValue(mockRepository),
+            volunteersRepositoryProvider.overrideWith((ref) {
+              final firestore = ref.watch(firestoreProvider);
+              final firebaseAuth = ref.watch(firebaseAuthProvider);
+              return VolunteersRepository(
+                firestore: firestore,
+                firebaseAuth: firebaseAuth,
+                networkClient: mockNetworkClient,
+              );
+            }),
           ],
           child: const MaterialApp(home: VolunteersPage()),
         ),
@@ -454,13 +451,13 @@ void main() {
       await tester.tap(sendInviteButton);
       await tester.pumpAndSettle();
 
-      // Assert: Verify that the repository method was called with correct parameters
-      verify(mockRepository.sendVolunteerInvite(
-        'Jane',
-        'Smith',
-        'jane.smith@example.com',
-        shelterId,
-      )).called(1);
+      // Assert: Verify that the network request was made to the correct URL
+      expect(mockNetworkClient.requests.length, equals(1));
+      final request = mockNetworkClient.requests.first;
+      expect(request.method, equals('POST'));
+      expect(request.url.toString(), equals('https://invite-volunteer-222422545919.us-central1.run.app'));
+      expect(request.headers?['Content-Type'], equals('application/json'));
+      expect(request.headers?['Authorization'], startsWith('Bearer '));
 
       // Assert: Verify success snackbar is shown
       expect(find.text('Invite sent successfully'), findsOneWidget);
@@ -508,45 +505,53 @@ void main() {
       final user = container.read(appUserProvider);
       final shelterId = user?.shelterId ?? 'test-shelter';
 
-      // Create mock repository and set up successful response
-      final mockRepository = MockVolunteersRepository();
-      when(mockRepository.deleteVolunteer(
-        any,
-        any,
-      )).thenAnswer((_) async {});
+      // Create mock network client and set up successful response
+      final mockNetworkClient = MockNetworkClient();
+      mockNetworkClient.setResponse(
+        'https://delete-volunteer-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId',
+        200,
+        '{"success": true}',
+      );
 
-      // Mock the fetchShelterWithVolunteers to return a shelter with volunteers including Alice
-      when(mockRepository.fetchShelterWithVolunteers(any))
-          .thenAnswer((_) => Stream.value(
-                createTestShelterWithVolunteers(
-                  shelterId: shelterId,
-                  volunteers: [
-                    createTestVolunteer(
-                      id: 'admin-user',
-                      firstName: 'DeleteVolunteer',
-                      lastName: 'Tester',
-                      email: 'deletevolunteeruser@example.com',
-                      shelterID: shelterId,
-                    ),
-                    createTestVolunteer(
-                      id: 'volunteer-to-delete',
-                      firstName: 'Alice',
-                      lastName: 'Johnson',
-                      email: 'alice.johnson@example.com',
-                      shelterID: shelterId,
-                    ),
-                  ],
-                ),
-              ));
+      // Add test volunteers to Firestore 
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc('admin-user')
+          .set(createTestVolunteerData(
+            id: 'admin-user',
+            firstName: 'DeleteVolunteer',
+            lastName: 'Tester',
+            email: 'deletevolunteeruser@example.com',
+            shelterID: shelterId,
+          ));
 
-      // Act: Build the widget with mocked repository
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc('volunteer-to-delete')
+          .set(createTestVolunteerData(
+            id: 'volunteer-to-delete',
+            firstName: 'Alice',
+            lastName: 'Johnson',
+            email: 'alice.johnson@example.com',
+            shelterID: shelterId,
+          ));
+
+      // Act: Build the widget with mocked network client
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             ...FirebaseTestOverrides.overrides,
             authViewModelProvider.overrideWith((ref) =>
                 container.read(authViewModelProvider.notifier)),
-            volunteersRepositoryProvider.overrideWithValue(mockRepository),
+            volunteersRepositoryProvider.overrideWith((ref) {
+              final firestore = ref.watch(firestoreProvider);
+              final firebaseAuth = ref.watch(firebaseAuthProvider);
+              return VolunteersRepository(
+                firestore: firestore,
+                firebaseAuth: firebaseAuth,
+                networkClient: mockNetworkClient,
+              );
+            }),
           ],
           child: const MaterialApp(home: VolunteersPage()),
         ),
@@ -580,14 +585,30 @@ void main() {
       await tester.tap(deleteConfirmButton);
       await tester.pumpAndSettle();
 
-      // Assert: Verify that the repository delete method was called with correct parameters
-      verify(mockRepository.deleteVolunteer(
-        'volunteer-to-delete',
-        shelterId,
-      )).called(1);
+      // Assert: Verify that the network request was made with correct parameters
+      expect(mockNetworkClient.requests.length, equals(1));
+      final request = mockNetworkClient.requests.first;
+      expect(request.method, equals('DELETE'));
+      expect(request.url.toString(), equals('https://delete-volunteer-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId'));
+      expect(request.headers?['Content-Type'], equals('application/json'));
+      expect(request.headers?['Authorization'], startsWith('Bearer '));
 
       // Assert: Verify success snackbar is shown
       expect(find.text('Alice deleted'), findsOneWidget);
+
+      // Manually delete the volunteer from Firestore to simulate the backend deletion
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc('volunteer-to-delete')
+          .delete();
+
+      // Give the stream time to emit the updated data
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(milliseconds: 50));
+      await tester.pumpAndSettle();
+
+      // Assert: Verify that Alice Johnson is no longer found after deletion
+      expect(find.text('Alice Johnson'), findsNothing);
     });
   });
 }
