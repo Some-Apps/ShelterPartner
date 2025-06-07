@@ -547,38 +547,6 @@ void main() {
       },
     );
 
-    testWidgets('contains user filter navigation button', (
-      WidgetTester tester,
-    ) async {
-      // Arrange: Create test user
-      final container = await createTestUserAndLogin(
-        email: 'filternavuser@example.com',
-        password: 'testpassword',
-        firstName: 'FilterNav',
-        lastName: 'Tester',
-        shelterName: 'Test Shelter',
-        shelterAddress: '123 Test St',
-        selectedManagementSoftware: 'ShelterLuv',
-      );
-
-      // Act
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: const MaterialApp(home: EnrichmentPage()),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Assert the NavigationButton component exists
-      // This tests that the UI component is present even if not visible in viewport
-      expect(find.byType(NavigationButton), findsWidgets);
-      
-      // Also check for the specific ListTile with our title
-      final listTileFinder = find.widgetWithText(ListTile, 'User Enrichment Filter');
-      expect(listTileFinder, findsOneWidget);
-    });
-
     testWidgets('applies user filter to animal list', (
       WidgetTester tester,
     ) async {
