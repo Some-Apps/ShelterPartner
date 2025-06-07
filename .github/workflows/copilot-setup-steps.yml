@@ -1,0 +1,49 @@
+name: "Copilot Setup Steps"
+
+# Allow testing of the setup steps from your repository's "Actions" tab.
+on: workflow_dispatch
+
+jobs:
+  # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+
+    # Set the permissions to the lowest permissions possible needed for your steps.
+    # Copilot will be given its own token for its operations.
+    permissions:
+      # If you want to clone the repository as part of your setup steps, for example to install dependencies, you'll need the `contents: read` permission. If you don't clone the repository in your setup steps, Copilot will do this for you automatically after the steps complete.
+      contents: read
+
+    # You can define any steps you want, and they will run before the agent starts.
+    # If you do not check out your code, Copilot will do this for you.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          cache: true
+
+      - name: Verify Flutter and Dart installation
+        run: |
+          flutter --version
+          dart --version
+          flutter doctor
+
+      - name: Install dependencies for main Flutter app
+        run: flutter pub get
+        working-directory: Flutter/shelter_partner
+
+      - name: Install dependencies for Website Flutter app
+        run: flutter pub get
+        working-directory: Website
+
+      - name: Verify Flutter setup is working
+        run: |
+          echo "Flutter setup completed successfully"
+          echo "Flutter version: $(flutter --version | head -n 1)"
+          echo "Dart version: $(dart --version)"
+          echo "Available Flutter targets:"
+          flutter devices
