@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shelter_partner/models/volunteer.dart';
+import 'package:shelter_partner/models/shelter.dart';
+import 'package:shelter_partner/models/shelter_settings.dart';
+import 'package:shelter_partner/models/volunteer_settings.dart';
 
 /// Creates test volunteer data for testing
 Map<String, dynamic> createTestVolunteerData({
@@ -43,5 +46,24 @@ Volunteer createTestVolunteer({
     lastActivity: lastActivity ?? Timestamp.now(),
     averageLogDuration: averageLogDuration,
     totalTimeLoggedWithAnimals: totalTimeLoggedWithAnimals,
+  );
+}
+
+/// Creates a test Shelter object with volunteers for testing
+Shelter createTestShelterWithVolunteers({
+  String shelterId = 'test-shelter',
+  String name = 'Test Shelter',
+  String address = '123 Test St',
+  List<Volunteer> volunteers = const [],
+}) {
+  return Shelter(
+    id: shelterId,
+    name: name,
+    address: address,
+    createdAt: Timestamp.now(),
+    managementSoftware: 'ShelterLuv',
+    shelterSettings: ShelterSettings.fromMap({}),
+    volunteerSettings: VolunteerSettings.fromMap({}),
+    volunteers: volunteers,
   );
 }

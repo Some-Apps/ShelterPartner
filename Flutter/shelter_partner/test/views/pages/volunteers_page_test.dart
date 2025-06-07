@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:shelter_partner/views/pages/volunteers_page.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/repositories/volunteers_repository.dart';
+import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 
 import '../../helpers/firebase_test_overrides.dart';
 import '../../helpers/test_auth_helpers.dart';
 import '../../helpers/test_volunteer_data.dart';
+
+@GenerateMocks([VolunteersRepository])
+import 'volunteers_page_test.mocks.dart';
 
 void main() {
   group('VolunteersPage Widget Tests', () {
@@ -368,6 +375,219 @@ void main() {
       
       // The "No volunteers available" message should NOT appear since admin is a volunteer
       expect(find.text('No volunteers available at the moment'), findsNothing);
+    });
+
+    testWidgets('successfully sends volunteer invite when form is submitted with valid data', (
+      WidgetTester tester,
+    ) async {
+      // Arrange: Create test user and shelter
+      final container = await createTestUserAndLogin(
+        email: 'invitesuccessuser@example.com',
+        password: 'testpassword',
+        firstName: 'InviteSuccess',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      final shelterId = user?.shelterId ?? 'test-shelter';
+
+      // Create mock repository and set up successful response
+      final mockRepository = MockVolunteersRepository();
+      when(mockRepository.sendVolunteerInvite(
+        any,
+        any,
+        any,
+        any,
+      )).thenAnswer((_) async {});
+
+      // Mock the fetchShelterWithVolunteers to return a shelter with the admin user
+      // This ensures the widget displays correctly while we test the invite functionality
+      when(mockRepository.fetchShelterWithVolunteers(any))
+          .thenAnswer((_) => Stream.value(
+                createTestShelterWithVolunteers(
+                  shelterId: shelterId,
+                  volunteers: [
+                    createTestVolunteer(
+                      id: 'admin-user',
+                      firstName: 'InviteSuccess',
+                      lastName: 'Tester',
+                      email: 'invitesuccessuser@example.com',
+                      shelterID: shelterId,
+                    ),
+                  ],
+                ),
+              ));
+
+      // Act: Build the widget with mocked repository
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ...FirebaseTestOverrides.overrides,
+            authViewModelProvider.overrideWith((ref) =>
+                container.read(authViewModelProvider.notifier)),
+            volunteersRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+          child: const MaterialApp(home: VolunteersPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Fill in the form with valid data
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Volunteer first name'),
+        'Jane',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Volunteer last name'),
+        'Smith',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Volunteer email'),
+        'jane.smith@example.com',
+      );
+
+      // Act: Submit the form
+      final sendInviteButton = find.widgetWithText(ElevatedButton, 'Send Invite');
+      await tester.tap(sendInviteButton);
+      await tester.pumpAndSettle();
+
+      // Assert: Verify that the repository method was called with correct parameters
+      verify(mockRepository.sendVolunteerInvite(
+        'Jane',
+        'Smith',
+        'jane.smith@example.com',
+        shelterId,
+      )).called(1);
+
+      // Assert: Verify success snackbar is shown
+      expect(find.text('Invite sent successfully'), findsOneWidget);
+
+      // Assert: Verify form fields are cleared after successful submission
+      expect(
+        tester.widget<TextFormField>(
+          find.widgetWithText(TextFormField, 'Volunteer first name'),
+        ).controller?.text,
+        isEmpty,
+      );
+      expect(
+        tester.widget<TextFormField>(
+          find.widgetWithText(TextFormField, 'Volunteer last name'),
+        ).controller?.text,
+        isEmpty,
+      );
+      expect(
+        tester.widget<TextFormField>(
+          find.widgetWithText(TextFormField, 'Volunteer email'),
+        ).controller?.text,
+        isEmpty,
+      );
+    });
+
+    testWidgets('successfully deletes volunteer when delete button is tapped and confirmed', (
+      WidgetTester tester,
+    ) async {
+      // Set a larger screen size for this test
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      // Arrange: Create test user and shelter
+      final container = await createTestUserAndLogin(
+        email: 'deletevolunteeruser@example.com',
+        password: 'testpassword',
+        firstName: 'DeleteVolunteer',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      final shelterId = user?.shelterId ?? 'test-shelter';
+
+      // Create mock repository and set up successful response
+      final mockRepository = MockVolunteersRepository();
+      when(mockRepository.deleteVolunteer(
+        any,
+        any,
+      )).thenAnswer((_) async {});
+
+      // Mock the fetchShelterWithVolunteers to return a shelter with volunteers including Alice
+      when(mockRepository.fetchShelterWithVolunteers(any))
+          .thenAnswer((_) => Stream.value(
+                createTestShelterWithVolunteers(
+                  shelterId: shelterId,
+                  volunteers: [
+                    createTestVolunteer(
+                      id: 'admin-user',
+                      firstName: 'DeleteVolunteer',
+                      lastName: 'Tester',
+                      email: 'deletevolunteeruser@example.com',
+                      shelterID: shelterId,
+                    ),
+                    createTestVolunteer(
+                      id: 'volunteer-to-delete',
+                      firstName: 'Alice',
+                      lastName: 'Johnson',
+                      email: 'alice.johnson@example.com',
+                      shelterID: shelterId,
+                    ),
+                  ],
+                ),
+              ));
+
+      // Act: Build the widget with mocked repository
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ...FirebaseTestOverrides.overrides,
+            authViewModelProvider.overrideWith((ref) =>
+                container.read(authViewModelProvider.notifier)),
+            volunteersRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+          child: const MaterialApp(home: VolunteersPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify volunteer is displayed
+      expect(find.text('Alice Johnson'), findsOneWidget);
+
+      // Find the delete button for Alice Johnson
+      final aliceListTile = find.ancestor(
+        of: find.text('Alice Johnson'),
+        matching: find.byType(ListTile),
+      );
+      final deleteButton = find.descendant(
+        of: aliceListTile,
+        matching: find.byIcon(Icons.delete),
+      );
+      expect(deleteButton, findsOneWidget);
+
+      // Act: Tap the delete button
+      await tester.tap(deleteButton, warnIfMissed: false);
+      await tester.pumpAndSettle();
+
+      // Assert: Verify confirmation dialog is shown
+      expect(find.text('Confirm Deletion'), findsOneWidget);
+      expect(find.text('Are you sure you want to delete Alice?'), findsOneWidget);
+
+      // Act: Confirm deletion
+      final deleteConfirmButton = find.widgetWithText(TextButton, 'Delete');
+      await tester.tap(deleteConfirmButton);
+      await tester.pumpAndSettle();
+
+      // Assert: Verify that the repository delete method was called with correct parameters
+      verify(mockRepository.deleteVolunteer(
+        'volunteer-to-delete',
+        shelterId,
+      )).called(1);
+
+      // Assert: Verify success snackbar is shown
+      expect(find.text('Alice deleted'), findsOneWidget);
     });
   });
 }
