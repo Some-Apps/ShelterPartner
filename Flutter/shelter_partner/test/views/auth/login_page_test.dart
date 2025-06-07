@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shelter_partner/views/auth/login_page.dart';
 import 'package:shelter_partner/repositories/auth_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';

@@ -186,3 +186,47 @@ jobs:
           else
             echo 'All formatting checks passed.'
           fi
+      - name: Check for autofixable Dart issues and upload patch if present (shelter_partner)
+        run: |
+          set +e
+          dart fix --apply
+          git diff > autofix.patch
+          if [ -s autofix.patch ]; then
+            echo '::error::Autofixable issues detected. Patch uploaded.'
+            echo 'To fix, run:'
+            echo '  cd Flutter/shelter_partner && dart fix --apply'
+            echo 'cd Flutter/shelter_partner && dart fix --apply' >> $GITHUB_WORKSPACE/fix_fixes.txt
+            exit 1
+          else
+            echo 'No autofixable issues found.'
+          fi
+          set -e
+        working-directory: Flutter/shelter_partner
+      - name: Upload autofix patch artifact (shelter_partner)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: autofix-patch-shelter_partner
+          path: Flutter/shelter_partner/autofix.patch
+      - name: Check for autofixable Dart issues and upload patch if present (website)
+        run: |
+          set +e
+          dart fix --apply
+          git diff > autofix.patch
+          if [ -s autofix.patch ]; then
+            echo '::error::Autofixable issues detected. Patch uploaded.'
+            echo 'To fix, run:'
+            echo '  cd Website && dart fix --apply'
+            echo 'cd Website && dart fix --apply' >> $GITHUB_WORKSPACE/fix_fixes.txt
+            exit 1
+          else
+            echo 'No autofixable issues found.'
+          fi
+          set -e
+        working-directory: Website
+      - name: Upload autofix patch artifact (website)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: autofix-patch-website
+          path: Website/autofix.patch

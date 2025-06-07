@@ -298,11 +298,6 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }
 
 // Provider to access the ShelterSettingsViewModel

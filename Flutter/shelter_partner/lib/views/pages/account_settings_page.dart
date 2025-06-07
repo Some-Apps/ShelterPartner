@@ -609,8 +609,9 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                               final shelterSettings = ref
                                   .watch(shelterSettingsViewModelProvider)
                                   .value;
-                              if (shelterSettings == null)
+                              if (shelterSettings == null) {
                                 return const SizedBox.shrink();
+                              }
 
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

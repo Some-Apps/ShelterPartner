@@ -39,7 +39,7 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
   void _onAuthStateChanged(AuthState authState) {
     if (authState.status == AuthStatus.authenticated) {
       final user = authState.user!;
-      final shelterID = user.shelterId!;
+      final shelterID = user.shelterId;
       if (user.type == 'admin') {
         fetchAnimals(shelterID: shelterID);
       } else if (user.type == 'volunteer') {

@@ -469,7 +469,7 @@ class AuthRepository {
       // Load CSV file as a string using the injected FileLoader
       final csvString = await _fileLoader.loadString(filename);
       print(
-        'Raw CSV string: ' + csvString,
+        'Raw CSV string: $csvString',
       ); // Debugging: print the entire raw string
       // Parse the CSV string
       final List<List<dynamic>> csvRows = const CsvToListConverter(
