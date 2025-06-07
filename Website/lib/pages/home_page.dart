@@ -1,8 +1,6 @@
-import 'dart:ui' as ui; // ignore: avoid_web_libraries_in_flutter
+// ignore: avoid_web_libraries_in_flutter
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart' hide Text, Navigator;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatelessWidget {
@@ -115,7 +113,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.black),
+                icon: const FaIcon(FontAwesomeIcons.facebook, color: Colors.black),
                 onPressed: () {
                   launchUrl(
                     Uri.parse(
@@ -125,7 +123,7 @@ class HomePage extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.black),
+                icon: const FaIcon(FontAwesomeIcons.instagram, color: Colors.black),
                 onPressed: () {
                   launchUrl(
                     Uri.parse('https://www.instagram.com/shelterpartner'),
@@ -145,11 +143,11 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
                       child: Text(
                         "There will be an open Zoom meeting today, June 6 at 6pm MST for any interested shelters. We'll go over our roadmap and get feedback from shelters. Here is a link to the meeting. All are welcome!",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -175,21 +173,21 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
                       child: Column(
                         children: [
                           Text(
                             'Welcome',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
-                            style: const TextStyle(fontSize: 15),
+                            style: TextStyle(fontSize: 15),
                           ),
                         ],
                       ),

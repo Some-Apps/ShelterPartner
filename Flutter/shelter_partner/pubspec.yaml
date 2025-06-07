@@ -46,6 +46,7 @@ dependencies:
 
 
 
+  collection: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -60,6 +61,7 @@ dev_dependencies:
 
 
 
+  state_notifier: any
 dependency_overrides:
   geolocator_android: 4.6.1
   google_maps_flutter_web: ^0.5.6  

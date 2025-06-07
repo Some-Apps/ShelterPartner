@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/repositories/stats_repository.dart';

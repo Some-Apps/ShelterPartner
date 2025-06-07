@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/services/chat_service.dart';
-import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
-import 'package:shelter_partner/view_models/auth_view_model.dart';
 
 class ChatInterface extends ConsumerStatefulWidget {
   final List<Animal> animals;

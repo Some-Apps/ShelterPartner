@@ -42,7 +42,7 @@ class ChatService {
 
       // Prepare the system message with animal context
       // Limit to 100 animals for context if the list is long
-      final maxAnimals = 250;
+      const maxAnimals = 250;
       final animalsToShow = animals.length > maxAnimals
           ? animals.sublist(0, maxAnimals)
           : animals;
@@ -50,7 +50,7 @@ class ChatService {
           .map((animal) {
             final settings = shelterSettings.shelterSettings;
             final List<String> animalInfo = ['Name: ${animal.name}'];
-            if (animal.notes != null && animal.notes.isNotEmpty) {
+            if (animal.notes.isNotEmpty) {
               final notesText = animal.notes
                   .map((note) => note.note)
                   .join(', ');
@@ -58,17 +58,22 @@ class ChatService {
             }
             animalInfo.add('Age: ${animal.monthsOld} months old');
             animalInfo.add('Other Info: $animal');
-            if (settings.showSpecies)
+            if (settings.showSpecies) {
               animalInfo.add('Species: ${animal.species}');
+            }
             if (settings.showBreed) animalInfo.add('Breed: ${animal.breed}');
-            if (settings.showDescription)
+            if (settings.showDescription) {
               animalInfo.add('Description: ${animal.description}');
-            if (settings.showLocation)
+            }
+            if (settings.showLocation) {
               animalInfo.add('Location: ${animal.location}');
-            if (settings.showMedicalInfo)
+            }
+            if (settings.showMedicalInfo) {
               animalInfo.add('Medical Category: ${animal.medicalCategory}');
-            if (settings.showBehaviorInfo)
+            }
+            if (settings.showBehaviorInfo) {
               animalInfo.add('Behavior Category: ${animal.behaviorCategory}');
+            }
             return animalInfo.join(', ');
           })
           .join('\n');

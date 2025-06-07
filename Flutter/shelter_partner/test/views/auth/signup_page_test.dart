@@ -34,7 +34,7 @@ void main() {
           shelterName: anyNamed('shelterName'),
           shelterAddress: anyNamed('shelterAddress'),
         ),
-      ).thenAnswer((_) async => null);
+      ).thenAnswer((_) async {});
       when(mockAuthRepository.getUserById(any)).thenAnswer((_) async => null);
     });
 
