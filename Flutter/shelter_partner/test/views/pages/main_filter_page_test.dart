@@ -6,6 +6,7 @@ import 'package:shelter_partner/models/filter_condition.dart';
 import 'package:shelter_partner/models/filter_group.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
+import 'package:shelter_partner/view_models/filter_view_model.dart';
 
 import '../../helpers/firebase_test_overrides.dart';
 import '../../helpers/test_auth_helpers.dart';
@@ -68,17 +69,18 @@ void main() {
         selectedManagementSoftware: 'ShelterLuv',
       );
 
+      final user = container.read(appUserProvider);
       const testTitle = 'User Enrichment Filter';
 
       // Act
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
+          child: MaterialApp(
             home: MainFilterPage(
               title: testTitle,
               collection: 'users',
-              documentID: 'test-user-id',
+              documentID: user!.id,
               filterFieldPath: 'userFilter',
             ),
           ),
@@ -134,10 +136,24 @@ void main() {
       // Assert - condition should be added and dialog should close
       expect(find.byType(AlertDialog), findsNothing);
       
-      // Should now show the filter expression
-      expect(find.textContaining('Name'), findsWidgets);
-      expect(find.textContaining('Contains'), findsWidgets);
-      expect(find.textContaining('test-value'), findsWidgets);
+      // Save the filter
+      final saveButton = find.byIcon(Icons.save);
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
+
+      // Verify that the filter was saved to the filterViewModel
+      final filterViewModel = container.read(filterViewModelProvider.notifier);
+      final savedFilter = await filterViewModel.loadFilterExpression(
+        'User Enrichment Filter',
+        'users',
+        user.id,
+        'userFilter',
+      );
+      expect(savedFilter, isNotNull);
+      expect(savedFilter!['filterElements'], isNotEmpty);
+      expect(savedFilter['filterElements'][0]['attribute'], equals('name'));
+      expect(savedFilter['filterElements'][0]['operatorType'], equals('contains'));
+      expect(savedFilter['filterElements'][0]['value'], equals('test-value'));
     });
 
     testWidgets('allows changing filter attribute and operator types', (
@@ -154,17 +170,18 @@ void main() {
         selectedManagementSoftware: 'ShelterLuv',
       );
 
+      final user = container.read(appUserProvider);
       const testTitle = 'User Enrichment Filter';
 
       // Act
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
+          child: MaterialApp(
             home: MainFilterPage(
               title: testTitle,
               collection: 'users',
-              documentID: 'test-user-id',
+              documentID: user!.id,
               filterFieldPath: 'userFilter',
             ),
           ),
@@ -211,6 +228,25 @@ void main() {
       expect(find.textContaining('Breed'), findsWidgets);
       expect(find.textContaining('Equals'), findsWidgets);
       expect(find.textContaining('Labrador'), findsWidgets);
+
+      // Save the filter
+      final saveButton = find.byIcon(Icons.save);
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
+
+      // Verify that the filter was saved to the filterViewModel
+      final filterViewModel = container.read(filterViewModelProvider.notifier);
+      final savedFilter = await filterViewModel.loadFilterExpression(
+        'User Enrichment Filter',
+        'users',
+        user.id,
+        'userFilter',
+      );
+      expect(savedFilter, isNotNull);
+      expect(savedFilter!['filterElements'], isNotEmpty);
+      expect(savedFilter['filterElements'][0]['attribute'], equals('breed'));
+      expect(savedFilter['filterElements'][0]['operatorType'], equals('equals'));
+      expect(savedFilter['filterElements'][0]['value'], equals('Labrador'));
     });
 
     testWidgets('supports numerical attributes with appropriate operators', (
@@ -227,17 +263,18 @@ void main() {
         selectedManagementSoftware: 'ShelterLuv',
       );
 
+      final user = container.read(appUserProvider);
       const testTitle = 'User Enrichment Filter';
 
       // Act
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
+          child: MaterialApp(
             home: MainFilterPage(
               title: testTitle,
               collection: 'users',
-              documentID: 'test-user-id',
+              documentID: user!.id,
               filterFieldPath: 'userFilter',
             ),
           ),
@@ -285,6 +322,25 @@ void main() {
       expect(find.textContaining('Sex'), findsWidgets);
       expect(find.textContaining('Equals'), findsWidgets);
       expect(find.textContaining('Male'), findsWidgets);
+
+      // Save the filter
+      final saveButton = find.byIcon(Icons.save);
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
+
+      // Verify that the filter was saved to the filterViewModel
+      final filterViewModel = container.read(filterViewModelProvider.notifier);
+      final savedFilter = await filterViewModel.loadFilterExpression(
+        'User Enrichment Filter',
+        'users',
+        user.id,
+        'userFilter',
+      );
+      expect(savedFilter, isNotNull);
+      expect(savedFilter!['filterElements'], isNotEmpty);
+      expect(savedFilter['filterElements'][0]['attribute'], equals('sex'));
+      expect(savedFilter['filterElements'][0]['operatorType'], equals('equals'));
+      expect(savedFilter['filterElements'][0]['value'], equals('Male'));
     });
 
     testWidgets('can remove filter conditions', (
@@ -301,17 +357,18 @@ void main() {
         selectedManagementSoftware: 'ShelterLuv',
       );
 
+      final user = container.read(appUserProvider);
       const testTitle = 'User Enrichment Filter';
 
       // Act
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
+          child: MaterialApp(
             home: MainFilterPage(
               title: testTitle,
               collection: 'users',
-              documentID: 'test-user-id',
+              documentID: user!.id,
               filterFieldPath: 'userFilter',
             ),
           ),

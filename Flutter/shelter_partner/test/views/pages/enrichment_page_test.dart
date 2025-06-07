@@ -626,16 +626,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Wait a bit for the filter to be applied
-      await tester.pump(const Duration(milliseconds: 500));
-
       // Assert: Only the filtered dog should be visible
       expect(find.text('Filtered Dog'), findsOneWidget);
       expect(find.text('Another Dog'), findsNothing);
       expect(find.text('Third Dog'), findsNothing);
     });
 
-    testWidgets('user filter works with enrichment filter together', (
+    testWidgets('user filter works together with search functionality', (
       WidgetTester tester,
     ) async {
       // Arrange: Create test user
@@ -660,7 +657,7 @@ void main() {
           .doc('dog1')
           .set(createTestAnimalData(
             id: 'dog1',
-            name: 'Alpha Dog',
+            name: 'Cooper Dog',
             breed: 'Labrador',
           ));
       
@@ -671,7 +668,7 @@ void main() {
           .doc('dog2')
           .set(createTestAnimalData(
             id: 'dog2',
-            name: 'Beta Dog',
+            name: 'Riley Dog',
             breed: 'Poodle',
           ));
 
@@ -703,12 +700,30 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Wait for the filter to be applied
-      await tester.pump(const Duration(milliseconds: 500));
+      // Now also use search functionality to further filter by breed
+      // Open the Additional Options to access the search attribute dropdown
+      final additionalOptionsTile = findAdditionalOptionsTile();
+      expect(additionalOptionsTile, findsOneWidget);
+      await tester.tap(additionalOptionsTile);
+      await tester.pumpAndSettle();
 
-      // Assert: Only our dogs with "Dog" in the name should be visible
-      expect(find.text('Alpha Dog'), findsOneWidget);
-      expect(find.text('Beta Dog'), findsOneWidget);
+      // Change the search attribute to 'Breed'
+      final attributeDropdown = findAttributeDropdown('Name');
+      expect(attributeDropdown, findsOneWidget);
+      await tester.tap(attributeDropdown);
+      await tester.pumpAndSettle();
+      final breedItem = find.text('Breed').last;
+      await tester.tap(breedItem);
+      await tester.pumpAndSettle();
+
+      // Use search to filter by 'Labrador' breed
+      final searchField = findSearchField();
+      await tester.enterText(searchField, 'Labrador');
+      await tester.pumpAndSettle();
+
+      // Assert: Only Cooper Dog should be visible (has "Dog" in name AND is a Labrador)
+      expect(find.text('Cooper Dog'), findsOneWidget);
+      expect(find.text('Riley Dog'), findsNothing); // Riley is a Poodle, not Labrador
       
       // The default test animals (Buddy, Max) should NOT be visible since they don't contain "Dog"
       expect(find.text('Buddy'), findsNothing);
