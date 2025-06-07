@@ -6,7 +6,6 @@ import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/simplistic_animal_card_view.dart';
-import 'package:shelter_partner/views/components/navigation_button_view.dart';
 
 import '../../helpers/firebase_test_overrides.dart';
 import '../../helpers/test_animal_data.dart';
@@ -570,33 +569,39 @@ void main() {
           .doc(shelterId)
           .collection('dogs')
           .doc('dog1')
-          .set(createTestAnimalData(
-            id: 'dog1',
-            name: 'Filtered Dog',
-            breed: 'Labrador',
-          ));
-      
+          .set(
+            createTestAnimalData(
+              id: 'dog1',
+              name: 'Filtered Dog',
+              breed: 'Labrador',
+            ),
+          );
+
       await FirebaseTestOverrides.fakeFirestore
           .collection('shelters')
           .doc(shelterId)
           .collection('dogs')
           .doc('dog2')
-          .set(createTestAnimalData(
-            id: 'dog2',
-            name: 'Another Dog',
-            breed: 'Poodle',
-          ));
-      
+          .set(
+            createTestAnimalData(
+              id: 'dog2',
+              name: 'Another Dog',
+              breed: 'Poodle',
+            ),
+          );
+
       await FirebaseTestOverrides.fakeFirestore
           .collection('shelters')
           .doc(shelterId)
           .collection('dogs')
           .doc('dog3')
-          .set(createTestAnimalData(
-            id: 'dog3',
-            name: 'Third Dog',
-            breed: 'Beagle',
-          ));
+          .set(
+            createTestAnimalData(
+              id: 'dog3',
+              name: 'Third Dog',
+              breed: 'Beagle',
+            ),
+          );
 
       // Create a user filter that filters for name containing "Filtered"
       final userFilterData = {
@@ -606,7 +611,7 @@ void main() {
             'attribute': 'name',
             'operatorType': 'contains',
             'value': 'Filtered',
-          }
+          },
         ],
         'operatorsBetween': {},
       };
@@ -655,22 +660,26 @@ void main() {
           .doc(shelterId)
           .collection('dogs')
           .doc('dog1')
-          .set(createTestAnimalData(
-            id: 'dog1',
-            name: 'Cooper Dog',
-            breed: 'Labrador',
-          ));
-      
+          .set(
+            createTestAnimalData(
+              id: 'dog1',
+              name: 'Cooper Dog',
+              breed: 'Labrador',
+            ),
+          );
+
       await FirebaseTestOverrides.fakeFirestore
           .collection('shelters')
           .doc(shelterId)
           .collection('dogs')
           .doc('dog2')
-          .set(createTestAnimalData(
-            id: 'dog2',
-            name: 'Riley Dog',
-            breed: 'Poodle',
-          ));
+          .set(
+            createTestAnimalData(
+              id: 'dog2',
+              name: 'Riley Dog',
+              breed: 'Poodle',
+            ),
+          );
 
       // Create a user filter that filters for name containing "Dog" (which all our test animals should have)
       final userFilterData = {
@@ -680,7 +689,7 @@ void main() {
             'attribute': 'name',
             'operatorType': 'contains',
             'value': 'Dog',
-          }
+          },
         ],
         'operatorsBetween': {},
       };
@@ -723,8 +732,11 @@ void main() {
 
       // Assert: Only Cooper Dog should be visible (has "Dog" in name AND is a Labrador)
       expect(find.text('Cooper Dog'), findsOneWidget);
-      expect(find.text('Riley Dog'), findsNothing); // Riley is a Poodle, not Labrador
-      
+      expect(
+        find.text('Riley Dog'),
+        findsNothing,
+      ); // Riley is a Poodle, not Labrador
+
       // The default test animals (Buddy, Max) should NOT be visible since they don't contain "Dog"
       expect(find.text('Buddy'), findsNothing);
       expect(find.text('Max'), findsNothing);

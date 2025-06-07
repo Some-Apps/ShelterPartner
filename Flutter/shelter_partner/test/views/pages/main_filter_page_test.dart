@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
-import 'package:shelter_partner/models/filter_condition.dart';
-import 'package:shelter_partner/models/filter_group.dart';
-import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/filter_view_model.dart';
 
@@ -90,52 +87,55 @@ void main() {
 
       // Assert initial state - should show "Add Condition" button when no filters exist
       expect(find.text('Add Condition'), findsOneWidget);
-      
+
       // Act - tap the "Add Condition" button
       await tester.tap(find.text('Add Condition'));
       await tester.pumpAndSettle();
 
       // Assert - dialog should open
-      expect(find.text('Add Condition'), findsWidgets); // Button and dialog title
+      expect(
+        find.text('Add Condition'),
+        findsWidgets,
+      ); // Button and dialog title
       expect(find.byType(AlertDialog), findsOneWidget);
-      
+
       // Find and interact with the attribute dropdown
       final attributeDropdown = find.byType(DropdownButton<String>).first;
       expect(attributeDropdown, findsOneWidget);
-      
+
       // The default attribute should be 'Name'
       expect(find.text('Name'), findsWidgets);
-      
+
       // Find and interact with the operator dropdown
       final operatorDropdown = find.byType(DropdownButton<OperatorType>);
       expect(operatorDropdown, findsOneWidget);
-      
+
       // Tap operator dropdown to see available options
       await tester.tap(operatorDropdown);
       await tester.pumpAndSettle();
-      
+
       // Should see operator options for name attribute
       expect(find.text('Equals'), findsOneWidget);
       expect(find.text('Contains'), findsOneWidget);
-      
+
       // Select "Contains" operator
       await tester.tap(find.text('Contains'));
       await tester.pumpAndSettle();
-      
+
       // Find the value text field and enter a value
       final valueField = find.byType(TextField);
       expect(valueField, findsOneWidget);
       await tester.enterText(valueField, 'test-value');
       await tester.pumpAndSettle();
-      
+
       // Find and tap the "Add" button in the dialog
       final addButton = find.text('Add').last;
       await tester.tap(addButton);
       await tester.pumpAndSettle();
-      
+
       // Assert - condition should be added and dialog should close
       expect(find.byType(AlertDialog), findsNothing);
-      
+
       // Save the filter
       final saveButton = find.byIcon(Icons.save);
       await tester.tap(saveButton);
@@ -152,7 +152,10 @@ void main() {
       expect(savedFilter, isNotNull);
       expect(savedFilter!['filterElements'], isNotEmpty);
       expect(savedFilter['filterElements'][0]['attribute'], equals('name'));
-      expect(savedFilter['filterElements'][0]['operatorType'], equals('contains'));
+      expect(
+        savedFilter['filterElements'][0]['operatorType'],
+        equals('contains'),
+      );
       expect(savedFilter['filterElements'][0]['value'], equals('test-value'));
     });
 
@@ -197,33 +200,33 @@ void main() {
       final attributeDropdown = find.byType(DropdownButton<String>).first;
       await tester.tap(attributeDropdown);
       await tester.pumpAndSettle();
-      
+
       await tester.tap(find.text('Breed'));
       await tester.pumpAndSettle();
-      
+
       // The operator dropdown should now show operators available for 'breed'
       final operatorDropdown = find.byType(DropdownButton<OperatorType>);
       await tester.tap(operatorDropdown);
       await tester.pumpAndSettle();
-      
+
       // Should see text operators for breed
       expect(find.text('Equals'), findsOneWidget);
       expect(find.text('Not Equals'), findsOneWidget);
-      
+
       // Select "Equals" operator
       await tester.tap(find.text('Equals'));
       await tester.pumpAndSettle();
-      
+
       // Enter a breed value
       final valueField = find.byType(TextField);
       await tester.enterText(valueField, 'Labrador');
       await tester.pumpAndSettle();
-      
+
       // Add the condition
       final addButton = find.text('Add').last;
       await tester.tap(addButton);
       await tester.pumpAndSettle();
-      
+
       // Assert - should show breed filter
       expect(find.textContaining('Breed'), findsWidgets);
       expect(find.textContaining('Equals'), findsWidgets);
@@ -245,7 +248,10 @@ void main() {
       expect(savedFilter, isNotNull);
       expect(savedFilter!['filterElements'], isNotEmpty);
       expect(savedFilter['filterElements'][0]['attribute'], equals('breed'));
-      expect(savedFilter['filterElements'][0]['operatorType'], equals('equals'));
+      expect(
+        savedFilter['filterElements'][0]['operatorType'],
+        equals('equals'),
+      );
       expect(savedFilter['filterElements'][0]['value'], equals('Labrador'));
     });
 
@@ -290,34 +296,34 @@ void main() {
       final attributeDropdown = find.byType(DropdownButton<String>).first;
       await tester.tap(attributeDropdown);
       await tester.pumpAndSettle();
-      
+
       await tester.tap(find.text('Sex'));
       await tester.pumpAndSettle();
-      
+
       // The operator dropdown should now show text operators
       final operatorDropdown = find.byType(DropdownButton<OperatorType>);
       await tester.tap(operatorDropdown);
       await tester.pumpAndSettle();
-      
+
       // Should see simple operators for sex
       expect(find.text('Equals'), findsOneWidget);
       expect(find.text('Not Equals'), findsOneWidget);
-      
+
       // Select "Equals" operator
       await tester.tap(find.text('Equals'));
       await tester.pumpAndSettle();
-      
+
       // Enter a value
       final valueField = find.byType(TextField);
       expect(valueField, findsOneWidget);
       await tester.enterText(valueField, 'Male');
       await tester.pumpAndSettle();
-      
+
       // Add the condition
       final addButton = find.text('Add').last;
       await tester.tap(addButton);
       await tester.pumpAndSettle();
-      
+
       // Assert - should show filter
       expect(find.textContaining('Sex'), findsWidgets);
       expect(find.textContaining('Equals'), findsWidgets);
@@ -339,13 +345,14 @@ void main() {
       expect(savedFilter, isNotNull);
       expect(savedFilter!['filterElements'], isNotEmpty);
       expect(savedFilter['filterElements'][0]['attribute'], equals('sex'));
-      expect(savedFilter['filterElements'][0]['operatorType'], equals('equals'));
+      expect(
+        savedFilter['filterElements'][0]['operatorType'],
+        equals('equals'),
+      );
       expect(savedFilter['filterElements'][0]['value'], equals('Male'));
     });
 
-    testWidgets('can remove filter conditions', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('can remove filter conditions', (WidgetTester tester) async {
       // Arrange: Create test user
       final container = await createTestUserAndLogin(
         email: 'removeuser@example.com',
@@ -379,36 +386,39 @@ void main() {
       // Add a condition first
       await tester.tap(find.text('Add Condition'));
       await tester.pumpAndSettle();
-      
+
       // Select default operator (should be auto-selected for 'Name')
       final operatorDropdown = find.byType(DropdownButton<OperatorType>);
       await tester.tap(operatorDropdown);
       await tester.pumpAndSettle();
-      
+
       // Select 'Contains' operator
       await tester.tap(find.text('Contains'));
       await tester.pumpAndSettle();
-      
+
       final valueField = find.byType(TextField);
       await tester.enterText(valueField, 'test-value');
       await tester.pumpAndSettle();
-      
+
       final addButton = find.text('Add').last;
       await tester.tap(addButton);
       await tester.pumpAndSettle();
-      
+
       // Verify condition was added
       expect(find.textContaining('test-value'), findsOneWidget);
-      
+
       // Find and tap the delete button for the condition
       final deleteButton = find.byIcon(Icons.delete);
       expect(deleteButton, findsOneWidget);
       await tester.tap(deleteButton);
       await tester.pumpAndSettle();
-      
+
       // Assert - condition should be removed
       expect(find.textContaining('test-value'), findsNothing);
-      expect(find.text('Add Condition'), findsOneWidget); // Back to initial state
+      expect(
+        find.text('Add Condition'),
+        findsOneWidget,
+      ); // Back to initial state
     });
   });
 }
