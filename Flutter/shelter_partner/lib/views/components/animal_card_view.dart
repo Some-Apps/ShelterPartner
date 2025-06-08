@@ -244,10 +244,7 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
           ? Colors.lightBlue.shade100
           : Colors.orange.shade100,
       elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(25),
-        side: BorderSide(color: Colors.black.withOpacity(0.4), width: 1.5),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       shadowColor: Colors.black,
       child: Container(
         padding: const EdgeInsets.all(8.0),
