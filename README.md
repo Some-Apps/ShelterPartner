@@ -49,7 +49,7 @@ All international payments will be made via PayPal so make sure you have an acco
 
 </details>
 
-## Bounties Paid On June 1st (In Progress)
+## Bounties Paid On June 1st
 
 <details>
    
