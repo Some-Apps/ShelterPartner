@@ -11,6 +11,7 @@ import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/shelter_settings.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/models/volunteer_settings.dart';
+import 'package:shelter_partner/services/logger_service.dart';
 import 'package:uuid/uuid.dart';
 import '../models/app_user.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
@@ -18,19 +19,24 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);
   final firebaseAuth = ref.watch(firebaseAuthProvider);
-  return AuthRepository(firestore: firestore, firebaseAuth: firebaseAuth);
+  final logger = ref.watch(loggerServiceProvider);
+  return AuthRepository(firestore: firestore, firebaseAuth: firebaseAuth, logger: logger);
 });
 
 class AuthRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
   final FileLoader _fileLoader;
+  final LoggerService _logger;
+  
   AuthRepository({
     required FirebaseFirestore firestore,
     required FirebaseAuth firebaseAuth,
+    required LoggerService logger,
     FileLoader? fileLoader,
   }) : _firestore = firestore,
        _firebaseAuth = firebaseAuth,
+       _logger = logger,
        _fileLoader = fileLoader ?? DefaultFileLoader();
 
   // Fetch user by ID
@@ -122,8 +128,8 @@ class AuthRepository {
 
         // Delete user from Firebase Auth
         await user.delete();
-      } catch (e) {
-        print('Error reauthenticating user: $e');
+      } catch (e, stackTrace) {
+        _logger.error('Error reauthenticating user', e, stackTrace);
       }
     }
   }

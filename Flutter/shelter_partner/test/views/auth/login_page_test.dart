@@ -23,15 +23,6 @@ void main() {
       final widget = ProviderScope(
         overrides: [
           ...FirebaseTestOverrides.overrides,
-          authRepositoryProvider.overrideWith((ref) {
-            final firestore = ref.watch(firestoreProvider);
-            final firebaseAuth = ref.watch(firebaseAuthProvider);
-            return AuthRepository(
-              firestore: firestore,
-              firebaseAuth: firebaseAuth,
-              fileLoader: MockFileLoader(),
-            );
-          }),
         ],
         child: MaterialApp(home: LoginPage(key: key)),
       );

@@ -25,9 +25,11 @@ Future<ProviderContainer> createTestUserAndLogin({
       authRepositoryProvider.overrideWith((ref) {
         final firestore = ref.watch(firestoreProvider);
         final firebaseAuth = ref.watch(firebaseAuthProvider);
+        final logger = ref.watch(loggerServiceProvider);
         return AuthRepository(
           firestore: firestore,
           firebaseAuth: firebaseAuth,
+          logger: logger,
           fileLoader: MockFileLoader(),
         );
       }),

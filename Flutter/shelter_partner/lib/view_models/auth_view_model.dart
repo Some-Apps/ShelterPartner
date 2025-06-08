@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/repositories/auth_repository.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 import 'package:uuid/uuid.dart';
 
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
@@ -62,8 +63,9 @@ class AuthViewModel extends StateNotifier<AuthState> {
       } else {
         state = AuthState.unauthenticated();
       }
-    } catch (e) {
-      print("ERROR: $e");
+    } catch (e, stackTrace) {
+      final logger = _ref.read(loggerServiceProvider);
+      logger.error("Login failed", e, stackTrace);
       state = AuthState.error(e.toString());
     }
   }
