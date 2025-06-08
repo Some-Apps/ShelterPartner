@@ -51,51 +51,47 @@ void main() {
       expect(find.text('Sammy'), findsOneWidget);
     });
 
-    testWidgets(
-      'displays cats in the cat tab',
-      skip: true, // Test consistently gets stuck and times out
-      (WidgetTester tester) async {
-        // Arrange: Create test user and shelter, get shared container
-        final container = await createTestUserAndLogin(
-          email: 'visitoruser2@example.com',
-          password: 'testpassword',
-          firstName: 'Visitor',
-          lastName: 'Tester',
-          shelterName: 'Test Shelter',
-          shelterAddress: '123 Test St',
-          selectedManagementSoftware: 'ShelterLuv',
-        );
-        // Get the correct shelterId from the logged-in user
-        final user = container.read(appUserProvider);
-        final shelterId = user?.shelterId ?? 'test-shelter';
-        // Add test cats to Firestore using the correct shelterId
-        await FirebaseTestOverrides.fakeFirestore
-            .collection('shelters')
-            .doc(shelterId)
-            .collection('cats')
-            .doc('cat1')
-            .set(
-              createTestAnimalData(id: 'cat1', name: 'Mittens', species: 'cat'),
-            );
-        // Act
-        await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: const MaterialApp(home: VisitorPage()),
-          ),
-        );
-        await tester.pumpAndSettle();
+    testWidgets('displays cats in the cat tab', (WidgetTester tester) async {
+      // Arrange: Create test user and shelter, get shared container
+      final container = await createTestUserAndLogin(
+        email: 'visitoruser2@example.com',
+        password: 'testpassword',
+        firstName: 'Visitor',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+      // Get the correct shelterId from the logged-in user
+      final user = container.read(appUserProvider);
+      final shelterId = user?.shelterId ?? 'test-shelter';
+      // Add test cats to Firestore using the correct shelterId
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('cats')
+          .doc('cat1')
+          .set(
+            createTestAnimalData(id: 'cat1', name: 'Mittens', species: 'cat'),
+          );
+      // Act
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: VisitorPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        // Verify the Cats tab is present and tap it
-        expect(find.text('Cats'), findsOneWidget);
-        await tester.tap(find.text('Cats'));
-        await tester.pumpAndSettle();
+      // Verify the Cats tab is present and tap it
+      expect(find.text('Cats'), findsOneWidget);
+      await tester.tap(find.text('Cats'));
+      await tester.pumpAndSettle();
 
-        // Assert
-        expect(find.text('Whiskers'), findsOneWidget); // from default test data
-        expect(find.text('Fluffy'), findsOneWidget); // from default test data
-        expect(find.text('Mittens'), findsOneWidget);
-      },
-    );
+      // Assert
+      expect(find.text('Whiskers'), findsOneWidget); // from default test data
+      expect(find.text('Fluffy'), findsOneWidget); // from default test data
+      expect(find.text('Mittens'), findsOneWidget);
+    });
   });
 }

@@ -259,11 +259,7 @@ class VolunteersRepository {
   Future<void> incrementVolunteerSetting(String shelterID, String field) async {
     final docRef = _firestore.collection('shelters').doc(shelterID);
     return docRef
-        .update({
-          'volunteerSettings.$field': FieldValue.increment(
-            1,
-          ), // Access nested volunteerSettings field
-        })
+        .update({'volunteerSettings.$field': FieldValue.increment(1)})
         .catchError((error) {
           throw Exception("Failed to increment: $error");
         });
