@@ -5,7 +5,7 @@ import 'package:shelter_partner/config/app_environment.dart';
 import 'package:shelter_partner/services/logger_service.dart';
 import 'package:shelter_partner/services/console_logger_service.dart';
 import 'package:shelter_partner/services/cloud_logger_service.dart';
-import 'package:gcloud/logging.dart';
+// import 'package:gcloud/logging.dart';
 
 /// Provider for FirebaseFirestore instance
 /// This allows us to override the Firestore instance in tests
@@ -33,20 +33,18 @@ final loggerServiceProvider = Provider<LoggerService>((ref) {
   final environment = ref.watch(appEnvironmentProvider);
   
   if (environment.isProduction) {
-    // In production, try to use Google Cloud Logging if available
-    // For now, fallback to console logger until cloud credentials are configured
-    // TODO: Replace with actual cloud logging when Google Cloud project is configured
-    // Example:
-    // try {
-    //   final logging = Logging(authClient, projectId: 'your-project-id');
-    //   return CloudLoggerService(logging: logging);
-    // } catch (e) {
-    //   // Fallback to console if cloud logging fails to initialize
-    //   return ConsoleLoggerService(minimumLevel: LogLevel.info);
-    // }
-    
-    // For now, use console logger with info level in production
-    return ConsoleLoggerService(minimumLevel: LogLevel.info);
+    // In production, use cloud logger stub (which falls back to console until configured)
+    // To enable actual cloud logging, follow instructions in GOOGLE_CLOUD_LOGGING_SETUP.md
+    try {
+      // When gcloud is properly configured, this will use actual cloud logging
+      return CloudLoggerService(
+        logging: null, // Placeholder - will be actual Logging instance when configured
+        logName: 'shelter-partner-app',
+      );
+    } catch (e) {
+      // Fallback to console if cloud logging fails to initialize
+      return ConsoleLoggerService(minimumLevel: LogLevel.info);
+    }
   } else {
     // Development: use console logger with debug level
     return ConsoleLoggerService(minimumLevel: LogLevel.debug);
