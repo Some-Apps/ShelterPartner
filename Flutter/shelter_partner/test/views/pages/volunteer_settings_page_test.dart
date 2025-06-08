@@ -149,6 +149,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // Get shelter ID for Firestore verification
+      final volunteersViewModel = container.read(volunteersViewModelProvider);
+      final initialShelter = volunteersViewModel.value;
+      expect(initialShelter, isNotNull);
+      final shelterId = initialShelter!.id;
+
       // Find the picker and verify it exists
       final pickerFinder = find.descendant(
         of: find.byType(PickerView),
@@ -179,6 +185,20 @@ void main() {
       await tester.tap(targetFinder.last);
       await tester.pumpAndSettle();
 
+      // Verify the selection was persisted to Firestore
+      final docSnapshotAfterChange = await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .get();
+      expect(docSnapshotAfterChange.exists, isTrue);
+      
+      final dataAfterChange = docSnapshotAfterChange.data() as Map<String, dynamic>;
+      final volunteerSettingsAfterChange = dataAfterChange['volunteerSettings'] as Map<String, dynamic>;
+      final updatedSort = volunteerSettingsAfterChange['enrichmentSort'] as String;
+      
+      expect(updatedSort, equals(targetValue),
+          reason: 'Firestore should be updated with the new enrichment sort value');
+
       // Verify the picker can be found and interacted with again after selection
       expect(pickerFinder, findsOneWidget);
       
@@ -191,6 +211,20 @@ void main() {
       expect(originalFinder, findsWidgets);
       await tester.tap(originalFinder.last);
       await tester.pumpAndSettle();
+
+      // Verify the switch back was also persisted to Firestore
+      final docSnapshotAfterSwitchBack = await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .get();
+      expect(docSnapshotAfterSwitchBack.exists, isTrue);
+      
+      final dataAfterSwitchBack = docSnapshotAfterSwitchBack.data() as Map<String, dynamic>;
+      final volunteerSettingsAfterSwitchBack = dataAfterSwitchBack['volunteerSettings'] as Map<String, dynamic>;
+      final finalSort = volunteerSettingsAfterSwitchBack['enrichmentSort'] as String;
+      
+      expect(finalSort, equals(initialValue),
+          reason: 'Firestore should be updated back to the original enrichment sort value');
 
       // Verify the picker is still functional after multiple interactions
       expect(pickerFinder, findsOneWidget);
@@ -228,6 +262,7 @@ void main() {
       final initialShelter = volunteersViewModel.value;
       expect(initialShelter, isNotNull);
       final initialCustomFormURL = initialShelter!.volunteerSettings.customFormURL;
+      final shelterId = initialShelter.id;
 
       // Find the text field and enter text
       final textField = find.byType(TextField);
@@ -244,13 +279,24 @@ void main() {
       await tester.tap(find.text('Volunteer Settings'));
       await tester.pumpAndSettle();
 
+      // Verify the custom form URL was persisted to Firestore
+      final docSnapshotAfterInput = await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .get();
+      expect(docSnapshotAfterInput.exists, isTrue);
+      
+      final dataAfterInput = docSnapshotAfterInput.data() as Map<String, dynamic>;
+      final volunteerSettingsAfterInput = dataAfterInput['volunteerSettings'] as Map<String, dynamic>;
+      final updatedURL = volunteerSettingsAfterInput['customFormURL'] as String;
+      
+      expect(updatedURL, equals(testURL),
+          reason: 'Firestore should be updated with the new custom form URL');
+
       // The text field should still contain the entered text
       final textFieldWidget = tester.widget<TextField>(textField);
       expect(textFieldWidget.controller?.text, equals(testURL));
       
-      // Note: In a test environment, the onChanged callback may not persist
-      // changes to Firestore immediately. The test verifies UI behavior and
-      // that the integration points exist for the ViewModel.
       expect(textFieldWidget.onChanged, isNotNull,
           reason: 'TextField should have onChanged callback for ViewModel integration');
     });
@@ -282,6 +328,7 @@ void main() {
       final initialShelter = volunteersViewModel.value;
       expect(initialShelter, isNotNull);
       final initialMinutes = initialShelter!.volunteerSettings.minimumLogMinutes;
+      final shelterId = initialShelter.id;
 
       // Find the number stepper
       final stepperFinder = find.byType(NumberStepperView);
@@ -311,21 +358,49 @@ void main() {
       expect(incrementButton, findsOneWidget);
       expect(decrementButton, findsOneWidget);
 
-      // Test that increment button is clickable and responsive
+      // Test increment functionality and verify Firestore persistence
       await tester.tap(incrementButton);
       await tester.pumpAndSettle();
 
-      // Verify the stepper still exists and maintains its callbacks
+      // Verify the increment was persisted to Firestore
+      final docSnapshotAfterIncrement = await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .get();
+      expect(docSnapshotAfterIncrement.exists, isTrue);
+      
+      final dataAfterIncrement = docSnapshotAfterIncrement.data() as Map<String, dynamic>;
+      final volunteerSettingsAfterIncrement = dataAfterIncrement['volunteerSettings'] as Map<String, dynamic>;
+      final updatedMinutes = volunteerSettingsAfterIncrement['minimumLogMinutes'] as int;
+      
+      expect(updatedMinutes, equals(initialMinutes + 1),
+          reason: 'Firestore should be updated with incremented value');
+
+      // Verify the stepper maintains its callbacks after interaction
       expect(stepperFinder, findsOneWidget);
       final stepperAfterIncrement = tester.widget<NumberStepperView>(stepperFinder);
       expect(stepperAfterIncrement.increment, isNotNull,
           reason: 'Stepper should maintain its increment callback');
 
-      // Test that decrement button is clickable and responsive
+      // Test decrement functionality and verify Firestore persistence
       await tester.tap(decrementButton);
       await tester.pumpAndSettle();
 
-      // Verify the stepper is still visible and functional after multiple interactions
+      // Verify the decrement was persisted to Firestore
+      final docSnapshotAfterDecrement = await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .get();
+      expect(docSnapshotAfterDecrement.exists, isTrue);
+      
+      final dataAfterDecrement = docSnapshotAfterDecrement.data() as Map<String, dynamic>;
+      final volunteerSettingsAfterDecrement = dataAfterDecrement['volunteerSettings'] as Map<String, dynamic>;
+      final finalMinutes = volunteerSettingsAfterDecrement['minimumLogMinutes'] as int;
+      
+      expect(finalMinutes, equals(initialMinutes),
+          reason: 'Firestore should be updated with decremented value (back to initial)');
+
+      // Verify the stepper is still functional after multiple interactions
       expect(stepperFinder, findsOneWidget);
       final stepperAfterDecrement = tester.widget<NumberStepperView>(stepperFinder);
       expect(stepperAfterDecrement.decrement, isNotNull,
@@ -364,6 +439,7 @@ void main() {
         final initialShelter = volunteersViewModel.value;
         expect(initialShelter, isNotNull);
         final expectedInitialValue = initialShelter!.volunteerSettings.photoUploadsAllowed;
+        final shelterId = initialShelter.id;
 
         // Find the specific switch for photo uploads
         final photoUploadSwitchFinder = find.ancestor(
@@ -387,6 +463,20 @@ void main() {
         await tester.tap(switchWidget);
         await tester.pumpAndSettle();
 
+        // Verify the toggle was persisted to Firestore
+        final docSnapshotAfterToggle = await FirebaseTestOverrides.fakeFirestore
+            .collection('shelters')
+            .doc(shelterId)
+            .get();
+        expect(docSnapshotAfterToggle.exists, isTrue);
+        
+        final dataAfterToggle = docSnapshotAfterToggle.data() as Map<String, dynamic>;
+        final volunteerSettingsAfterToggle = dataAfterToggle['volunteerSettings'] as Map<String, dynamic>;
+        final updatedValue = volunteerSettingsAfterToggle['photoUploadsAllowed'] as bool;
+        
+        expect(updatedValue, equals(!expectedInitialValue),
+            reason: 'Firestore should be updated with the toggled photo uploads value');
+
         // The switch should still be present and functional after toggle
         expect(switchWidget, findsOneWidget);
         
@@ -394,10 +484,6 @@ void main() {
         final toggledSwitch = tester.widget<Switch>(switchWidget);
         expect(toggledSwitch.onChanged, isNotNull,
             reason: 'Switch should maintain its onChanged callback for ViewModel integration');
-            
-        // Note: In the test environment, the onChanged callback may not persist
-        // changes to the ViewModel immediately. The test verifies UI behavior and
-        // that the integration points exist for proper data binding.
       });
 
       testWidgets('require name switch toggles correctly', (
