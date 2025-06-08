@@ -287,9 +287,7 @@ void main() {
       final volunteersViewModel = container.read(volunteersViewModelProvider);
       final initialShelter = volunteersViewModel.value;
       expect(initialShelter, isNotNull);
-      final initialCustomFormURL =
-          initialShelter!.volunteerSettings.customFormURL;
-      final shelterId = initialShelter.id;
+      final shelterId = initialShelter?.id;
 
       // Find the text field and enter text
       final textField = find.byType(TextField);

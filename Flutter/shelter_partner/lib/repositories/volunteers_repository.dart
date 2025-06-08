@@ -4,16 +4,24 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
+import 'package:shelter_partner/helpers/network_client.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class VolunteersRepository {
   final FirebaseFirestore _firestore;
-  VolunteersRepository({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  final FirebaseAuth _firebaseAuth;
+  final NetworkClient _networkClient;
+
+  VolunteersRepository({
+    required FirebaseFirestore firestore,
+    required FirebaseAuth firebaseAuth,
+    NetworkClient? networkClient,
+  }) : _firestore = firestore,
+       _firebaseAuth = firebaseAuth,
+       _networkClient = networkClient ?? DefaultNetworkClient();
 
   Stream<Shelter> fetchShelterWithVolunteers(String shelterID) {
     final shelterDocRef = _firestore.collection('shelters').doc(shelterID);
@@ -147,7 +155,7 @@ class VolunteersRepository {
       print('Authorization: Bearer $idToken');
 
       // Send the authenticated request to Cloud Run
-      final response = await http.post(
+      final response = await _networkClient.post(
         Uri.parse('https://invite-volunteer-222422545919.us-central1.run.app'),
         headers: {
           'Authorization': 'Bearer $idToken', // Pass the Firebase Auth ID token
@@ -182,7 +190,7 @@ class VolunteersRepository {
   }
 
   Future<String?> getIdToken() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _firebaseAuth.currentUser;
     if (user != null) {
       // Get the ID token from the current authenticated user
       return await user.getIdToken();
@@ -194,7 +202,7 @@ class VolunteersRepository {
   Future<void> deleteVolunteer(String id, String shelterId) async {
     try {
       // Get Firebase ID token for authentication
-      final user = FirebaseAuth.instance.currentUser;
+      final user = _firebaseAuth.currentUser;
       String? idToken = await user?.getIdToken();
 
       // Create the URL with query parameters for the DELETE request
@@ -208,7 +216,7 @@ class VolunteersRepository {
       print('Authorization: Bearer $idToken');
 
       // Make the DELETE request with the token in the headers
-      final response = await http.delete(
+      final response = await _networkClient.delete(
         url,
         headers: {
           'Authorization':
@@ -275,5 +283,6 @@ class VolunteersRepository {
 // Provider to access the VolunteersRepository
 final volunteersRepositoryProvider = Provider<VolunteersRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);
-  return VolunteersRepository(firestore: firestore);
+  final firebaseAuth = ref.watch(firebaseAuthProvider);
+  return VolunteersRepository(firestore: firestore, firebaseAuth: firebaseAuth);
 });
