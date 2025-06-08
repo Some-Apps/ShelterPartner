@@ -418,7 +418,7 @@ void main() {
 
         // Create mock network client and set up successful response
         final mockNetworkClient = MockNetworkClient();
-        mockNetworkClient.setResponse(
+        mockNetworkClient.setPostResponse(
           'https://invite-volunteer-222422545919.us-central1.run.app',
           200,
           '{"status": "success"}',
@@ -552,7 +552,7 @@ void main() {
 
         // Create mock network client and set up successful response
         final mockNetworkClient = MockNetworkClient();
-        mockNetworkClient.setResponse(
+        mockNetworkClient.setDeleteResponse(
           'https://delete-volunteer-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId',
           200,
           '{"success": true}',

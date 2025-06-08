@@ -5,8 +5,19 @@ class MockNetworkClient implements NetworkClient {
   final Map<String, http.Response> _responses = {};
   final List<NetworkRequest> _requests = [];
 
-  void setResponse(String url, int statusCode, [String? body]) {
-    _responses[url] = http.Response(body ?? '', statusCode);
+  void setGetResponse(String url, int statusCode, [String? body]) {
+    final key = 'GET:$url';
+    _responses[key] = http.Response(body ?? '', statusCode);
+  }
+
+  void setPostResponse(String url, int statusCode, [String? body]) {
+    final key = 'POST:$url';
+    _responses[key] = http.Response(body ?? '', statusCode);
+  }
+
+  void setDeleteResponse(String url, int statusCode, [String? body]) {
+    final key = 'DELETE:$url';
+    _responses[key] = http.Response(body ?? '', statusCode);
   }
 
   List<NetworkRequest> get requests => List.unmodifiable(_requests);
@@ -19,7 +30,8 @@ class MockNetworkClient implements NetworkClient {
   @override
   Future<http.Response> get(Uri url, {Map<String, String>? headers}) async {
     _requests.add(NetworkRequest('GET', url, headers, null));
-    final response = _responses[url.toString()];
+    final key = 'GET:${url.toString()}';
+    final response = _responses[key];
     if (response != null) {
       return response;
     }
@@ -34,7 +46,8 @@ class MockNetworkClient implements NetworkClient {
     Object? body,
   }) async {
     _requests.add(NetworkRequest('POST', url, headers, body));
-    final response = _responses[url.toString()];
+    final key = 'POST:${url.toString()}';
+    final response = _responses[key];
     if (response != null) {
       return response;
     }
@@ -45,7 +58,8 @@ class MockNetworkClient implements NetworkClient {
   @override
   Future<http.Response> delete(Uri url, {Map<String, String>? headers}) async {
     _requests.add(NetworkRequest('DELETE', url, headers, null));
-    final response = _responses[url.toString()];
+    final key = 'DELETE:${url.toString()}';
+    final response = _responses[key];
     if (response != null) {
       return response;
     }
