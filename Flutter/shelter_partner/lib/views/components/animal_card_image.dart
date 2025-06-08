@@ -25,7 +25,7 @@ class AnimalCardImage extends StatelessWidget {
         // Background stroke (semi-transparent)
         CircleAvatar(
           radius: 62.5,
-          backgroundColor: Colors.black.withOpacity(0.15),
+          backgroundColor: Colors.black.withValues(alpha: 0.15),
         ),
 
         // Animated stroke

@@ -252,7 +252,8 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Top Row: Image and details.
-            Expanded(
+            SizedBox(
+              height: 125,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
