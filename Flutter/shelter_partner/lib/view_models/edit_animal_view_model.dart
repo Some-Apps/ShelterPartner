@@ -48,7 +48,7 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
     } else if (field == 'tags') {
       itemToDelete = state.tags.firstWhereOrNull((tag) => tag.id == itemId);
       if (itemToDelete != null) {
-        List<Tag> updatedTags = List.from(state.tags ?? [])
+        List<Tag> updatedTags = List.from(state.tags)
           ..remove(itemToDelete);
         state = state.copyWith(tags: updatedTags);
       }
@@ -95,7 +95,7 @@ class EditAnimalViewModel extends StateNotifier<Animal> {
           ..add(itemToDelete);
         state = state.copyWith(photos: updatedPhotos);
       } else if (field == 'tags') {
-        List<Tag> updatedTags = List.from(state.tags ?? [])..add(itemToDelete);
+        List<Tag> updatedTags = List.from(state.tags)..add(itemToDelete);
         state = state.copyWith(tags: updatedTags);
       }
     }

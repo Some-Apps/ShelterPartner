@@ -28,7 +28,6 @@ class AddNoteRepository {
     final docRef = _firestore
         .collection('shelters/$shelterID/$collection')
         .doc(animal.id);
-    final appUser = appUserProvider.read;
 
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(docRef);

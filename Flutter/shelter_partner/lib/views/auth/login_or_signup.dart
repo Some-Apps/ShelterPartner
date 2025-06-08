@@ -36,8 +36,6 @@ class LoginOrSignup extends ConsumerWidget {
         return SignupPage(onTapLogin: navigateToLogin);
       case AuthPageType.forgotPassword:
         return ForgotPasswordPage(onTapLogin: navigateToLogin);
-      default:
-        return LoginPage(onTapSignup: navigateToSignup);
     }
   }
 }

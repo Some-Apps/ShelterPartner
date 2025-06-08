@@ -40,9 +40,7 @@ class LogsWidget extends StatelessWidget {
                     final startTime = log.startTime.toDate();
                     final endTime = log.endTime.toDate();
                     final duration = endTime.difference(startTime).inMinutes;
-                    final formattedDate = endTime != null
-                        ? DateFormat('MMM d').format(endTime)
-                        : '';
+                    final formattedDate = DateFormat('MMM d').format(endTime);
 
                     return LogCard(
                       log: log,

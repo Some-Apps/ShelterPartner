@@ -32,7 +32,7 @@ class AnimalCardViewModel extends StateNotifier<AsyncValue<void>> {
 
         if (shelterSettings.ignoreVisitWhenAutomaticallyPutBack) {
           // Remove the last log
-          final removedLog = updatedLogs.removeLast();
+          updatedLogs.removeLast();
           await _repository.deleteLastLog(shelterId, animalType, animal.id);
         } else {
           // Update the last log's endTime to exactly 1 hour after startTime
