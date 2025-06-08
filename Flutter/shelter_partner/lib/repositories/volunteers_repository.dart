@@ -14,7 +14,7 @@ class VolunteersRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
   final NetworkClient _networkClient;
-  
+
   VolunteersRepository({
     required FirebaseFirestore firestore,
     required FirebaseAuth firebaseAuth,
@@ -288,8 +288,5 @@ class VolunteersRepository {
 final volunteersRepositoryProvider = Provider<VolunteersRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);
   final firebaseAuth = ref.watch(firebaseAuthProvider);
-  return VolunteersRepository(
-    firestore: firestore,
-    firebaseAuth: firebaseAuth,
-  );
+  return VolunteersRepository(firestore: firestore, firebaseAuth: firebaseAuth);
 });

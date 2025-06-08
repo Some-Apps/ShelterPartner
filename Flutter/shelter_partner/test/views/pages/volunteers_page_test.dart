@@ -18,66 +18,66 @@ void main() {
       FirebaseTestOverrides.initialize();
     });
 
-    testWidgets('displays volunteer settings section and navigates to settings page', (
-      WidgetTester tester,
-    ) async {
-      // Arrange: Create test user and shelter
-      final container = await createTestUserAndLogin(
-        email: 'volunteersettingsuser@example.com',
-        password: 'testpassword',
-        firstName: 'VolunteerSettings',
-        lastName: 'Tester',
-        shelterName: 'Test Shelter',
-        shelterAddress: '123 Test St',
-        selectedManagementSoftware: 'ShelterLuv',
-      );
+    testWidgets(
+      'displays volunteer settings section and navigates to settings page',
+      (WidgetTester tester) async {
+        // Arrange: Create test user and shelter
+        final container = await createTestUserAndLogin(
+          email: 'volunteersettingsuser@example.com',
+          password: 'testpassword',
+          firstName: 'VolunteerSettings',
+          lastName: 'Tester',
+          shelterName: 'Test Shelter',
+          shelterAddress: '123 Test St',
+          selectedManagementSoftware: 'ShelterLuv',
+        );
 
-      // Mock router to track navigation
-      String? navigatedRoute;
-      final router = GoRouter(
-        initialLocation: '/volunteers',
-        routes: [
-          GoRoute(
-            path: '/volunteers',
-            builder: (context, state) => const VolunteersPage(),
+        // Mock router to track navigation
+        String? navigatedRoute;
+        final router = GoRouter(
+          initialLocation: '/volunteers',
+          routes: [
+            GoRoute(
+              path: '/volunteers',
+              builder: (context, state) => const VolunteersPage(),
+            ),
+            GoRoute(
+              path: '/volunteers/volunteer-settings',
+              builder: (context, state) {
+                navigatedRoute = '/volunteers/volunteer-settings';
+                return const Scaffold(body: Text('Volunteer Settings Page'));
+              },
+            ),
+          ],
+        );
+
+        // Act: Build the widget
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp.router(routerConfig: router),
           ),
-          GoRoute(
-            path: '/volunteers/volunteer-settings',
-            builder: (context, state) {
-              navigatedRoute = '/volunteers/volunteer-settings';
-              return const Scaffold(
-                body: Text('Volunteer Settings Page'),
-              );
-            },
-          ),
-        ],
-      );
+        );
+        await tester.pumpAndSettle();
 
-      // Act: Build the widget
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp.router(
-            routerConfig: router,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        // Assert: Check that volunteer settings section is present
+        expect(find.text('Volunteer Settings'), findsOneWidget);
+        expect(find.byIcon(Icons.settings), findsOneWidget);
+        expect(find.byIcon(Icons.chevron_right), findsOneWidget);
 
-      // Assert: Check that volunteer settings section is present
-      expect(find.text('Volunteer Settings'), findsOneWidget);
-      expect(find.byIcon(Icons.settings), findsOneWidget);
-      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+        // Act: Tap on volunteer settings
+        final volunteerSettingsTile = find.widgetWithText(
+          ListTile,
+          'Volunteer Settings',
+        );
+        expect(volunteerSettingsTile, findsOneWidget);
+        await tester.tap(volunteerSettingsTile);
+        await tester.pumpAndSettle();
 
-      // Act: Tap on volunteer settings
-      final volunteerSettingsTile = find.widgetWithText(ListTile, 'Volunteer Settings');
-      expect(volunteerSettingsTile, findsOneWidget);
-      await tester.tap(volunteerSettingsTile);
-      await tester.pumpAndSettle();
-
-      // Assert: Navigation occurred
-      expect(navigatedRoute, equals('/volunteers/volunteer-settings'));
-    });
+        // Assert: Navigation occurred
+        expect(navigatedRoute, equals('/volunteers/volunteer-settings'));
+      },
+    );
 
     testWidgets('displays invite volunteer form with validation', (
       WidgetTester tester,
@@ -110,13 +110,22 @@ void main() {
       expect(find.text('Send Invite'), findsOneWidget);
 
       // Test form validation - try to submit empty form
-      final sendInviteButton = find.widgetWithText(ElevatedButton, 'Send Invite');
+      final sendInviteButton = find.widgetWithText(
+        ElevatedButton,
+        'Send Invite',
+      );
       await tester.tap(sendInviteButton);
       await tester.pumpAndSettle();
 
       // Assert: Validation errors should appear
-      expect(find.text('Please enter the volunteer\'s first name'), findsOneWidget);
-      expect(find.text('Please enter the volunteer\'s last name'), findsOneWidget);
+      expect(
+        find.text('Please enter the volunteer\'s first name'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Please enter the volunteer\'s last name'),
+        findsOneWidget,
+      );
       expect(find.text('Please enter the volunteer email'), findsOneWidget);
     });
 
@@ -158,7 +167,10 @@ void main() {
       );
 
       // Try to submit form
-      final sendInviteButton = find.widgetWithText(ElevatedButton, 'Send Invite');
+      final sendInviteButton = find.widgetWithText(
+        ElevatedButton,
+        'Send Invite',
+      );
       await tester.tap(sendInviteButton);
       await tester.pumpAndSettle();
 
@@ -187,24 +199,28 @@ void main() {
       await FirebaseTestOverrides.fakeFirestore
           .collection('users')
           .doc('volunteer1')
-          .set(createTestVolunteerData(
-            id: 'volunteer1',
-            firstName: 'Alice',
-            lastName: 'Johnson',
-            email: 'alice.johnson@example.com',
-            shelterID: shelterId,
-          ));
+          .set(
+            createTestVolunteerData(
+              id: 'volunteer1',
+              firstName: 'Alice',
+              lastName: 'Johnson',
+              email: 'alice.johnson@example.com',
+              shelterID: shelterId,
+            ),
+          );
 
       await FirebaseTestOverrides.fakeFirestore
           .collection('users')
           .doc('volunteer2')
-          .set(createTestVolunteerData(
-            id: 'volunteer2',
-            firstName: 'Bob',
-            lastName: 'Wilson',
-            email: 'bob.wilson@example.com',
-            shelterID: shelterId,
-          ));
+          .set(
+            createTestVolunteerData(
+              id: 'volunteer2',
+              firstName: 'Bob',
+              lastName: 'Wilson',
+              email: 'bob.wilson@example.com',
+              shelterID: shelterId,
+            ),
+          );
 
       // Act: Build the widget
       await tester.pumpWidget(
@@ -222,7 +238,7 @@ void main() {
       // Check that volunteers are displayed
       expect(find.text('Alice Johnson'), findsOneWidget);
       expect(find.text('Bob Wilson'), findsOneWidget);
-      
+
       // Check that delete buttons are present in the volunteers list
       // Find delete buttons within ListTile widgets that have volunteer names
       final aliceListTile = find.ancestor(
@@ -233,16 +249,16 @@ void main() {
         of: find.text('Bob Wilson'),
         matching: find.byType(ListTile),
       );
-      
-      expect(find.descendant(
-        of: aliceListTile,
-        matching: find.byIcon(Icons.delete),
-      ), findsOneWidget);
-      expect(find.descendant(
-        of: bobListTile,
-        matching: find.byIcon(Icons.delete),
-      ), findsOneWidget);
-      
+
+      expect(
+        find.descendant(of: aliceListTile, matching: find.byIcon(Icons.delete)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: bobListTile, matching: find.byIcon(Icons.delete)),
+        findsOneWidget,
+      );
+
       // Check that sort dropdown is present
       expect(find.text('A-Z'), findsOneWidget);
     });
@@ -268,35 +284,41 @@ void main() {
       await FirebaseTestOverrides.fakeFirestore
           .collection('users')
           .doc('volunteer1')
-          .set(createTestVolunteerData(
-            id: 'volunteer1',
-            firstName: 'Alice',
-            lastName: 'Johnson',
-            email: 'alice.johnson@example.com',
-            shelterID: shelterId,
-          ));
+          .set(
+            createTestVolunteerData(
+              id: 'volunteer1',
+              firstName: 'Alice',
+              lastName: 'Johnson',
+              email: 'alice.johnson@example.com',
+              shelterID: shelterId,
+            ),
+          );
 
       await FirebaseTestOverrides.fakeFirestore
           .collection('users')
           .doc('volunteer2')
-          .set(createTestVolunteerData(
-            id: 'volunteer2',
-            firstName: 'Bob',
-            lastName: 'Wilson',
-            email: 'bob.wilson@example.com',
-            shelterID: shelterId,
-          ));
+          .set(
+            createTestVolunteerData(
+              id: 'volunteer2',
+              firstName: 'Bob',
+              lastName: 'Wilson',
+              email: 'bob.wilson@example.com',
+              shelterID: shelterId,
+            ),
+          );
 
       await FirebaseTestOverrides.fakeFirestore
           .collection('users')
           .doc('volunteer3')
-          .set(createTestVolunteerData(
-            id: 'volunteer3',
-            firstName: 'Charlie',
-            lastName: 'Brown',
-            email: 'charlie.brown@example.com',
-            shelterID: shelterId,
-          ));
+          .set(
+            createTestVolunteerData(
+              id: 'volunteer3',
+              firstName: 'Charlie',
+              lastName: 'Brown',
+              email: 'charlie.brown@example.com',
+              shelterID: shelterId,
+            ),
+          );
 
       // Act: Build the widget
       await tester.pumpWidget(
@@ -341,274 +363,311 @@ void main() {
       expect(find.text('Charlie Brown'), findsOneWidget);
     });
 
-    testWidgets('shows volunteer list with admin user when no additional volunteers exist', (
-      WidgetTester tester,
-    ) async {
-      // Arrange: Create test user and shelter (admin user will appear as volunteer)
-      final container = await createTestUserAndLogin(
-        email: 'onlyadminuser@example.com',
-        password: 'testpassword',
-        firstName: 'OnlyAdmin',
-        lastName: 'Tester',
-        shelterName: 'Test Shelter',
-        shelterAddress: '123 Test St',
-        selectedManagementSoftware: 'ShelterLuv',
-      );
+    testWidgets(
+      'shows volunteer list with admin user when no additional volunteers exist',
+      (WidgetTester tester) async {
+        // Arrange: Create test user and shelter (admin user will appear as volunteer)
+        final container = await createTestUserAndLogin(
+          email: 'onlyadminuser@example.com',
+          password: 'testpassword',
+          firstName: 'OnlyAdmin',
+          lastName: 'Tester',
+          shelterName: 'Test Shelter',
+          shelterAddress: '123 Test St',
+          selectedManagementSoftware: 'ShelterLuv',
+        );
 
-      // Act: Build the widget
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: const MaterialApp(home: VolunteersPage()),
-        ),
-      );
-      await tester.pumpAndSettle();
+        // Act: Build the widget
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: VolunteersPage()),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Assert: Check that admin user appears in volunteers section
-      expect(find.text('Volunteers'), findsOneWidget);
-      expect(find.text('Search Volunteers'), findsOneWidget);
-      expect(find.text('OnlyAdmin Tester'), findsOneWidget);
-      
-      // The "No volunteers available" message should NOT appear since admin is a volunteer
-      expect(find.text('No volunteers available at the moment'), findsNothing);
-    });
+        // Assert: Check that admin user appears in volunteers section
+        expect(find.text('Volunteers'), findsOneWidget);
+        expect(find.text('Search Volunteers'), findsOneWidget);
+        expect(find.text('OnlyAdmin Tester'), findsOneWidget);
 
-    testWidgets('successfully sends volunteer invite when form is submitted with valid data', (
-      WidgetTester tester,
-    ) async {
-      // Arrange: Create test user and shelter
-      final container = await createTestUserAndLogin(
-        email: 'invitesuccessuser@example.com',
-        password: 'testpassword',
-        firstName: 'InviteSuccess',
-        lastName: 'Tester',
-        shelterName: 'Test Shelter',
-        shelterAddress: '123 Test St',
-        selectedManagementSoftware: 'ShelterLuv',
-      );
+        // The "No volunteers available" message should NOT appear since admin is a volunteer
+        expect(
+          find.text('No volunteers available at the moment'),
+          findsNothing,
+        );
+      },
+    );
 
-      final user = container.read(appUserProvider);
-      final shelterId = user?.shelterId ?? 'test-shelter';
+    testWidgets(
+      'successfully sends volunteer invite when form is submitted with valid data',
+      (WidgetTester tester) async {
+        // Arrange: Create test user and shelter
+        final container = await createTestUserAndLogin(
+          email: 'invitesuccessuser@example.com',
+          password: 'testpassword',
+          firstName: 'InviteSuccess',
+          lastName: 'Tester',
+          shelterName: 'Test Shelter',
+          shelterAddress: '123 Test St',
+          selectedManagementSoftware: 'ShelterLuv',
+        );
 
-      // Create mock network client and set up successful response
-      final mockNetworkClient = MockNetworkClient();
-      mockNetworkClient.setResponse(
-        'https://invite-volunteer-222422545919.us-central1.run.app',
-        200,
-        '{"status": "success"}',
-      );
+        final user = container.read(appUserProvider);
+        final shelterId = user?.shelterId ?? 'test-shelter';
 
-      // Add test volunteers to Firestore to ensure widget displays correctly
-      await FirebaseTestOverrides.fakeFirestore
-          .collection('users')
-          .doc('admin-user')
-          .set(createTestVolunteerData(
-            id: 'admin-user',
-            firstName: 'InviteSuccess',
-            lastName: 'Tester',
-            email: 'invitesuccessuser@example.com',
-            shelterID: shelterId,
-          ));
+        // Create mock network client and set up successful response
+        final mockNetworkClient = MockNetworkClient();
+        mockNetworkClient.setResponse(
+          'https://invite-volunteer-222422545919.us-central1.run.app',
+          200,
+          '{"status": "success"}',
+        );
 
-      // Act: Build the widget with mocked network client
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            ...FirebaseTestOverrides.overrides,
-            authViewModelProvider.overrideWith((ref) =>
-                container.read(authViewModelProvider.notifier)),
-            volunteersRepositoryProvider.overrideWith((ref) {
-              final firestore = ref.watch(firestoreProvider);
-              final firebaseAuth = ref.watch(firebaseAuthProvider);
-              return VolunteersRepository(
-                firestore: firestore,
-                firebaseAuth: firebaseAuth,
-                networkClient: mockNetworkClient,
-              );
-            }),
-          ],
-          child: const MaterialApp(home: VolunteersPage()),
-        ),
-      );
-      await tester.pumpAndSettle();
+        // Add test volunteers to Firestore to ensure widget displays correctly
+        await FirebaseTestOverrides.fakeFirestore
+            .collection('users')
+            .doc('admin-user')
+            .set(
+              createTestVolunteerData(
+                id: 'admin-user',
+                firstName: 'InviteSuccess',
+                lastName: 'Tester',
+                email: 'invitesuccessuser@example.com',
+                shelterID: shelterId,
+              ),
+            );
 
-      // Fill in the form with valid data
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Volunteer first name'),
-        'Jane',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Volunteer last name'),
-        'Smith',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Volunteer email'),
-        'jane.smith@example.com',
-      );
+        // Act: Build the widget with mocked network client
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              ...FirebaseTestOverrides.overrides,
+              authViewModelProvider.overrideWith(
+                (ref) => container.read(authViewModelProvider.notifier),
+              ),
+              volunteersRepositoryProvider.overrideWith((ref) {
+                final firestore = ref.watch(firestoreProvider);
+                final firebaseAuth = ref.watch(firebaseAuthProvider);
+                return VolunteersRepository(
+                  firestore: firestore,
+                  firebaseAuth: firebaseAuth,
+                  networkClient: mockNetworkClient,
+                );
+              }),
+            ],
+            child: const MaterialApp(home: VolunteersPage()),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Act: Submit the form
-      final sendInviteButton = find.widgetWithText(ElevatedButton, 'Send Invite');
-      await tester.tap(sendInviteButton);
-      await tester.pumpAndSettle();
-
-      // Assert: Verify that the network request was made to the correct URL
-      expect(mockNetworkClient.requests.length, equals(1));
-      final request = mockNetworkClient.requests.first;
-      expect(request.method, equals('POST'));
-      expect(request.url.toString(), equals('https://invite-volunteer-222422545919.us-central1.run.app'));
-      expect(request.headers?['Content-Type'], equals('application/json'));
-      expect(request.headers?['Authorization'], startsWith('Bearer '));
-
-      // Assert: Verify success snackbar is shown
-      expect(find.text('Invite sent successfully'), findsOneWidget);
-
-      // Assert: Verify form fields are cleared after successful submission
-      expect(
-        tester.widget<TextFormField>(
+        // Fill in the form with valid data
+        await tester.enterText(
           find.widgetWithText(TextFormField, 'Volunteer first name'),
-        ).controller?.text,
-        isEmpty,
-      );
-      expect(
-        tester.widget<TextFormField>(
+          'Jane',
+        );
+        await tester.enterText(
           find.widgetWithText(TextFormField, 'Volunteer last name'),
-        ).controller?.text,
-        isEmpty,
-      );
-      expect(
-        tester.widget<TextFormField>(
+          'Smith',
+        );
+        await tester.enterText(
           find.widgetWithText(TextFormField, 'Volunteer email'),
-        ).controller?.text,
-        isEmpty,
-      );
-    });
+          'jane.smith@example.com',
+        );
 
-    testWidgets('successfully deletes volunteer when delete button is tapped and confirmed', (
-      WidgetTester tester,
-    ) async {
-      // Set a larger screen size for this test
-      tester.view.physicalSize = const Size(1200, 1600);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
+        // Act: Submit the form
+        final sendInviteButton = find.widgetWithText(
+          ElevatedButton,
+          'Send Invite',
+        );
+        await tester.tap(sendInviteButton);
+        await tester.pumpAndSettle();
 
-      // Arrange: Create test user and shelter
-      final container = await createTestUserAndLogin(
-        email: 'deletevolunteeruser@example.com',
-        password: 'testpassword',
-        firstName: 'DeleteVolunteer',
-        lastName: 'Tester',
-        shelterName: 'Test Shelter',
-        shelterAddress: '123 Test St',
-        selectedManagementSoftware: 'ShelterLuv',
-      );
+        // Assert: Verify that the network request was made to the correct URL
+        expect(mockNetworkClient.requests.length, equals(1));
+        final request = mockNetworkClient.requests.first;
+        expect(request.method, equals('POST'));
+        expect(
+          request.url.toString(),
+          equals('https://invite-volunteer-222422545919.us-central1.run.app'),
+        );
+        expect(request.headers?['Content-Type'], equals('application/json'));
+        expect(request.headers?['Authorization'], startsWith('Bearer '));
 
-      final user = container.read(appUserProvider);
-      final shelterId = user?.shelterId ?? 'test-shelter';
+        // Assert: Verify success snackbar is shown
+        expect(find.text('Invite sent successfully'), findsOneWidget);
 
-      // Create mock network client and set up successful response
-      final mockNetworkClient = MockNetworkClient();
-      mockNetworkClient.setResponse(
-        'https://delete-volunteer-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId',
-        200,
-        '{"success": true}',
-      );
+        // Assert: Verify form fields are cleared after successful submission
+        expect(
+          tester
+              .widget<TextFormField>(
+                find.widgetWithText(TextFormField, 'Volunteer first name'),
+              )
+              .controller
+              ?.text,
+          isEmpty,
+        );
+        expect(
+          tester
+              .widget<TextFormField>(
+                find.widgetWithText(TextFormField, 'Volunteer last name'),
+              )
+              .controller
+              ?.text,
+          isEmpty,
+        );
+        expect(
+          tester
+              .widget<TextFormField>(
+                find.widgetWithText(TextFormField, 'Volunteer email'),
+              )
+              .controller
+              ?.text,
+          isEmpty,
+        );
+      },
+    );
 
-      // Add test volunteers to Firestore 
-      await FirebaseTestOverrides.fakeFirestore
-          .collection('users')
-          .doc('admin-user')
-          .set(createTestVolunteerData(
-            id: 'admin-user',
-            firstName: 'DeleteVolunteer',
-            lastName: 'Tester',
-            email: 'deletevolunteeruser@example.com',
-            shelterID: shelterId,
-          ));
+    testWidgets(
+      'successfully deletes volunteer when delete button is tapped and confirmed',
+      (WidgetTester tester) async {
+        // Set a larger screen size for this test
+        tester.view.physicalSize = const Size(1200, 1600);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
 
-      await FirebaseTestOverrides.fakeFirestore
-          .collection('users')
-          .doc('volunteer-to-delete')
-          .set(createTestVolunteerData(
-            id: 'volunteer-to-delete',
-            firstName: 'Alice',
-            lastName: 'Johnson',
-            email: 'alice.johnson@example.com',
-            shelterID: shelterId,
-          ));
+        // Arrange: Create test user and shelter
+        final container = await createTestUserAndLogin(
+          email: 'deletevolunteeruser@example.com',
+          password: 'testpassword',
+          firstName: 'DeleteVolunteer',
+          lastName: 'Tester',
+          shelterName: 'Test Shelter',
+          shelterAddress: '123 Test St',
+          selectedManagementSoftware: 'ShelterLuv',
+        );
 
-      // Act: Build the widget with mocked network client
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            ...FirebaseTestOverrides.overrides,
-            authViewModelProvider.overrideWith((ref) =>
-                container.read(authViewModelProvider.notifier)),
-            volunteersRepositoryProvider.overrideWith((ref) {
-              final firestore = ref.watch(firestoreProvider);
-              final firebaseAuth = ref.watch(firebaseAuthProvider);
-              return VolunteersRepository(
-                firestore: firestore,
-                firebaseAuth: firebaseAuth,
-                networkClient: mockNetworkClient,
-              );
-            }),
-          ],
-          child: const MaterialApp(home: VolunteersPage()),
-        ),
-      );
-      await tester.pumpAndSettle();
+        final user = container.read(appUserProvider);
+        final shelterId = user?.shelterId ?? 'test-shelter';
 
-      // Verify volunteer is displayed
-      expect(find.text('Alice Johnson'), findsOneWidget);
+        // Create mock network client and set up successful response
+        final mockNetworkClient = MockNetworkClient();
+        mockNetworkClient.setResponse(
+          'https://delete-volunteer-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId',
+          200,
+          '{"success": true}',
+        );
 
-      // Find the delete button for Alice Johnson
-      final aliceListTile = find.ancestor(
-        of: find.text('Alice Johnson'),
-        matching: find.byType(ListTile),
-      );
-      final deleteButton = find.descendant(
-        of: aliceListTile,
-        matching: find.byIcon(Icons.delete),
-      );
-      expect(deleteButton, findsOneWidget);
+        // Add test volunteers to Firestore
+        await FirebaseTestOverrides.fakeFirestore
+            .collection('users')
+            .doc('admin-user')
+            .set(
+              createTestVolunteerData(
+                id: 'admin-user',
+                firstName: 'DeleteVolunteer',
+                lastName: 'Tester',
+                email: 'deletevolunteeruser@example.com',
+                shelterID: shelterId,
+              ),
+            );
 
-      // Act: Tap the delete button
-      await tester.tap(deleteButton, warnIfMissed: false);
-      await tester.pumpAndSettle();
+        await FirebaseTestOverrides.fakeFirestore
+            .collection('users')
+            .doc('volunteer-to-delete')
+            .set(
+              createTestVolunteerData(
+                id: 'volunteer-to-delete',
+                firstName: 'Alice',
+                lastName: 'Johnson',
+                email: 'alice.johnson@example.com',
+                shelterID: shelterId,
+              ),
+            );
 
-      // Assert: Verify confirmation dialog is shown
-      expect(find.text('Confirm Deletion'), findsOneWidget);
-      expect(find.text('Are you sure you want to delete Alice?'), findsOneWidget);
+        // Act: Build the widget with mocked network client
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              ...FirebaseTestOverrides.overrides,
+              authViewModelProvider.overrideWith(
+                (ref) => container.read(authViewModelProvider.notifier),
+              ),
+              volunteersRepositoryProvider.overrideWith((ref) {
+                final firestore = ref.watch(firestoreProvider);
+                final firebaseAuth = ref.watch(firebaseAuthProvider);
+                return VolunteersRepository(
+                  firestore: firestore,
+                  firebaseAuth: firebaseAuth,
+                  networkClient: mockNetworkClient,
+                );
+              }),
+            ],
+            child: const MaterialApp(home: VolunteersPage()),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Act: Confirm deletion
-      final deleteConfirmButton = find.widgetWithText(TextButton, 'Delete');
-      await tester.tap(deleteConfirmButton);
-      await tester.pumpAndSettle();
+        // Verify volunteer is displayed
+        expect(find.text('Alice Johnson'), findsOneWidget);
 
-      // Assert: Verify that the network request was made with correct parameters
-      expect(mockNetworkClient.requests.length, equals(1));
-      final request = mockNetworkClient.requests.first;
-      expect(request.method, equals('DELETE'));
-      expect(request.url.toString(), equals('https://delete-volunteer-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId'));
-      expect(request.headers?['Content-Type'], equals('application/json'));
-      expect(request.headers?['Authorization'], startsWith('Bearer '));
+        // Find the delete button for Alice Johnson
+        final aliceListTile = find.ancestor(
+          of: find.text('Alice Johnson'),
+          matching: find.byType(ListTile),
+        );
+        final deleteButton = find.descendant(
+          of: aliceListTile,
+          matching: find.byIcon(Icons.delete),
+        );
+        expect(deleteButton, findsOneWidget);
 
-      // Assert: Verify success snackbar is shown
-      expect(find.text('Alice deleted'), findsOneWidget);
+        // Act: Tap the delete button
+        await tester.tap(deleteButton, warnIfMissed: false);
+        await tester.pumpAndSettle();
 
-      // Manually delete the volunteer from Firestore to simulate the backend deletion
-      await FirebaseTestOverrides.fakeFirestore
-          .collection('users')
-          .doc('volunteer-to-delete')
-          .delete();
+        // Assert: Verify confirmation dialog is shown
+        expect(find.text('Confirm Deletion'), findsOneWidget);
+        expect(
+          find.text('Are you sure you want to delete Alice?'),
+          findsOneWidget,
+        );
 
-      // Give the stream time to emit the updated data
-      await tester.pumpAndSettle();
-      await Future.delayed(const Duration(milliseconds: 50));
-      await tester.pumpAndSettle();
+        // Act: Confirm deletion
+        final deleteConfirmButton = find.widgetWithText(TextButton, 'Delete');
+        await tester.tap(deleteConfirmButton);
+        await tester.pumpAndSettle();
 
-      // Assert: Verify that Alice Johnson is no longer found after deletion
-      expect(find.text('Alice Johnson'), findsNothing);
-    });
+        // Assert: Verify that the network request was made with correct parameters
+        expect(mockNetworkClient.requests.length, equals(1));
+        final request = mockNetworkClient.requests.first;
+        expect(request.method, equals('DELETE'));
+        expect(
+          request.url.toString(),
+          equals(
+            'https://delete-volunteer-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId',
+          ),
+        );
+        expect(request.headers?['Content-Type'], equals('application/json'));
+        expect(request.headers?['Authorization'], startsWith('Bearer '));
+
+        // Assert: Verify success snackbar is shown
+        expect(find.text('Alice deleted'), findsOneWidget);
+
+        // Manually delete the volunteer from Firestore to simulate the backend deletion
+        await FirebaseTestOverrides.fakeFirestore
+            .collection('users')
+            .doc('volunteer-to-delete')
+            .delete();
+
+        // Give the stream time to emit the updated data
+        await tester.pumpAndSettle();
+        await Future.delayed(const Duration(milliseconds: 50));
+        await tester.pumpAndSettle();
+
+        // Assert: Verify that Alice Johnson is no longer found after deletion
+        expect(find.text('Alice Johnson'), findsNothing);
+      },
+    );
   });
 }
