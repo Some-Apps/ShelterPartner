@@ -545,5 +545,201 @@ void main() {
         );
       },
     );
+
+    testWidgets('applies user filter to animal list', (
+      WidgetTester tester,
+    ) async {
+      // Arrange: Create test user with a specific user filter
+      final container = await createTestUserAndLogin(
+        email: 'filterapplyuser@example.com',
+        password: 'testpassword',
+        firstName: 'FilterApply',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      final shelterId = user?.shelterId ?? 'test-shelter';
+
+      // Add test animals with different names and breeds
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog1')
+          .set(
+            createTestAnimalData(
+              id: 'dog1',
+              name: 'Filtered Dog',
+              breed: 'Labrador',
+            ),
+          );
+
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog2')
+          .set(
+            createTestAnimalData(
+              id: 'dog2',
+              name: 'Another Dog',
+              breed: 'Poodle',
+            ),
+          );
+
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog3')
+          .set(
+            createTestAnimalData(
+              id: 'dog3',
+              name: 'Third Dog',
+              breed: 'Beagle',
+            ),
+          );
+
+      // Create a user filter that filters for name containing "Filtered"
+      final userFilterData = {
+        'filterElements': [
+          {
+            'type': 'condition',
+            'attribute': 'name',
+            'operatorType': 'contains',
+            'value': 'Filtered',
+          },
+        ],
+        'operatorsBetween': {},
+      };
+
+      // Update the user document with the filter
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc(user!.id)
+          .update({'userFilter': userFilterData});
+
+      // Act
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: EnrichmentPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Assert: Only the filtered dog should be visible
+      expect(find.text('Filtered Dog'), findsOneWidget);
+      expect(find.text('Another Dog'), findsNothing);
+      expect(find.text('Third Dog'), findsNothing);
+    });
+
+    testWidgets('user filter works together with search functionality', (
+      WidgetTester tester,
+    ) async {
+      // Arrange: Create test user
+      final container = await createTestUserAndLogin(
+        email: 'combinedfilteruser@example.com',
+        password: 'testpassword',
+        firstName: 'CombinedFilter',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      final shelterId = user?.shelterId ?? 'test-shelter';
+
+      // Add test animals - use names that contain common letters
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog1')
+          .set(
+            createTestAnimalData(
+              id: 'dog1',
+              name: 'Cooper Dog',
+              breed: 'Labrador',
+            ),
+          );
+
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog2')
+          .set(
+            createTestAnimalData(
+              id: 'dog2',
+              name: 'Riley Dog',
+              breed: 'Poodle',
+            ),
+          );
+
+      // Create a user filter that filters for name containing "Dog" (which all our test animals should have)
+      final userFilterData = {
+        'filterElements': [
+          {
+            'type': 'condition',
+            'attribute': 'name',
+            'operatorType': 'contains',
+            'value': 'Dog',
+          },
+        ],
+        'operatorsBetween': {},
+      };
+
+      // Update the user document with the filter
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('users')
+          .doc(user!.id)
+          .update({'userFilter': userFilterData});
+
+      // Act
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: EnrichmentPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Now also use search functionality to further filter by breed
+      // Open the Additional Options to access the search attribute dropdown
+      final additionalOptionsTile = findAdditionalOptionsTile();
+      expect(additionalOptionsTile, findsOneWidget);
+      await tester.tap(additionalOptionsTile);
+      await tester.pumpAndSettle();
+
+      // Change the search attribute to 'Breed'
+      final attributeDropdown = findAttributeDropdown('Name');
+      expect(attributeDropdown, findsOneWidget);
+      await tester.tap(attributeDropdown);
+      await tester.pumpAndSettle();
+      final breedItem = find.text('Breed').last;
+      await tester.tap(breedItem);
+      await tester.pumpAndSettle();
+
+      // Use search to filter by 'Labrador' breed
+      final searchField = findSearchField();
+      await tester.enterText(searchField, 'Labrador');
+      await tester.pumpAndSettle();
+
+      // Assert: Only Cooper Dog should be visible (has "Dog" in name AND is a Labrador)
+      expect(find.text('Cooper Dog'), findsOneWidget);
+      expect(
+        find.text('Riley Dog'),
+        findsNothing,
+      ); // Riley is a Poodle, not Labrador
+
+      // The default test animals (Buddy, Max) should NOT be visible since they don't contain "Dog"
+      expect(find.text('Buddy'), findsNothing);
+      expect(find.text('Max'), findsNothing);
+    });
   });
 }
