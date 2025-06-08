@@ -261,7 +261,7 @@ class AuthRepository {
       'volunteers': [],
     });
 
-    print('Shelter data uploaded for: $shelterName');
+    _logger.info('Shelter data uploaded for: $shelterName');
 
     // After creating shelter, upload cats and dogs from CSV or placeholders
     await addAnimalsFromCSV(shelterId);
@@ -271,7 +271,7 @@ class AuthRepository {
     final animalTypes = ['cats', 'dogs'];
 
     for (var animalType in animalTypes) {
-      print('Attempting to upload $animalType for shelter $shelterId...');
+      _logger.info('Attempting to upload $animalType for shelter $shelterId...');
       await uploadDataToFirestore(
         filename: 'assets/csv/$animalType.csv', // Corrected path
         collectionName: animalType,
@@ -287,16 +287,16 @@ class AuthRepository {
   }) async {
     try {
       // Load CSV data using the loadCsvData function
-      print('Loading CSV file: $filename');
+      _logger.debug('Loading CSV file: $filename');
       final csvData = await loadCsvData(
         filename,
       ); // Load CSV data from the file
 
       if (csvData.isEmpty) {
-        print('No data found in CSV file: $filename');
+        _logger.warning('No data found in CSV file: $filename');
         return; // Exit if no data is found
       } else {
-        print('Loaded ${csvData.length} rows from $filename');
+        _logger.info('Loaded ${csvData.length} rows from $filename');
       }
 
       // Create a batch to perform multiple writes as a single atomic operation
