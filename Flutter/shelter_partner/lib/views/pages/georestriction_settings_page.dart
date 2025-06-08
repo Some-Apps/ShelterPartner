@@ -24,8 +24,6 @@ class _GeorestrictionSettingsPageState
   double _zoomLevel = 10;
   Circle? _circle;
   String _locationOption = 'Screen';
-  String _address = '';
-  String? _selectedAddress;
   List<AddressSuggestion> _addressSuggestions = [];
 
   // Replace with your actual API URL
@@ -345,8 +343,6 @@ class _GeorestrictionSettingsPageState
                                   if (newValue != null) {
                                     setState(() {
                                       _locationOption = newValue;
-                                      _selectedAddress =
-                                          null; // Reset selected address
                                       _addressController
                                           .clear(); // Clear the text field
                                       _addressSuggestions =
@@ -375,9 +371,6 @@ class _GeorestrictionSettingsPageState
                                     labelText: 'Enter Address',
                                   ),
                                   onChanged: (value) {
-                                    setState(() {
-                                      _address = value;
-                                    });
                                     _fetchAddressSuggestions(value);
                                   },
                                 ),
@@ -394,8 +387,6 @@ class _GeorestrictionSettingsPageState
                                         title: Text(suggestion.description),
                                         onTap: () async {
                                           setState(() {
-                                            _selectedAddress =
-                                                suggestion.description;
                                             _addressController.clear();
                                             _addressSuggestions = [];
                                             _addressFocusNode.unfocus();

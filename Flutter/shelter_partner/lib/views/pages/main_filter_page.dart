@@ -584,8 +584,6 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
         return 'Is True';
       case OperatorType.isFalse:
         return 'Is False';
-      default:
-        return '';
     }
   }
 
@@ -876,8 +874,6 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
         return 'Is True';
       case OperatorType.isFalse:
         return 'Is False';
-      default:
-        return '';
     }
   }
 }

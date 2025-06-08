@@ -42,8 +42,6 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   // Selected animal type ('cats' or 'dogs')
   String selectedAnimalType = 'cats';
 
-  bool _hasPreloadedImages = false; // Flag to control preloading
-
   @override
   void initState() {
     super.initState();
@@ -62,9 +60,6 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _preloadImages('cats');
       _preloadImages('dogs');
-      setState(() {
-        _hasPreloadedImages = true;
-      });
     });
   }
 
@@ -183,9 +178,6 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
         child: Icon(Icons.pets, size: 50, color: Colors.grey),
       );
     }
-
-    double screenWidth = MediaQuery.of(context).size.width;
-    int crossAxisCount = (screenWidth / maxItemExtent).ceil();
 
     return CustomScrollView(
       controller: _scrollController,

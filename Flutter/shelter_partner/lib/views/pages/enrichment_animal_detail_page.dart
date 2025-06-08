@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,40 +39,6 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
         final appUser = ref.read(appUserProvider);
         final accountSettings = ref.watch(accountSettingsViewModelProvider);
         final animal = ref.watch(animalProvider(initialAnimal));
-
-        // Helper method to format the intake date
-        String getFormattedDate(Timestamp? timestamp) {
-          if (timestamp == null) return 'Unknown';
-          final date = timestamp.toDate();
-          return '${date.day}/${date.month}/${date.year}';
-        }
-
-        void showFullScreenImage(BuildContext context, String imageUrl) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Scaffold(
-                backgroundColor: Colors.black,
-                body: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Center(
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(imageUrl)}',
-                      placeholder: (context, url) =>
-                          const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
 
         bool isAdmin() {
           // Replace with actual logic to check if the user is an admin

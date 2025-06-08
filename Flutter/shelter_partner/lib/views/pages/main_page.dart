@@ -47,13 +47,6 @@ class MainPage extends ConsumerWidget {
 
       final volunteerSettings = volunteerSettingsAsyncValue.value!;
 
-      // Modes that act like Volunteer
-      Set<String> volunteerModes = {
-        'Enrichment',
-        'Visitor',
-        'Enrichment & Visitor',
-      };
-
       // Define the navigation items and visible indexes
       List<BottomNavigationBarItem> items = [];
       List<int> visibleIndexes = [];
