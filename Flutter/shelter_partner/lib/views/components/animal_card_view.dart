@@ -487,48 +487,48 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    // mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       if (animal.logs.isNotEmpty)
-                        Flexible(
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.access_time,
-                                size: 16,
-                                color: Colors.grey.shade600,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.access_time,
+                              size: 16,
+                              color: Colors.grey.shade600,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
+                                style: TextStyle(color: Colors.grey.shade600),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  "${_timeAgo(widget.animal.inKennel ? animal.logs.last.endTime.toDate() : animal.logs.last.startTime.toDate(), widget.animal.inKennel)}${animal.logs.last.type.isNotEmpty ? ' (${animal.logs.last.type})' : ''}",
-                                  style: TextStyle(color: Colors.grey.shade600),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                      // Remove manual spacer, only show author on right if present
                       if (animal.logs.isNotEmpty &&
                           animal.logs.last.author.isNotEmpty)
-                        Flexible(
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.person_2_outlined,
-                                size: 16,
-                                color: Colors.grey.shade600,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.person_2_outlined,
+                              size: 16,
+                              color: Colors.grey.shade600,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                animal.logs.last.author,
+                                style: TextStyle(color: Colors.grey.shade600),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  animal.logs.last.author,
-                                  style: TextStyle(color: Colors.grey.shade600),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                     ],
                   ),
