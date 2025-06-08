@@ -25,7 +25,7 @@ jobs:
         working-directory: Flutter/shelter_partner
 
       - name: Analyze project source
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos # TODO: fix warnings so that --no-fatal-warnings/--no-fatal-infos can be removed
+        run: flutter analyze --no-fatal-infos
         working-directory: Flutter/shelter_partner
 
       - name: Run tests

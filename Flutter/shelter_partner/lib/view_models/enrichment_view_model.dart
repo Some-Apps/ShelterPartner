@@ -276,8 +276,6 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
         return attributeValue == true;
       case OperatorType.isFalse:
         return attributeValue == false;
-      default:
-        return false;
     }
   }
 

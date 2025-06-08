@@ -70,8 +70,6 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
   Map<String, Map<String, Map<String, int>>> _groupByTimeframe(
     List<Animal> animals,
   ) {
-    final intervals = ['<6 hours', '6-24 hours', '1-2 days', '3+ days'];
-
     // Initialize species and color maps
     final speciesData = {
       '<6 hours': <String, int>{},
@@ -105,11 +103,11 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
           interval = '3+ days';
         }
 
-        final species = animal.species ?? 'cat';
+        final species = animal.species;
         speciesData[interval]?[species] =
             (speciesData[interval]?[species] ?? 0) + 1;
 
-        final colorString = (animal.symbolColor ?? '').toLowerCase();
+        final colorString = animal.symbolColor.toLowerCase();
         if (colorString.isNotEmpty) {
           colorData[interval]?[colorString] =
               (colorData[interval]?[colorString] ?? 0) + 1;

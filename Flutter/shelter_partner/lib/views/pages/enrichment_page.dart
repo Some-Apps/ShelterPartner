@@ -132,7 +132,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
             fieldValue = animal.notes.map((note) => note.note).join(' ');
             break;
           case 'tags':
-            fieldValue = animal.tags.map((tag) => tag.title).join(' ') ?? '';
+            fieldValue = animal.tags.map((tag) => tag.title).join(' ');
             break;
           case 'breed':
             fieldValue = animal.breed;
@@ -404,10 +404,6 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
         ),
       );
     }
-  }
-
-  Widget _buildAdCard(Ad ad) {
-    return CustomAffiliateAd(ad: ad);
   }
 
   @override

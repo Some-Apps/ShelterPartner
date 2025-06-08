@@ -9,7 +9,7 @@ import 'package:shelter_partner/view_models/auth_view_model.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   final void Function()? onTapLogin;
-  DebugHelper debugHelper;
+  final DebugHelper debugHelper;
 
   SignupPage({super.key, required this.onTapLogin, DebugHelper? debugHelper})
     : debugHelper = debugHelper ?? DebugHelper();

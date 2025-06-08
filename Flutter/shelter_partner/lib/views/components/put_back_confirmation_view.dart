@@ -68,9 +68,6 @@ class _PutBackConfirmationViewState
   void _showThankYouDialog(BuildContext context) {
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
-    final putBackViewModel = ref.read(
-      putBackConfirmationViewModelProvider(widget.animals.first).notifier,
-    );
     final appUser = ref.watch(appUserProvider);
     showDialog(
       context: context,

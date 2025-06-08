@@ -72,6 +72,7 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                       .read(volunteersViewModelProvider.notifier)
                       .deleteVolunteer(volunteerId, shelterID);
                   // Refresh the volunteers list from the provider.
+                  // ignore: unused_result
                   ref.refresh(volunteersViewModelProvider);
                   // Clear local filtered list so the new data is used.
                   setState(() {

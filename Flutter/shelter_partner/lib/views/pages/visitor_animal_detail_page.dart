@@ -138,7 +138,7 @@ class VisitorAnimalDetailPage extends StatelessWidget {
             animal.notes.isNotEmpty
                 ? Column(
                     children: animal.notes.map((note) {
-                      return ListTile(title: Text(note.note ?? 'Note'));
+                      return ListTile(title: Text(note.note));
                     }).toList(),
                   )
                 : const Padding(

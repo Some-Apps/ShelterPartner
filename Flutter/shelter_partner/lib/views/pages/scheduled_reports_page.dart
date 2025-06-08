@@ -226,6 +226,7 @@ class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
                                     removedItem.toMap(),
                                   );
                               if (_arrayItems.isEmpty) {
+                                // ignore: unused_result
                                 ref.refresh(shelterSettingsViewModelProvider);
                               }
                             },

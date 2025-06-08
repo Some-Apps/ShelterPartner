@@ -10,7 +10,6 @@ class SwitchToAdminPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appUser = ref.watch(appUserProvider);
     final TextEditingController passwordController = TextEditingController();
 
     Future<void> switchToAdmin(
