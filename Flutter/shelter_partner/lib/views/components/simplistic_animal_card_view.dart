@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/animal_card_repository.dart';
+import 'package:shelter_partner/view_models/add_log_view_model.dart';
 import 'package:shelter_partner/view_models/animal_card_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
@@ -363,6 +364,34 @@ class _SimplisticAnimalCardViewState
                                         AddLogView(animal: animal),
                                   );
                                   break;
+                                case 'Quick Log':
+                                  // Automatically add a 20-minute log starting 20 minutes ago
+                                  final repository = ref.read(
+                                    animalRepositoryProvider,
+                                  );
+                                  final now = DateTime.now();
+                                  final twentyMinutesAgo = now.subtract(
+                                    const Duration(minutes: 20),
+                                  );
+                                  final log = Log(
+                                    id: const Uuid().v4(),
+                                    type: 'quick_log',
+                                    author: '',
+                                    authorID: '',
+                                    earlyReason: '',
+                                    startTime: Timestamp.fromDate(
+                                      twentyMinutesAgo,
+                                    ),
+                                    endTime: Timestamp.fromDate(now),
+                                  );
+                                  ref
+                                      .read(
+                                        addLogViewModelProvider(
+                                          widget.animal,
+                                        ).notifier,
+                                      )
+                                      .addQuickLogToAnimal(widget.animal, log);
+                                  break;
                               }
                             },
                             itemBuilder: (BuildContext context) {
@@ -377,6 +406,11 @@ class _SimplisticAnimalCardViewState
                                       "Admin" &&
                                   animal.inKennel) {
                                 menuItems.add('Add Log');
+                              }
+                              if (appUser?.type == "admin" &&
+                                  accountSettings!.accountSettings?.mode ==
+                                      "Admin") {
+                                menuItems.add('Quick Log');
                               }
 
                               return menuItems.map((String choice) {
