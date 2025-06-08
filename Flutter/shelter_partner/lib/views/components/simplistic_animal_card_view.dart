@@ -39,7 +39,8 @@ String _timeAgo(DateTime dateTime, bool inKennel) {
   if (difference.inDays > 8) {
     return '${(difference.inDays / 7).floor()} weeks${inKennel ? ' ago' : ''}';
   } else if (difference.inDays >= 1) {
-    return '${difference.inDays} days${inKennel ? ' ago' : ''}';
+    final dayLabel = difference.inDays == 1 ? 'day' : 'days';
+    return '${difference.inDays} $dayLabel${inKennel ? ' ago' : ''}';
   } else if (difference.inHours >= 1) {
     return '${difference.inHours} hours${inKennel ? ' ago' : ''}';
   } else if (difference.inMinutes >= 1) {
