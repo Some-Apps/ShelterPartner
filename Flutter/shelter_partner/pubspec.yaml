@@ -43,9 +43,9 @@ dependencies:
   icon_decoration: ^2.1.0
   fl_chart: ^0.69.2
   rxdart: ^0.28.0
-
-
-
+  logger: ^2.5.0
+  gcloud: ^0.8.12
+  
   collection: any
 dev_dependencies:
   flutter_test:

@@ -3,6 +3,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/put_back_confirmation_repository.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class PutBackConfirmationViewModel extends StateNotifier<Animal> {
   final PutBackConfirmationRepository _repository;
@@ -12,7 +13,8 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
     : super(animal);
 
   Future<void> putBackAnimal(Animal animal, Log log) async {
-    print(log.toMap());
+    final logger = ref.read(loggerServiceProvider);
+    logger.debug("Putting back animal with log: ${log.toMap()}");
     // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
     // final enrichmentViewModel = ref.read(enrichmentViewModelProvider.notifier);
@@ -25,9 +27,10 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
         log,
       );
       // Optionally, update the state if needed
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Handle error
-      print('Failed to add note: $e');
+      final logger = ref.read(loggerServiceProvider);
+      logger.error('Failed to put back animal', e, stackTrace);
     }
   }
 
@@ -38,9 +41,10 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
     try {
       await _repository.deleteLastLog(animal, shelterDetailsAsync.value!.id);
       // Optionally, update the state if needed
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Handle error
-      print('Failed to add note: $e');
+      final logger = ref.read(loggerServiceProvider);
+      logger.error('Failed to delete last log', e, stackTrace);
     }
   }
 }

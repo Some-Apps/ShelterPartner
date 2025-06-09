@@ -1,14 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelter_partner/services/logger_service.dart';
 
 import '../models/photo.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class EditAnimalRepository {
   final FirebaseFirestore _firestore;
-  EditAnimalRepository({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  final LoggerService _logger;
+
+  EditAnimalRepository({
+    required FirebaseFirestore firestore,
+    required LoggerService logger,
+  }) : _firestore = firestore,
+       _logger = logger;
 
   Future<void> deleteItem(
     String shelterId,
@@ -72,12 +78,16 @@ class EditAnimalRepository {
           );
           try {
             await resizedPhotoRef.delete();
-          } catch (e) {
-            print('Failed to delte resized photos: ${e.toString()}');
+          } catch (e, stackTrace) {
+            _logger.warning('Failed to delete resized photos', e, stackTrace);
           }
         }
-      } catch (e) {
-        print('Error deleting manual photo from storage: $e');
+      } catch (e, stackTrace) {
+        _logger.error(
+          'Error deleting manual photo from storage',
+          e,
+          stackTrace,
+        );
       }
     }
     // For ShelterLuv/asm photos , add to deleted_photos collection
@@ -88,8 +98,8 @@ class EditAnimalRepository {
           'deletedAt': Timestamp.now(),
           'source': photo.source,
         });
-      } catch (e) {
-        print('Error adding to deleted photos: $e');
+      } catch (e, stackTrace) {
+        _logger.error('Error adding to deleted photos', e, stackTrace);
       }
     }
   }
@@ -97,5 +107,6 @@ class EditAnimalRepository {
 
 final editAnimalRepositoryProvider = Provider<EditAnimalRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);
-  return EditAnimalRepository(firestore: firestore);
+  final logger = ref.watch(loggerServiceProvider);
+  return EditAnimalRepository(firestore: firestore, logger: logger);
 });

@@ -1,14 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
+import 'package:shelter_partner/repositories/auth_repository.dart';
+import 'package:shelter_partner/services/mock_logger_service.dart';
 
 import 'package:shelter_partner/views/auth/login_page.dart';
-import 'package:shelter_partner/repositories/auth_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
 import '../../helpers/firebase_test_overrides.dart';
 import '../../helpers/mock_file_loader.dart';
-import 'package:shelter_partner/providers/firebase_providers.dart';
 
 void main() {
   group('LoginPage Widget Tests', () {
@@ -30,6 +31,7 @@ void main() {
               firestore: firestore,
               firebaseAuth: firebaseAuth,
               fileLoader: MockFileLoader(),
+              logger: MockLoggerService(),
             );
           }),
         ],
