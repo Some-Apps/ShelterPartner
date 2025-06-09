@@ -154,6 +154,7 @@ exports.scheduledReport = async (req, res) => {
                 { id: 'id', title: 'ID' },
                 { id: 'name', title: 'Name' },
                 { id: 'species', title: 'Species' },
+                { id: 'tags', title: 'Tags' },
                 { id: 'noteDate', title: 'Note Date' },
                 { id: 'noteAuthor', title: 'Note Author' },
                 { id: 'note', title: 'Note' },
@@ -169,14 +170,30 @@ exports.scheduledReport = async (req, res) => {
 
         animalsData.forEach(animal => {
             console.log(`Adding records for Animal ID: ${animal.id}, Name: ${animal.name}, Species: ${animal.species}`);
-            let isFirstRowForAnimal = true;
+            
+            // Add header row for the animal with ID, Name, Species, and Tags
+            records.push({
+                id: animal.id,
+                name: animal.name,
+                species: animal.species,
+                tags: formatTags(animal.tags),
+                noteDate: '',
+                noteAuthor: '',
+                note: '',
+                logType: '',
+                logStart: '',
+                logEnd: '',
+                logDuration: '',
+                logAuthor: ''
+            });
 
-            // Process notes
+            // Process notes (with empty animal-level fields)
             animal.notes.forEach(note => {
                 records.push({
-                    id: isFirstRowForAnimal ? animal.id : '',
-                    name: isFirstRowForAnimal ? animal.name : '',
-                    species: isFirstRowForAnimal ? animal.species : '',
+                    id: '',
+                    name: '',
+                    species: '',
+                    tags: '',
                     noteDate: moment(note.timestamp.toDate()).format('MMM D'),
                     noteAuthor: note.author || '',
                     note: note.note || '',
@@ -186,18 +203,18 @@ exports.scheduledReport = async (req, res) => {
                     logDuration: '',
                     logAuthor: ''
                 });
-                isFirstRowForAnimal = false;
             });
 
-            // Process logs
+            // Process logs (with empty animal-level fields)
             animal.logs.forEach(log => {
                 const start = moment(log.startTime.toDate());
                 const end = moment(log.endTime.toDate());
                 const duration = Math.round(moment.duration(end.diff(start)).asMinutes());
                 records.push({
-                    id: isFirstRowForAnimal ? animal.id : '',
-                    name: isFirstRowForAnimal ? animal.name : '',
-                    species: isFirstRowForAnimal ? animal.species : '',
+                    id: '',
+                    name: '',
+                    species: '',
+                    tags: '',
                     noteDate: '',
                     noteAuthor: '',
                     note: '',
@@ -207,7 +224,6 @@ exports.scheduledReport = async (req, res) => {
                     logDuration: duration,
                     logAuthor: log.author || ''
                 });
-                isFirstRowForAnimal = false;
             });
         });
 
@@ -337,6 +353,20 @@ exports.scheduledReport = async (req, res) => {
 };
 
 /**
+ * Formats tags array into the required string format.
+ * @param {Array} tags - Array of tag objects with title and count properties.
+ * @returns {string} - Formatted tags string like "[(Friendly: 23), (Pulls: 18)]"
+ */
+function formatTags(tags) {
+    if (!tags || tags.length === 0) {
+        return '';
+    }
+    
+    const formattedTags = tags.map(tag => `(${tag.title}: ${tag.count})`);
+    return `[${formattedTags.join(', ')}]`;
+}
+
+/**
  * Fetches animal data within the specified date range.
  * @param {Object} doc - Firestore document.
  * @param {string} species - Species of the animal (Cat/Dog).
@@ -363,6 +393,7 @@ function fetchAnimalData(doc, species, startDate, endDate) {
     const notes = animal.notes || [];
     const logs = animal.logs || [];
     const photos = animal.photos || [];
+    const tags = animal.tags || [];
 
     // Filter notes within the date range
     const filteredNotes = notes.filter(note => {
@@ -407,7 +438,8 @@ function fetchAnimalData(doc, species, startDate, endDate) {
             species: species,
             notes: filteredNotes,
             logs: filteredLogs,
-            photos: filteredPhotos
+            photos: filteredPhotos,
+            tags: tags
         };
     }
 
