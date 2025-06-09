@@ -1,3 +1,4 @@
+const functions = require('firebase-functions');
 const { Firestore } = require('@google-cloud/firestore');
 const csvWriter = require('csv-writer').createObjectCsvWriter;
 const nodemailer = require('nodemailer');
@@ -11,45 +12,17 @@ console.log('Initialized Firestore client.');
 
 /**
  * Cloud Function to generate and send animal activity reports.
- * @param {Object} req - The HTTP request object.
- * @param {Object} res - The HTTP response object.
+ * Triggered by Pub/Sub messages.
+ * @param {Object} message - The Pub/Sub message object.
+ * @param {Object} context - The Cloud Function execution context.
  */
-exports.scheduledReport = async (req, res) => {
-    console.log('Function `scheduledReport` invoked.');
+exports.scheduledReport = functions.pubsub.topic('scheduled-report-topic').onPublish(async (message, context) => {
+    console.log('Function `scheduledReport` invoked via Pub/Sub.');
 
     try {
-        const requestJson = req.body;
-        console.log('Request body received:', JSON.stringify(requestJson));
-
-        // Validate request body
-        if (!requestJson || !requestJson.message || !requestJson.message.data) {
-            console.error('Invalid request: Missing `message` or `data` field.');
-            res.status(400).send('Invalid request: Missing `message` or `data` field.');
-            return;
-        }
-        console.log('Request body is valid.');
-
-        // Decode base64 data
-        let decodedData;
-        try {
-            decodedData = Buffer.from(requestJson.message.data, 'base64').toString('utf-8');
-            console.log('Decoded data:', decodedData);
-        } catch (decodeError) {
-            console.error('Error decoding base64 data:', decodeError);
-            res.status(400).send('Invalid data encoding.');
-            return;
-        }
-
-        // Parse JSON
-        let messageData;
-        try {
-            messageData = JSON.parse(decodedData);
-            console.log('Parsed message data:', JSON.stringify(messageData));
-        } catch (parseError) {
-            console.error('Error parsing JSON data:', parseError);
-            res.status(400).send('Invalid JSON data.');
-            return;
-        }
+        // Get data from Pub/Sub message
+        const messageData = message.json;
+        console.log('Parsed message data:', JSON.stringify(messageData));
 
         const shelterId = messageData.shelterId;
         const email = messageData.email;
@@ -60,8 +33,7 @@ exports.scheduledReport = async (req, res) => {
         // Validate required parameters
         if (!shelterId || !email || !frequency) {
             console.error('Missing `shelterId`, `email`, or `frequency` in message data.');
-            res.status(400).send('shelterId, email, or frequency missing');
-            return;
+            throw new Error('shelterId, email, or frequency missing');
         }
 
         // Define Chicago timezone
@@ -84,8 +56,7 @@ exports.scheduledReport = async (req, res) => {
                 break;
             default:
                 console.error('Invalid frequency:', frequency);
-                res.status(400).send('Invalid frequency');
-                return;
+                throw new Error('Invalid frequency');
         }
 
         console.log(`Date Range - Start Date: ${startDate.format()}, End Date: ${today.format()}`);
@@ -104,8 +75,7 @@ exports.scheduledReport = async (req, res) => {
             console.log(`Fetched ${catsSnapshot.size} Cat documents and ${dogsSnapshot.size} Dog documents.`);
         } catch (firestoreError) {
             console.error('Error fetching data from Firestore:', firestoreError);
-            res.status(500).send('Error fetching data from Firestore.');
-            return;
+            throw new Error('Error fetching data from Firestore.');
         }
 
         let animalsData = [];
@@ -140,7 +110,6 @@ exports.scheduledReport = async (req, res) => {
 
         if (animalsData.length === 0) {
             console.log('No data to report for the specified period.');
-            res.status(200).send('No data to report for the specified period.');
             return;
         }
 
@@ -234,8 +203,7 @@ exports.scheduledReport = async (req, res) => {
             console.log('CSV file generated successfully.');
         } catch (csvError) {
             console.error('Error writing CSV file:', csvError);
-            res.status(500).send('Error generating CSV file.');
-            return;
+            throw new Error('Error generating CSV file.');
         }
 
         // ----------------------------------------------------------------------------
@@ -253,8 +221,6 @@ exports.scheduledReport = async (req, res) => {
                 // Remove invalid photos
                 const validPhotos = (animal.photos || []).filter(
                     photo => !photo.url.includes('amazonaws') || !photo.url.includes('shelterluv')
-
-
                 );
                 return {
                     ...animal,
@@ -341,16 +307,15 @@ exports.scheduledReport = async (req, res) => {
             console.log('Email sent successfully.');
         } catch (emailError) {
             console.error('Error sending email:', emailError);
-            res.status(500).send('Error sending email.');
-            return;
+            throw new Error('Error sending email.');
         }
 
-        res.status(200).send('Report generated and sent successfully');
+        console.log('Report generated and sent successfully');
     } catch (error) {
         console.error(`Unexpected Error: ${error.message}`, error);
-        res.status(500).send(`Error generating report: ${error.message}`);
+        throw error;
     }
-};
+});
 
 /**
  * Formats tags array into the required string format.
