@@ -25,22 +25,27 @@ jobs:
       - name: Run golden tests
         run: |
           cd Flutter/shelter_partner
+          set +e
           docker run --rm \
             -v "$(pwd)/test:/app/test" \
             -v "$(pwd)/assets:/app/assets" \
             flutter-golden-tests
+          TEST_EXIT_CODE=$?
+          set -e
+          exit $TEST_EXIT_CODE
         continue-on-error: true
         id: golden-tests
 
-      - name: Extract failure images
+      - name: Extract failure images from container
         if: failure()
         run: |
           cd Flutter/shelter_partner
-          # Create a temporary container to extract failure images
+          # Create a container and copy test directory to get any failure images
           CONTAINER_ID=$(docker create flutter-golden-tests)
           mkdir -p failure_images
-          docker cp "$CONTAINER_ID:/app/test" failure_images/ || echo "No failure images to extract"
-          docker rm "$CONTAINER_ID"
+          docker cp "$CONTAINER_ID:/app/test/golden/failures" failure_images/ 2>/dev/null || echo "No failure images found"
+          docker rm "$CONTAINER_ID" >/dev/null 2>&1 || true
+        continue-on-error: true
 
       - name: Upload failure images as artifacts
         if: failure()
