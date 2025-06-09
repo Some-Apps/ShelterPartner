@@ -9,7 +9,7 @@
     "dependencies": {
         "@google-cloud/functions-framework": "^3.1.0",
         "autocomplete-cloud-function": "file:",
-        "axios": "^1.4.0",
+        "axios": "^1.8.2",
         "cors": "^2.8.5"
     },
     "engines": {
