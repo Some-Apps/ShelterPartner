@@ -1,7 +1,7 @@
 import 'package:shelter_partner/services/logger_service.dart';
 
 /// Mock logger implementation for testing
-/// 
+///
 /// Captures all log calls for inspection in tests
 class MockLoggerService implements LoggerService {
   final List<LogCall> _calls = [];

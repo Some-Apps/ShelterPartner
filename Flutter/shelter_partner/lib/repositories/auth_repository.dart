@@ -20,7 +20,11 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);
   final firebaseAuth = ref.watch(firebaseAuthProvider);
   final logger = ref.watch(loggerServiceProvider);
-  return AuthRepository(firestore: firestore, firebaseAuth: firebaseAuth, logger: logger);
+  return AuthRepository(
+    firestore: firestore,
+    firebaseAuth: firebaseAuth,
+    logger: logger,
+  );
 });
 
 class AuthRepository {
@@ -28,7 +32,7 @@ class AuthRepository {
   final FirebaseAuth _firebaseAuth;
   final FileLoader _fileLoader;
   final LoggerService _logger;
-  
+
   AuthRepository({
     required FirebaseFirestore firestore,
     required FirebaseAuth firebaseAuth,
@@ -271,7 +275,9 @@ class AuthRepository {
     final animalTypes = ['cats', 'dogs'];
 
     for (var animalType in animalTypes) {
-      _logger.info('Attempting to upload $animalType for shelter $shelterId...');
+      _logger.info(
+        'Attempting to upload $animalType for shelter $shelterId...',
+      );
       await uploadDataToFirestore(
         filename: 'assets/csv/$animalType.csv', // Corrected path
         collectionName: animalType,

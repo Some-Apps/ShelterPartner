@@ -31,14 +31,15 @@ final appEnvironmentProvider = Provider<AppEnvironment>((ref) {
 /// - CloudLogger for production (when Google Cloud credentials are configured)
 final loggerServiceProvider = Provider<LoggerService>((ref) {
   final environment = ref.watch(appEnvironmentProvider);
-  
+
   if (environment.isProduction) {
     // In production, use cloud logger stub (which falls back to console until configured)
     // To enable actual cloud logging, follow instructions in GOOGLE_CLOUD_LOGGING_SETUP.md
     try {
       // When gcloud is properly configured, this will use actual cloud logging
       return CloudLoggerService(
-        logging: null, // Placeholder - will be actual Logging instance when configured
+        logging:
+            null, // Placeholder - will be actual Logging instance when configured
         logName: 'shelter-partner-app',
       );
     } catch (e) {

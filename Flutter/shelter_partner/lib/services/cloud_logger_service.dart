@@ -2,9 +2,9 @@
 import 'package:shelter_partner/services/logger_service.dart';
 
 /// Google Cloud Logger implementation for production environments
-/// 
+///
 /// Sends logs to Google Cloud Logging for centralized log management
-/// 
+///
 /// Note: This is a stub implementation. To activate:
 /// 1. Uncomment the gcloud import above
 /// 2. Uncomment the actual implementation below
@@ -13,13 +13,12 @@ import 'package:shelter_partner/services/logger_service.dart';
 class CloudLoggerService implements LoggerService {
   // Stub implementation - replace with actual cloud logging when ready
   final LoggerService _fallbackLogger;
-  
+
   CloudLoggerService({
     required dynamic logging, // Logging type when gcloud is available
     String logName = 'shelter-partner-app',
     LoggerService? fallbackLogger,
-  }) : _fallbackLogger = fallbackLogger ?? 
-        const _StubConsoleLogger();
+  }) : _fallbackLogger = fallbackLogger ?? const _StubConsoleLogger();
 
   @override
   void debug(String message, [Object? error, StackTrace? stackTrace]) {

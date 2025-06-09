@@ -2,13 +2,13 @@ import 'package:logger/logger.dart';
 import 'package:shelter_partner/services/logger_service.dart';
 
 /// Console logger implementation for development environments
-/// 
+///
 /// Uses the logger package to provide colored console output
 /// with proper log levels and formatting
 class ConsoleLoggerService implements LoggerService {
   final Logger _logger;
 
-  ConsoleLoggerService({LogLevel minimumLevel = LogLevel.debug}) 
+  ConsoleLoggerService({LogLevel minimumLevel = LogLevel.debug})
     : _logger = Logger(
         level: _mapLogLevel(minimumLevel),
         printer: PrettyPrinter(

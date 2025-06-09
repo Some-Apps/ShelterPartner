@@ -9,7 +9,7 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 class EditAnimalRepository {
   final FirebaseFirestore _firestore;
   final LoggerService _logger;
-  
+
   EditAnimalRepository({
     required FirebaseFirestore firestore,
     required LoggerService logger,
@@ -83,7 +83,11 @@ class EditAnimalRepository {
           }
         }
       } catch (e, stackTrace) {
-        _logger.error('Error deleting manual photo from storage', e, stackTrace);
+        _logger.error(
+          'Error deleting manual photo from storage',
+          e,
+          stackTrace,
+        );
       }
     }
     // For ShelterLuv/asm photos , add to deleted_photos collection
