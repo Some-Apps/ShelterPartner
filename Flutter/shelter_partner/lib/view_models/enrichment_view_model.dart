@@ -327,8 +327,15 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
         return animal.volunteerCategory;
       case 'inKennel':
         return animal.inKennel;
-      case 'monthsOld': // Add this case
+      case 'monthsOld':
         return animal.monthsOld;
+      case 'letOutType':
+        // Assuming last log contains let out type
+        return animal.logs.isNotEmpty ? animal.logs.last.type : '';
+      case 'earlyPutBackReason':
+        // Assuming last log contains early put back reason
+        return animal.logs.isNotEmpty ? animal.logs.last.earlyReason : '';
+      // Add other attributes as needed
       default:
         return null;
     }
