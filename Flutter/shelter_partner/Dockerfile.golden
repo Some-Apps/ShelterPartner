@@ -1,0 +1,56 @@
+# Dockerfile for running Flutter golden tests in a consistent environment
+FROM ubuntu:22.04
+
+# Set environment variables to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PUB_CACHE=/pub-cache
+ENV PATH="$PATH:/flutter/bin:/pub-cache/bin"
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    wget \
+    unzip \
+    libgconf-2-4 \
+    gdb \
+    libstdc++6 \
+    libglu1-mesa \
+    fonts-droid-fallback \
+    lib32stdc++6 \
+    python3 \
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Flutter
+RUN git config --global http.sslverify false \
+    && git clone https://github.com/flutter/flutter.git -b 3.32.0 /flutter \
+    && git config --global http.sslverify true
+
+# Pre-download Flutter dependencies
+RUN flutter precache
+
+# Disable analytics
+RUN flutter config --no-analytics
+
+# Create a non-root user for running tests
+RUN useradd -m -s /bin/bash flutter-user
+
+# Set working directory
+WORKDIR /app
+
+# Copy the Flutter project
+COPY . .
+
+# Ensure proper ownership
+RUN chown -R flutter-user:flutter-user /app /pub-cache
+
+# Switch to non-root user
+USER flutter-user
+
+# Install Flutter dependencies
+RUN flutter pub get
+
+# Set the entrypoint for running golden tests
+ENTRYPOINT ["flutter", "test", "--tags", "golden"]
