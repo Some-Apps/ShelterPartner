@@ -367,9 +367,6 @@ class _SimplisticAnimalCardViewState
                                   break;
                                 case 'Quick Log':
                                   // Automatically add a 20-minute log starting 20 minutes ago
-                                  final repository = ref.read(
-                                    animalRepositoryProvider,
-                                  );
                                   final now = DateTime.now();
                                   final twentyMinutesAgo = now.subtract(
                                     const Duration(minutes: 20),
