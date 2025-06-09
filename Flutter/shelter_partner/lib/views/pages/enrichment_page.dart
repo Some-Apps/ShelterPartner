@@ -171,8 +171,9 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
 
             break;
           case 'earlyPutBackReason':
-            fieldValue =
-                animal.logs.isNotEmpty ? animal.logs.last.earlyReason : '';
+            fieldValue = animal.logs.isNotEmpty
+                ? animal.logs.last.earlyReason
+                : '';
             break;
           // Add more cases for other attributes as needed
           default:

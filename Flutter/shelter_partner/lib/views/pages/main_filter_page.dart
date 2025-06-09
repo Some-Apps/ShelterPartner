@@ -119,13 +119,13 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
                   filterElements.map((e) => e.toJson()).toList();
 
               // Serialize operatorsBetween
-              Map<String, String> serializedOperatorsBetween =
-                  operatorsBetween.map(
-                (key, value) => MapEntry(
-                  key.toString(),
-                  value.toString().split('.').last,
-                ),
-              );
+              Map<String, String> serializedOperatorsBetween = operatorsBetween
+                  .map(
+                    (key, value) => MapEntry(
+                      key.toString(),
+                      value.toString().split('.').last,
+                    ),
+                  );
 
               // Save to Firestore
               final filterViewModel = ref.read(
@@ -161,8 +161,9 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
                     itemCount: filterElements.length,
                     itemBuilder: (context, index) {
                       final element = filterElements[index];
-                      LogicalOperator? logicalOperatorBetween =
-                          index > 0 ? getOperatorBetween(index - 1) : null;
+                      LogicalOperator? logicalOperatorBetween = index > 0
+                          ? getOperatorBetween(index - 1)
+                          : null;
                       return _buildFilterElementUI(
                         element,
                         index,
@@ -284,7 +285,8 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
                 '${_getDisplayName(condition.attribute)} ${_operatorToString(condition.operatorType)} ${condition.value}',
                 style: const TextStyle(fontSize: 16.0),
               ),
-              trailing: indentLevel ==
+              trailing:
+                  indentLevel ==
                       0 // Only show delete button for top-level conditions
                   ? IconButton(
                       icon: const Icon(Icons.delete),
