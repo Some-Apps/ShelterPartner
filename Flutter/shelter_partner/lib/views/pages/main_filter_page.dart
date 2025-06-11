@@ -59,7 +59,8 @@ class _MainFilterPageState extends ConsumerState<MainFilterPage> {
     'Volunteer Category': 'volunteerCategory',
     'Months Old': 'monthsOld',
     'In Kennel': 'inKennel',
-    // Add other display names and attribute keys as needed
+    'Let Out Type': 'letOutType',
+    'Early Put Back Reason': 'earlyPutBackReason',
   };
 
   @override
@@ -733,6 +734,19 @@ class _AddConditionDialogState extends State<AddConditionDialog> {
       OperatorType.lessThanOrEqual,
     ],
     'inKennel': [OperatorType.isTrue, OperatorType.isFalse],
+
+    'letOutType': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains,
+    ],
+    'earlyPutBackReason': [
+      OperatorType.equals,
+      OperatorType.notEquals,
+      OperatorType.contains,
+      OperatorType.notContains,
+    ],
     // Add other attributes and their valid operators
   };
 
