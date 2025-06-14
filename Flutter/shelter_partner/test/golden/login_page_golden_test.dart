@@ -49,12 +49,19 @@ void main() {
       // Act
       await tester.pumpWidget(widget);
       
-      // Multiple pumps to handle the FutureBuilder and image loading
-      for (int i = 0; i < 5; i++) {
-        await tester.pump(const Duration(milliseconds: 100));
-      }
+      // Wait for initial frame
+      await tester.pump();
+      
+      // Wait for the logo FutureBuilder to complete with a reasonable timeout
+      // The FutureBuilder uses precacheImage which should complete quickly in tests
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump(const Duration(milliseconds: 100));
+      
+      // Final pump to ensure any pending rebuilds are completed
+      await tester.pump();
 
-      // Assert
+      // Assert - take screenshot regardless of loading state for now
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('login_page.png'),

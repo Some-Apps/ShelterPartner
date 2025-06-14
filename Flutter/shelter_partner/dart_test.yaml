@@ -1,0 +1,3 @@
+tags:
+  golden:
+    description: "Tests for Flutter golden file verification"

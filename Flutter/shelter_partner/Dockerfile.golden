@@ -49,6 +49,9 @@ RUN chown -R flutter-user:flutter-user /app /pub-cache
 # Switch to non-root user
 USER flutter-user
 
+# Add git safe directory to avoid ownership issues
+RUN git config --global --add safe.directory /flutter
+
 # Install Flutter dependencies
 RUN flutter pub get
 
