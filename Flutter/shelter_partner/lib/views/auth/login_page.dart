@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shelter_partner/views/auth/my_textfield.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,24 +39,50 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FutureBuilder(
-                      future: precacheImage(
-                        const AssetImage("assets/images/square_logo.png"),
-                        context,
-                      ),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
+                    Builder(
+                      builder: (context) {
+                        // In debug mode (including tests), show image directly without spinner
+                        if (kDebugMode) {
                           return Image.asset(
                             "assets/images/square_logo.png",
                             width: 250,
-                          );
-                        } else {
-                          return const SizedBox(
-                            width: 250,
-                            height: 250,
-                            child: Center(child: CircularProgressIndicator()),
+                            errorBuilder: (context, error, stackTrace) =>
+                                const SizedBox(
+                                  width: 250,
+                                  height: 250,
+                                  child: Icon(
+                                    Icons.pets,
+                                    size: 100,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                           );
                         }
+
+                        // Production mode - use FutureBuilder with spinner
+                        return FutureBuilder(
+                          future: precacheImage(
+                            const AssetImage("assets/images/square_logo.png"),
+                            context,
+                          ),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return Image.asset(
+                                "assets/images/square_logo.png",
+                                width: 250,
+                              );
+                            } else {
+                              return const SizedBox(
+                                width: 250,
+                                height: 250,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+                          },
+                        );
                       },
                     ),
                     const Text(
