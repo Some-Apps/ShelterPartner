@@ -5,6 +5,7 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PUB_CACHE=/pub-cache
 ENV PATH="$PATH:/flutter/bin:/pub-cache/bin"
+ENV FLUTTER_ROOT=/flutter
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -23,34 +24,33 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Flutter
-RUN git config --global http.sslverify false \
+# Create a non-root user for running tests
+RUN useradd -m -s /bin/bash flutter-user
+
+# Create directories and set ownership
+RUN mkdir -p /flutter /pub-cache /app \
+    && chown -R flutter-user:flutter-user /flutter /pub-cache /app
+
+# Switch to non-root user early
+USER flutter-user
+
+# Install Flutter as flutter-user
+RUN git config --global --add safe.directory /flutter \
+    && git config --global http.sslverify false \
     && git clone https://github.com/flutter/flutter.git -b 3.32.0 /flutter \
     && git config --global http.sslverify true
 
 # Pre-download Flutter dependencies
-RUN flutter precache
+RUN flutter precache --no-sound-null-safety
 
 # Disable analytics
 RUN flutter config --no-analytics
-
-# Create a non-root user for running tests
-RUN useradd -m -s /bin/bash flutter-user
 
 # Set working directory
 WORKDIR /app
 
 # Copy the Flutter project
-COPY . .
-
-# Ensure proper ownership
-RUN chown -R flutter-user:flutter-user /app /pub-cache
-
-# Switch to non-root user
-USER flutter-user
-
-# Add git safe directory to avoid ownership issues
-RUN git config --global --add safe.directory /flutter
+COPY --chown=flutter-user:flutter-user . .
 
 # Install Flutter dependencies
 RUN flutter pub get
