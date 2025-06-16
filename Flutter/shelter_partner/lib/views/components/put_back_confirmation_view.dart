@@ -347,10 +347,10 @@ class _PutBackConfirmationViewState
                         animal,
                         Log(
                           id: const Uuid().v4().toString(),
-                          type: _selectedEarlyReason ?? '',
+                          type: '',
                           author: _nameController.text,
                           authorID: appUser?.id ?? '',
-                          earlyReason: '',
+                          earlyReason: _selectedEarlyReason ?? '',
                           startTime: Timestamp.now(),
                           endTime: Timestamp.now(),
                         ),
