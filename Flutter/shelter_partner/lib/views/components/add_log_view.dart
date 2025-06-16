@@ -32,6 +32,7 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      initialEntryMode: TimePickerEntryMode.input,
     );
     if (picked != null) {
       final now = DateTime.now();
@@ -42,7 +43,9 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
         picked.hour,
         picked.minute,
       );
-      controller.text = selectedTime.toIso8601String();
+      setState(() {
+        controller.text = selectedTime.toIso8601String();
+      });
     }
   }
 
@@ -153,13 +156,12 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
         ),
         ElevatedButton(
           onPressed:
-              (_selectedType != null &&
-                  _startTimeController.text.isNotEmpty &&
+              (_startTimeController.text.isNotEmpty &&
                   _endTimeController.text.isNotEmpty)
               ? () async {
                   Log log = Log(
                     id: const Uuid().v4().toString(),
-                    type: _selectedType!,
+                    type: _selectedType ?? '',
                     author: userDetails!.firstName,
                     authorID: userDetails.id,
                     startTime: Timestamp.fromDate(
