@@ -9,7 +9,7 @@ class ChatService {
   final Ref ref;
   static const String _apiUrl = 'https://api.openai.com/v1/chat/completions';
   static const String _model = 'gpt-4o-mini';
-  static const String _apiKey = 'API_KEY_HERE';
+  static const String _apiKey = 'API_KEY';
 
   ChatService(this.ref);
 
@@ -83,7 +83,7 @@ class ChatService {
 
       final systemMessage =
           '''
-You are a helpful assistant for a pet shelter. You can only discuss the animals listed below. If a user asks for a list of all available animals, provide a concise list of their names and brief details.
+You are a helpful assistant for a pet shelter. Please provide accurate and concise information about the animals in the shelter based on the user's query.
 
 
 Available animals:\n$animalContext$moreText
