@@ -27,7 +27,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(home: const ShelterSettingsPage()),
+          child: const MaterialApp(home: ShelterSettingsPage()),
         ),
       );
 
@@ -78,7 +78,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(home: const ShelterSettingsPage()),
+          child: const MaterialApp(home: ShelterSettingsPage()),
         ),
       );
 
