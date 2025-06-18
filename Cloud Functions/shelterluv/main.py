@@ -268,7 +268,7 @@ def parse_animal(animal, only_include_primary_photo=True):
                 'source': 'shelterluv'
             })
 
-    full_location = ' '.join(current_location.values()) if current_location else "Unknown"
+    full_location = '>'.join(current_location.values()) if current_location else "Unknown"
 
     intake_timestamp = animal.get('LastIntakeUnixTime')
     if intake_timestamp is not None:
