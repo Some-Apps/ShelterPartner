@@ -12,8 +12,9 @@ void main() {
       FirebaseTestOverrides.initialize();
     });
 
-    testWidgets('displays Only Include Primary Photo From ShelterLuv toggle',
-        (WidgetTester tester) async {
+    testWidgets('displays Only Include Primary Photo From ShelterLuv toggle', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final container = await createTestUserAndLogin(
         email: 'testuser@example.com',
@@ -26,9 +27,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            home: const ShelterSettingsPage(),
-          ),
+          child: MaterialApp(home: const ShelterSettingsPage()),
         ),
       );
 
@@ -64,7 +63,9 @@ void main() {
       );
     });
 
-    testWidgets('primary photo toggle can be switched', (WidgetTester tester) async {
+    testWidgets('primary photo toggle can be switched', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final container = await createTestUserAndLogin(
         email: 'testuser@example.com',
@@ -77,9 +78,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            home: const ShelterSettingsPage(),
-          ),
+          child: MaterialApp(home: const ShelterSettingsPage()),
         ),
       );
 
@@ -99,7 +98,7 @@ void main() {
       );
 
       // Tap the switch to toggle it
-      await tester.tap(switchWidget);
+      await tester.tap(switchWidget, warnIfMissed: false);
       await tester.pumpAndSettle();
 
       // The switch should still be functional (this is a basic interaction test)

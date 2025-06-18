@@ -600,11 +600,22 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                     },
                                   ),
                                 ),
-                                Divider(
-                                  color: Colors.black.withOpacity(0.1),
-                                  height: 0,
-                                  thickness: 1,
-                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 25),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 16.0),
+                            child: Text(
+                              "ShelterLuv Integration Settings",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          Card.outlined(
+                            child: ListView(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: [
                                 ListTile(
                                   title: SwitchToggleView(
                                     title:
