@@ -27,6 +27,7 @@ class ShelterSettings {
   final bool showLocation;
   final bool showMedicalInfo;
   final bool showBehaviorInfo;
+  final bool onlyIncludePrimaryPhotoFromShelterLuv;
 
   ShelterSettings({
     required this.scheduledReports,
@@ -54,6 +55,7 @@ class ShelterSettings {
     this.showLocation = true,
     this.showMedicalInfo = false,
     this.showBehaviorInfo = true,
+    this.onlyIncludePrimaryPhotoFromShelterLuv = true,
   });
 
   // Method to dynamically return a list based on the key
@@ -109,6 +111,8 @@ class ShelterSettings {
       'showLocation': showLocation,
       'showMedicalInfo': showMedicalInfo,
       'showBehaviorInfo': showBehaviorInfo,
+      'onlyIncludePrimaryPhotoFromShelterLuv':
+          onlyIncludePrimaryPhotoFromShelterLuv,
     };
   }
 
@@ -175,6 +179,8 @@ class ShelterSettings {
       showLocation: data['showLocation'] ?? true,
       showMedicalInfo: data['showMedicalInfo'] ?? false,
       showBehaviorInfo: data['showBehaviorInfo'] ?? true,
+      onlyIncludePrimaryPhotoFromShelterLuv:
+          data['onlyIncludePrimaryPhotoFromShelterLuv'] ?? true,
     );
   }
 
@@ -201,6 +207,7 @@ class ShelterSettings {
     bool? showLocation,
     bool? showMedicalInfo,
     bool? showBehaviorInfo,
+    bool? onlyIncludePrimaryPhotoFromShelterLuv,
     int? tokenCount,
     int? tokenLimit,
     DateTime? lastTokenReset,
@@ -232,6 +239,9 @@ class ShelterSettings {
       showLocation: showLocation ?? this.showLocation,
       showMedicalInfo: showMedicalInfo ?? this.showMedicalInfo,
       showBehaviorInfo: showBehaviorInfo ?? this.showBehaviorInfo,
+      onlyIncludePrimaryPhotoFromShelterLuv:
+          onlyIncludePrimaryPhotoFromShelterLuv ??
+          this.onlyIncludePrimaryPhotoFromShelterLuv,
       tokenCount: tokenCount ?? this.tokenCount,
       tokenLimit: tokenLimit ?? this.tokenLimit,
       lastTokenReset: lastTokenReset ?? this.lastTokenReset,

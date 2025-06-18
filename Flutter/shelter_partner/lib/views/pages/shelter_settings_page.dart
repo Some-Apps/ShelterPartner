@@ -600,6 +600,33 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                     },
                                   ),
                                 ),
+                                Divider(
+                                  color: Colors.black.withOpacity(0.1),
+                                  height: 0,
+                                  thickness: 1,
+                                ),
+                                ListTile(
+                                  title: SwitchToggleView(
+                                    title:
+                                        "Only Include Primary Photo From ShelterLuv",
+                                    value:
+                                        shelter
+                                            ?.shelterSettings
+                                            .onlyIncludePrimaryPhotoFromShelterLuv ??
+                                        true,
+                                    onChanged: (bool newValue) {
+                                      ref
+                                          .read(
+                                            shelterSettingsViewModelProvider
+                                                .notifier,
+                                          )
+                                          .toggleAttribute(
+                                            shelter!.id,
+                                            "onlyIncludePrimaryPhotoFromShelterLuv",
+                                          );
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
                           ),
