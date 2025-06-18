@@ -603,6 +603,44 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                               ],
                             ),
                           ),
+                          const SizedBox(height: 25),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 16.0),
+                            child: Text(
+                              "ShelterLuv Integration Settings",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          Card.outlined(
+                            child: ListView(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: [
+                                ListTile(
+                                  title: SwitchToggleView(
+                                    title:
+                                        "Only Include Primary Photo From ShelterLuv",
+                                    value:
+                                        shelter
+                                            ?.shelterSettings
+                                            .onlyIncludePrimaryPhotoFromShelterLuv ??
+                                        true,
+                                    onChanged: (bool newValue) {
+                                      ref
+                                          .read(
+                                            shelterSettingsViewModelProvider
+                                                .notifier,
+                                          )
+                                          .toggleAttribute(
+                                            shelter!.id,
+                                            "onlyIncludePrimaryPhotoFromShelterLuv",
+                                          );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),

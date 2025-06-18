@@ -50,9 +50,19 @@ def main(request):
     dogs_ref = shelter_doc_ref.collection('dogs')
     other_ref = shelter_doc_ref.collection('other')
 
+    # Fetch shelter settings to determine photo filtering behavior
+    try:
+        shelter_doc = shelter_doc_ref.get()
+        shelter_settings = shelter_doc.to_dict().get('shelterSettings', {}) if shelter_doc.exists else {}
+        only_include_primary_photo = shelter_settings.get('onlyIncludePrimaryPhotoFromShelterLuv', True)
+    except Exception as e:
+        print(f"Error fetching shelter settings: {e}")
+        only_include_primary_photo = True  # Default to true if error
+
     # Fetch and process animals
     animals, original_animals = fetch_all_animals(api_key)
-    update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, other_ref, shelterId)
+    processed_animals = [parse_animal(animal, only_include_primary_photo) for animal in animals]
+    update_firestore_optimized(processed_animals, shelter_doc_ref, cats_ref, dogs_ref, other_ref, shelterId)
 
     # Update the shelter document with the last sync times
     try:
@@ -124,11 +134,12 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
                 existing_photos = existing_data.get('photos', [])
                 manually_added_photos = [p for p in existing_photos if p.get('source') == 'manual']
                 
-                # Filter out deleted photos from new photos 
-                new_photos = [p for p in animal['photos'] if p['url'] not in deleted_photos]
+                # Filter out deleted photos from new ShelterLuv photos 
+                new_shelterluv_photos = [p for p in animal['photos'] if p['url'] not in deleted_photos]
                 
-                # Combine manually added photos with non deleted photos
-                update_data['photos'] = manually_added_photos + new_photos
+                # Combine manually added photos with new ShelterLuv photos
+                # This automatically replaces all previous ShelterLuv photos with the new filtered set
+                update_data['photos'] = manually_added_photos + new_shelterluv_photos
 
             if existing_data != update_data:  # Only update if there's a change
                 batch.update(animal_doc_ref, update_data)
@@ -221,13 +232,13 @@ def fetch_all_animals(api_key):
         if not animals:  # Break the loop if no animals are returned
             break
 
-        all_animals.extend([parse_animal(animal) for animal in animals])
+        all_animals.extend(animals)  # Keep raw animals
         all_original_animals.extend(animals)
         params["offset"] += params["limit"]
 
     return all_animals, all_original_animals
 
-def parse_animal(animal):
+def parse_animal(animal, only_include_primary_photo=True):
     timestamp = datetime.now()
     name_without_parentheses = re.sub(r"\([^)]*\)", "", animal.get('Name', '')).strip()
     current_location = animal.get('CurrentLocation')
@@ -240,12 +251,21 @@ def parse_animal(animal):
 
     photos = []
     if animal.get('Photos'):
-        for photo_url in animal.get('Photos'):
+        photo_urls = animal.get('Photos')
+        # If only_include_primary_photo is True, only take the first photo (CoverPhoto)
+        # Otherwise, take all photos
+        if only_include_primary_photo and photo_urls:
+            photo_urls = [photo_urls[0]]  # Only the first photo (primary/cover photo)
+            
+        for photo_url in photo_urls:
             photo_id = str(uuid.uuid4())
             photos.append({
                 'id': photo_id,
                 'url': photo_url,
-                'timestamp': timestamp
+                'timestamp': timestamp,
+                'author': 'ShelterLuv',
+                'authorID': 'shelterluv_api',
+                'source': 'shelterluv'
             })
 
     full_location = ' '.join(current_location.values()) if current_location else "Unknown"
