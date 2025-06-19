@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     git \
     wget \
     unzip \
+    xz-utils \
     libgconf-2-4 \
     gdb \
     libstdc++6 \
@@ -34,14 +35,12 @@ RUN mkdir -p /flutter /pub-cache /app \
 # Switch to non-root user early
 USER flutter-user
 
-# Install Flutter as flutter-user
-RUN git config --global --add safe.directory /flutter \
-    && git config --global http.sslverify false \
-    && git clone https://github.com/flutter/flutter.git -b 3.32.0 /flutter \
-    && git config --global http.sslverify true
+# Download and extract the precompiled Flutter SDK
+RUN wget -qO- https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.0-stable.tar.xz | tar xJ -C /
+RUN chown -R flutter-user:flutter-user /flutter
 
 # Pre-download Flutter dependencies
-RUN flutter precache --no-sound-null-safety
+RUN flutter precache
 
 # Disable analytics
 RUN flutter config --no-analytics
