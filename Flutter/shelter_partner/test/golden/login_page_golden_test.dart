@@ -21,16 +21,16 @@ void main() {
           authRepositoryProvider.overrideWith((ref) {
             final firestore = ref.watch(firestoreProvider);
             final firebaseAuth = ref.watch(firebaseAuthProvider);
+            final logger = ref.watch(loggerServiceProvider);
             return AuthRepository(
               firestore: firestore,
               firebaseAuth: firebaseAuth,
+              logger: logger,
               fileLoader: MockFileLoader(),
             );
           }),
         ],
-        child: const MaterialApp(
-          home: LoginPage(),
-        ),
+        child: const MaterialApp(home: LoginPage()),
       );
     }
 
@@ -48,16 +48,16 @@ void main() {
 
       // Act
       await tester.pumpWidget(widget);
-      
+
       // Wait for initial frame
       await tester.pump();
-      
+
       // Wait for the logo FutureBuilder to complete with a reasonable timeout
       // The FutureBuilder uses precacheImage which should complete quickly in tests
       await tester.pump(const Duration(milliseconds: 100));
       await tester.pump(const Duration(milliseconds: 100));
       await tester.pump(const Duration(milliseconds: 100));
-      
+
       // Final pump to ensure any pending rebuilds are completed
       await tester.pump();
 
