@@ -9,9 +9,6 @@ class ShelterSettings {
   final List<String> letOutTypes;
   final List<APIKey> apiKeys;
   final String apiKey;
-  final String asmUsername;
-  final String asmPassword;
-  final String asmAccountNumber;
   final int requestCount;
   final int requestLimit;
   final bool automaticallyPutBackAnimals;
@@ -37,9 +34,6 @@ class ShelterSettings {
     required this.letOutTypes,
     required this.apiKeys,
     required this.apiKey,
-    required this.asmUsername,
-    required this.asmPassword,
-    required this.asmAccountNumber,
     required this.requestCount,
     required this.requestLimit,
     this.automaticallyPutBackAnimals = false,
@@ -92,9 +86,6 @@ class ShelterSettings {
           .map((apiKey) => apiKey.toMap())
           .toList(), // Convert each APIKey to a Map
       'apiKey': apiKey,
-      'asmUsername': asmUsername,
-      'asmPassword': asmPassword,
-      'asmAccountNumber': asmAccountNumber,
       'requestCount': requestCount,
       'requestLimit': requestLimit,
       'automaticallyPutBackAnimals': automaticallyPutBackAnimals,
@@ -158,9 +149,6 @@ class ShelterSettings {
               .toList() ??
           [],
       apiKey: data['apiKey'] ?? '',
-      asmUsername: data['asmUsername'] ?? '',
-      asmPassword: data['asmPassword'] ?? '',
-      asmAccountNumber: data['asmAccountNumber'] ?? '',
       requestCount: data['requestCount'] ?? 0,
       requestLimit: data['requestLimit'] ?? 0,
       automaticallyPutBackAnimals: data['automaticallyPutBackAnimals'] ?? false,
@@ -192,9 +180,6 @@ class ShelterSettings {
     List<String>? letOutTypes,
     List<APIKey>? apiKeys,
     String? apiKey,
-    String? asmUsername,
-    String? asmPassword,
-    String? asmAccountNumber,
     int? requestCount,
     int? requestLimit,
     bool? automaticallyPutBackAnimals,
@@ -220,9 +205,6 @@ class ShelterSettings {
       letOutTypes: letOutTypes ?? this.letOutTypes,
       apiKeys: apiKeys ?? this.apiKeys,
       apiKey: apiKey ?? this.apiKey,
-      asmUsername: asmUsername ?? this.asmUsername,
-      asmPassword: asmPassword ?? this.asmPassword,
-      asmAccountNumber: asmAccountNumber ?? this.asmAccountNumber,
       requestCount: requestCount ?? this.requestCount,
       requestLimit: requestLimit ?? this.requestLimit,
       automaticallyPutBackAnimals:

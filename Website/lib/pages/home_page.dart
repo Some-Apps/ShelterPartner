@@ -192,7 +192,7 @@ class HomePage extends StatelessWidget {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv or ASM to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
+                            'Shelter Partner is a free and open source web and mobile app that directly connects to ShelterLuv to help your volunteers and staff better prioritize the animals in your care. Watch the video below to learn more. You can access the web version by clicking the "App" button above.',
                             style: TextStyle(fontSize: 15),
                           ),
                         ],

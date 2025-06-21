@@ -90,22 +90,7 @@ def shelter_email_publisher(request):
                             'shelterId': shelter_id
                         }
                     
-                    elif management_software == 'ShelterManager':
-                        username = shelter_data.get('shelterSettings', {}).get('asmUsername')
-                        password = shelter_data.get('shelterSettings', {}).get('asmPassword')
-                        account = shelter_data.get('shelterSettings', {}).get('asmAccountNumber')
-                        
-                        if not username:
-                            print(f'No username for ShelterManager shelter {shelter_id}')
-                            continue
-                        
-                        topic_name = 'ingest-asm-email'
-                        data = {
-                            'username': username,
-                            'password': password,
-                            'account': account,
-                            'shelterId': shelter_id
-                        }
+
                     
                     elif management_software == 'Animals First':
                         api_key = shelter_data.get('shelterSettings', {}).get('apiKey')
