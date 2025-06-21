@@ -54,19 +54,28 @@ After writing a test that passes, temporarily break the functionality and verify
 
 ## 7. Running Tests
 - Run all tests with `flutter test --exclude-tags golden` from the project root.
-- Run only golden tests with `flutter test --tags golden` from the project root.
+- Run only golden tests with `./run_golden_tests.sh` from the project root (requires Docker and bash).
 - **Before submitting code**: Ensure all tests pass AND verify that critical tests can fail when the code they test is broken.
 
 ## 8. Golden Tests (Screenshot Tests)
 Golden tests verify the visual appearance of UI components by comparing screenshots against reference images.
 
-### Writing Golden Tests
-- Place golden tests in `test/golden/` directory
-- Tag all golden tests with `tags: ['golden']`
-- Use consistent viewport sizes for reproducible screenshots
-- Use `matchesGoldenFile()` to compare against reference images
+**📖 For complete golden test documentation, see [GOLDEN_TESTS.md](../GOLDEN_TESTS.md)**
 
-Example:
+### Quick Start
+```bash
+cd Flutter/shelter_partner
+./run_golden_tests.sh
+```
+
+### Key Requirements
+- **Docker is required** for consistent rendering across different environments
+- **Windows users**: Use Git Bash or WSL to run the bash script (not PowerShell)
+- Tag all golden tests with `tags: ['golden']`
+- Set consistent viewport sizes for reproducible screenshots
+- Handle async operations properly before taking screenshots
+
+### Example
 ```dart
 testWidgets('login page appears correctly', (WidgetTester tester) async {
   // Set consistent viewport
@@ -75,6 +84,13 @@ testWidgets('login page appears correctly', (WidgetTester tester) async {
   addTearDown(tester.view.reset);
   
   await tester.pumpWidget(widget);
+  
+  // Wait for async operations
+  await tester.pump();
+  for (int i = 0; i < 3; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+  
   await expectLater(
     find.byType(MaterialApp),
     matchesGoldenFile('login_page.png'),
@@ -82,48 +98,13 @@ testWidgets('login page appears correctly', (WidgetTester tester) async {
 }, tags: ['golden']);
 ```
 
-### Running Golden Tests Locally
-Golden tests require a consistent environment to prevent flaky results across different machines.
-
-**Option 1: Using Docker (Recommended)**
-```bash
-cd Flutter/shelter_partner
-./run_golden_tests.sh
-```
-
-**Option 2: Direct Flutter Command**
-```bash
-cd Flutter/shelter_partner
-flutter test --tags golden
-```
-
 ### Updating Golden Images
-When UI changes are intentional and golden tests fail:
-
-**Using Docker:**
 ```bash
 cd Flutter/shelter_partner
 ./run_golden_tests.sh --update-goldens
 ```
 
-**Using Flutter directly:**
-```bash
-cd Flutter/shelter_partner
-flutter test --tags golden --update-goldens
-```
-
-**Important:** Always review the updated golden images to ensure they match your expectations before committing them.
-
-### CI/CD Integration
-- Golden tests run automatically in GitHub Actions using Docker for consistency
-- Regular tests (non-golden) exclude golden tests using `--exclude-tags golden`
-- If golden tests fail in CI, failure images are uploaded as artifacts for review
-
-### Troubleshooting Golden Tests
-- **Tests timeout**: Ensure async operations complete before taking screenshots
-- **Inconsistent results**: Use Docker for consistent font rendering and viewport
-- **Large file sizes**: Consider using smaller viewport sizes or compressing images
-- **False positives**: Check for animations, random data, or timing-dependent content
+**Important:** Always review updated golden images before committing them.
 
 ---
 
