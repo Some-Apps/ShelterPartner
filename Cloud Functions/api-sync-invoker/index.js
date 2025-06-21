@@ -35,21 +35,7 @@ exports.shelterApiKeyPublisher = functions.https.onRequest(async (req, res) => {
                     }
                     topicName = 'shelterLuv-sync-topic';
                     data = { apiKey: apiKey, shelterId: shelterId };
-                } else if (managementSoftware === 'ShelterManager') {
-                    const username = shelterData.shelterSettings.asmUsername;
-                    const password = shelterData.shelterSettings.asmPassword;
-                    const account = shelterData.shelterSettings.asmAccountNumber;
-                    topicName = 'asm-sync-topic';
-                    data = { 
-                        username: username, 
-                        password: password, 
-                        account: account, 
-                        shelterId: shelterId 
-                    };
-                    if (!username || username.trim() === '') {
-                        console.log(`No apiKey for shelter ${shelterId}`);
-                        continue;
-                    }
+
                 } else if (managementSoftware === 'Animals First') {
                     const apiKey = shelterData.shelterSettings.apiKey;
                     if (!apiKey || apiKey.trim() === '') {
