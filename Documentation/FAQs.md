@@ -19,7 +19,7 @@ Unfortunately ShelterPartner is not available on Android. We plan to support And
 
 ## What management software works with ShelterPartner?
 
-ShelterPartner can connect to any of the following accounts; Shelter Manager (ASM), ShelterLuv, RescueGroups, and Shelter Buddy. It cannot not connect to PetPoint or Chameleon. We hope to be able to connect to these in the future. If you use software not mentioned, it may still be possible to connect your account. Just let me know via email and I’ll see what I can do.
+ShelterPartner currently connects to ShelterLuv accounts. We hope to be able to connect to other shelter management systems in the future. If you use software not currently supported, it may still be possible to connect your account. Just let me know via email and I'll see what I can do.
 
 ## ShelterPartner is missing something that my shelter would need to be able to use it. Can you add this feature?
 
