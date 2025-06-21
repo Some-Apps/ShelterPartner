@@ -53,8 +53,8 @@ After writing a test that passes, temporarily break the functionality and verify
 - **Improves reliability**: Helps identify flaky or ineffective tests
 
 ## 7. Running Tests
-- Run all tests with `flutter test --exclude-tags golden` from the project root.
-- Run only golden tests with `./run_golden_tests.sh` from the project root (requires Docker and bash).
+- Run all standard tests with `flutter test --exclude-tags golden` from the project root.
+- Run golden tests with `./run_golden_tests.sh` from the project root (requires Docker and bash).
 - **Before submitting code**: Ensure all tests pass AND verify that critical tests can fail when the code they test is broken.
 
 ## 8. Golden Tests (Screenshot Tests)

@@ -58,6 +58,7 @@ dev_dependencies:
   mockito: ^5.4.4
   fake_cloud_firestore: ^3.0.3
   firebase_auth_mocks: ^0.14.1
+  golden_toolkit: ^0.15.0
 
 
 
