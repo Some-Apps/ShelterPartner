@@ -48,11 +48,14 @@ RUN flutter config --no-analytics
 # Set working directory
 WORKDIR /app
 
-# Copy the Flutter project
-COPY . .
+# Copy only pubspec files first for better Docker cache on dependency install
+COPY pubspec.yaml pubspec.lock ./
 
 # Install Flutter dependencies
 RUN flutter pub get
 
+# Now copy the rest of the project
+COPY . .
+
 # Set the entrypoint for running golden tests
-ENTRYPOINT ["flutter", "test", "--tags", "golden"]
+ENTRYPOINT ["flutter", "test", "test/golden", "--tags", "golden"]

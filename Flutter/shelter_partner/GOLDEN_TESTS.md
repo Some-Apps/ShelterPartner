@@ -83,12 +83,19 @@ docker rm "$CONTAINER_NAME"
 
 1. **Location**: Place golden tests in `test/golden/` directory
 2. **Naming**: Use `_golden_test.dart` suffix (e.g., `login_page_golden_test.dart`)
-3. **Tagging**: Always add `tags: ['golden']` to exclude from regular test runs
+3. **Tagging**: Add `@Tags(['golden'])` at the top of the file and, to avoid IDE warnings, add a `library` directive immediately after, e.g.:
+   ```dart
+   @Tags(['golden'])
+   library my_widget_golden_test;
+   ```
 4. **Viewport**: Set consistent viewport size for reproducible screenshots
 
 ### Example Golden Test
 
 ```dart
+@Tags(['golden'])
+library my_widget_golden_test;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -137,7 +144,7 @@ void main() {
         find.byType(MaterialApp),
         matchesGoldenFile('my_widget.png'),
       );
-    }, tags: ['golden']);
+    });
   });
 }
 ```
