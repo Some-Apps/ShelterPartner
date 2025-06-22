@@ -54,7 +54,7 @@ if [ "$UPDATE_GOLDENS" = true ]; then
     
     # Copy updated golden images from container to host
     echo "Copying updated golden images from container to host..."
-    docker cp "$CONTAINER_NAME:/app/test/golden/" "./test/"
+    docker cp "$CONTAINER_NAME:/app/test/golden/goldens" "./test/golden/goldens"
     
     # Clean up the container
     docker rm "$CONTAINER_NAME" > /dev/null 2>&1

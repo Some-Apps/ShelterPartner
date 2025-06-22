@@ -48,8 +48,9 @@ RUN flutter config --no-analytics
 # Set working directory
 WORKDIR /app
 
-# Copy only pubspec files first for better Docker cache on dependency install
+# Copy pubspec files and asset directories first
 COPY pubspec.yaml pubspec.lock ./
+COPY assets/ ./assets/
 
 # Install Flutter dependencies
 RUN flutter pub get

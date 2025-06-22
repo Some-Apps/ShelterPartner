@@ -88,7 +88,8 @@ docker rm "$CONTAINER_NAME"
    @Tags(['golden'])
    library my_widget_golden_test;
    ```
-4. **Viewport**: Set consistent viewport size for reproducible screenshots
+4. **Toolkit Pattern**: Use the `golden_toolkit` pattern for all golden tests. This means using `testGoldens`, `loadAppFonts`, `pumpWidgetBuilder`, and `screenMatchesGolden` (or a project-provided `goldenTest` helper if available).
+5. **Viewport**: Set consistent viewport size for reproducible screenshots. The standard for this project is `surfaceSize: const Size(1600, 1200)`.
 
 ### Example Golden Test
 
@@ -97,6 +98,7 @@ docker rm "$CONTAINER_NAME"
 library my_widget_golden_test;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -104,47 +106,19 @@ import 'package:shelter_partner/views/my_widget.dart';
 import '../helpers/firebase_test_overrides.dart';
 
 void main() {
-  group('MyWidget Golden Tests', () {
-    setUp(() {
-      FirebaseTestOverrides.initialize();
-    });
-
-    Future<Widget> createTestWidget() async {
-      return ProviderScope(
+  testGoldens('MyWidget Golden Tests', (WidgetTester tester) async {
+    FirebaseTestOverrides.initialize();
+    await loadAppFonts();
+    await tester.pumpWidgetBuilder(
+      ProviderScope(
         overrides: FirebaseTestOverrides.overrides,
         child: const MaterialApp(
           home: MyWidget(),
         ),
-      );
-    }
-
-    void setupTestViewport(WidgetTester tester) {
-      // Set consistent viewport size
-      tester.view.physicalSize = const Size(1200, 1600);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-    }
-
-    testWidgets('my widget appears correctly', (WidgetTester tester) async {
-      // Arrange
-      setupTestViewport(tester);
-      final widget = await createTestWidget();
-
-      // Act
-      await tester.pumpWidget(widget);
-      
-      // Wait for async operations to complete
-      await tester.pump();
-      for (int i = 0; i < 3; i++) {
-        await tester.pump(const Duration(milliseconds: 100));
-      }
-
-      // Assert
-      await expectLater(
-        find.byType(MaterialApp),
-        matchesGoldenFile('my_widget.png'),
-      );
-    });
+      ),
+      surfaceSize: const Size(1600, 1200),
+    );
+    await screenMatchesGolden(tester, 'my_widget');
   });
 }
 ```
