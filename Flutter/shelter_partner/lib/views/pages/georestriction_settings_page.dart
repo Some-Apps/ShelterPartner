@@ -133,7 +133,7 @@ class _GeorestrictionSettingsPageState
         center: _center!,
         radius: _radius,
         strokeColor: Colors.blue,
-        fillColor: Colors.blue.withOpacity(0.3),
+        fillColor: Colors.blue.withValues(alpha: 0.3),
         strokeWidth: 2,
       );
     });

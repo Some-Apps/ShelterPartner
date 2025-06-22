@@ -577,7 +577,7 @@ class PhotoItem extends ConsumerWidget {
                 icon: Icon(
                   Icons.delete,
                   size: 20.0,
-                  color: Colors.red.withOpacity(1),
+                  color: Colors.red.withValues(alpha: 1),
                 ),
                 onPressed: onDelete,
               ),

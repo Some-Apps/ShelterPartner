@@ -193,7 +193,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -218,7 +218,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -243,7 +243,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -268,7 +268,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -291,7 +291,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -317,7 +317,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -342,7 +342,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -395,7 +395,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),

@@ -248,7 +248,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                                     gradient: LinearGradient(
                                       colors: [
                                         Colors.transparent,
-                                        Colors.black.withOpacity(0.7),
+                                        Colors.black.withValues(alpha: 0.7),
                                       ],
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,

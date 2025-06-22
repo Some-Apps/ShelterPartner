@@ -61,7 +61,7 @@ class AnimalCardImage extends ConsumerWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withValues(alpha: 0.6),
                   blurRadius: 0.25,
                   spreadRadius: 0,
                   offset: isPressed ? const Offset(0, 0) : const Offset(0, 1.5),

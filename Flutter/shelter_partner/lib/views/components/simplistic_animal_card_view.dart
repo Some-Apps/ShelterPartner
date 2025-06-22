@@ -246,7 +246,7 @@ class _SimplisticAnimalCardViewState
           borderRadius: BorderRadius.circular(25),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
               // spreadRadius: 0.5,
               blurRadius: 1,
               offset: const Offset(0, 1.5),
