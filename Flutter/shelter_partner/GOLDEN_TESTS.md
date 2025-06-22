@@ -34,6 +34,8 @@ The golden test script (`run_golden_tests.sh`) is a bash script. **Windows users
 
 **Windows users**: Use Git Bash, WSL, or another bash-compatible shell for these commands.
 
+**Mac users**: Comment out ```lib32stdc++6 \``` in **Dockerfile.golden** and then run ```export DOCKER_DEFAULT_PLATFORM=linux/amd64``` before running the tests.
+
 **Run all golden tests:**
 ```bash
 cd Flutter/shelter_partner
