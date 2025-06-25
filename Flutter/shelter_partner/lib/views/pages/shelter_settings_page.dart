@@ -16,29 +16,17 @@ class ShelterSettingsPage extends ConsumerStatefulWidget {
 class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _focusNode = FocusNode();
-  final FocusNode _asmUsernameFocusNode = FocusNode();
-  final FocusNode _asmPasswordFocusNode = FocusNode();
-  final FocusNode _asmAccountNumberFocusNode = FocusNode();
   late TextEditingController _apiKeyController;
-  late TextEditingController _asmUsernameController;
-  late TextEditingController _asmPasswordController;
-  late TextEditingController _asmAccountNumberController;
 
   @override
   void initState() {
     super.initState();
     _apiKeyController = TextEditingController();
-    _asmUsernameController = TextEditingController();
-    _asmPasswordController = TextEditingController();
-    _asmAccountNumberController = TextEditingController();
   }
 
   @override
   void dispose() {
     _apiKeyController.dispose();
-    _asmUsernameController.dispose();
-    _asmPasswordController.dispose();
-    _asmAccountNumberController.dispose();
     super.dispose();
   }
 
@@ -60,28 +48,12 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
         if (_apiKeyController.text != shelter?.shelterSettings.apiKey) {
           _apiKeyController.text = shelter!.shelterSettings.apiKey;
         }
-        if (_asmUsernameController.text !=
-            shelter?.shelterSettings.asmUsername) {
-          _asmUsernameController.text = shelter!.shelterSettings.asmUsername;
-        }
-        if (_asmPasswordController.text !=
-            shelter?.shelterSettings.asmPassword) {
-          _asmPasswordController.text = shelter!.shelterSettings.asmPassword;
-        }
-        if (_asmAccountNumberController.text !=
-            shelter?.shelterSettings.asmAccountNumber) {
-          _asmAccountNumberController.text =
-              shelter!.shelterSettings.asmAccountNumber;
-        }
 
         return Scaffold(
           appBar: AppBar(title: const Text("Shelter Settings")),
           body: GestureDetector(
             onTap: () {
               _focusNode.unfocus();
-              _asmUsernameFocusNode.unfocus();
-              _asmPasswordFocusNode.unfocus();
-              _asmAccountNumberFocusNode.unfocus();
             },
             child: SingleChildScrollView(
               child: Center(
@@ -301,83 +273,6 @@ class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
                                         .modifyShelterSettingString(
                                           shelter!.id,
                                           "apiKey",
-                                          value,
-                                        );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ] else if (shelter?.managementSoftware ==
-                              "ShelterManager") ...[
-                            Card.outlined(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: "ASM Account #",
-                                    hintText: "ASM Account #",
-                                  ),
-                                  controller: _asmAccountNumberController,
-                                  focusNode: _asmAccountNumberFocusNode,
-                                  onChanged: (String value) {
-                                    ref
-                                        .read(
-                                          shelterSettingsViewModelProvider
-                                              .notifier,
-                                        )
-                                        .modifyShelterSettingString(
-                                          shelter!.id,
-                                          "asmAccountNumber",
-                                          value,
-                                        );
-                                  },
-                                ),
-                              ),
-                            ),
-                            Card.outlined(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: "ASM Username",
-                                    hintText: "ASM Username",
-                                  ),
-                                  controller: _asmUsernameController,
-                                  focusNode: _asmUsernameFocusNode,
-                                  onChanged: (String value) {
-                                    ref
-                                        .read(
-                                          shelterSettingsViewModelProvider
-                                              .notifier,
-                                        )
-                                        .modifyShelterSettingString(
-                                          shelter!.id,
-                                          "asmUsername",
-                                          value,
-                                        );
-                                  },
-                                ),
-                              ),
-                            ),
-                            Card.outlined(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: "ASM Password",
-                                    hintText: "ASM Password",
-                                  ),
-                                  controller: _asmPasswordController,
-                                  focusNode: _asmPasswordFocusNode,
-                                  onChanged: (String value) {
-                                    ref
-                                        .read(
-                                          shelterSettingsViewModelProvider
-                                              .notifier,
-                                        )
-                                        .modifyShelterSettingString(
-                                          shelter!.id,
-                                          "asmPassword",
                                           value,
                                         );
                                   },
