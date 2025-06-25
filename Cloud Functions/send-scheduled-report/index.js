@@ -187,44 +187,48 @@ exports.scheduledReport = async (req, res) => {
                 logAuthor: ''
             });
 
-            // Process notes (with empty animal-level fields)
-            animal.notes.forEach(note => {
-                records.push({
-                    id: '',
-                    name: '',
-                    species: '',
-                    tags: '',
-                    noteDate: moment(note.timestamp.toDate()).format('MMM D'),
-                    noteAuthor: note.author || '',
-                    note: note.note || '',
-                    logType: '',
-                    logStart: '',
-                    logEnd: '',
-                    logDuration: '',
-                    logAuthor: ''
+            // Process notes (with empty animal-level fields), excluding Shelter Partner authored content
+            animal.notes
+                .filter(note => note.author !== 'Shelter Partner')
+                .forEach(note => {
+                    records.push({
+                        id: '',
+                        name: '',
+                        species: '',
+                        tags: '',
+                        noteDate: moment(note.timestamp.toDate()).format('MMM D'),
+                        noteAuthor: note.author || '',
+                        note: note.note || '',
+                        logType: '',
+                        logStart: '',
+                        logEnd: '',
+                        logDuration: '',
+                        logAuthor: ''
+                    });
                 });
-            });
 
-            // Process logs (with empty animal-level fields)
-            animal.logs.forEach(log => {
-                const start = moment(log.startTime.toDate());
-                const end = moment(log.endTime.toDate());
-                const duration = Math.round(moment.duration(end.diff(start)).asMinutes());
-                records.push({
-                    id: '',
-                    name: '',
-                    species: '',
-                    tags: '',
-                    noteDate: '',
-                    noteAuthor: '',
-                    note: '',
-                    logType: log.type || '',
-                    logStart: start.format('MMM D HH:mm'),
-                    logEnd: end.format('MMM D HH:mm'),
-                    logDuration: duration,
-                    logAuthor: log.author || ''
+            // Process logs (with empty animal-level fields), excluding Shelter Partner authored content
+            animal.logs
+                .filter(log => log.author !== 'Shelter Partner')
+                .forEach(log => {
+                    const start = moment(log.startTime.toDate());
+                    const end = moment(log.endTime.toDate());
+                    const duration = Math.round(moment.duration(end.diff(start)).asMinutes());
+                    records.push({
+                        id: '',
+                        name: '',
+                        species: '',
+                        tags: '',
+                        noteDate: '',
+                        noteAuthor: '',
+                        note: '',
+                        logType: log.type || '',
+                        logStart: start.format('MMM D HH:mm'),
+                        logEnd: end.format('MMM D HH:mm'),
+                        logDuration: duration,
+                        logAuthor: log.author || ''
+                    });
                 });
-            });
         });
 
         console.log(`Total records to write to CSV: ${records.length}`);
@@ -246,44 +250,52 @@ exports.scheduledReport = async (req, res) => {
         const catsData = animalsData
             .filter(animal => animal.species === 'Cat')
             .map(animal => {
-                // Remove invalid notes
+                // Remove invalid notes and Shelter Partner authored content
                 const validNotes = (animal.notes || []).filter(
-                    note => note.note !== 'Added animal to the app'
+                    note => note.note !== 'Added animal to the app' && note.author !== 'Shelter Partner'
                 );
-                // Remove invalid photos
+                // Remove invalid photos and Shelter Partner authored content
                 const validPhotos = (animal.photos || []).filter(
-                    photo => !photo.url.includes('amazonaws') || !photo.url.includes('shelterluv')
-
-
+                    photo => !photo.url.includes('amazonaws') && !photo.url.includes('shelterluv') && photo.author !== 'Shelter Partner'
+                );
+                // Remove Shelter Partner authored logs
+                const validLogs = (animal.logs || []).filter(
+                    log => log.author !== 'Shelter Partner'
                 );
                 return {
                     ...animal,
                     notes: validNotes,
-                    photos: validPhotos
+                    photos: validPhotos,
+                    logs: validLogs
                 };
             })
-            // Keep only animals that have at least 1 valid note or photo
-            .filter(animal => animal.notes.length > 0 || animal.photos.length > 0);
+            // Keep only animals that have at least 1 valid note, photo, or log
+            .filter(animal => animal.notes.length > 0 || animal.photos.length > 0 || animal.logs.length > 0);
 
         const dogsData = animalsData
             .filter(animal => animal.species === 'Dog')
             .map(animal => {
-                // Remove invalid notes
+                // Remove invalid notes and Shelter Partner authored content
                 const validNotes = (animal.notes || []).filter(
-                    note => note.note !== 'Added animal to the app'
+                    note => note.note !== 'Added animal to the app' && note.author !== 'Shelter Partner'
                 );
-                // Remove invalid photos
+                // Remove invalid photos and Shelter Partner authored content
                 const validPhotos = (animal.photos || []).filter(
-                    photo => !photo.url.includes('amazonaws')
+                    photo => !photo.url.includes('amazonaws') && photo.author !== 'Shelter Partner'
+                );
+                // Remove Shelter Partner authored logs
+                const validLogs = (animal.logs || []).filter(
+                    log => log.author !== 'Shelter Partner'
                 );
                 return {
                     ...animal,
                     notes: validNotes,
-                    photos: validPhotos
+                    photos: validPhotos,
+                    logs: validLogs
                 };
             })
-            // Keep only animals that have at least 1 valid note or photo
-            .filter(animal => animal.notes.length > 0 || animal.photos.length > 0);
+            // Keep only animals that have at least 1 valid note, photo, or log
+            .filter(animal => animal.notes.length > 0 || animal.photos.length > 0 || animal.logs.length > 0);
 
         // 2. Generate HTML
         let htmlContent = '<h1>Animal Activity Report</h1>';

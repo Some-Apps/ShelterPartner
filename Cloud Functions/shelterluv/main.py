@@ -284,7 +284,7 @@ def parse_animal(animal, only_include_primary_photo=True):
                 'id': photo_id,
                 'url': photo_url,
                 'timestamp': timestamp,
-                'author': 'ShelterLuv',
+                'author': 'Shelter Partner',
                 'authorID': 'shelterluv_api',
                 'source': 'shelterluv'
             })
