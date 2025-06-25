@@ -1,6 +1,6 @@
 # Welcome To [Shelter Partner](https://shelterpartner.org)!
 
-Jared will be out of town June 18 - 21 and will respond to any messages when he gets back.
+Jared will be out of town June 26 - 29 and will respond to any messages when he gets back.
 
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
