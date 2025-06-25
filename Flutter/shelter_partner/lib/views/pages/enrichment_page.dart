@@ -910,7 +910,7 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
   }
 }
 
-class CustomAffiliateAd extends StatefulWidget {
+class CustomAffiliateAd extends ConsumerStatefulWidget {
   final Ad ad;
 
   const CustomAffiliateAd({super.key, required this.ad});
@@ -919,7 +919,7 @@ class CustomAffiliateAd extends StatefulWidget {
   _CustomAffiliateAdState createState() => _CustomAffiliateAdState();
 }
 
-class _CustomAffiliateAdState extends State<CustomAffiliateAd>
+class _CustomAffiliateAdState extends ConsumerState<CustomAffiliateAd>
     with SingleTickerProviderStateMixin {
   late final ScrollController _scrollController;
   late final AnimationController _animationController;
@@ -990,9 +990,9 @@ class _CustomAffiliateAdState extends State<CustomAffiliateAd>
 
   @override
   Widget build(BuildContext context) {
+    final serviceUrls = ref.watch(serviceUrlsProvider);
     final resizedImages = _imageUrls.map((url) {
-      final proxyUrl =
-          'https://us-central1-production-10b3e.cloudfunctions.net/cors-images?url=${Uri.encodeComponent(url)}';
+      final proxyUrl = serviceUrls.corsImageUrl(url);
       return CachedNetworkImage(
         imageUrl: proxyUrl,
         cacheKey: url,

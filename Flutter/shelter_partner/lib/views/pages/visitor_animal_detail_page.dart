@@ -1,14 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
-class VisitorAnimalDetailPage extends StatelessWidget {
+class VisitorAnimalDetailPage extends ConsumerWidget {
   final Animal animal;
 
   const VisitorAnimalDetailPage({super.key, required this.animal});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final serviceUrls = ref.watch(serviceUrlsProvider);
+    
     // Helper method to format the intake date
     String getFormattedDate(Timestamp? timestamp) {
       if (timestamp == null) return 'Unknown';
@@ -28,7 +32,7 @@ class VisitorAnimalDetailPage extends StatelessWidget {
               },
               child: Center(
                 child: Image.network(
-                  'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(imageUrl)}',
+                  serviceUrls.corsImageUrl(imageUrl),
                 ),
               ),
             ),
@@ -54,8 +58,7 @@ class VisitorAnimalDetailPage extends StatelessWidget {
                       itemCount: animal.photos?.length ?? 0,
                       itemBuilder: (context, index) {
                         final originalPhoto = animal.photos![index];
-                        final proxyUrl =
-                            'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(originalPhoto.url)}';
+                        final proxyUrl = serviceUrls.corsImageUrl(originalPhoto.url);
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(

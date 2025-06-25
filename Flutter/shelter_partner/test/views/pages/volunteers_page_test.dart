@@ -449,9 +449,11 @@ void main() {
               volunteersRepositoryProvider.overrideWith((ref) {
                 final firestore = ref.watch(firestoreProvider);
                 final firebaseAuth = ref.watch(firebaseAuthProvider);
+                final serviceUrls = ref.watch(serviceUrlsProvider);
                 return VolunteersRepository(
                   firestore: firestore,
                   firebaseAuth: firebaseAuth,
+                  serviceUrls: serviceUrls,
                   networkClient: mockNetworkClient,
                 );
               }),
@@ -489,7 +491,7 @@ void main() {
         expect(request.method, equals('POST'));
         expect(
           request.url.toString(),
-          equals('https://invite-volunteer-222422545919.us-central1.run.app'),
+          equals('https://invite-volunteer-dev-222422545919.us-central1.run.app'),
         );
         expect(request.headers?['Content-Type'], equals('application/json'));
         expect(request.headers?['Authorization'], startsWith('Bearer '));
@@ -596,9 +598,11 @@ void main() {
               volunteersRepositoryProvider.overrideWith((ref) {
                 final firestore = ref.watch(firestoreProvider);
                 final firebaseAuth = ref.watch(firebaseAuthProvider);
+                final serviceUrls = ref.watch(serviceUrlsProvider);
                 return VolunteersRepository(
                   firestore: firestore,
                   firebaseAuth: firebaseAuth,
+                  serviceUrls: serviceUrls,
                   networkClient: mockNetworkClient,
                 );
               }),
@@ -645,7 +649,7 @@ void main() {
         expect(
           request.url.toString(),
           equals(
-            'https://delete-volunteer-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId',
+            'https://delete-volunteer-dev-222422545919.us-central1.run.app?id=volunteer-to-delete&shelterID=$shelterId',
           ),
         );
         expect(request.headers?['Content-Type'], equals('application/json'));
