@@ -60,9 +60,30 @@ def main(request):
         only_include_primary_photo = True  # Default to true if error
 
     # Fetch and process animals
-    animals, original_animals = fetch_all_animals(api_key)
-    processed_animals = [parse_animal(animal, only_include_primary_photo) for animal in animals]
-    update_firestore_optimized(processed_animals, shelter_doc_ref, cats_ref, dogs_ref, other_ref, shelterId)
+    try:
+        animals, original_animals = fetch_all_animals(api_key)
+        processed_animals = [parse_animal(animal, only_include_primary_photo) for animal in animals]
+        update_firestore_optimized(processed_animals, shelter_doc_ref, cats_ref, dogs_ref, other_ref, shelterId)
+    except requests.exceptions.HTTPError as e:
+        # Check if the error indicates a revoked/invalid API key
+        if e.response.status_code in [401, 403]:
+            print(f"API key revoked or invalid for shelter {shelterId}. Clearing API key.")
+            try:
+                # Clear the API key by setting it to an empty string
+                shelter_doc_ref.update({'shelterSettings.apiKey': ''})
+                print(f"Successfully cleared API key for shelter {shelterId}")
+                return f'API key revoked for shelter {shelterId}. Key has been cleared.', 200
+            except Exception as clear_error:
+                print(f"Error clearing API key for shelter {shelterId}: {clear_error}")
+                return f'API key revoked but failed to clear: {clear_error}', 500
+        else:
+            # Re-raise the exception if it's not related to API key issues
+            print(f"HTTP error {e.response.status_code} for shelter {shelterId}: {e}")
+            raise
+    except Exception as e:
+        # Handle other types of exceptions
+        print(f"Unexpected error fetching animals for shelter {shelterId}: {e}")
+        raise
 
     # Update the shelter document with the last sync times
     try:
