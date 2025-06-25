@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/api_key.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 import 'package:shelter_partner/view_models/shelter_settings_view_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -29,6 +30,7 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
   @override
   Widget build(BuildContext context) {
     final shelterAsyncValue = ref.watch(shelterSettingsViewModelProvider);
+    final serviceUrls = ref.watch(serviceUrlsProvider);
 
     return shelterAsyncValue.when(
       loading: () => Scaffold(
@@ -134,7 +136,7 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                           Clipboard.setData(
                             ClipboardData(
                               text:
-                                  'https://api-222422545919.us-central1.run.app?shelterId=${shelter!.id}&apiKey=YOUR-API-KEY-HERE&species=cats',
+                                  '${serviceUrls.apiUrl}?shelterId=${shelter!.id}&apiKey=YOUR-API-KEY-HERE&species=cats',
                             ),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -156,7 +158,7 @@ class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
                           Clipboard.setData(
                             ClipboardData(
                               text:
-                                  'https://api-222422545919.us-central1.run.app?shelterId=${shelter!.id}&apiKey=YOUR-API-KEY-HERE&species=dogs',
+                                  '${serviceUrls.apiUrl}?shelterId=${shelter!.id}&apiKey=YOUR-API-KEY-HERE&species=dogs',
                             ),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(

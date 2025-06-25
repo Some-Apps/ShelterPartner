@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:shelter_partner/models/shelter.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 
 class GeorestrictionSettingsPage extends ConsumerStatefulWidget {
@@ -26,10 +27,6 @@ class _GeorestrictionSettingsPageState
   String _locationOption = 'Screen';
   List<AddressSuggestion> _addressSuggestions = [];
 
-  // Replace with your actual API URL
-  final String placesApiUrl =
-      'https://places-api-222422545919.us-central1.run.app';
-
   final TextEditingController _addressController = TextEditingController();
   final FocusNode _addressFocusNode = FocusNode(); // Create a FocusNode
 
@@ -49,7 +46,8 @@ class _GeorestrictionSettingsPageState
       return;
     }
 
-    final url = Uri.parse('$placesApiUrl?input=$input');
+    final serviceUrls = ref.read(serviceUrlsProvider);
+    final url = Uri.parse('${serviceUrls.placesApiUrl}?input=$input');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -71,9 +69,8 @@ class _GeorestrictionSettingsPageState
 
   // Fetch place details using the Cloud Function API
   Future<void> _getPlaceDetails(String placeId) async {
-    final url = Uri.parse(
-      'https://places-api-details-222422545919.us-central1.run.app?place_id=$placeId',
-    );
+    final serviceUrls = ref.read(serviceUrlsProvider);
+    final url = Uri.parse(serviceUrls.placesApiDetailsUrlWithPlaceId(placeId));
 
     try {
       final response = await http.get(url);

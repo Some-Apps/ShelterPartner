@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shelter_partner/config/service_urls.dart';
 
 /// Environment configuration for the application
 ///
@@ -8,28 +9,32 @@ class AppEnvironment {
   final bool isProduction;
   final bool isDebugMode;
   final String environment;
+  final ServiceUrls serviceUrls;
 
   const AppEnvironment._({
     required this.isProduction,
     required this.isDebugMode,
     required this.environment,
+    required this.serviceUrls,
   });
 
   /// Create development environment configuration
   factory AppEnvironment.development() {
-    return const AppEnvironment._(
+    return AppEnvironment._(
       isProduction: false,
       isDebugMode: true,
       environment: 'development',
+      serviceUrls: ServiceUrls.development(),
     );
   }
 
   /// Create production environment configuration
   factory AppEnvironment.production() {
-    return const AppEnvironment._(
+    return AppEnvironment._(
       isProduction: true,
       isDebugMode: false,
       environment: 'production',
+      serviceUrls: ServiceUrls.production(),
     );
   }
 
@@ -41,5 +46,5 @@ class AppEnvironment {
   }
 
   @override
-  String toString() => 'AppEnvironment($environment)';
+  String toString() => 'AppEnvironment($environment, urls: $serviceUrls)';
 }
