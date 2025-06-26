@@ -32,28 +32,28 @@ class ServiceUrls {
 
   /// Create service URLs for development environment
   factory ServiceUrls.development() {
-    return ServiceUrls._(
-      corsImagesUrl: const String.fromEnvironment(
+    return const ServiceUrls._(
+      corsImagesUrl: String.fromEnvironment(
         'CORS_IMAGES_URL',
         defaultValue: 'https://us-central1-development-e5282.cloudfunctions.net/cors_images',
       ),
-      apiUrl: const String.fromEnvironment(
+      apiUrl: String.fromEnvironment(
         'API_URL',
         defaultValue: 'https://api-dev-222422545919.us-central1.run.app',
       ),
-      deleteVolunteerUrl: const String.fromEnvironment(
+      deleteVolunteerUrl: String.fromEnvironment(
         'DELETE_VOLUNTEER_URL',
         defaultValue: 'https://delete-volunteer-dev-222422545919.us-central1.run.app',
       ),
-      inviteVolunteerUrl: const String.fromEnvironment(
+      inviteVolunteerUrl: String.fromEnvironment(
         'INVITE_VOLUNTEER_URL',
         defaultValue: 'https://invite-volunteer-dev-222422545919.us-central1.run.app',
       ),
-      placesApiUrl: const String.fromEnvironment(
+      placesApiUrl: String.fromEnvironment(
         'PLACES_API_URL',
         defaultValue: 'https://places-api-dev-222422545919.us-central1.run.app',
       ),
-      placesApiDetailsUrl: const String.fromEnvironment(
+      placesApiDetailsUrl: String.fromEnvironment(
         'PLACES_API_DETAILS_URL',
         defaultValue: 'https://places-api-details-dev-222422545919.us-central1.run.app',
       ),
@@ -62,28 +62,28 @@ class ServiceUrls {
 
   /// Create service URLs for production environment
   factory ServiceUrls.production() {
-    return ServiceUrls._(
-      corsImagesUrl: const String.fromEnvironment(
+    return const ServiceUrls._(
+      corsImagesUrl: String.fromEnvironment(
         'CORS_IMAGES_URL',
         defaultValue: 'https://cors-images-222422545919.us-central1.run.app',
       ),
-      apiUrl: const String.fromEnvironment(
+      apiUrl: String.fromEnvironment(
         'API_URL',
         defaultValue: 'https://api-222422545919.us-central1.run.app',
       ),
-      deleteVolunteerUrl: const String.fromEnvironment(
+      deleteVolunteerUrl: String.fromEnvironment(
         'DELETE_VOLUNTEER_URL',
         defaultValue: 'https://delete-volunteer-222422545919.us-central1.run.app',
       ),
-      inviteVolunteerUrl: const String.fromEnvironment(
+      inviteVolunteerUrl: String.fromEnvironment(
         'INVITE_VOLUNTEER_URL',
         defaultValue: 'https://invite-volunteer-222422545919.us-central1.run.app',
       ),
-      placesApiUrl: const String.fromEnvironment(
+      placesApiUrl: String.fromEnvironment(
         'PLACES_API_URL',
         defaultValue: 'https://places-api-222422545919.us-central1.run.app',
       ),
-      placesApiDetailsUrl: const String.fromEnvironment(
+      placesApiDetailsUrl: String.fromEnvironment(
         'PLACES_API_DETAILS_URL',
         defaultValue: 'https://places-api-details-222422545919.us-central1.run.app',
       ),
