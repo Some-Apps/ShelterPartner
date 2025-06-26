@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shelter_partner/config/service_urls.dart';
 import 'package:shelter_partner/helpers/network_client.dart';
 import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/volunteer.dart';
@@ -14,13 +15,16 @@ class VolunteersRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
   final NetworkClient _networkClient;
+  final ServiceUrls _serviceUrls;
 
   VolunteersRepository({
     required FirebaseFirestore firestore,
     required FirebaseAuth firebaseAuth,
+    required ServiceUrls serviceUrls,
     NetworkClient? networkClient,
   }) : _firestore = firestore,
        _firebaseAuth = firebaseAuth,
+       _serviceUrls = serviceUrls,
        _networkClient = networkClient ?? DefaultNetworkClient();
 
   Stream<Shelter> fetchShelterWithVolunteers(String shelterID) {
@@ -156,7 +160,7 @@ class VolunteersRepository {
 
       // Send the authenticated request to Cloud Run
       final response = await _networkClient.post(
-        Uri.parse('https://invite-volunteer-222422545919.us-central1.run.app'),
+        Uri.parse(_serviceUrls.inviteVolunteerUrl),
         headers: {
           'Authorization': 'Bearer $idToken', // Pass the Firebase Auth ID token
           'Content-Type': 'application/json',
@@ -207,7 +211,7 @@ class VolunteersRepository {
 
       // Create the URL with query parameters for the DELETE request
       final url = Uri.parse(
-        'https://delete-volunteer-222422545919.us-central1.run.app'
+        '${_serviceUrls.deleteVolunteerUrl}'
         '?id=$id&shelterID=$shelterId',
       );
 
@@ -284,5 +288,10 @@ class VolunteersRepository {
 final volunteersRepositoryProvider = Provider<VolunteersRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);
   final firebaseAuth = ref.watch(firebaseAuthProvider);
-  return VolunteersRepository(firestore: firestore, firebaseAuth: firebaseAuth);
+  final serviceUrls = ref.watch(serviceUrlsProvider);
+  return VolunteersRepository(
+    firestore: firestore, 
+    firebaseAuth: firebaseAuth,
+    serviceUrls: serviceUrls,
+  );
 });

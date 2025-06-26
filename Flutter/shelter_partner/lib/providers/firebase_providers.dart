@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/config/app_environment.dart';
+import 'package:shelter_partner/config/service_urls.dart';
 import 'package:shelter_partner/services/logger_service.dart';
 import 'package:shelter_partner/services/console_logger_service.dart';
 import 'package:shelter_partner/services/cloud_logger_service.dart';
@@ -23,6 +24,13 @@ final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
 /// Determines the current environment (development/production)
 final appEnvironmentProvider = Provider<AppEnvironment>((ref) {
   return AppEnvironment.autoDetect();
+});
+
+/// Provider for ServiceUrls
+/// Provides service URLs based on the current environment
+final serviceUrlsProvider = Provider<ServiceUrls>((ref) {
+  final environment = ref.watch(appEnvironmentProvider);
+  return environment.serviceUrls;
 });
 
 /// Provider for LoggerService instance

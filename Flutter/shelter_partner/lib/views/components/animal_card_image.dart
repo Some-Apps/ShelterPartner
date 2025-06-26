@@ -3,9 +3,11 @@ import 'dart:core';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
-class AnimalCardImage extends StatelessWidget {
+class AnimalCardImage extends ConsumerWidget {
   final Animation<double> _curvedAnimation;
   final bool isPressed;
   final Animal animal;
@@ -18,7 +20,8 @@ class AnimalCardImage extends StatelessWidget {
   }) : _curvedAnimation = curvedAnimation;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final serviceUrls = ref.watch(serviceUrlsProvider);
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -72,9 +75,7 @@ class AnimalCardImage extends StatelessWidget {
                 ClipOval(
                   child: animal.photos?.isNotEmpty ?? false
                       ? CachedNetworkImage(
-                          imageUrl:
-                              'https://cors-images-222422545919.us-central1.run.app'
-                              '?url=${Uri.encodeComponent(animal.photos?.first.url ?? '')}',
+                          imageUrl: serviceUrls.corsImageUrl(animal.photos?.first.url ?? ''),
                           cacheKey: animal.photos?.first.url,
                           width: 100,
                           height: 100,

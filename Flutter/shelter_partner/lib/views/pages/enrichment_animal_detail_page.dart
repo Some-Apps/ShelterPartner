@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/photo.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 import 'package:shelter_partner/repositories/edit_animal_repository.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
@@ -13,7 +14,7 @@ import 'package:shelter_partner/views/components/notes_view.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class EnrichmentAnimalDetailPage extends StatelessWidget {
+class EnrichmentAnimalDetailPage extends ConsumerWidget {
   final Animal initialAnimal;
   final bool visitorPage;
 
@@ -24,7 +25,8 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final serviceUrls = ref.watch(serviceUrlsProvider);
     final animalProvider =
         StateNotifierProvider.family<EditAnimalViewModel, Animal, Animal>(
           (ref, animal) => EditAnimalViewModel(
@@ -116,7 +118,7 @@ class EnrichmentAnimalDetailPage extends StatelessWidget {
                                 (animal.photos ?? [])
                                     .map(
                                       (photo) =>
-                                          'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(photo.url)}',
+                                          serviceUrls.corsImageUrl(photo.url),
                                     )
                                     .toList(),
                                 index,
@@ -509,7 +511,7 @@ class _PhotoListState extends State<PhotoList> {
   }
 }
 
-class PhotoItem extends StatelessWidget {
+class PhotoItem extends ConsumerWidget {
   final Photo photo;
   final int index;
   final bool isAdmin;
@@ -526,9 +528,9 @@ class PhotoItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final proxyUrl =
-        'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(photo.url)}';
+  Widget build(BuildContext context, WidgetRef ref) {
+    final serviceUrls = ref.watch(serviceUrlsProvider);
+    final proxyUrl = serviceUrls.corsImageUrl(photo.url);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),

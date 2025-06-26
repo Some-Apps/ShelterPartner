@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/animal.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/visitors_view_model.dart';
 import 'package:shelter_partner/views/components/chat_interface.dart';
@@ -12,12 +13,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shelter_partner/helper/fullscreen_stub.dart'
     if (dart.library.html) 'package:shelter_partner/helper/fullscreen_web.dart'
     if (dart.library.io) 'package:shelter_partner/helper/fullscreen_mobile.dart';
-
-/// A helper function that returns a formatted URL using a CORS proxy.
-String formatImageUrl(String? url) {
-  if (url == null || url.isEmpty) return '';
-  return 'https://cors-images-222422545919.us-central1.run.app?url=${Uri.encodeComponent(url)}';
-}
 
 class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
@@ -55,12 +50,6 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_onTabChanged);
-
-    // Preload images for both 'cats' and 'dogs'
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _preloadImages('cats');
-      _preloadImages('dogs');
-    });
   }
 
   void _onTabChanged() {
@@ -74,13 +63,10 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
   }
 
   void _onScroll() {
-    if (_throttleTimer?.isActive ?? false) return;
-    _throttleTimer = Timer(throttleDuration, () {
-      _preloadImages(selectedAnimalType);
-    });
+    // Note: Preloading moved to build method since serviceUrls access is needed
   }
 
-  void _preloadImages(String animalType) {
+  void _preloadImages(String animalType, serviceUrls) {
     if (!mounted) return;
 
     final animalsMap = ref.read(visitorsViewModelProvider);
@@ -100,7 +86,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
           ? animal.photos!.first.url
           : '';
 
-      final formattedUrl = formatImageUrl(originalUrl);
+      final formattedUrl = serviceUrls.corsImageUrl(originalUrl);
       if (formattedUrl.isNotEmpty) {
         precacheImage(CachedNetworkImageProvider(formattedUrl), context);
       }
@@ -117,9 +103,16 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
   @override
   Widget build(BuildContext context) {
+    final serviceUrls = ref.watch(serviceUrlsProvider);
     final animalsMap = ref.watch(visitorsViewModelProvider);
     final dogs = animalsMap['dogs'] ?? [];
     final cats = animalsMap['cats'] ?? [];
+
+    // Preload images when animals are available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (cats.isNotEmpty) _preloadImages('cats', serviceUrls);
+      if (dogs.isNotEmpty) _preloadImages('dogs', serviceUrls);
+    });
 
     // Determine which tabs to show based on available animals
     final List<Tab> tabs = [];
@@ -127,12 +120,12 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
 
     if (dogs.isNotEmpty) {
       tabs.add(const Tab(text: 'Dogs'));
-      tabViews.add(_buildAnimalGrid(dogs));
+      tabViews.add(_buildAnimalGrid(dogs, serviceUrls));
     }
 
     if (cats.isNotEmpty) {
       tabs.add(const Tab(text: 'Cats'));
-      tabViews.add(_buildAnimalGrid(cats));
+      tabViews.add(_buildAnimalGrid(cats, serviceUrls));
     }
 
     // If no animals are available, show a message
@@ -172,7 +165,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
     );
   }
 
-  Widget _buildAnimalGrid(List<Animal> animals) {
+  Widget _buildAnimalGrid(List<Animal> animals, serviceUrls) {
     if (animals.isEmpty) {
       return const Center(
         child: Icon(Icons.pets, size: 50, color: Colors.grey),
@@ -193,7 +186,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                 (animal.photos != null && animal.photos!.isNotEmpty)
                 ? animal.photos!.first.url
                 : '';
-            final displayUrl = formatImageUrl(originalUrl);
+            final displayUrl = serviceUrls.corsImageUrl(originalUrl);
 
             return Padding(
               padding: const EdgeInsets.all(8.0),
@@ -334,11 +327,14 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     // Shuffle the list of animals
     _shuffledAnimals = List.from(widget.animals)..shuffle();
 
+    // Get serviceUrls from ref
+    final serviceUrls = widget.ref.read(serviceUrlsProvider);
+
     // Set the initial image URL and animal, ensuring it skips animals without images
     _currentIndex = 0;
     _currentPhotoIndex = 0;
     do {
-      _setCurrentImage();
+      _setCurrentImage(serviceUrls);
       if (_currentImageUrl.isEmpty) {
         _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
       }
@@ -351,14 +347,14 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     enterFullScreen();
   }
 
-  void _setCurrentImage() {
+  void _setCurrentImage(serviceUrls) {
     final animal = _shuffledAnimals[_currentIndex];
     _currentAnimal = animal; // Set the current animal
     if (animal.photos != null && animal.photos!.isNotEmpty) {
       if (_currentPhotoIndex >= animal.photos!.length) {
         _currentPhotoIndex = 0;
       }
-      _currentImageUrl = formatImageUrl(animal.photos![_currentPhotoIndex].url);
+      _currentImageUrl = serviceUrls.corsImageUrl(animal.photos![_currentPhotoIndex].url);
     } else {
       _currentImageUrl = '';
     }
@@ -393,14 +389,14 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
           do {
             _currentIndex = (_currentIndex + 1) % _shuffledAnimals.length;
             _currentPhotoIndex = 0;
-            _setCurrentImage();
+            _setCurrentImage(widget.ref.read(serviceUrlsProvider));
             attempts++;
           } while (_currentImageUrl.isEmpty &&
               attempts < _shuffledAnimals.length);
           return;
         }
 
-        _setCurrentImage();
+        _setCurrentImage(widget.ref.read(serviceUrlsProvider));
       });
     });
   }
