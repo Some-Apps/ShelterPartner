@@ -765,6 +765,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.3.0"
+  google_identity_services_web:
+    dependency: transitive
+    description:
+      name: google_identity_services_web
+      sha256: "5d187c46dc59e02646e10fe82665fc3884a9b71bc1c90c2b8b749316d33ee454"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.3+1"
   google_maps:
     dependency: transitive
     description:
@@ -814,13 +822,21 @@ packages:
     source: hosted
     version: "0.5.10"
   googleapis:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: googleapis
       sha256: "5c9e0f25be1dec13d8d2158263141104c51b5ba83487537c17a2330581e505ee"
       url: "https://pub.dev"
     source: hosted
     version: "14.0.0"
+  googleapis_auth:
+    dependency: "direct main"
+    description:
+      name: googleapis_auth
+      sha256: b81fe352cc4a330b3710d2b7ad258d9bcef6f909bb759b306bf42973a7d046db
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   graphs:
     dependency: transitive
     description:
@@ -1017,10 +1033,10 @@ packages:
     dependency: "direct main"
     description:
       name: logger
-      sha256: be4b23575aac7ebf01f225a241eb7f6b5641eeaf43c6a8613510fc2f8cf187d1
+      sha256: "2621da01aabaf223f8f961e751f2c943dbb374dc3559b982f200ccedadaa6999"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.0"
+    version: "2.6.0"
   logging:
     dependency: transitive
     description:
