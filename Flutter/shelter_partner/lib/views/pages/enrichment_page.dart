@@ -60,6 +60,8 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
     'Location Category': 'locationCategory',
     'Medical Category': 'medicalCategory',
     'Volunteer Category': 'volunteerCategory',
+    'Let Out Type': 'letOutType',
+    'Early Put Back Reason': 'earlyPutBackReason',
   };
 
   // PagingControllers for infinite scrolling
@@ -164,10 +166,20 @@ class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
           case 'volunteerCategory':
             fieldValue = animal.volunteerCategory;
             break;
+          case 'letOutType':
+            fieldValue = animal.logs.isNotEmpty ? animal.logs.last.type : '';
+
+            break;
+          case 'earlyPutBackReason':
+            fieldValue = animal.logs.isNotEmpty
+                ? animal.logs.last.earlyReason
+                : '';
+            break;
+          // Add more cases for other attributes as needed
           default:
             fieldValue = '';
         }
-        return _containsQuery(fieldValue.toLowerCase());
+        return _containsQuery(fieldValue?.toLowerCase());
       }).toList();
     }
   }
