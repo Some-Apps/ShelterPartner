@@ -16,7 +16,7 @@ import 'package:shelter_partner/views/pages/enrichment_page.dart';
 import 'package:shelter_partner/views/pages/api_keys_page.dart';
 import 'package:shelter_partner/views/pages/array_modifier_page.dart';
 import 'package:shelter_partner/views/pages/better_impact_page.dart';
-import 'package:shelter_partner/views/pages/change-password-page.dart';
+import 'package:shelter_partner/views/pages/change_password_page.dart';
 import 'package:shelter_partner/views/pages/account_settings_page.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:shelter_partner/views/pages/main_page.dart';
