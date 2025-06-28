@@ -491,7 +491,9 @@ void main() {
         expect(request.method, equals('POST'));
         expect(
           request.url.toString(),
-          equals('https://invite-volunteer-dev-222422545919.us-central1.run.app'),
+          equals(
+            'https://invite-volunteer-dev-222422545919.us-central1.run.app',
+          ),
         );
         expect(request.headers?['Content-Type'], equals('application/json'));
         expect(request.headers?['Authorization'], startsWith('Bearer '));

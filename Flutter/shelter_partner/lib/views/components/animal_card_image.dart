@@ -75,7 +75,9 @@ class AnimalCardImage extends ConsumerWidget {
                 ClipOval(
                   child: animal.photos?.isNotEmpty ?? false
                       ? CachedNetworkImage(
-                          imageUrl: serviceUrls.corsImageUrl(animal.photos?.first.url ?? ''),
+                          imageUrl: serviceUrls.corsImageUrl(
+                            animal.photos?.first.url ?? '',
+                          ),
                           cacheKey: animal.photos?.first.url,
                           width: 100,
                           height: 100,
