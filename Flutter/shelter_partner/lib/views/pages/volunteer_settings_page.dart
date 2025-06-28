@@ -12,10 +12,10 @@ class VolunteerSettingsPage extends ConsumerStatefulWidget {
   const VolunteerSettingsPage({super.key});
 
   @override
-  _VolunteerSettingsPageState createState() => _VolunteerSettingsPageState();
+  VolunteerSettingsPageState createState() => VolunteerSettingsPageState();
 }
 
-class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
+class VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
   late TextEditingController _customFormURLController;
 
   @override

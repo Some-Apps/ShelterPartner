@@ -5,10 +5,10 @@ class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
 
   @override
-  _ChangePasswordPageState createState() => _ChangePasswordPageState();
+  ChangePasswordPageState createState() => ChangePasswordPageState();
 }
 
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
+class ChangePasswordPageState extends State<ChangePasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _oldPasswordController = TextEditingController();
   final _passwordController = TextEditingController();

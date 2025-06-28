@@ -11,10 +11,10 @@ class VolunteersPage extends ConsumerStatefulWidget {
   const VolunteersPage({super.key});
 
   @override
-  _VolunteersPageState createState() => _VolunteersPageState();
+  VolunteersPageState createState() => VolunteersPageState();
 }
 
-class _VolunteersPageState extends ConsumerState<VolunteersPage> {
+class VolunteersPageState extends ConsumerState<VolunteersPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();

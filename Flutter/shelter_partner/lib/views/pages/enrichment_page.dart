@@ -28,10 +28,10 @@ class EnrichmentPage extends ConsumerStatefulWidget {
   const EnrichmentPage({super.key});
 
   @override
-  ConsumerState<EnrichmentPage> createState() => _EnrichmentPageState();
+  EnrichmentPageState createState() => EnrichmentPageState();
 }
 
-class _EnrichmentPageState extends ConsumerState<EnrichmentPage>
+class EnrichmentPageState extends ConsumerState<EnrichmentPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String selectedGroupingCategory = 'None';
@@ -916,10 +916,10 @@ class CustomAffiliateAd extends ConsumerStatefulWidget {
   const CustomAffiliateAd({super.key, required this.ad});
 
   @override
-  _CustomAffiliateAdState createState() => _CustomAffiliateAdState();
+  CustomAffiliateAdState createState() => CustomAffiliateAdState();
 }
 
-class _CustomAffiliateAdState extends ConsumerState<CustomAffiliateAd>
+class CustomAffiliateAdState extends ConsumerState<CustomAffiliateAd>
     with SingleTickerProviderStateMixin {
   late final ScrollController _scrollController;
   late final AnimationController _animationController;

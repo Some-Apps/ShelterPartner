@@ -14,10 +14,10 @@ class SignupPage extends ConsumerStatefulWidget {
   SignupPage({super.key, required this.onTapLogin, DebugHelper? debugHelper})
     : debugHelper = debugHelper ?? DebugHelper();
   @override
-  _SignupPageState createState() => _SignupPageState();
+  SignupPageState createState() => SignupPageState();
 }
 
-class _SignupPageState extends ConsumerState<SignupPage> {
+class SignupPageState extends ConsumerState<SignupPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();

@@ -288,10 +288,10 @@ class FullScreenGallery extends StatefulWidget {
   });
 
   @override
-  _FullScreenGalleryState createState() => _FullScreenGalleryState();
+  FullScreenGalleryState createState() => FullScreenGalleryState();
 }
 
-class _FullScreenGalleryState extends State<FullScreenGallery> {
+class FullScreenGalleryState extends State<FullScreenGallery> {
   late PageController _pageController;
   late int _currentIndex;
   final _focusNode = FocusNode();
@@ -437,10 +437,10 @@ class PhotoList extends StatefulWidget {
   });
 
   @override
-  _PhotoListState createState() => _PhotoListState();
+  PhotoListState createState() => PhotoListState();
 }
 
-class _PhotoListState extends State<PhotoList> {
+class PhotoListState extends State<PhotoList> {
   late ScrollController _scrollController;
   double _scrollPosition = 0.0;
   final double _itemWidth = 216.0; // 200 width + 8 padding on each side

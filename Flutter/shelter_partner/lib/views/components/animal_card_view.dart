@@ -51,10 +51,10 @@ class AnimalCardView extends ConsumerStatefulWidget {
   });
 
   @override
-  _AnimalCardViewState createState() => _AnimalCardViewState();
+  AnimalCardViewState createState() => AnimalCardViewState();
 }
 
-class _AnimalCardViewState extends ConsumerState<AnimalCardView>
+class AnimalCardViewState extends ConsumerState<AnimalCardView>
     with TickerProviderStateMixin {
   late final LoggerService _logger;
   bool _automaticPutBackHandled = false;

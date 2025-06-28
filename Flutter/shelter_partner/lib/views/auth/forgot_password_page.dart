@@ -11,10 +11,10 @@ class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key, required this.onTapLogin});
 
   @override
-  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
+  ForgotPasswordPageState createState() => ForgotPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
+class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final emailController = TextEditingController();
 
   // Method to send password reset email

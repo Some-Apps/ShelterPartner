@@ -19,10 +19,10 @@ class AddNoteView extends ConsumerStatefulWidget {
   const AddNoteView({super.key, required this.animal});
 
   @override
-  _AddNoteViewState createState() => _AddNoteViewState();
+  AddNoteViewState createState() => AddNoteViewState();
 }
 
-class _AddNoteViewState extends ConsumerState<AddNoteView> {
+class AddNoteViewState extends ConsumerState<AddNoteView> {
   final TextEditingController _noteController = TextEditingController();
   final Set<String> _selectedTags = {};
 

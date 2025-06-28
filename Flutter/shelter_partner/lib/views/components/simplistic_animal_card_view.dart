@@ -30,8 +30,8 @@ class SimplisticAnimalCardView extends ConsumerStatefulWidget {
   const SimplisticAnimalCardView({super.key, required this.animal});
 
   @override
-  _SimplisticAnimalCardViewState createState() =>
-      _SimplisticAnimalCardViewState();
+  SimplisticAnimalCardViewState createState() =>
+      SimplisticAnimalCardViewState();
 }
 
 /// Helper method to calculate time ago from a given DateTime
@@ -52,7 +52,7 @@ String _timeAgo(DateTime dateTime, bool inKennel) {
   }
 }
 
-class _SimplisticAnimalCardViewState
+class SimplisticAnimalCardViewState
     extends ConsumerState<SimplisticAnimalCardView>
     with TickerProviderStateMixin {
   bool _automaticPutBackHandled = false;

@@ -14,10 +14,10 @@ class AccountSettingsPage extends ConsumerStatefulWidget {
   const AccountSettingsPage({super.key});
 
   @override
-  _AccountSettingsPageState createState() => _AccountSettingsPageState();
+  AccountSettingsPageState createState() => AccountSettingsPageState();
 }
 
-class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
+class AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   final FocusNode _focusNode = FocusNode();
 
   late TextEditingController _customFormURLController;

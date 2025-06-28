@@ -13,11 +13,11 @@ class GeorestrictionSettingsPage extends ConsumerStatefulWidget {
   const GeorestrictionSettingsPage({super.key});
 
   @override
-  _GeorestrictionSettingsPageState createState() =>
-      _GeorestrictionSettingsPageState();
+  GeorestrictionSettingsPageState createState() =>
+      GeorestrictionSettingsPageState();
 }
 
-class _GeorestrictionSettingsPageState
+class GeorestrictionSettingsPageState
     extends ConsumerState<GeorestrictionSettingsPage> {
   GoogleMapController? _mapController;
   LatLng? _center;

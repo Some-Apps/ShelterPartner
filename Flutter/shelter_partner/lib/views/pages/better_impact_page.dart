@@ -26,10 +26,10 @@ class BetterImpactPage extends ConsumerStatefulWidget {
   const BetterImpactPage({super.key});
 
   @override
-  _BetterImpactPageState createState() => _BetterImpactPageState();
+  BetterImpactPageState createState() => BetterImpactPageState();
 }
 
-class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
+class BetterImpactPageState extends ConsumerState<BetterImpactPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 

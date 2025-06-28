@@ -10,10 +10,10 @@ class ShelterSettingsPage extends ConsumerStatefulWidget {
   const ShelterSettingsPage({super.key});
 
   @override
-  _ShelterSettingsPageState createState() => _ShelterSettingsPageState();
+  ShelterSettingsPageState createState() => ShelterSettingsPageState();
 }
 
-class _ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
+class ShelterSettingsPageState extends ConsumerState<ShelterSettingsPage> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _focusNode = FocusNode();
   late TextEditingController _apiKeyController;

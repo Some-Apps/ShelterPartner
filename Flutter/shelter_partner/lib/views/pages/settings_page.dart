@@ -17,10 +17,10 @@ class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  SettingsPageState createState() => SettingsPageState();
 }
 
-class _SettingsPageState extends ConsumerState<SettingsPage> {
+class SettingsPageState extends ConsumerState<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
   String _version = "Loading...";
   List<GitHubRelease> _releases = [];

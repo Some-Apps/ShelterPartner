@@ -34,10 +34,10 @@ class MainFilterPage extends ConsumerStatefulWidget {
     required this.filterFieldPath,
   });
   @override
-  _MainFilterPageState createState() => _MainFilterPageState();
+  MainFilterPageState createState() => MainFilterPageState();
 }
 
-class _MainFilterPageState extends ConsumerState<MainFilterPage> {
+class MainFilterPageState extends ConsumerState<MainFilterPage> {
   List<FilterElement> filterElements = [];
   Map<int, LogicalOperator> operatorsBetween = {};
   bool groupWithPrevious = false; // State of the "Group with Previous" checkbox
@@ -613,10 +613,10 @@ class AddConditionDialog extends StatefulWidget {
   });
 
   @override
-  _AddConditionDialogState createState() => _AddConditionDialogState();
+  AddConditionDialogState createState() => AddConditionDialogState();
 }
 
-class _AddConditionDialogState extends State<AddConditionDialog> {
+class AddConditionDialogState extends State<AddConditionDialog> {
   String selectedAttributeDisplayName = 'Name'; // Default display name
   String selectedAttribute = 'name'; // Corresponding attribute key
   OperatorType? selectedOperator;

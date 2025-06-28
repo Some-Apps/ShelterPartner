@@ -16,10 +16,10 @@ class AddLogView extends ConsumerStatefulWidget {
   const AddLogView({super.key, required this.animal});
 
   @override
-  _AddLogViewState createState() => _AddLogViewState();
+  AddLogViewState createState() => AddLogViewState();
 }
 
-class _AddLogViewState extends ConsumerState<AddLogView> {
+class AddLogViewState extends ConsumerState<AddLogView> {
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _endTimeController = TextEditingController();
 
