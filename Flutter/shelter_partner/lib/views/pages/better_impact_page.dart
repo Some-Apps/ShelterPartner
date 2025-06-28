@@ -341,10 +341,11 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
                           const SizedBox(height: 20),
                           InkWell(
                             onTap: () async {
-                              const url =
-                                  'https://support.betterimpact.com/volunteerimpacthelp/en/help-articles/it/';
-                              if (await canLaunch(url)) {
-                                await launch(url);
+                              final url = Uri.parse(
+                                'https://support.betterimpact.com/volunteerimpacthelp/en/help-articles/it/',
+                              );
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url);
                               } else {
                                 throw 'Could not launch $url';
                               }
