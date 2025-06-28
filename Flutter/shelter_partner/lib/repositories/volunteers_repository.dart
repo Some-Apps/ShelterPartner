@@ -290,7 +290,7 @@ final volunteersRepositoryProvider = Provider<VolunteersRepository>((ref) {
   final firebaseAuth = ref.watch(firebaseAuthProvider);
   final serviceUrls = ref.watch(serviceUrlsProvider);
   return VolunteersRepository(
-    firestore: firestore, 
+    firestore: firestore,
     firebaseAuth: firebaseAuth,
     serviceUrls: serviceUrls,
   );

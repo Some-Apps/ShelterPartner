@@ -53,8 +53,14 @@ class TestAddLogDialog extends StatelessWidget {
               value: null,
               items: const [
                 DropdownMenuItem(value: 'tired', child: Text('Tired')),
-                DropdownMenuItem(value: 'not_interested', child: Text('Not interested')),
-                DropdownMenuItem(value: 'too_excited', child: Text('Too excited')),
+                DropdownMenuItem(
+                  value: 'not_interested',
+                  child: Text('Not interested'),
+                ),
+                DropdownMenuItem(
+                  value: 'too_excited',
+                  child: Text('Too excited'),
+                ),
               ],
               onChanged: (String? newValue) {},
               decoration: const InputDecoration(
@@ -83,18 +89,16 @@ class TestAddLogDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () {},
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
+        TextButton(onPressed: () {}, child: const Text('Cancel')),
+        const ElevatedButton(
           onPressed: null, // Disabled state for demo
-          child: const Text('Save'),
+          child: Text('Save'),
         ),
       ],
     );
   }
 }
+
 class TestAnimalCard extends StatelessWidget {
   final Animal animal;
 
@@ -103,7 +107,9 @@ class TestAnimalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: animal.inKennel ? Colors.lightBlue.shade100 : Colors.orange.shade100,
+      color: animal.inKennel
+          ? Colors.lightBlue.shade100
+          : Colors.orange.shade100,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -127,7 +133,10 @@ class TestAnimalCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: animal.inKennel ? Colors.green : Colors.red,
                     borderRadius: BorderRadius.circular(12),
@@ -209,8 +218,12 @@ void main() {
             author: 'Test User',
             authorID: testUserId,
             earlyReason: '',
-            startTime: Timestamp.fromDate(mockClock.now().subtract(const Duration(hours: 2))),
-            endTime: Timestamp.fromDate(mockClock.now().subtract(const Duration(hours: 1))),
+            startTime: Timestamp.fromDate(
+              mockClock.now().subtract(const Duration(hours: 2)),
+            ),
+            endTime: Timestamp.fromDate(
+              mockClock.now().subtract(const Duration(hours: 1)),
+            ),
           ),
         ],
       ),
@@ -229,8 +242,12 @@ void main() {
             author: 'Test User',
             authorID: testUserId,
             earlyReason: '',
-            startTime: Timestamp.fromDate(mockClock.now().subtract(const Duration(minutes: 30))),
-            endTime: Timestamp.fromDate(mockClock.now().add(const Duration(hours: 1))),
+            startTime: Timestamp.fromDate(
+              mockClock.now().subtract(const Duration(minutes: 30)),
+            ),
+            endTime: Timestamp.fromDate(
+              mockClock.now().add(const Duration(hours: 1)),
+            ),
           ),
         ],
       ),
@@ -269,7 +286,10 @@ void main() {
     );
 
     await tester.pump();
-    await screenMatchesGolden(tester, 'animal_workflow_01_animal_card_in_kennel');
+    await screenMatchesGolden(
+      tester,
+      'animal_workflow_01_animal_card_in_kennel',
+    );
 
     // 2. Show animal card in taken out state
     final takenOutAnimal = testAnimals[0].copyWith(inKennel: false);
@@ -287,16 +307,17 @@ void main() {
     );
 
     await tester.pump();
-    await screenMatchesGolden(tester, 'animal_workflow_02_animal_card_taken_out');
+    await screenMatchesGolden(
+      tester,
+      'animal_workflow_02_animal_card_taken_out',
+    );
 
     // 3. Screenshot: When log popup is open (mock AddLogView component)
     await tester.pumpWidgetBuilder(
       MaterialApp(
         home: Scaffold(
           backgroundColor: Colors.white,
-          body: Center(
-            child: TestAddLogDialog(animal: takenOutAnimal),
-          ),
+          body: Center(child: TestAddLogDialog(animal: takenOutAnimal)),
         ),
       ),
       surfaceSize: const Size(600, 800),
@@ -316,7 +337,9 @@ void main() {
           author: 'Test User',
           authorID: testUserId,
           earlyReason: '',
-          startTime: Timestamp.fromDate(mockClock.now().subtract(const Duration(minutes: 30))),
+          startTime: Timestamp.fromDate(
+            mockClock.now().subtract(const Duration(minutes: 30)),
+          ),
           endTime: Timestamp.fromDate(mockClock.now()),
         ),
       ],
@@ -336,7 +359,10 @@ void main() {
     );
 
     await tester.pump();
-    await screenMatchesGolden(tester, 'animal_workflow_04_animal_back_in_kennel');
+    await screenMatchesGolden(
+      tester,
+      'animal_workflow_04_animal_back_in_kennel',
+    );
 
     // 5. Screenshot: Show multiple animals in different states for context
     await tester.pumpWidgetBuilder(
@@ -359,6 +385,9 @@ void main() {
     );
 
     await tester.pump();
-    await screenMatchesGolden(tester, 'animal_workflow_05_multiple_animals_overview');
+    await screenMatchesGolden(
+      tester,
+      'animal_workflow_05_multiple_animals_overview',
+    );
   });
 }
