@@ -29,7 +29,7 @@ jobs:
         working-directory: Flutter/shelter_partner
 
       - name: Run tests
-        run: flutter test
+        run: flutter test --exclude-tags golden
         working-directory: Flutter/shelter_partner
 
       - name: Build Web

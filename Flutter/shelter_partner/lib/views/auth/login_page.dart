@@ -38,25 +38,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FutureBuilder(
-                      future: precacheImage(
-                        const AssetImage("assets/images/square_logo.png"),
-                        context,
-                      ),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return Image.asset(
-                            "assets/images/square_logo.png",
-                            width: 250,
-                          );
-                        } else {
-                          return const SizedBox(
-                            width: 250,
-                            height: 250,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-                      },
+                    SizedBox(
+                      width: 250,
+                      height: 250,
+                      child: Image.asset("assets/images/square_logo.png"),
                     ),
                     const Text(
                       "Welcome Back!",

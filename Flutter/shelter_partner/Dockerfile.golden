@@ -1,0 +1,62 @@
+# Dockerfile for running Flutter golden tests in a consistent environment
+FROM ubuntu:22.04
+
+# Set environment variables to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PUB_CACHE=/pub-cache
+ENV PATH="$PATH:/flutter/bin:/pub-cache/bin"
+ENV FLUTTER_ROOT=/flutter
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    wget \
+    unzip \
+    xz-utils \
+    libgconf-2-4 \
+    gdb \
+    libstdc++6 \
+    libglu1-mesa \
+    fonts-droid-fallback \
+    fonts-liberation \
+    fonts-roboto \
+    fonts-dejavu-core \
+    fontconfig \
+    lib32stdc++6 \
+    python3 \
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && fc-cache -fv
+
+# Create directories
+RUN mkdir -p /flutter /pub-cache /app
+
+# Download and extract the precompiled Flutter SDK
+RUN wget -qO- https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.0-stable.tar.xz | tar xJ -C /
+
+# Allow git to trust the flutter directory when running as root
+RUN git config --global --add safe.directory /flutter
+
+# Pre-download Flutter dependencies
+RUN flutter precache
+
+# Disable analytics
+RUN flutter config --no-analytics
+
+# Set working directory
+WORKDIR /app
+
+# Copy pubspec files and asset directories first
+COPY pubspec.yaml pubspec.lock ./
+COPY assets/ ./assets/
+
+# Install Flutter dependencies
+RUN flutter pub get
+
+# Now copy the rest of the project
+COPY . .
+
+# Set the entrypoint for running golden tests
+ENTRYPOINT ["flutter", "test", "test/golden", "--tags", "golden"]

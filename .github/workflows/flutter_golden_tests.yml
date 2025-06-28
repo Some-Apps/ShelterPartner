@@ -1,0 +1,62 @@
+name: Flutter Golden Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  golden-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image for golden tests
+        run: |
+          cd Flutter/shelter_partner
+          docker build -t flutter-golden-tests -f Dockerfile.golden .
+
+      - name: Run golden tests
+        run: |
+          cd Flutter/shelter_partner
+          set +e
+          docker run --rm \
+            -v "$(pwd)/test:/app/test" \
+            -v "$(pwd)/assets:/app/assets" \
+            flutter-golden-tests
+          TEST_EXIT_CODE=$?
+          set -e
+          exit $TEST_EXIT_CODE
+        continue-on-error: true
+        id: golden-tests
+
+      - name: Extract failure images from container
+        if: failure()
+        run: |
+          cd Flutter/shelter_partner
+          # Create a container and copy test directory to get any failure images
+          CONTAINER_ID=$(docker create flutter-golden-tests)
+          mkdir -p failure_images
+          docker cp "$CONTAINER_ID:/app/test/golden/failures" failure_images/ 2>/dev/null || echo "No failure images found"
+          docker rm "$CONTAINER_ID" >/dev/null 2>&1 || true
+        continue-on-error: true
+
+      - name: Upload failure images as artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-test-failures
+          path: Flutter/shelter_partner/failure_images/
+          retention-days: 7
+
+      - name: Fail if golden tests failed
+        if: steps.golden-tests.outcome == 'failure'
+        run: |
+          echo "Golden tests failed. Please check the failure images artifact."
+          exit 1
