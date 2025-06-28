@@ -7,11 +7,15 @@ import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/repositories/add_note_repository.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 
+import 'package:shelter_partner/services/logger_service.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
+
 class AddNoteViewModel extends StateNotifier<Animal> {
   final AddNoteRepository _repository;
   final Ref ref;
+  final LoggerService _logger;
 
-  AddNoteViewModel(this._repository, this.ref, Animal animal) : super(animal);
+  AddNoteViewModel(this._repository, this.ref, Animal animal) : _logger = ref.read(loggerServiceProvider), super(animal);
 
   Future<void> updateAnimalTags(Animal animal, List<String> tags) async {
     try {
@@ -26,12 +30,12 @@ class AddNoteViewModel extends StateNotifier<Animal> {
       // Optionally, update the state if needed
     } catch (e) {
       // Handle error
-      print('Failed to add tags: $e');
+      _logger.error('Failed to add tags', e);
     }
   }
 
   Future<void> addNoteToAnimal(Animal animal, Note note) async {
-    print(note.toMap());
+    _logger.debug(note.toMap().toString());
     // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
     try {
@@ -43,7 +47,7 @@ class AddNoteViewModel extends StateNotifier<Animal> {
       // Optionally, update the state if needed
     } catch (e) {
       // Handle error
-      print('Failed to add note: $e');
+      _logger.error('Failed to add note', e);
     }
   }
 
@@ -65,7 +69,7 @@ class AddNoteViewModel extends StateNotifier<Animal> {
       // Optionally, update the state if needed
     } catch (e) {
       // Handle error
-      print('Failed to upload image: $e');
+      _logger.error('Failed to upload image', e);
     }
   }
 }

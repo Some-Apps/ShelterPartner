@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 import 'package:shelter_partner/repositories/update_volunteer_repository.dart';
 import 'package:shelter_partner/view_models/add_note_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
@@ -29,6 +30,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
+    final logger = ref.read(loggerServiceProvider);
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
@@ -39,8 +41,8 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
           _selectedImage = image;
         });
       }
-    } catch (e) {
-      print('Error picking image: $e');
+    } catch (e, s) {
+      logger.error('Error picking image', e, s);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
@@ -57,6 +59,7 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
   Widget build(BuildContext context) {
     final userDetails = ref.read(appUserProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
+    final logger = ref.watch(loggerServiceProvider);
 
     return AlertDialog(
       title: Text(widget.animal.name),
@@ -149,13 +152,13 @@ class _AddNoteViewState extends ConsumerState<AddNoteView> {
               // You may need to add a way to store _selectedImage if you plan to save it
             );
             if (note.note.isNotEmpty) {
-              debugPrint("adding a note");
+              logger.debug("adding a note");
               ref
                   .read(addNoteViewModelProvider(widget.animal).notifier)
                   .addNoteToAnimal(widget.animal, note);
             }
             if (_selectedTags.isNotEmpty) {
-              debugPrint(_selectedTags.toString());
+              logger.debug(_selectedTags.toString());
               ref
                   .read(addNoteViewModelProvider(widget.animal).notifier)
                   .updateAnimalTags(widget.animal, _selectedTags.toList());

@@ -45,8 +45,6 @@ class AddLogViewModel extends StateNotifier<Animal> {
       // Optionally, update the state if needed
       ref.read(logAddedProvider.notifier).state = true;
     } catch (e, stackTrace) {
-      // Handle error
-      final logger = ref.read(loggerServiceProvider);
       logger.error('Failed to add log', e, stackTrace);
     }
   }

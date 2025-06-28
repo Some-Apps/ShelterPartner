@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
+import 'package:shelter_partner/services/logger_service.dart';
 import 'package:shelter_partner/repositories/animal_card_repository.dart';
 import 'package:shelter_partner/view_models/add_log_view_model.dart';
 import 'package:shelter_partner/view_models/animal_card_view_model.dart';
@@ -54,6 +56,7 @@ class AnimalCardView extends ConsumerStatefulWidget {
 
 class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     with TickerProviderStateMixin {
+  late final LoggerService _logger;
   bool _automaticPutBackHandled = false;
   late AnimationController _controller;
   late Animation<double> _curvedAnimation;
@@ -62,11 +65,12 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
   @override
   void initState() {
     super.initState();
+    _logger = ref.read(loggerServiceProvider);
 
     // Print the account type on appear.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final appUser = ref.read(appUserProvider);
-      print("Account type on appear: ${appUser?.type}");
+      _logger.info("Account type on appear: ${appUser?.type}");
     });
 
     // Handle automatic put back after the first frame.
@@ -104,44 +108,44 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
     // Listen for animation completion.
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        print("DEBUG: AnimationStatus completed triggered");
+        _logger.debug("AnimationStatus completed triggered");
         _controller.reset();
         final currentAnimal = widget.animal;
-        print("DEBUG: currentAnimal.inKennel: ${currentAnimal.inKennel}");
+        _logger.debug("currentAnimal.inKennel: ${currentAnimal.inKennel}");
         if (currentAnimal.inKennel) {
           final accountDetails = ref
               .read(accountSettingsViewModelProvider)
               .value;
-          print("DEBUG: accountDetails: $accountDetails");
+          _logger.debug("accountDetails: $accountDetails");
           if (accountDetails != null) {
             final appUser = ref.read(appUserProvider);
-            print("DEBUG: appUser: $appUser");
+            _logger.debug("appUser: $appUser");
             final shelterSettings = ref
                 .read(shelterDetailsViewModelProvider)
                 .value;
-            print("DEBUG: shelterSettings: $shelterSettings");
+            _logger.debug("shelterSettings: $shelterSettings");
             bool requireName;
             bool requireLetOutType;
             if (appUser?.type == "admin") {
               requireName = accountDetails.accountSettings!.requireName;
               requireLetOutType =
                   accountDetails.accountSettings!.requireLetOutType;
-              print(
-                "DEBUG: Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType",
+              _logger.debug(
+                "Admin account - requireName: $requireName, requireLetOutType: $requireLetOutType",
               );
             } else {
               requireName = shelterSettings!.volunteerSettings.requireName;
               requireLetOutType =
                   shelterSettings.volunteerSettings.requireLetOutType;
-              print(
-                "DEBUG: Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType",
+              _logger.debug(
+                "Volunteer account - requireName: $requireName, requireLetOutType: $requireLetOutType",
               );
             }
             if (requireName || requireLetOutType) {
-              print("DEBUG: Showing take out confirmation dialog");
+              _logger.debug("Showing take out confirmation dialog");
               _showTakeOutConfirmationDialog();
             } else {
-              print("DEBUG: Directly taking out animal");
+              _logger.debug("Directly taking out animal");
               ref
                   .read(
                     takeOutConfirmationViewModelProvider(
@@ -162,11 +166,11 @@ class _AnimalCardViewState extends ConsumerState<AnimalCardView>
                   );
             }
           } else {
-            print("DEBUG: accountDetails is null");
+            _logger.debug("accountDetails is null");
           }
         } else {
-          print(
-            "DEBUG: Animal not in kennel, showing put back confirmation dialog",
+          _logger.debug(
+            "Animal not in kennel, showing put back confirmation dialog",
           );
           _showPutBackConfirmationDialog();
         }

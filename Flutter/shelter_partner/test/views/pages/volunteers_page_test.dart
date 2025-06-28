@@ -450,11 +450,13 @@ void main() {
                 final firestore = ref.watch(firestoreProvider);
                 final firebaseAuth = ref.watch(firebaseAuthProvider);
                 final serviceUrls = ref.watch(serviceUrlsProvider);
+                final logger = ref.watch(loggerServiceProvider);
                 return VolunteersRepository(
                   firestore: firestore,
                   firebaseAuth: firebaseAuth,
                   serviceUrls: serviceUrls,
                   networkClient: mockNetworkClient,
+                  logger: logger,
                 );
               }),
             ],
@@ -601,11 +603,13 @@ void main() {
                 final firestore = ref.watch(firestoreProvider);
                 final firebaseAuth = ref.watch(firebaseAuthProvider);
                 final serviceUrls = ref.watch(serviceUrlsProvider);
+                final logger = ref.watch(loggerServiceProvider);
                 return VolunteersRepository(
                   firestore: firestore,
                   firebaseAuth: firebaseAuth,
                   serviceUrls: serviceUrls,
                   networkClient: mockNetworkClient,
+                  logger: logger,
                 );
               }),
             ],
