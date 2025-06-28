@@ -402,7 +402,9 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                           ),
                                                       borderSide: BorderSide(
                                                         color: Colors.grey
-                                                            .withValues(alpha: 0.5),
+                                                            .withValues(
+                                                              alpha: 0.5,
+                                                            ),
                                                       ),
                                                     ),
                                                     focusedBorder:
@@ -419,7 +421,9 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                         ),
                                                     filled: true,
                                                     fillColor: Colors.grey
-                                                        .withValues(alpha: 0.05),
+                                                        .withValues(
+                                                          alpha: 0.05,
+                                                        ),
                                                   ),
                                                   onChanged: (value) {
                                                     _filterVolunteers(
@@ -440,7 +444,9 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                   decoration: BoxDecoration(
                                                     border: Border.all(
                                                       color: Colors.grey
-                                                          .withValues(alpha: 0.5),
+                                                          .withValues(
+                                                            alpha: 0.5,
+                                                          ),
                                                     ),
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -504,7 +510,9 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                         icon: Icon(
                                                           Icons.delete,
                                                           color: Colors.red
-                                                              .withValues(alpha: 0.5),
+                                                              .withValues(
+                                                                alpha: 0.5,
+                                                              ),
                                                         ),
                                                         onPressed: () {
                                                           _confirmDeleteVolunteer(
@@ -523,7 +531,9 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                     ),
                                                     Divider(
                                                       color: Colors.black
-                                                          .withValues(alpha: 0.1),
+                                                          .withValues(
+                                                            alpha: 0.1,
+                                                          ),
                                                       height: 0,
                                                       thickness: 1,
                                                     ),
@@ -553,7 +563,9 @@ class _VolunteersPageState extends ConsumerState<VolunteersPage> {
               if (isLoading)
                 Center(
                   child: Container(
-                    color: Colors.black.withValues(alpha: 0.5), // Faded background
+                    color: Colors.black.withValues(
+                      alpha: 0.5,
+                    ), // Faded background
                     child: const Center(child: CircularProgressIndicator()),
                   ),
                 ),

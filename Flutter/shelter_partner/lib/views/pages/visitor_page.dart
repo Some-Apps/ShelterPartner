@@ -354,7 +354,9 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       if (_currentPhotoIndex >= animal.photos!.length) {
         _currentPhotoIndex = 0;
       }
-      _currentImageUrl = serviceUrls.corsImageUrl(animal.photos![_currentPhotoIndex].url);
+      _currentImageUrl = serviceUrls.corsImageUrl(
+        animal.photos![_currentPhotoIndex].url,
+      );
     } else {
       _currentImageUrl = '';
     }

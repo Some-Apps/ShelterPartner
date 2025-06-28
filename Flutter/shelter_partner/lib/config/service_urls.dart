@@ -35,7 +35,8 @@ class ServiceUrls {
     return const ServiceUrls._(
       corsImagesUrl: String.fromEnvironment(
         'CORS_IMAGES_URL',
-        defaultValue: 'https://us-central1-development-e5282.cloudfunctions.net/cors_images',
+        defaultValue:
+            'https://us-central1-development-e5282.cloudfunctions.net/cors_images',
       ),
       apiUrl: String.fromEnvironment(
         'API_URL',
@@ -43,11 +44,13 @@ class ServiceUrls {
       ),
       deleteVolunteerUrl: String.fromEnvironment(
         'DELETE_VOLUNTEER_URL',
-        defaultValue: 'https://delete-volunteer-dev-222422545919.us-central1.run.app',
+        defaultValue:
+            'https://delete-volunteer-dev-222422545919.us-central1.run.app',
       ),
       inviteVolunteerUrl: String.fromEnvironment(
         'INVITE_VOLUNTEER_URL',
-        defaultValue: 'https://invite-volunteer-dev-222422545919.us-central1.run.app',
+        defaultValue:
+            'https://invite-volunteer-dev-222422545919.us-central1.run.app',
       ),
       placesApiUrl: String.fromEnvironment(
         'PLACES_API_URL',
@@ -55,7 +58,8 @@ class ServiceUrls {
       ),
       placesApiDetailsUrl: String.fromEnvironment(
         'PLACES_API_DETAILS_URL',
-        defaultValue: 'https://places-api-details-dev-222422545919.us-central1.run.app',
+        defaultValue:
+            'https://places-api-details-dev-222422545919.us-central1.run.app',
       ),
     );
   }
@@ -73,11 +77,13 @@ class ServiceUrls {
       ),
       deleteVolunteerUrl: String.fromEnvironment(
         'DELETE_VOLUNTEER_URL',
-        defaultValue: 'https://delete-volunteer-222422545919.us-central1.run.app',
+        defaultValue:
+            'https://delete-volunteer-222422545919.us-central1.run.app',
       ),
       inviteVolunteerUrl: String.fromEnvironment(
         'INVITE_VOLUNTEER_URL',
-        defaultValue: 'https://invite-volunteer-222422545919.us-central1.run.app',
+        defaultValue:
+            'https://invite-volunteer-222422545919.us-central1.run.app',
       ),
       placesApiUrl: String.fromEnvironment(
         'PLACES_API_URL',
@@ -85,7 +91,8 @@ class ServiceUrls {
       ),
       placesApiDetailsUrl: String.fromEnvironment(
         'PLACES_API_DETAILS_URL',
-        defaultValue: 'https://places-api-details-222422545919.us-central1.run.app',
+        defaultValue:
+            'https://places-api-details-222422545919.us-central1.run.app',
       ),
     );
   }

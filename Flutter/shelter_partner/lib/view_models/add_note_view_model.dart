@@ -15,7 +15,9 @@ class AddNoteViewModel extends StateNotifier<Animal> {
   final Ref ref;
   final LoggerService _logger;
 
-  AddNoteViewModel(this._repository, this.ref, Animal animal) : _logger = ref.read(loggerServiceProvider), super(animal);
+  AddNoteViewModel(this._repository, this.ref, Animal animal)
+    : _logger = ref.read(loggerServiceProvider),
+      super(animal);
 
   Future<void> updateAnimalTags(Animal animal, List<String> tags) async {
     try {

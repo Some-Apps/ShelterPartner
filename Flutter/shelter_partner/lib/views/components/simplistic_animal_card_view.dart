@@ -105,8 +105,9 @@ class _SimplisticAnimalCardViewState
         final currentAnimal = widget.animal;
         _logger.debug("currentAnimal.inKennel: ${currentAnimal.inKennel}");
         if (currentAnimal.inKennel) {
-          final accountDetails =
-              ref.read(accountSettingsViewModelProvider).value;
+          final accountDetails = ref
+              .read(accountSettingsViewModelProvider)
+              .value;
           _logger.debug("accountDetails: $accountDetails");
           if (accountDetails != null) {
             final appUser = ref.read(appUserProvider);
