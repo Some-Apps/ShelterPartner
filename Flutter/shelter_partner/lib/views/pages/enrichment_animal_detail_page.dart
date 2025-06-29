@@ -315,8 +315,8 @@ class FullScreenGalleryState extends State<FullScreenGallery> {
     super.dispose();
   }
 
-  void _onKey(RawKeyEvent event) {
-    if (event is RawKeyDownEvent) {
+  void _onKey(KeyEvent event) {
+    if (event is KeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         _previousImage();
       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -366,9 +366,9 @@ class FullScreenGalleryState extends State<FullScreenGallery> {
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
-      body: RawKeyboardListener(
+      body: KeyboardListener(
         focusNode: _focusNode,
-        onKey: isWeb ? _onKey : null,
+        onKeyEvent: isWeb ? _onKey : null,
         child: Stack(
           alignment: Alignment.center,
           children: [
