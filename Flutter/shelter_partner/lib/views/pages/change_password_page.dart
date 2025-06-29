@@ -26,12 +26,14 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
           );
           await user.reauthenticateWithCredential(credential);
           await user.updatePassword(_passwordController.text);
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Password changed successfully')),
           );
           Navigator.pop(context);
         }
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: $e')));

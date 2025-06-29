@@ -357,6 +357,7 @@ class PutBackConfirmationViewState
                     }
                   }
 
+                  if (!context.mounted) return;
                   Navigator.of(context).pop(); // Close the progress indicator
                   Navigator.of(context).pop(true);
                   _showThankYouDialog(context);

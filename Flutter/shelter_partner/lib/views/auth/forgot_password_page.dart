@@ -34,6 +34,7 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         .sendPasswordReset(email);
 
     // Close the loading indicator
+    if (!mounted) return;
     Navigator.of(context).pop();
 
     if (errorMessage == null) {
@@ -58,6 +59,7 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       );
     } else {
       Future.microtask(() {
+        if (!mounted) return;
         Fluttertoast.showToast(
           msg: errorMessage,
           toastLength: Toast.LENGTH_LONG,

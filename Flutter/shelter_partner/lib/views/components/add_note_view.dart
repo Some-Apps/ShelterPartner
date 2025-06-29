@@ -43,6 +43,7 @@ class AddNoteViewState extends ConsumerState<AddNoteView> {
       }
     } catch (e, s) {
       logger.error('Error picking image', e, s);
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
@@ -177,19 +178,16 @@ class AddNoteViewState extends ConsumerState<AddNoteView> {
                   .read(addNoteViewModelProvider(widget.animal).notifier)
                   .uploadImageToAnimal(widget.animal, _selectedImage!, ref)
                   .then((_) {
-                    if (mounted) {
-                      ref
-                          .read(updateVolunteerRepositoryProvider)
-                          .modifyVolunteerLastActivity(
-                            userDetails.id,
-                            Timestamp.now(),
-                          );
-                      Navigator.of(
-                        context,
-                      ).pop(); // Close the loading indicator
-                      Navigator.of(context).pop(note);
-                      ref.read(noteAddedProvider.notifier).state = true;
-                    }
+                    if (!context.mounted) return;
+                    ref
+                        .read(updateVolunteerRepositoryProvider)
+                        .modifyVolunteerLastActivity(
+                          userDetails.id,
+                          Timestamp.now(),
+                        );
+                    Navigator.of(context).pop(); // Close the loading indicator
+                    Navigator.of(context).pop(note);
+                    ref.read(noteAddedProvider.notifier).state = true;
                   });
             } else {
               ref

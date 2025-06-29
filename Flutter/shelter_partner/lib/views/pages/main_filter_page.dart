@@ -138,6 +138,7 @@ class MainFilterPageState extends ConsumerState<MainFilterPage> {
                 widget.filterFieldPath,
               );
 
+              if (!context.mounted) return;
               Navigator.pop(context, filterElements);
             },
           ),

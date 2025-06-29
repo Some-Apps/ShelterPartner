@@ -191,7 +191,7 @@ class AddLogViewState extends ConsumerState<AddLogView> {
                           logger.info('Last activity updated');
                         }
                       });
-
+                  if (!context.mounted) return;
                   Navigator.of(context).pop(log);
                 }
               : null,

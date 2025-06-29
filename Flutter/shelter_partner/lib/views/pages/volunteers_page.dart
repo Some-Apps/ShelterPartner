@@ -78,10 +78,12 @@ class VolunteersPageState extends ConsumerState<VolunteersPage> {
                   setState(() {
                     filteredVolunteers = [];
                   });
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('$volunteerName deleted')),
                   );
                 } catch (e) {
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Failed to delete volunteer: $e')),
                   );
@@ -306,7 +308,9 @@ class VolunteersPageState extends ConsumerState<VolunteersPage> {
                                                               email,
                                                               shelterID,
                                                             );
-
+                                                        if (!context.mounted) {
+                                                          return;
+                                                        }
                                                         ScaffoldMessenger.of(
                                                           context,
                                                         ).showSnackBar(
