@@ -466,38 +466,40 @@ class AuthRepository {
 
       // Commit the batch
       await batch.commit();
-      print('Successfully uploaded all documents for $collectionName');
+      _logger.info('Successfully uploaded all documents for $collectionName');
     } catch (e) {
-      print('Error uploading data from $filename: $e');
+      _logger.error('Error uploading data from $filename', e);
     }
   }
 
   Future<List<Map<String, dynamic>>> loadCsvData(String filename) async {
-    print('Attempting to load CSV data from $filename');
+    _logger.debug('Attempting to load CSV data from $filename');
     try {
       // Load CSV file as a string using the injected FileLoader
       final csvString = await _fileLoader.loadString(filename);
-      print(
+      _logger.debug(
         'Raw CSV string: $csvString',
       ); // Debugging: print the entire raw string
       // Parse the CSV string
       final List<List<dynamic>> csvRows = const CsvToListConverter(
         eol: '\n',
       ).convert(csvString);
-      print('Parsed CSV rows: $csvRows'); // Debugging: print parsed rows
+      _logger.debug(
+        'Parsed CSV rows: $csvRows',
+      ); // Debugging: print parsed rows
 
       if (csvRows.isEmpty) {
-        print('No data found in CSV file: $filename');
+        _logger.warning('No data found in CSV file: $filename');
         return [];
       }
 
       // Assuming the first row is the header (column names)
       final headers = csvRows.first.map((header) => header.toString()).toList();
-      print('CSV Headers: $headers');
+      _logger.debug('CSV Headers: $headers');
 
       final List<Map<String, dynamic>> csvData = [];
       for (int i = 1; i < csvRows.length; i++) {
-        print('Processing row $i: ${csvRows[i]}');
+        _logger.debug('Processing row $i: ${csvRows[i]}');
         final Map<String, dynamic> rowMap = {};
         for (int j = 0; j < headers.length; j++) {
           rowMap[headers[j]] = csvRows[i][j];
@@ -505,10 +507,10 @@ class AuthRepository {
         csvData.add(rowMap);
       }
 
-      print('Successfully loaded ${csvData.length} rows from $filename');
+      _logger.info('Successfully loaded ${csvData.length} rows from $filename');
       return csvData;
     } catch (e) {
-      print('Error loading CSV data from $filename: $e');
+      _logger.error('Error loading CSV data from $filename', e);
       return [];
     }
   }

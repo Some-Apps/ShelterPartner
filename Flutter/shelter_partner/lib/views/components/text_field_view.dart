@@ -15,10 +15,10 @@ class TextFieldView extends StatefulWidget {
   });
 
   @override
-  _TextFieldViewState createState() => _TextFieldViewState();
+  TextFieldViewState createState() => TextFieldViewState();
 }
 
-class _TextFieldViewState extends State<TextFieldView> {
+class TextFieldViewState extends State<TextFieldView> {
   late TextEditingController _controller;
 
   @override

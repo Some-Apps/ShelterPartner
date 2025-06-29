@@ -15,15 +15,20 @@ import 'package:shelter_partner/view_models/volunteers_view_model.dart';
 import 'package:shelter_partner/views/pages/main_filter_page.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'package:shelter_partner/services/logger_service.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
+
 class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
   final EnrichmentRepository _repository;
   final Ref ref;
   final Clock _clock;
+  final LoggerService _logger;
 
   StreamSubscription<void>? _animalsSubscription;
 
   EnrichmentViewModel(this._repository, this.ref)
     : _clock = ref.read(clockProvider),
+      _logger = ref.read(loggerServiceProvider),
       super({'cats': [], 'dogs': []}) {
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       _onAuthStateChanged(next);
@@ -138,7 +143,7 @@ class EnrichmentViewModel extends StateNotifier<Map<String, List<Animal>>> {
               if (_ignoreFirestoreUpdatesUntil != null &&
                   _clock.now().isBefore(_ignoreFirestoreUpdatesUntil!)) {
                 // Ignore this update - just return without changing state
-                print(
+                _logger.debug(
                   "Ignoring Firestore update due to recent optimistic update.",
                 );
                 return;

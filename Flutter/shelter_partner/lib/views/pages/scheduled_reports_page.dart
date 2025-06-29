@@ -15,10 +15,10 @@ class ScheduledReportsPage extends ConsumerStatefulWidget {
   });
 
   @override
-  _ScheduledReportsPageState createState() => _ScheduledReportsPageState();
+  ScheduledReportsPageState createState() => ScheduledReportsPageState();
 }
 
-class _ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
+class ScheduledReportsPageState extends ConsumerState<ScheduledReportsPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();

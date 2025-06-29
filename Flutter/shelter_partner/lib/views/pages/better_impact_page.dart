@@ -26,10 +26,10 @@ class BetterImpactPage extends ConsumerStatefulWidget {
   const BetterImpactPage({super.key});
 
   @override
-  _BetterImpactPageState createState() => _BetterImpactPageState();
+  BetterImpactPageState createState() => BetterImpactPageState();
 }
 
-class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
+class BetterImpactPageState extends ConsumerState<BetterImpactPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -118,6 +118,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         // Get shelterID from authViewModelProvider
         final authState = ref.read(authViewModelProvider);
         if (authState.status != AuthStatus.authenticated) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('User not authenticated.')),
           );
@@ -128,6 +129,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         }
         final shelterID = authState.user?.shelterId;
         if (shelterID == null) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Shelter ID not found.')),
           );
@@ -140,6 +142,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         // Get existing volunteers from volunteersViewModelProvider
         final volunteersState = ref.read(volunteersViewModelProvider);
         if (volunteersState is AsyncLoading) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Volunteer data is loading. Please try again.'),
@@ -150,6 +153,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
           });
           return;
         } else if (volunteersState is AsyncError) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -164,6 +168,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         } else if (volunteersState is AsyncData<Shelter?>) {
           final shelter = volunteersState.value;
           if (shelter == null) {
+            if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('No shelter data available.')),
             );
@@ -204,6 +209,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
           ref.read(usersToRemoveProvider.notifier).state = usersToRemove;
 
           // Show the dialog and wait for the result
+          if (!mounted) return;
           final shouldSync = await showDialog<bool>(
             context: context,
             builder: (BuildContext context) {
@@ -248,6 +254,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
                       .read(volunteersViewModelProvider.notifier)
                       .deleteVolunteer(volunteer.id, shelterID);
                 } catch (e) {
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Failed to delete volunteer: $e')),
                   );
@@ -267,9 +274,11 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
               );
 
               // Navigate back to /volunteers
+              if (!mounted) return;
               context.go('/volunteers');
             } catch (e) {
               // Handle any errors
+              if (!mounted) return;
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text('Error during sync: $e')));
@@ -277,6 +286,7 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
           }
         } else {
           // Should not reach here
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Unexpected error occurred.')),
           );
@@ -287,12 +297,14 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
         }
       } else {
         // Handle error response from Cloud Function
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to sync users: ${response.body}')),
         );
       }
     } catch (e) {
       // Handle exceptions
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error during sync: $e')));
@@ -341,10 +353,11 @@ class _BetterImpactPageState extends ConsumerState<BetterImpactPage> {
                           const SizedBox(height: 20),
                           InkWell(
                             onTap: () async {
-                              const url =
-                                  'https://support.betterimpact.com/volunteerimpacthelp/en/help-articles/it/';
-                              if (await canLaunch(url)) {
-                                await launch(url);
+                              final url = Uri.parse(
+                                'https://support.betterimpact.com/volunteerimpacthelp/en/help-articles/it/',
+                              );
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url);
                               } else {
                                 throw 'Could not launch $url';
                               }

@@ -138,7 +138,9 @@ class AuthViewModel extends StateNotifier<AuthState> {
       _ref.read(appUserProvider.notifier).state = null;
 
       // Navigate back to the login/auth page
-      context.go('/');
+      if (context.mounted) {
+        context.go('/');
+      }
     } catch (e) {
       state = AuthState.error("Failed to delete account: ${e.toString()}");
     }
@@ -157,7 +159,9 @@ class AuthViewModel extends StateNotifier<AuthState> {
       state = AuthState.unauthenticated();
 
       // Navigate back to the login/auth page
-      context.go('/');
+      if (context.mounted) {
+        context.go('/');
+      }
     } catch (e) {
       // Handle any errors that occur during logout
       state = AuthState.error("Failed to log out: ${e.toString()}");

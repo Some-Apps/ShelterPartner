@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 import 'package:shelter_partner/repositories/update_volunteer_repository.dart';
 import 'package:shelter_partner/view_models/add_log_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
@@ -15,10 +16,10 @@ class AddLogView extends ConsumerStatefulWidget {
   const AddLogView({super.key, required this.animal});
 
   @override
-  _AddLogViewState createState() => _AddLogViewState();
+  AddLogViewState createState() => AddLogViewState();
 }
 
-class _AddLogViewState extends ConsumerState<AddLogView> {
+class AddLogViewState extends ConsumerState<AddLogView> {
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _endTimeController = TextEditingController();
 
@@ -60,6 +61,7 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
   Widget build(BuildContext context) {
     final userDetails = ref.read(appUserProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
+    final logger = ref.watch(loggerServiceProvider);
 
     return AlertDialog(
       title: Text(widget.animal.name),
@@ -177,19 +179,19 @@ class _AddLogViewState extends ConsumerState<AddLogView> {
                       .read(addLogViewModelProvider(widget.animal).notifier)
                       .addLogToAnimal(widget.animal, log)
                       .then((_) {
-                        print('Log added');
+                        logger.info('Log added');
                         if (mounted) {
-                          print('Updating last activity');
+                          logger.info('Updating last activity');
                           ref
                               .read(updateVolunteerRepositoryProvider)
                               .modifyVolunteerLastActivity(
                                 userDetails.id,
                                 Timestamp.now(),
                               );
-                          print('Last activity updated');
+                          logger.info('Last activity updated');
                         }
                       });
-
+                  if (!context.mounted) return;
                   Navigator.of(context).pop(log);
                 }
               : null,

@@ -162,7 +162,7 @@ class LogCard extends StatelessWidget {
               child: IconButton(
                 icon: Icon(
                   Icons.delete,
-                  color: Colors.red.withOpacity(0.5),
+                  color: Colors.red.withValues(alpha: 0.5),
                   size: 15.0,
                 ),
                 onPressed: onDelete,

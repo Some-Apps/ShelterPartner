@@ -12,10 +12,10 @@ class VolunteerSettingsPage extends ConsumerStatefulWidget {
   const VolunteerSettingsPage({super.key});
 
   @override
-  _VolunteerSettingsPageState createState() => _VolunteerSettingsPageState();
+  VolunteerSettingsPageState createState() => VolunteerSettingsPageState();
 }
 
-class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
+class VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
   late TextEditingController _customFormURLController;
 
   @override
@@ -193,7 +193,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -218,7 +218,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -243,7 +243,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -268,7 +268,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -291,7 +291,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -317,7 +317,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -342,7 +342,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -395,7 +395,7 @@ class _VolunteerSettingsPageState extends ConsumerState<VolunteerSettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),

@@ -6,13 +6,17 @@ import 'auth_view_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
 
+import 'package:shelter_partner/services/logger_service.dart';
+
 class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   final ShelterSettingsRepository _repository;
   final Ref ref;
   final FirebaseFirestore _firestore;
+  final LoggerService _logger;
 
   ShelterSettingsViewModel(this._repository, this.ref, this._firestore)
-    : super(const AsyncValue.loading()) {
+    : _logger = ref.read(loggerServiceProvider),
+      super(const AsyncValue.loading()) {
     _initialize(); // Start the initialization process to fetch account details
   }
 
@@ -64,7 +68,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.toggleShelterSetting(shelterID, field);
     } catch (error) {
-      print("Error toggling: $error");
+      _logger.error("Error toggling", error);
       state = AsyncValue.error("Error toggling: $error", StackTrace.current);
     }
   }
@@ -100,7 +104,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
         value,
       );
     } catch (error) {
-      print("Error adding string to array: $error");
+      _logger.error("Error adding string to array", error);
       state = AsyncValue.error(
         "Error adding string to array: $error",
         StackTrace.current,
@@ -117,7 +121,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.addMapToShelterSettingsArray(shelterID, field, value);
     } catch (error) {
-      print("Error adding map to array: $error");
+      _logger.error("Error adding map to array", error);
       state = AsyncValue.error(
         "Error adding map to array: $error",
         StackTrace.current,
@@ -138,7 +142,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
         value,
       );
     } catch (error) {
-      print("Error removing string from array: $error");
+      _logger.error("Error removing string from array", error);
       state = AsyncValue.error(
         "Error removing string from array: $error",
         StackTrace.current,
@@ -159,7 +163,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
         newOrder,
       );
     } catch (error) {
-      print("Error reordering map array: $error");
+      _logger.error("Error reordering map array", error);
       state = AsyncValue.error(
         "Error reordering map array: $error",
         StackTrace.current,
@@ -175,7 +179,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.modifyShelterSettingString(userID, field, newValue);
     } catch (error) {
-      print("Error modifying: $error");
+      _logger.error("Error modifying", error);
       state = AsyncValue.error("Error modifying: $error", StackTrace.current);
     }
   }
@@ -189,7 +193,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.reorderShelterSettingsArray(shelterID, field, newOrder);
     } catch (error) {
-      print("Error reordering array: $error");
+      _logger.error("Error reordering array", error);
       state = AsyncValue.error(
         "Error reordering array: $error",
         StackTrace.current,
@@ -210,7 +214,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
         value,
       );
     } catch (error) {
-      print("Error removing map from array: $error");
+      _logger.error("Error removing map from array", error);
       state = AsyncValue.error(
         "Error removing map from array: $error",
         StackTrace.current,
@@ -223,7 +227,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.incrementShelterSetting(userID, field);
     } catch (error) {
-      print("Error incrementing: $error");
+      _logger.error("Error incrementing", error);
       state = AsyncValue.error(
         "Error incrementing: $error",
         StackTrace.current,
@@ -235,7 +239,7 @@ class ShelterSettingsViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.decrementShelterSetting(userID, field);
     } catch (error) {
-      print("Error decrementing: $error");
+      _logger.error("Error decrementing", error);
       state = AsyncValue.error(
         "Error decrementing: $error",
         StackTrace.current,

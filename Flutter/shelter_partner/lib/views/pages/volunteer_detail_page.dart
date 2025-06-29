@@ -142,6 +142,7 @@ void _showEditNameDialog(
               await ref
                   .read(volunteerDetailViewModelProvider(volunteer).notifier)
                   .updateVolunteerName(newFirstName, newLastName);
+              // ignore: use_build_context_synchronously
               Navigator.of(context).pop();
             },
           ),

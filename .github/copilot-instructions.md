@@ -14,7 +14,7 @@ This is a Flutter-based application for animal shelter management built with Fir
 - **Setup**: `cd Flutter/shelter_partner && flutter pub get` to install dependencies
 - **Build**: `flutter build web` (primary target platform)
 - **Test**: `flutter test` (all tests must pass)
-- **Analyze**: `flutter analyze` (warnings are acceptable, errors are not)
+- **Analyze**: `flutter analyze` (infos are acceptable, warnings and errors are not)
 - **Format**: `dart format .` (required by CI)
 
 ## Repository Structure

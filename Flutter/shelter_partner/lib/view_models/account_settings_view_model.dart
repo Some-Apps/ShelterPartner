@@ -5,13 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/repositories/account_settings_repository.dart';
 import 'auth_view_model.dart';
+import 'package:shelter_partner/services/logger_service.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
   final AccountSettingsRepository _repository;
   final Ref ref;
+  final LoggerService _logger;
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
-  AccountSettingsViewModel(this._repository, this.ref)
+  AccountSettingsViewModel(this._repository, this.ref, this._logger)
     : super(const AsyncValue.loading()) {
     // Listen to authentication state changes
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
@@ -73,7 +76,7 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     try {
       await _repository.modifyAccountSettingString(userID, field, newValue);
     } catch (error) {
-      print("Error modifying: $error");
+      _logger.error("Error modifying", error);
       state = AsyncValue.error("Error modifying: $error", StackTrace.current);
     }
   }
@@ -82,7 +85,7 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     try {
       await _repository.toggleAccountSetting(userID, field);
     } catch (error) {
-      print("Error toggling: $error");
+      _logger.error("Error toggling", error);
       state = AsyncValue.error("Error toggling: $error", StackTrace.current);
     }
   }
@@ -95,7 +98,7 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
       );
       return data;
     } catch (error) {
-      print("Error reading locationTierCount: $error");
+      _logger.error("Error reading locationTierCount", error);
       state = AsyncValue.error(
         "Error reading locationTierCount: $error",
         StackTrace.current,
@@ -108,7 +111,7 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     try {
       await _repository.updateLocationTierCount(userID, count);
     } catch (error) {
-      print("Error updating locationTierCount: $error");
+      _logger.error("Error updating locationTierCount", error);
       state = AsyncValue.error(
         "Error updating locationTierCount: $error",
         StackTrace.current,
@@ -121,7 +124,7 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     try {
       await _repository.incrementAccountSetting(userID, field);
     } catch (error) {
-      print("Error incrementing: $error");
+      _logger.error("Error incrementing", error);
       state = AsyncValue.error(
         "Error incrementing: $error",
         StackTrace.current,
@@ -133,7 +136,7 @@ class AccountSettingsViewModel extends StateNotifier<AsyncValue<AppUser?>> {
     try {
       await _repository.decrementAccountSetting(userID, field);
     } catch (error) {
-      print("Error decrementing: $error");
+      _logger.error("Error decrementing", error);
       state = AsyncValue.error(
         "Error decrementing: $error",
         StackTrace.current,
@@ -178,8 +181,10 @@ final accountSettingsViewModelProvider =
       final repository = ref.watch(
         accountSettingsRepositoryProvider,
       ); // Access the repository
+      final logger = ref.watch(loggerServiceProvider);
       return AccountSettingsViewModel(
         repository,
         ref,
+        logger,
       ); // Pass the repository and ref
     });

@@ -6,13 +6,18 @@ import 'package:shelter_partner/repositories/volunteers_repository.dart';
 import '../models/shelter.dart';
 import 'auth_view_model.dart';
 
+import 'package:shelter_partner/services/logger_service.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
+
 class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
   final VolunteersRepository _repository;
   final Ref ref;
+  final LoggerService _logger;
   StreamSubscription<Shelter>? _shelterSubscription;
 
   VolunteersViewModel(this._repository, this.ref)
-    : super(const AsyncValue.loading()) {
+    : _logger = ref.read(loggerServiceProvider),
+      super(const AsyncValue.loading()) {
     _initialize();
   }
 
@@ -55,7 +60,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.changeGeofence(shelterID, location, radius, zoom);
     } catch (error) {
-      print("Error changing geofence: $error");
+      _logger.error("Error changing geofence", error);
       state = AsyncValue.error(
         "Error changing geofence: $error",
         StackTrace.current,
@@ -68,7 +73,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.incrementVolunteerSetting(shelterID, field);
     } catch (error) {
-      print("Error incrementing: $error");
+      _logger.error("Error incrementing", error);
       state = AsyncValue.error(
         "Error incrementing: $error",
         StackTrace.current,
@@ -89,7 +94,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
         newValue,
       );
     } catch (error) {
-      print("Error modifying: $error");
+      _logger.error("Error modifying", error);
       state = AsyncValue.error("Error modifying: $error", StackTrace.current);
     }
   }
@@ -99,7 +104,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.toggleVolunteerSetting(shelterID, field);
     } catch (error) {
-      print("Error toggling: $error");
+      _logger.error("Error toggling", error);
       state = AsyncValue.error("Error toggling: $error", StackTrace.current);
     }
   }
@@ -134,7 +139,7 @@ class VolunteersViewModel extends StateNotifier<AsyncValue<Shelter?>> {
     try {
       await _repository.decrementVolunteerSetting(shelterID, field);
     } catch (error) {
-      print("Error decrementing: $error");
+      _logger.error("Error decrementing", error);
       state = AsyncValue.error(
         "Error decrementing: $error",
         StackTrace.current,

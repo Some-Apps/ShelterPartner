@@ -47,6 +47,7 @@ class CloudLoggerService implements LoggerService {
 }
 
 /// Simple console fallback for cloud logger stub
+// ignore_for_file: avoid_print
 class _StubConsoleLogger implements LoggerService {
   const _StubConsoleLogger();
 

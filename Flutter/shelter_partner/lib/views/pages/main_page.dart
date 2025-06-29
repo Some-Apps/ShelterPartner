@@ -207,7 +207,7 @@ class MainPage extends ConsumerWidget {
           selectedItemColor: Theme.of(context).colorScheme.primary,
           unselectedItemColor: Theme.of(
             context,
-          ).colorScheme.onSurface.withOpacity(0.6),
+          ).colorScheme.onSurface.withValues(alpha: 0.6),
           currentIndex: currentIndex,
           onTap: (index) {
             int branchIndex = visibleIndexes[index];
