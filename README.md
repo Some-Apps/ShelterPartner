@@ -1,6 +1,6 @@
 # Welcome To [Shelter Partner](https://shelterpartner.org)!
 
-Jared will be out of town June 26 - 29 and will respond to any messages when he gets back.
+Jared will be out of town July 4 - 16 and will respond to any messages when he gets back.
 
 ## How To Contribute On GitHub
 1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
@@ -31,7 +31,7 @@ All international payments will be made via PayPal so make sure you have an acco
    - GitHub sponsors can increase bounties as a perk
    - The project manager can increase bounties as they see fit
 
-## Bounties To Be Paid On July 1st
+## Bounties Paid On July 1st
 
 <details>
    
