@@ -162,7 +162,15 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
                 # This automatically replaces all previous ShelterLuv photos with the new filtered set
                 update_data['photos'] = manually_added_photos + new_shelterluv_photos
 
-            if existing_data != update_data:  # Only update if there's a change
+            # Check if any of the update fields have actually changed
+            needs_update = False
+            for key, new_value in update_data.items():
+                existing_value = existing_data.get(key)
+                if existing_value != new_value:
+                    needs_update = True
+                    break
+
+            if needs_update:  # Only update if there's actually a change
                 batch.update(animal_doc_ref, update_data)
                 updated_animals.append(animal['id'])
         else:
@@ -177,7 +185,7 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
         if operations_count >= max_batch_size:
             commit_batch()
 
-    commit_batch
+    commit_batch()
     # Delete removed animals
     animals_to_delete = firestore_animals_set - {animal['id'] for animal in animals if animal['id']}
     for animal_id in animals_to_delete:
