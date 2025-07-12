@@ -13,10 +13,10 @@ class ArrayModifierPage extends ConsumerStatefulWidget {
   });
 
   @override
-  _ArrayModifierPageState createState() => _ArrayModifierPageState();
+  ArrayModifierPageState createState() => ArrayModifierPageState();
 }
 
-class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
+class ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _itemController = TextEditingController();
 
@@ -39,7 +39,6 @@ class _ArrayModifierPageState extends ConsumerState<ArrayModifierPage> {
         appBar: AppBar(title: Text(widget.title)),
         body: Center(child: Text('Error: $error')),
       ),
-      // ...existing code...
       data: (shelter) {
         final List arrayItems = shelter!.shelterSettings.getArray(
           widget.arrayKey,

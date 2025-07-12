@@ -201,7 +201,7 @@ class StatsPage extends ConsumerWidget {
                 ),
                 children: [
                   Card.outlined(
-                    color: Colors.black.withOpacity(0.025),
+                    color: Colors.black.withValues(alpha: 0.025),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
@@ -284,7 +284,7 @@ class StatsPage extends ConsumerWidget {
                     ),
                   ),
                   Card.outlined(
-                    color: Colors.black.withOpacity(0.025),
+                    color: Colors.black.withValues(alpha: 0.025),
                     child: const Center(
                       child: Text(
                         'Other Stats',
@@ -296,7 +296,7 @@ class StatsPage extends ConsumerWidget {
                     ),
                   ),
                   Card.outlined(
-                    color: Colors.black.withOpacity(0.025),
+                    color: Colors.black.withValues(alpha: 0.025),
                     child: const Center(
                       child: Text(
                         'Even More Stats',

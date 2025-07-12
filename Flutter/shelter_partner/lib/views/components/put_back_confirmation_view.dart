@@ -19,11 +19,10 @@ class PutBackConfirmationView extends ConsumerStatefulWidget {
   const PutBackConfirmationView({super.key, required this.animals});
 
   @override
-  _PutBackConfirmationViewState createState() =>
-      _PutBackConfirmationViewState();
+  PutBackConfirmationViewState createState() => PutBackConfirmationViewState();
 }
 
-class _PutBackConfirmationViewState
+class PutBackConfirmationViewState
     extends ConsumerState<PutBackConfirmationView> {
   final TextEditingController _nameController = TextEditingController();
   String? _selectedEarlyReason;
@@ -358,6 +357,7 @@ class _PutBackConfirmationViewState
                     }
                   }
 
+                  if (!context.mounted) return;
                   Navigator.of(context).pop(); // Close the progress indicator
                   Navigator.of(context).pop(true);
                   _showThankYouDialog(context);

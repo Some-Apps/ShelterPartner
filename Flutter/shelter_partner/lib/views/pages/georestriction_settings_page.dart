@@ -13,11 +13,11 @@ class GeorestrictionSettingsPage extends ConsumerStatefulWidget {
   const GeorestrictionSettingsPage({super.key});
 
   @override
-  _GeorestrictionSettingsPageState createState() =>
-      _GeorestrictionSettingsPageState();
+  GeorestrictionSettingsPageState createState() =>
+      GeorestrictionSettingsPageState();
 }
 
-class _GeorestrictionSettingsPageState
+class GeorestrictionSettingsPageState
     extends ConsumerState<GeorestrictionSettingsPage> {
   GoogleMapController? _mapController;
   LatLng? _center;
@@ -49,6 +49,7 @@ class _GeorestrictionSettingsPageState
     final serviceUrls = ref.read(serviceUrlsProvider);
     final url = Uri.parse('${serviceUrls.placesApiUrl}?input=$input');
     final response = await http.get(url);
+    final logger = ref.read(loggerServiceProvider);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -63,7 +64,7 @@ class _GeorestrictionSettingsPageState
         }).toList();
       });
     } else {
-      print('Error fetching address suggestions: ${response.body}');
+      logger.error('Error fetching address suggestions: ${response.body}');
     }
   }
 
@@ -100,6 +101,7 @@ class _GeorestrictionSettingsPageState
 
   // Center the map on the user's current location
   Future<void> _centerOnUserLocation() async {
+    final logger = ref.read(loggerServiceProvider);
     try {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -121,8 +123,8 @@ class _GeorestrictionSettingsPageState
         );
         _updateCircle();
       });
-    } catch (e) {
-      print("Error getting location: $e");
+    } catch (e, s) {
+      logger.error("Error getting location", e, s);
     }
   }
 
@@ -133,7 +135,7 @@ class _GeorestrictionSettingsPageState
         center: _center!,
         radius: _radius,
         strokeColor: Colors.blue,
-        fillColor: Colors.blue.withOpacity(0.3),
+        fillColor: Colors.blue.withValues(alpha: 0.3),
         strokeWidth: 2,
       );
     });
@@ -213,6 +215,7 @@ class _GeorestrictionSettingsPageState
     return ElevatedButton(
       onPressed: () {
         if (_center != null) {
+          final logger = ref.read(loggerServiceProvider);
           ref
               .read(volunteersViewModelProvider.notifier)
               .changeGeofence(
@@ -222,7 +225,7 @@ class _GeorestrictionSettingsPageState
                 _zoomLevel,
               );
           Navigator.of(context).pop();
-          print('Save changes pressed');
+          logger.info('Save changes pressed');
         } else {
           _showErrorMessage('Center location is not set.');
         }

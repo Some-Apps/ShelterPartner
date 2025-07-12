@@ -43,17 +43,17 @@ class SwitchToAdminPage extends ConsumerWidget {
         // Navigate to the first tab of the Admin layout
         if (context.mounted) {
           context.go('/enrichment');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Switched to Admin mode')),
+          );
         }
-
-        // Provide feedback or navigation if needed
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Switched to Admin mode')));
       } catch (e) {
         // Handle error (e.g., show a snackbar with an error message)
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Incorrect password')));
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Incorrect password')));
+        }
       }
     }
 

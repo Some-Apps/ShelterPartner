@@ -11,20 +11,25 @@ import 'package:shelter_partner/models/shelter.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
 
+import 'package:shelter_partner/services/logger_service.dart';
+
 class VolunteersRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
   final NetworkClient _networkClient;
   final ServiceUrls _serviceUrls;
+  final LoggerService _logger;
 
   VolunteersRepository({
     required FirebaseFirestore firestore,
     required FirebaseAuth firebaseAuth,
     required ServiceUrls serviceUrls,
+    required LoggerService logger,
     NetworkClient? networkClient,
   }) : _firestore = firestore,
        _firebaseAuth = firebaseAuth,
        _serviceUrls = serviceUrls,
+       _logger = logger,
        _networkClient = networkClient ?? DefaultNetworkClient();
 
   Stream<Shelter> fetchShelterWithVolunteers(String shelterID) {
@@ -44,7 +49,7 @@ class VolunteersRepository {
           .where('shelterID', isEqualTo: shelterID)
           .snapshots()
           .map((querySnapshot) {
-            print('Volunteers: ${querySnapshot.docs.length}');
+            _logger.debug('Volunteers: ${querySnapshot.docs.length}');
             return querySnapshot.docs
                 .map((doc) => Volunteer.fromDocument(doc))
                 .toList();
@@ -155,8 +160,8 @@ class VolunteersRepository {
       String? idToken = await getIdToken();
 
       // Log the request body and headers
-      print('Sending request with data: $data');
-      print('Authorization: Bearer $idToken');
+      _logger.debug('Sending request with data: $data');
+      _logger.debug('Authorization: Bearer $idToken');
 
       // Send the authenticated request to Cloud Run
       final response = await _networkClient.post(
@@ -169,26 +174,28 @@ class VolunteersRepository {
       );
 
       // Log the response
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      _logger.debug('Response status code: ${response.statusCode}');
+      _logger.debug('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
         if (result['status'] != 'success') {
-          print('Error from Cloud Function: ${result['message']}');
+          _logger.error('Error from Cloud Function: ${result['message']}');
           throw Exception(result['message']);
         } else {
-          print('Invite sent successfully to $email');
+          _logger.info('Invite sent successfully to $email');
         }
       } else {
         // Log full response for debugging
-        print('Request failed with status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        _logger.error(
+          'Request failed with status code: ${response.statusCode}',
+        );
+        _logger.debug('Response body: ${response.body}');
         throw Exception('Failed to send invite: ${response.body}');
       }
     } catch (e) {
       // Log error details
-      print('Error occurred: $e');
+      _logger.error('Error occurred', e);
       throw Exception('Failed to send invite: $e');
     }
   }
@@ -216,8 +223,7 @@ class VolunteersRepository {
       );
 
       // Log the request details for debugging
-      print('Request URL: $url');
-      print('Authorization: Bearer $idToken');
+      _logger.debug('Request URL: $url');
 
       // Make the DELETE request with the token in the headers
       final response = await _networkClient.delete(
@@ -230,8 +236,8 @@ class VolunteersRepository {
       );
 
       // Log response status and body
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      _logger.debug('Response status code: ${response.statusCode}');
+      _logger.debug('Response body: ${response.body}');
 
       if (response.statusCode != 200) {
         throw Exception('Failed to delete volunteer: ${response.body}');
@@ -242,9 +248,9 @@ class VolunteersRepository {
         throw Exception(result['message']);
       }
 
-      print('Volunteer deleted successfully');
+      _logger.info('Volunteer deleted successfully');
     } catch (e) {
-      print('Error occurred: $e');
+      _logger.error('Error occurred', e);
       throw Exception('Failed to delete volunteer: $e');
     }
   }
@@ -289,9 +295,11 @@ final volunteersRepositoryProvider = Provider<VolunteersRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);
   final firebaseAuth = ref.watch(firebaseAuthProvider);
   final serviceUrls = ref.watch(serviceUrlsProvider);
+  final logger = ref.watch(loggerServiceProvider);
   return VolunteersRepository(
-    firestore: firestore, 
+    firestore: firestore,
     firebaseAuth: firebaseAuth,
     serviceUrls: serviceUrls,
+    logger: logger,
   );
 });

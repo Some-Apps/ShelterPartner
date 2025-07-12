@@ -5,10 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/volunteer.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
 
+import 'package:shelter_partner/services/logger_service.dart';
+
 class VolunteerDetailsRepository {
   final FirebaseFirestore _firestore;
-  VolunteerDetailsRepository({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  final LoggerService _logger;
+  VolunteerDetailsRepository({
+    required FirebaseFirestore firestore,
+    required LoggerService logger,
+  }) : _firestore = firestore,
+       _logger = logger;
 
   Future<void> updateVolunteerName(
     String shelterID,
@@ -22,7 +28,7 @@ class VolunteerDetailsRepository {
         'lastName': lastName,
       });
     } catch (e) {
-      print('Error updating volunteer name: $e');
+      _logger.error('Error updating volunteer name', e);
       rethrow;
     }
   }
@@ -102,7 +108,7 @@ class VolunteerDetailsRepository {
       };
     } catch (e) {
       // Handle errors
-      print('Error fetching logs: $e');
+      _logger.error('Error fetching logs', e);
       rethrow;
     }
   }
@@ -111,6 +117,7 @@ class VolunteerDetailsRepository {
 final volunteerDetailsRepositoryProvider = Provider<VolunteerDetailsRepository>(
   (ref) {
     final firestore = ref.watch(firestoreProvider);
-    return VolunteerDetailsRepository(firestore: firestore);
+    final logger = ref.watch(loggerServiceProvider);
+    return VolunteerDetailsRepository(firestore: firestore, logger: logger);
   },
 );

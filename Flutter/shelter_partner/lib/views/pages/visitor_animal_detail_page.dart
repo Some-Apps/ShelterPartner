@@ -12,7 +12,7 @@ class VisitorAnimalDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final serviceUrls = ref.watch(serviceUrlsProvider);
-    
+
     // Helper method to format the intake date
     String getFormattedDate(Timestamp? timestamp) {
       if (timestamp == null) return 'Unknown';
@@ -31,9 +31,7 @@ class VisitorAnimalDetailPage extends ConsumerWidget {
                 Navigator.pop(context);
               },
               child: Center(
-                child: Image.network(
-                  serviceUrls.corsImageUrl(imageUrl),
-                ),
+                child: Image.network(serviceUrls.corsImageUrl(imageUrl)),
               ),
             ),
           ),
@@ -58,7 +56,9 @@ class VisitorAnimalDetailPage extends ConsumerWidget {
                       itemCount: animal.photos?.length ?? 0,
                       itemBuilder: (context, index) {
                         final originalPhoto = animal.photos![index];
-                        final proxyUrl = serviceUrls.corsImageUrl(originalPhoto.url);
+                        final proxyUrl = serviceUrls.corsImageUrl(
+                          originalPhoto.url,
+                        );
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(

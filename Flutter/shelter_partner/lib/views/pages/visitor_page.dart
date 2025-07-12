@@ -18,10 +18,10 @@ class VisitorPage extends ConsumerStatefulWidget {
   const VisitorPage({super.key});
 
   @override
-  ConsumerState<VisitorPage> createState() => _VisitorPageState();
+  VisitorPageState createState() => VisitorPageState();
 }
 
-class _VisitorPageState extends ConsumerState<VisitorPage>
+class VisitorPageState extends ConsumerState<VisitorPage>
     with SingleTickerProviderStateMixin {
   final int preloadImageCount = 150; // Reduced preload count
   late ScrollController _scrollController;
@@ -248,7 +248,7 @@ class _VisitorPageState extends ConsumerState<VisitorPage>
                                     gradient: LinearGradient(
                                       colors: [
                                         Colors.transparent,
-                                        Colors.black.withOpacity(0.7),
+                                        Colors.black.withValues(alpha: 0.7),
                                       ],
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
@@ -309,10 +309,10 @@ class SlideshowScreen extends StatefulWidget {
   const SlideshowScreen({super.key, required this.animals, required this.ref});
 
   @override
-  _SlideshowScreenState createState() => _SlideshowScreenState();
+  SlideshowScreenState createState() => SlideshowScreenState();
 }
 
-class _SlideshowScreenState extends State<SlideshowScreen> {
+class SlideshowScreenState extends State<SlideshowScreen> {
   int _currentIndex = 0;
   int _currentPhotoIndex = 0;
   late Timer _timer;
@@ -354,7 +354,9 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       if (_currentPhotoIndex >= animal.photos!.length) {
         _currentPhotoIndex = 0;
       }
-      _currentImageUrl = serviceUrls.corsImageUrl(animal.photos![_currentPhotoIndex].url);
+      _currentImageUrl = serviceUrls.corsImageUrl(
+        animal.photos![_currentPhotoIndex].url,
+      );
     } else {
       _currentImageUrl = '';
     }

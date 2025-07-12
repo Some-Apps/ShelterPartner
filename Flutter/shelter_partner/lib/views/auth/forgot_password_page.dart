@@ -11,10 +11,10 @@ class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key, required this.onTapLogin});
 
   @override
-  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
+  ForgotPasswordPageState createState() => ForgotPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
+class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final emailController = TextEditingController();
 
   // Method to send password reset email
@@ -34,6 +34,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         .sendPasswordReset(email);
 
     // Close the loading indicator
+    if (!mounted) return;
     Navigator.of(context).pop();
 
     if (errorMessage == null) {
@@ -58,6 +59,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       );
     } else {
       Future.microtask(() {
+        if (!mounted) return;
         Fluttertoast.showToast(
           msg: errorMessage,
           toastLength: Toast.LENGTH_LONG,

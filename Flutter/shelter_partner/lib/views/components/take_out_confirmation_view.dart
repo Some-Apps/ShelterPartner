@@ -196,23 +196,20 @@ class TakeOutConfirmationViewState
                           ),
                         )
                         .then((_) {
-                          if (mounted) {
-                            ref
-                                .read(updateVolunteerRepositoryProvider)
-                                .modifyVolunteerLastActivity(
-                                  userDetails.id,
-                                  Timestamp.now(),
-                                );
-                          }
+                          ref
+                              .read(updateVolunteerRepositoryProvider)
+                              .modifyVolunteerLastActivity(
+                                userDetails.id,
+                                Timestamp.now(),
+                              );
                         });
                   }
 
-                  if (mounted) {
-                    Navigator.of(
-                      currentContext,
-                    ).pop(); // Close the loading indicator
-                    Navigator.of(currentContext).pop(true); // User confirmed
-                  }
+                  if (!context.mounted) return;
+                  Navigator.of(
+                    currentContext,
+                  ).pop(); // Close the loading indicator
+                  Navigator.of(currentContext).pop(true); // User confirmed
                 }
               : null,
           child: const Text('Confirm'),

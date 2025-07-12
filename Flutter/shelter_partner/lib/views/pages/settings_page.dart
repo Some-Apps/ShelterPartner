@@ -10,15 +10,17 @@ import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/components/release_notes.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shelter_partner/providers/firebase_providers.dart';
+import 'package:shelter_partner/services/logger_service.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  SettingsPageState createState() => SettingsPageState();
 }
 
-class _SettingsPageState extends ConsumerState<SettingsPage> {
+class SettingsPageState extends ConsumerState<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
   String _version = "Loading...";
   List<GitHubRelease> _releases = [];
@@ -29,7 +31,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   void initState() {
     super.initState();
     _fetchVersion();
-    fetchFilteredReleases().then((releases) {
+    final logger = ref.read(loggerServiceProvider);
+    fetchFilteredReleases(logger).then((releases) {
       setState(() {
         _releases = releases;
       });
@@ -95,7 +98,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   },
                                 ),
                                 Divider(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   height: 0,
                                   thickness: 1,
                                 ),
@@ -108,7 +111,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   },
                                 ),
                                 Divider(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   height: 0,
                                   thickness: 1,
                                 ),
@@ -121,7 +124,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   },
                                 ),
                                 Divider(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   height: 0,
                                   thickness: 1,
                                 ),
@@ -169,7 +172,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               //   },
                               // ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -182,7 +185,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 },
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -196,7 +199,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 },
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -362,7 +365,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               //   ),
                               // ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -379,7 +382,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 },
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -392,7 +395,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 },
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -407,7 +410,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -419,7 +422,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 ),
                               ),
                               Divider(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
                                 thickness: 1,
                               ),
@@ -497,7 +500,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 }
 
-Future<List<GitHubRelease>> fetchFilteredReleases() async {
+Future<List<GitHubRelease>> fetchFilteredReleases(LoggerService logger) async {
   final response = await http.get(
     Uri.parse(
       'https://api.github.com/repos/ShelterPartner/ShelterPartner/releases',
@@ -518,8 +521,8 @@ Future<List<GitHubRelease>> fetchFilteredReleases() async {
           .whereType<GitHubRelease>()
           .toList();
       return releases..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
-    } catch (e) {
-      print('Failed to decode JSON');
+    } catch (e, s) {
+      logger.error('Failed to decode JSON', e, s);
       throw Exception('Invalid JSON: $e');
     }
   } else {

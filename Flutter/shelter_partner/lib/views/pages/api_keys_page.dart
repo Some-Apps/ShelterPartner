@@ -13,10 +13,10 @@ class ApiKeysPage extends ConsumerStatefulWidget {
   const ApiKeysPage({required this.title, required this.arrayKey, super.key});
 
   @override
-  _ApiKeysPageState createState() => _ApiKeysPageState();
+  ApiKeysPageState createState() => ApiKeysPageState();
 }
 
-class _ApiKeysPageState extends ConsumerState<ApiKeysPage> {
+class ApiKeysPageState extends ConsumerState<ApiKeysPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _itemController = TextEditingController();
   List<APIKey> _arrayItems = [];

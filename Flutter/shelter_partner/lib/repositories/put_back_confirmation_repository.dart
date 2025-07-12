@@ -4,10 +4,16 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
 
+import 'package:shelter_partner/services/logger_service.dart';
+
 class PutBackConfirmationRepository {
   final FirebaseFirestore _firestore;
-  PutBackConfirmationRepository({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  final LoggerService _logger;
+  PutBackConfirmationRepository({
+    required FirebaseFirestore firestore,
+    required LoggerService logger,
+  }) : _firestore = firestore,
+       _logger = logger;
 
   Future<void> putBackAnimal(Animal animal, String shelterID, Log log) async {
     try {
@@ -15,7 +21,7 @@ class PutBackConfirmationRepository {
       final collection = animal.species.toLowerCase() == 'cat'
           ? 'cats'
           : 'dogs';
-      print('Determined collection: $collection');
+      _logger.debug('Determined collection: $collection');
 
       // Fetch the current logs
       final docRef = _firestore
@@ -40,14 +46,14 @@ class PutBackConfirmationRepository {
       // Update the logs array in Firestore
       if (!animal.inKennel) {
         await docRef.update({'logs': logs});
-        print('Updated last log for ${animal.id}');
+        _logger.info('Updated last log for ${animal.id}');
 
         // Update the inKennel status
         await docRef.update({'inKennel': true});
-        print('Updated inKennel status for ${animal.id}');
+        _logger.info('Updated inKennel status for ${animal.id}');
       }
     } catch (e) {
-      print('Error in putBackAnimal: $e');
+      _logger.error('Error in putBackAnimal', e);
     }
   }
 
@@ -57,7 +63,7 @@ class PutBackConfirmationRepository {
       final collection = animal.species.toLowerCase() == 'cat'
           ? 'cats'
           : 'dogs';
-      print('Determined collection: $collection');
+      _logger.debug('Determined collection: $collection');
 
       // Fetch the current logs
       final docRef = _firestore
@@ -79,9 +85,11 @@ class PutBackConfirmationRepository {
 
       // Update the logs array and inKennel status in Firestore
       await docRef.update({'logs': logs, 'inKennel': true});
-      print('Deleted last log and set inKennel to true for ${animal.id}');
+      _logger.info(
+        'Deleted last log and set inKennel to true for ${animal.id}',
+      );
     } catch (e) {
-      print('Error in deleteLastLog: $e');
+      _logger.error('Error in deleteLastLog', e);
     }
   }
 }
@@ -90,5 +98,9 @@ class PutBackConfirmationRepository {
 final putBackConfirmationRepositoryProvider =
     Provider<PutBackConfirmationRepository>((ref) {
       final firestore = ref.watch(firestoreProvider);
-      return PutBackConfirmationRepository(firestore: firestore);
+      final logger = ref.watch(loggerServiceProvider);
+      return PutBackConfirmationRepository(
+        firestore: firestore,
+        logger: logger,
+      );
     });
