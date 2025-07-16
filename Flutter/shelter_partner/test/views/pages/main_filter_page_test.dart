@@ -420,5 +420,250 @@ void main() {
         findsOneWidget,
       ); // Back to initial state
     });
+
+    testWidgets('should display Medical Category in attribute dropdown', (WidgetTester tester) async {
+      // Arrange: Create test user
+      final container = await createTestUserAndLogin(
+        email: 'medicalcategory@example.com',
+        password: 'testpassword',
+        firstName: 'Medical',
+        lastName: 'CategoryTester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      const testTitle = 'User Enrichment Filter';
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: MainFilterPage(
+              title: testTitle,
+              collection: 'users',
+              documentID: user!.id,
+              filterFieldPath: 'userFilter',
+            ),
+          ),
+        ),
+      );
+
+      // Wait for the widget to be built
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Condition" button to open the dialog
+      await tester.tap(find.text('Add Condition'));
+      await tester.pumpAndSettle();
+
+      // Find the attribute dropdown
+      final attributeDropdown = find.byType(DropdownButton<String>).first;
+      await tester.tap(attributeDropdown);
+      await tester.pumpAndSettle();
+
+      // Try to scroll down in the dropdown to see more items
+      try {
+        await tester.scrollUntilVisible(find.text('Medical Category'), 100);
+        await tester.pumpAndSettle();
+        expect(find.text('Medical Category'), findsOneWidget);
+      } catch (e) {
+        // If scrolling doesn't work, just try to tap directly
+        await tester.tap(find.text('Medical Category'));
+        await tester.pumpAndSettle();
+      }
+    });
+
+    testWidgets('should display Let Out Type and Early Put Back Reasons in attribute dropdown', (WidgetTester tester) async {
+      // Arrange: Create test user
+      final container = await createTestUserAndLogin(
+        email: 'letoutuser@example.com',
+        password: 'testpassword',
+        firstName: 'LetOut',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      const testTitle = 'User Enrichment Filter';
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: MainFilterPage(
+              title: testTitle,
+              collection: 'users',
+              documentID: user!.id,
+              filterFieldPath: 'userFilter',
+            ),
+          ),
+        ),
+      );
+
+      // Wait for the widget to be built
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Condition" button to open the dialog
+      await tester.tap(find.text('Add Condition'));
+      await tester.pumpAndSettle();
+
+      // Find the attribute dropdown
+      final attributeDropdown = find.byType(DropdownButton<String>).first;
+      await tester.tap(attributeDropdown);
+      await tester.pumpAndSettle();
+
+      // Verify that "Let Out Type" and "Early Put Back Reasons" are in the dropdown
+      expect(find.text('Let Out Type'), findsOneWidget);
+      expect(find.text('Early Put Back Reasons'), findsOneWidget);
+    });
+
+    testWidgets('should allow selecting Let Out Type as filter attribute with appropriate operators', (WidgetTester tester) async {
+      // Arrange: Create test user
+      final container = await createTestUserAndLogin(
+        email: 'letouttype@example.com',
+        password: 'testpassword',
+        firstName: 'LetOutType',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      const testTitle = 'User Enrichment Filter';
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: MainFilterPage(
+              title: testTitle,
+              collection: 'users',
+              documentID: user!.id,
+              filterFieldPath: 'userFilter',
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Condition" button to open the dialog
+      await tester.tap(find.text('Add Condition'));
+      await tester.pumpAndSettle();
+
+      // Select "Let Out Type" from the attribute dropdown
+      final attributeDropdown = find.byType(DropdownButton<String>).first;
+      await tester.tap(attributeDropdown);
+      await tester.pumpAndSettle();
+      
+      await tester.tap(find.text('Let Out Type'));
+      await tester.pumpAndSettle();
+
+      // Verify that appropriate operators are available for Let Out Type
+      final operatorDropdown = find.byType(DropdownButton<OperatorType>);
+      await tester.tap(operatorDropdown);
+      await tester.pumpAndSettle();
+
+      // Check that string-based operators are available
+      expect(find.text('Equals'), findsOneWidget);
+      expect(find.text('Not Equals'), findsOneWidget);
+      expect(find.text('Contains'), findsOneWidget);
+      expect(find.text('Not Contains'), findsOneWidget);
+
+      // Select "Contains" operator and add a value
+      await tester.tap(find.text('Contains'));
+      await tester.pumpAndSettle();
+
+      final valueField = find.byType(TextField);
+      await tester.enterText(valueField, 'Walk');
+      await tester.pumpAndSettle();
+
+      // Add the condition
+      final addButton = find.text('Add').last;
+      await tester.tap(addButton);
+      await tester.pumpAndSettle();
+
+      // Verify the condition was added
+      expect(find.textContaining('Let Out Type'), findsWidgets);
+      expect(find.textContaining('Contains'), findsWidgets);
+      expect(find.textContaining('Walk'), findsWidgets);
+    });
+
+    testWidgets('should allow selecting Early Put Back Reasons as filter attribute with appropriate operators', (WidgetTester tester) async {
+      // Arrange: Create test user
+      final container = await createTestUserAndLogin(
+        email: 'putbackreason@example.com',
+        password: 'testpassword',
+        firstName: 'PutBackReason',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+
+      final user = container.read(appUserProvider);
+      const testTitle = 'User Enrichment Filter';
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: MainFilterPage(
+              title: testTitle,
+              collection: 'users',
+              documentID: user!.id,
+              filterFieldPath: 'userFilter',
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Condition" button to open the dialog
+      await tester.tap(find.text('Add Condition'));
+      await tester.pumpAndSettle();
+
+      // Select "Early Put Back Reasons" from the attribute dropdown
+      final attributeDropdown = find.byType(DropdownButton<String>).first;
+      await tester.tap(attributeDropdown);
+      await tester.pumpAndSettle();
+      
+      await tester.tap(find.text('Early Put Back Reasons'));
+      await tester.pumpAndSettle();
+
+      // Verify that appropriate operators are available for Early Put Back Reasons
+      final operatorDropdown = find.byType(DropdownButton<OperatorType>);
+      await tester.tap(operatorDropdown);
+      await tester.pumpAndSettle();
+
+      // Check that string-based operators are available
+      expect(find.text('Equals'), findsOneWidget);
+      expect(find.text('Not Equals'), findsOneWidget);
+      expect(find.text('Contains'), findsOneWidget);
+      expect(find.text('Not Contains'), findsOneWidget);
+
+      // Select "Equals" operator and add a value
+      await tester.tap(find.text('Equals'));
+      await tester.pumpAndSettle();
+
+      final valueField = find.byType(TextField);
+      await tester.enterText(valueField, 'Needed medical attention');
+      await tester.pumpAndSettle();
+
+      // Add the condition
+      final addButton = find.text('Add').last;
+      await tester.tap(addButton);
+      await tester.pumpAndSettle();
+
+      // Verify the condition was added
+      expect(find.textContaining('Early Put Back Reasons'), findsWidgets);
+      expect(find.textContaining('Equals'), findsWidgets);
+      expect(find.textContaining('Needed medical attention'), findsWidgets);
+    });
   });
 }

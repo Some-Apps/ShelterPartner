@@ -60,6 +60,8 @@ class EnrichmentPageState extends ConsumerState<EnrichmentPage>
     'Location Category': 'locationCategory',
     'Medical Category': 'medicalCategory',
     'Volunteer Category': 'volunteerCategory',
+    'Let Out Type': 'letOutType',
+    'Early Put Back Reasons': 'earlyPutBackReason',
   };
 
   // PagingControllers for infinite scrolling
@@ -163,6 +165,18 @@ class EnrichmentPageState extends ConsumerState<EnrichmentPage>
             break;
           case 'volunteerCategory':
             fieldValue = animal.volunteerCategory;
+            break;
+          case 'letOutType':
+            fieldValue = animal.logs.map((log) => log.type).join(' ');
+            break;
+          case 'earlyPutBackReason':
+            fieldValue = animal.logs
+                .where(
+                  (log) =>
+                      log.earlyReason != null && log.earlyReason!.isNotEmpty,
+                )
+                .map((log) => log.earlyReason!)
+                .join(' ');
             break;
           default:
             fieldValue = '';

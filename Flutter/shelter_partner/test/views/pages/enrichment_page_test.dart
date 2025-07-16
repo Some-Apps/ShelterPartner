@@ -741,5 +741,136 @@ void main() {
       expect(find.text('Buddy'), findsNothing);
       expect(find.text('Max'), findsNothing);
     });
+
+    testWidgets('search bar should support Let Out Type and Early Put Back Reasons attributes', (WidgetTester tester) async {
+      // Arrange: Create test user and shelter, get shared container
+      final container = await createTestUserAndLogin(
+        email: 'logsearchuser@example.com',
+        password: 'testpassword',
+        firstName: 'LogSearch',
+        lastName: 'Tester',
+        shelterName: 'Test Shelter',
+        shelterAddress: '123 Test St',
+        selectedManagementSoftware: 'ShelterLuv',
+      );
+      final user = container.read(appUserProvider);
+      final shelterId = user?.shelterId ?? 'test-shelter';
+      
+      // Add test animals with logs containing different types and early reasons
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog1')
+          .set(createTestAnimalData(
+            id: 'dog1', 
+            name: 'Sammy',
+            logs: [
+              {
+                'id': 'log1',
+                'type': 'Walk',
+                'author': 'Volunteer',
+                'authorID': 'vol1',
+                'startTime': DateTime.now().subtract(const Duration(hours: 2)),
+                'endTime': DateTime.now().subtract(const Duration(hours: 1)),
+                'earlyReason': null,
+              },
+              {
+                'id': 'log2',
+                'type': 'Training',
+                'author': 'Volunteer',
+                'authorID': 'vol1',
+                'startTime': DateTime.now().subtract(const Duration(hours: 4)),
+                'endTime': DateTime.now().subtract(const Duration(hours: 3)),
+                'earlyReason': 'Medical attention needed',
+              }
+            ]
+          ));
+      
+      await FirebaseTestOverrides.fakeFirestore
+          .collection('shelters')
+          .doc(shelterId)
+          .collection('dogs')
+          .doc('dog2')
+          .set(createTestAnimalData(
+            id: 'dog2', 
+            name: 'Rex',
+            logs: [
+              {
+                'id': 'log3',
+                'type': 'Playtime',
+                'author': 'Volunteer',
+                'authorID': 'vol2',
+                'startTime': DateTime.now().subtract(const Duration(hours: 1)),
+                'endTime': DateTime.now(),
+                'earlyReason': null,
+              }
+            ]
+          ));
+
+      // Act
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: EnrichmentPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Open the Additional Options expansion tile to reveal the dropdowns
+      final additionalOptionsTile = findAdditionalOptionsTile();
+      expect(additionalOptionsTile, findsOneWidget);
+      await tester.tap(additionalOptionsTile);
+      await tester.pumpAndSettle();
+
+      // Test Let Out Type search
+      // Find the attribute dropdown and select "Let Out Type"
+      final attributeDropdown = findAttributeDropdown('Name');
+      expect(attributeDropdown, findsOneWidget);
+      await tester.tap(attributeDropdown);
+      await tester.pumpAndSettle();
+
+      // Verify "Let Out Type" option is available
+      expect(find.text('Let Out Type'), findsOneWidget);
+      await tester.tap(find.text('Let Out Type'));
+      await tester.pumpAndSettle();
+
+      // Search for 'Walk' in let out types
+      final searchField = findSearchField();
+      await tester.enterText(searchField, 'Walk');
+      await tester.pumpAndSettle();
+
+      // Only Sammy should be visible (has a log with type 'Walk')
+      expect(countAnimalCardText('Sammy'), 1);
+      expect(countAnimalCardText('Rex'), 0);
+
+      // Test Early Put Back Reasons search
+      // Change to Early Put Back Reasons attribute
+      await tester.tap(attributeDropdown);
+      await tester.pumpAndSettle();
+      
+      // Verify "Early Put Back Reasons" option is available
+      expect(find.text('Early Put Back Reasons'), findsOneWidget);
+      await tester.tap(find.text('Early Put Back Reasons'));
+      await tester.pumpAndSettle();
+
+      // Clear previous search and search for 'Medical'
+      await tester.enterText(searchField, '');
+      await tester.pumpAndSettle();
+      await tester.enterText(searchField, 'Medical');
+      await tester.pumpAndSettle();
+
+      // Only Sammy should be visible (has a log with early reason containing 'Medical')
+      expect(countAnimalCardText('Sammy'), 1);
+      expect(countAnimalCardText('Rex'), 0);
+
+      // Search for something that doesn't exist
+      await tester.enterText(searchField, 'Nonexistent');
+      await tester.pumpAndSettle();
+
+      // No animals should be visible
+      expect(countAnimalCardText('Sammy'), 0);
+      expect(countAnimalCardText('Rex'), 0);
+    });
   });
 }
