@@ -218,6 +218,15 @@ class VisitorsViewModel extends StateNotifier<Map<String, List<Animal>>> {
         return animal.volunteerCategory;
       case 'inKennel':
         return animal.inKennel;
+      case 'letOutType':
+        return animal.logs.map((log) => log.type.toLowerCase()).toList();
+      case 'earlyPutBackReason':
+        return animal.logs
+            .where(
+              (log) => log.earlyReason != null && log.earlyReason!.isNotEmpty,
+            )
+            .map((log) => log.earlyReason!.toLowerCase())
+            .toList();
       default:
         return null;
     }
