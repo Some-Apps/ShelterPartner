@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
-import 'package:shelter_partner/view_models/enrichment_view_model.dart';
+// import 'package:shelter_partner/view_models/enrichment_view_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/models/photo.dart';
@@ -11,8 +11,8 @@ void main() {
   group('Filter Functionality Tests', () {
     test('getAttributeValue should return let out types from animal logs', () {
       // Create an enrichment view model for testing
-      const viewModel = EnrichmentViewModel;
-      
+      // const viewModel = EnrichmentViewModel;
+
       // Create test logs with different types
       final logs = [
         Log(
@@ -64,20 +64,27 @@ void main() {
 
       // Create a mock EnrichmentViewModel instance
       // We'll test the getAttributeValue method indirectly by creating an instance
-      
+
       // Test Let Out Type attribute
       // Since we can't directly access the method, we'll test the expected behavior
-      final letOutTypes = animal.logs.map((log) => log.type.toLowerCase()).toList();
+      final letOutTypes = animal.logs
+          .map((log) => log.type.toLowerCase())
+          .toList();
       expect(letOutTypes, contains('walk'));
       expect(letOutTypes, contains('training'));
-      
+
       // Test Early Put Back Reasons attribute
       final earlyReasons = animal.logs
-          .where((log) => log.earlyReason != null && log.earlyReason!.isNotEmpty)
+          .where(
+            (log) => log.earlyReason != null && log.earlyReason!.isNotEmpty,
+          )
           .map((log) => log.earlyReason!.toLowerCase())
           .toList();
       expect(earlyReasons, contains('medical attention needed'));
-      expect(earlyReasons.length, equals(1)); // Only one log has an early reason
+      expect(
+        earlyReasons.length,
+        equals(1),
+      ); // Only one log has an early reason
     });
 
     test('logs should contain correct type and early reason fields', () {
