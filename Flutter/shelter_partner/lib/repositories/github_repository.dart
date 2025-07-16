@@ -12,11 +12,7 @@ class GitHubRepository {
     required String body,
     List<String> labels = const ['user feedback'],
   }) async {
-    final issue = GitHubIssue(
-      title: title,
-      body: body,
-      labels: labels,
-    );
+    final issue = GitHubIssue(title: title, body: body, labels: labels);
 
     final response = await http.post(
       Uri.parse('$_baseUrl/repos/$_repoOwner/$_repoName/issues'),
@@ -32,7 +28,9 @@ class GitHubRepository {
       final responseData = jsonDecode(response.body);
       return GitHubIssueResponse.fromJson(responseData);
     } else {
-      throw Exception('Failed to create GitHub issue: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Failed to create GitHub issue: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 }

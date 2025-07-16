@@ -11,14 +11,16 @@ class FeedbackSubmissionDialog extends ConsumerStatefulWidget {
   const FeedbackSubmissionDialog({super.key});
 
   @override
-  FeedbackSubmissionDialogState createState() => FeedbackSubmissionDialogState();
+  FeedbackSubmissionDialogState createState() =>
+      FeedbackSubmissionDialogState();
 }
 
-class FeedbackSubmissionDialogState extends ConsumerState<FeedbackSubmissionDialog> {
+class FeedbackSubmissionDialogState
+    extends ConsumerState<FeedbackSubmissionDialog> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final GitHubRepository _githubRepository = GitHubRepository();
-  
+
   XFile? _selectedImage;
   final ImagePicker _picker = ImagePicker();
   bool _isSubmitting = false;
@@ -38,9 +40,9 @@ class FeedbackSubmissionDialogState extends ConsumerState<FeedbackSubmissionDial
     } catch (e, s) {
       logger.error('Error picking image', e, s);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
     }
   }
 
@@ -51,9 +53,12 @@ class FeedbackSubmissionDialogState extends ConsumerState<FeedbackSubmissionDial
   }
 
   Future<void> _submitFeedback() async {
-    if (_titleController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty) {
+    if (_titleController.text.trim().isEmpty ||
+        _descriptionController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in both title and description')),
+        const SnackBar(
+          content: Text('Please fill in both title and description'),
+        ),
       );
       return;
     }
@@ -63,15 +68,16 @@ class FeedbackSubmissionDialogState extends ConsumerState<FeedbackSubmissionDial
     });
 
     final logger = ref.read(loggerServiceProvider);
-    
+
     try {
       String body = _descriptionController.text.trim();
-      
+
       // Add screenshot info if image is selected
       if (_selectedImage != null) {
-        body += '\n\n---\n**Note:** User attempted to include a screenshot with this feedback.';
+        body +=
+            '\n\n---\n**Note:** User attempted to include a screenshot with this feedback.';
       }
-      
+
       // Add submission info
       body += '\n\n---\n*Submitted from ShelterPartner app*';
 
@@ -85,7 +91,7 @@ class FeedbackSubmissionDialogState extends ConsumerState<FeedbackSubmissionDial
 
       // Show success message with link
       Navigator.of(context).pop();
-      
+
       // Show toast with success message
       Fluttertoast.showToast(
         msg: "Feedback submitted successfully!",
@@ -105,7 +111,9 @@ class FeedbackSubmissionDialogState extends ConsumerState<FeedbackSubmissionDial
               const SizedBox(height: 16),
               Text('Issue #${response.number}: ${response.title}'),
               const SizedBox(height: 16),
-              const Text('You can track the progress of your feedback using the link below:'),
+              const Text(
+                'You can track the progress of your feedback using the link below:',
+              ),
             ],
           ),
           actions: [
@@ -124,18 +132,17 @@ class FeedbackSubmissionDialogState extends ConsumerState<FeedbackSubmissionDial
           ],
         ),
       );
-
     } catch (e, s) {
       logger.error('Error submitting feedback', e, s);
       if (!mounted) return;
-      
+
       setState(() {
         _isSubmitting = false;
       });
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to submit feedback: $e')),
-      );
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to submit feedback: $e')));
     }
   }
 
@@ -170,7 +177,8 @@ class FeedbackSubmissionDialogState extends ConsumerState<FeedbackSubmissionDial
               maxLines: 5,
               decoration: const InputDecoration(
                 labelText: 'Description',
-                hintText: 'Detailed description of your feedback, bug report, or feature request',
+                hintText:
+                    'Detailed description of your feedback, bug report, or feature request',
                 border: OutlineInputBorder(),
               ),
               enabled: !_isSubmitting,

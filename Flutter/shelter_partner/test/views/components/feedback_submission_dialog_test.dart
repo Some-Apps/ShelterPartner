@@ -11,14 +11,14 @@ void main() {
       FirebaseTestOverrides.initialize();
     });
 
-    testWidgets('should display all UI elements correctly', (WidgetTester tester) async {
+    testWidgets('should display all UI elements correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: FirebaseTestOverrides.overrides,
           child: const MaterialApp(
-            home: Scaffold(
-              body: FeedbackSubmissionDialog(),
-            ),
+            home: Scaffold(body: FeedbackSubmissionDialog()),
           ),
         ),
       );
@@ -39,14 +39,14 @@ void main() {
       expect(find.text('Add Screenshot (Optional)'), findsOneWidget);
     });
 
-    testWidgets('should show validation message for empty fields', (WidgetTester tester) async {
+    testWidgets('should show validation message for empty fields', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: FirebaseTestOverrides.overrides,
           child: const MaterialApp(
-            home: Scaffold(
-              body: FeedbackSubmissionDialog(),
-            ),
+            home: Scaffold(body: FeedbackSubmissionDialog()),
           ),
         ),
       );
@@ -56,10 +56,15 @@ void main() {
       await tester.pump();
 
       // Should show validation message
-      expect(find.text('Please fill in both title and description'), findsOneWidget);
+      expect(
+        find.text('Please fill in both title and description'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('should close dialog when Cancel is pressed', (WidgetTester tester) async {
+    testWidgets('should close dialog when Cancel is pressed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: FirebaseTestOverrides.overrides,
@@ -94,26 +99,32 @@ void main() {
       expect(find.text('Submit Feedback'), findsNothing);
     });
 
-    testWidgets('should enable and disable submit button correctly', (WidgetTester tester) async {
+    testWidgets('should enable and disable submit button correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: FirebaseTestOverrides.overrides,
           child: const MaterialApp(
-            home: Scaffold(
-              body: FeedbackSubmissionDialog(),
-            ),
+            home: Scaffold(body: FeedbackSubmissionDialog()),
           ),
         ),
       );
 
       final submitButton = find.widgetWithText(ElevatedButton, 'Submit');
-      
+
       // Submit button should be enabled initially
       expect(tester.widget<ElevatedButton>(submitButton).onPressed, isNotNull);
 
       // Fill in the title field
-      await tester.enterText(find.widgetWithText(TextField, 'Title'), 'Test Feedback');
-      await tester.enterText(find.widgetWithText(TextField, 'Description'), 'This is a test feedback');
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Title'),
+        'Test Feedback',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Description'),
+        'This is a test feedback',
+      );
       await tester.pump();
 
       // Submit button should still be enabled with text filled

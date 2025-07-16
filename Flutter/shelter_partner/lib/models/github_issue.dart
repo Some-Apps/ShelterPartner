@@ -10,11 +10,7 @@ class GitHubIssue {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'body': body,
-      'labels': labels,
-    };
+    return {'title': title, 'body': body, 'labels': labels};
   }
 }
 

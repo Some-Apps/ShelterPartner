@@ -377,7 +377,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                                 onTap: () {
                                   showDialog(
                                     context: context,
-                                    builder: (context) => const FeedbackSubmissionDialog(),
+                                    builder: (context) =>
+                                        const FeedbackSubmissionDialog(),
                                   );
                                 },
                               ),

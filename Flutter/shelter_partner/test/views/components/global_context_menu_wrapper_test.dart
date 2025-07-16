@@ -12,18 +12,16 @@ void main() {
       FirebaseTestOverrides.initialize();
     });
 
-    testWidgets('should render child widget correctly', (WidgetTester tester) async {
+    testWidgets('should render child widget correctly', (
+      WidgetTester tester,
+    ) async {
       const testWidget = Text('Test Child');
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: FirebaseTestOverrides.overrides,
           child: const MaterialApp(
-            home: Scaffold(
-              body: GlobalContextMenuWrapper(
-                child: testWidget,
-              ),
-            ),
+            home: Scaffold(body: GlobalContextMenuWrapper(child: testWidget)),
           ),
         ),
       );
@@ -32,20 +30,18 @@ void main() {
       expect(find.text('Test Child'), findsOneWidget);
     });
 
-    testWidgets('should show context menu on right click in web environment', (WidgetTester tester) async {
+    testWidgets('should show context menu on right click in web environment', (
+      WidgetTester tester,
+    ) async {
       // This test would only apply to web, but since we're in test environment,
       // we'll just verify the widget structure
       const testWidget = Text('Test Child');
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: FirebaseTestOverrides.overrides,
           child: const MaterialApp(
-            home: Scaffold(
-              body: GlobalContextMenuWrapper(
-                child: testWidget,
-              ),
-            ),
+            home: Scaffold(body: GlobalContextMenuWrapper(child: testWidget)),
           ),
         ),
       );
@@ -54,23 +50,21 @@ void main() {
       if (kIsWeb) {
         expect(find.byType(GestureDetector), findsOneWidget);
       }
-      
+
       // Verify child is still present
       expect(find.text('Test Child'), findsOneWidget);
     });
 
-    testWidgets('should pass through child on non-web platforms', (WidgetTester tester) async {
+    testWidgets('should pass through child on non-web platforms', (
+      WidgetTester tester,
+    ) async {
       const testWidget = Text('Test Child');
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: FirebaseTestOverrides.overrides,
           child: const MaterialApp(
-            home: Scaffold(
-              body: GlobalContextMenuWrapper(
-                child: testWidget,
-              ),
-            ),
+            home: Scaffold(body: GlobalContextMenuWrapper(child: testWidget)),
           ),
         ),
       );
