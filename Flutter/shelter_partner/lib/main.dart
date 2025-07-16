@@ -30,6 +30,7 @@ import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
 import 'package:shelter_partner/views/pages/volunteers_page.dart';
+import 'package:shelter_partner/views/components/global_context_menu_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,11 +106,13 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider); // Watch the GoRouter provider
 
-    return MaterialApp.router(
-      routerConfig: goRouter,
-      theme: theme,
-      themeMode: ThemeMode.light, // Set your desired theme mode
-      debugShowCheckedModeBanner: false,
+    return GlobalContextMenuWrapper(
+      child: MaterialApp.router(
+        routerConfig: goRouter,
+        theme: theme,
+        themeMode: ThemeMode.light, // Set your desired theme mode
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
