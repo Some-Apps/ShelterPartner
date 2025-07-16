@@ -6,8 +6,6 @@ import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/views/components/animal_card_view.dart';
 import 'package:shelter_partner/views/components/simplistic_animal_card_view.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shelter_partner/models/log.dart';
 
 import '../../helpers/firebase_test_overrides.dart';
 import '../../helpers/test_animal_data.dart';
