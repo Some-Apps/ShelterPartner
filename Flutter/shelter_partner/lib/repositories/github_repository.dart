@@ -3,9 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:shelter_partner/models/github_issue.dart';
 
 class GitHubRepository {
-  static const String _baseUrl = 'https://api.github.com';
-  static const String _repoOwner = 'Shelter-Partner';
-  static const String _repoName = 'ShelterPartner';
+  // Cloud Function URL for GitHub issue proxy
+  static const String _cloudFunctionUrl =
+      'https://us-central1-shelterpartner-42b4c.cloudfunctions.net/create_github_issue';
 
   Future<GitHubIssueResponse> createIssue({
     required String title,
@@ -15,10 +15,9 @@ class GitHubRepository {
     final issue = GitHubIssue(title: title, body: body, labels: labels);
 
     final response = await http.post(
-      Uri.parse('$_baseUrl/repos/$_repoOwner/$_repoName/issues'),
+      Uri.parse(_cloudFunctionUrl),
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json',
         'User-Agent': 'ShelterPartner-App',
       },
       body: jsonEncode(issue.toJson()),
