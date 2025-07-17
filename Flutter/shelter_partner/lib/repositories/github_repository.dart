@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:shelter_partner/models/github_issue.dart';
 
@@ -11,8 +12,28 @@ class GitHubRepository {
     required String title,
     required String body,
     List<String> labels = const ['user feedback'],
+    Uint8List? imageBytes,
+    String? imageName,
   }) async {
-    final issue = GitHubIssue(title: title, body: body, labels: labels);
+    String? imageBase64;
+
+    // Convert image to base64 if provided
+    if (imageBytes != null) {
+      try {
+        imageBase64 = base64Encode(imageBytes);
+      } catch (e) {
+        // If base64 conversion fails, continue without image
+        imageBase64 = null;
+      }
+    }
+
+    final issue = GitHubIssue(
+      title: title,
+      body: body,
+      labels: labels,
+      imageBase64: imageBase64,
+      imageName: imageName,
+    );
 
     final response = await http.post(
       Uri.parse(_cloudFunctionUrl),

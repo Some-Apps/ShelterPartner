@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,19 +73,38 @@ class FeedbackSubmissionDialogState
     try {
       String body = _descriptionController.text.trim();
 
-      // Add screenshot info if image is selected
-      if (_selectedImage != null) {
-        body +=
-            '\n\n---\n**Note:** User attempted to include a screenshot with this feedback.';
-      }
-
       // Add submission info
       body += '\n\n---\n*Submitted from ShelterPartner app*';
+
+      // Prepare image data if selected
+      Uint8List? imageBytes;
+      String? imageName;
+
+      if (_selectedImage != null) {
+        try {
+          imageBytes = await _selectedImage!.readAsBytes();
+          imageName = _selectedImage!.name;
+
+          // Check file size (limit to 10MB for reasonable upload)
+          if (imageBytes.length > 10 * 1024 * 1024) {
+            throw Exception('Image file is too large (over 10MB)');
+          }
+        } catch (e) {
+          logger.warning('Failed to process image: $e');
+          // Continue without image but add note
+          body +=
+              '\n\n**Note:** User attempted to include a screenshot but image processing failed: ${e.toString()}';
+          imageBytes = null;
+          imageName = null;
+        }
+      }
 
       final response = await _githubRepository.createIssue(
         title: _titleController.text.trim(),
         body: body,
         labels: ['user feedback'],
+        imageBytes: imageBytes,
+        imageName: imageName,
       );
 
       if (!mounted) return;
@@ -93,8 +113,14 @@ class FeedbackSubmissionDialogState
       Navigator.of(context).pop();
 
       // Show toast with success message
+      String toastMessage = "Feedback submitted successfully!";
+      if (_selectedImage != null && !response.imageUploaded) {
+        toastMessage =
+            "Feedback submitted! Note: Screenshot could not be uploaded.";
+      }
+
       Fluttertoast.showToast(
-        msg: "Feedback submitted successfully!",
+        msg: toastMessage,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
       );
@@ -108,6 +134,13 @@ class FeedbackSubmissionDialogState
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text('Your feedback has been submitted successfully!'),
+              if (_selectedImage != null && !response.imageUploaded) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Note: Your screenshot could not be uploaded${response.imageUploadError != null ? ': ${response.imageUploadError}' : '.'}',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ],
               const SizedBox(height: 16),
               Text('Issue #${response.number}: ${response.title}'),
               const SizedBox(height: 16),
