@@ -3,7 +3,7 @@
 Jared will be out of town July 4 - 16 and will respond to any messages when he gets back.
 
 ## How To Contribute On GitHub
-1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue. Issues with "Bounty" labels are available to work on if not already assigned to someone.
+1. Create an issue in the Some-Apps/ShelterPartner repository or select an existing issue.
 2. Comment on the issue "I'd like to work on this"
 3. Once you have been assigned the issue, fork to the repository into a branch containing the issue number
 4. When you are ready, submit a pull request from this branch
