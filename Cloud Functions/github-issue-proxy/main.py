@@ -3,11 +3,7 @@ import json
 import os
 import requests
 from flask import jsonify, request
-from google.cloud import logging
 
-# Initialize Google Cloud Logging
-logging_client = logging.Client()
-logging_client.setup_logging()
 
 # GitHub API configuration
 GITHUB_API_URL = "https://api.github.com"
@@ -38,9 +34,8 @@ def create_github_issue(request):
     
     try:
         # Get GitHub token from environment variable
-        github_token = os.environ.get('GITHUB_TOKEN')
+        github_token = os.environ.get('github')
         if not github_token:
-            logging.error("GitHub token not configured")
             return jsonify({'error': 'Server configuration error'}), 500, headers
         
         # Parse request JSON
@@ -90,20 +85,16 @@ def create_github_issue(request):
                 'title': github_data['title']
             }
             
-            logging.info(f"Successfully created GitHub issue #{github_data['number']}")
             return jsonify(result), 201, headers
         else:
-            logging.error(f"GitHub API error: {response.status_code} - {response.text}")
             return jsonify({
                 'error': 'Failed to create GitHub issue',
                 'details': response.text
             }), response.status_code, headers
             
     except requests.exceptions.RequestException as e:
-        logging.error(f"Request error: {str(e)}")
         return jsonify({'error': 'Network error occurred'}), 500, headers
     except json.JSONDecodeError:
         return jsonify({'error': 'Invalid JSON payload'}), 400, headers
     except Exception as e:
-        logging.error(f"Unexpected error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500, headers

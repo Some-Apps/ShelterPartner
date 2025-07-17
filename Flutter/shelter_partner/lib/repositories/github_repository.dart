@@ -5,7 +5,7 @@ import 'package:shelter_partner/models/github_issue.dart';
 class GitHubRepository {
   // Cloud Function URL for GitHub issue proxy
   static const String _cloudFunctionUrl =
-      'https://us-central1-shelterpartner-42b4c.cloudfunctions.net/create_github_issue';
+      'https://github-issue-proxy-222422545919.europe-west1.run.app';
 
   Future<GitHubIssueResponse> createIssue({
     required String title,
