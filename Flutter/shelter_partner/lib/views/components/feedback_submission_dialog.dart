@@ -81,7 +81,7 @@ class FeedbackSubmissionDialogState
       // Add submission info
       body += '\n\n---\n*Submitted from ShelterPartner app*';
 
-      final response = await _githubRepository.createIssue(
+      await _githubRepository.submitFeedback(
         title: _titleController.text.trim(),
         body: body,
         labels: ['user feedback'],
@@ -89,7 +89,7 @@ class FeedbackSubmissionDialogState
 
       if (!mounted) return;
 
-      // Show success message with link
+      // Show success message
       Navigator.of(context).pop();
 
       // Show toast with success message
@@ -99,20 +99,22 @@ class FeedbackSubmissionDialogState
         gravity: ToastGravity.BOTTOM,
       );
 
-      // Show dialog with link to the issue
+      // Show dialog with success message
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Feedback Submitted'),
-          content: Column(
+          content: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Your feedback has been submitted successfully!'),
-              const SizedBox(height: 16),
-              Text('Issue #${response.number}: ${response.title}'),
-              const SizedBox(height: 16),
-              const Text(
-                'You can track the progress of your feedback using the link below:',
+              Text('Your feedback has been submitted successfully!'),
+              SizedBox(height: 16),
+              Text(
+                'Thank you for your feedback. Our team will review it and respond if needed.',
+              ),
+              SizedBox(height: 16),
+              Text(
+                'You can visit our GitHub repository to track all feedback and updates:',
               ),
             ],
           ),
@@ -123,8 +125,9 @@ class FeedbackSubmissionDialogState
             ),
             ElevatedButton(
               onPressed: () async {
-                if (await canLaunchUrl(Uri.parse(response.htmlUrl))) {
-                  await launchUrl(Uri.parse(response.htmlUrl));
+                const gitHubUrl = 'https://github.com/Shelter-Partner/ShelterPartner/issues';
+                if (await canLaunchUrl(Uri.parse(gitHubUrl))) {
+                  await launchUrl(Uri.parse(gitHubUrl));
                 }
               },
               child: const Text('View on GitHub'),
