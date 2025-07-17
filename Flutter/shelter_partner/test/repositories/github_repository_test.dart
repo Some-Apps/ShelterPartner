@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('GitHubRepository', () {
-    test('should construct proper request for submitting feedback', () {
+    test('should construct proper request for creating GitHub issue', () {
       // This test verifies the request construction without making actual network calls
       const title = 'Test Issue';
       const body = 'Test Description';
@@ -13,14 +13,20 @@ void main() {
       expect(labels, ['user feedback']);
     });
 
-    test('should handle Zapier webhook format', () {
-      // Zapier webhooks typically return a simple success status
-      // We don't expect specific response data like GitHub API
-      const title = 'Test Feedback';
-      const body = 'Test feedback description';
-      
-      expect(title, 'Test Feedback');
-      expect(body, 'Test feedback description');
+    test('should handle GitHub API response format', () {
+      final responseData = {
+        'number': 123,
+        'html_url':
+            'https://github.com/Shelter-Partner/ShelterPartner/issues/123',
+        'title': 'Test Issue',
+      };
+
+      expect(responseData['number'], 123);
+      expect(
+        responseData['html_url'],
+        'https://github.com/Shelter-Partner/ShelterPartner/issues/123',
+      );
+      expect(responseData['title'], 'Test Issue');
     });
   });
 }
