@@ -11,6 +11,7 @@ import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/edit_animal_view_model.dart';
 import 'package:shelter_partner/views/components/logs_view.dart';
 import 'package:shelter_partner/views/components/notes_view.dart';
+import 'package:shelter_partner/views/components/tags_view.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -243,6 +244,25 @@ class EnrichmentAnimalDetailPage extends ConsumerWidget {
                             animal.id,
                             'notes',
                             noteId,
+                          );
+                    },
+                  ),
+
+                  const SizedBox(height: 32.0),
+
+                  // Tags section
+                  TagsWidget(
+                    tags: animal.tags,
+                    isAdmin: isAdmin(),
+                    onDelete: (String tagId) {
+                      ref
+                          .read(animalProvider(initialAnimal).notifier)
+                          .deleteItemOptimistically(
+                            appUser!.shelterId,
+                            animal.species,
+                            animal.id,
+                            'tags',
+                            tagId,
                           );
                     },
                   ),
