@@ -191,7 +191,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: TagsWidget(
-              tags: [],
+              tags: const [],
               isAdmin: false,
               onDelete: (tagId) {},
             ),
