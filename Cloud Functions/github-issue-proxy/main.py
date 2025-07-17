@@ -5,6 +5,8 @@ import requests
 import base64
 import tempfile
 import mimetypes
+import time
+import uuid
 from flask import jsonify, request
 
 
@@ -15,37 +17,79 @@ REPO_NAME = "ShelterPartner"
 
 def upload_image_to_github(github_token, image_base64, image_name):
     """
-    Upload an image to GitHub as a release asset or use a temporary method.
+    Upload an image to GitHub repository as a file and return the URL.
     Returns the URL if successful, None otherwise.
     """
     try:
         # Decode base64 image
         image_data = base64.b64decode(image_base64)
         
-        # For now, we'll embed the image directly in the issue body as base64
-        # This is not ideal for large images but works for screenshots
+        # Check size limit (GitHub has a 100MB file size limit, but let's be more conservative)
+        max_size = 25 * 1024 * 1024  # 25MB
+        if len(image_data) > max_size:
+            return None, "Image too large (maximum 25MB)"
         
-        # Detect image format
+        # Generate a unique filename with timestamp
+        import time
+        import uuid
+        timestamp = int(time.time())
+        unique_id = str(uuid.uuid4())[:8]
+        
+        # Detect image format and ensure proper extension
         image_format = 'png'  # default
+        extension = '.png'
         if image_name:
             if image_name.lower().endswith(('.jpg', '.jpeg')):
                 image_format = 'jpeg'
+                extension = '.jpg'
             elif image_name.lower().endswith('.gif'):
                 image_format = 'gif'
+                extension = '.gif'
             elif image_name.lower().endswith('.webp'):
                 image_format = 'webp'
+                extension = '.webp'
         
-        # Create data URL for embedding
-        data_url = f"data:image/{image_format};base64,{image_base64}"
+        # Create file path in the repository
+        filename = f"feedback-{timestamp}-{unique_id}{extension}"
+        file_path = f"Assets/user-feedback/{filename}"
         
-        # Check size limit (GitHub has limits on issue body size)
-        if len(image_base64) > 1000000:  # ~750KB base64 = ~1MB binary
-            return None, "Image too large for embedding (max ~750KB)"
+        # Upload file to GitHub repository using Contents API
+        github_headers = {
+            'Authorization': f'token {github_token}',
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json',
+            'User-Agent': 'ShelterPartner-CloudFunction'
+        }
         
-        return data_url, None
+        upload_payload = {
+            'message': f'Add user feedback image: {filename}',
+            'content': image_base64,
+            'path': file_path
+        }
+        
+        upload_url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/contents/{file_path}"
+        upload_response = requests.put(
+            upload_url,
+            headers=github_headers,
+            json=upload_payload,
+            timeout=30
+        )
+        
+        if upload_response.status_code == 201:
+            # File uploaded successfully, return the raw GitHub URL
+            upload_data = upload_response.json()
+            # Use the download_url from the response for direct access
+            if 'content' in upload_data and 'download_url' in upload_data['content']:
+                return upload_data['content']['download_url'], None
+            else:
+                # Fallback to constructing the raw URL
+                raw_url = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/main/{file_path}"
+                return raw_url, None
+        else:
+            return None, f"Failed to upload to GitHub: {upload_response.status_code} - {upload_response.text}"
         
     except Exception as e:
-        return None, f"Image processing failed: {str(e)}"
+        return None, f"Image upload failed: {str(e)}"
 
 @functions_framework.http
 def create_github_issue(request):
