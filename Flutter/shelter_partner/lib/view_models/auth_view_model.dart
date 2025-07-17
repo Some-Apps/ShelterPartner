@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shelter_partner/models/app_user.dart';
 import 'package:shelter_partner/repositories/auth_repository.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
+import 'package:shelter_partner/services/analytics_service.dart';
 import 'package:uuid/uuid.dart';
 
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
@@ -31,6 +32,10 @@ class AuthViewModel extends StateNotifier<AuthState> {
         if (appUser != null) {
           state = AuthState.authenticated(appUser);
           _ref.read(appUserProvider.notifier).state = appUser;
+
+          // Set user ID for analytics
+          final analytics = _ref.read(analyticsServiceProvider);
+          await analytics.setUserId(appUser.id);
         } else {
           state = AuthState.unauthenticated();
         }
@@ -60,6 +65,10 @@ class AuthViewModel extends StateNotifier<AuthState> {
       if (appUser != null) {
         state = AuthState.authenticated(appUser);
         _ref.read(appUserProvider.notifier).state = appUser;
+
+        // Set user ID for analytics
+        final analytics = _ref.read(analyticsServiceProvider);
+        await analytics.setUserId(appUser.id);
       } else {
         state = AuthState.unauthenticated();
       }
@@ -114,6 +123,10 @@ class AuthViewModel extends StateNotifier<AuthState> {
       if (appUser != null) {
         state = AuthState.authenticated(appUser);
         _ref.read(appUserProvider.notifier).state = appUser;
+
+        // Set user ID for analytics
+        final analytics = _ref.read(analyticsServiceProvider);
+        await analytics.setUserId(appUser.id);
       } else {
         state = AuthState.unauthenticated();
       }

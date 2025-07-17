@@ -9,6 +9,7 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/filter_parameters.dart';
 import 'package:shelter_partner/models/theme.dart';
 import 'package:shelter_partner/models/volunteer.dart';
+import 'package:shelter_partner/services/analytics_service.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/auth/auth_page.dart';
 import 'package:shelter_partner/views/pages/acknowledgements_page.dart';
@@ -88,6 +89,10 @@ void main() async {
 
   final FirebaseService firebaseService = FirebaseService();
   await firebaseService.initialize();
+
+  // Initialize analytics
+  final analyticsService = FirebaseAnalyticsService();
+  await analyticsService.initialize();
 
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);

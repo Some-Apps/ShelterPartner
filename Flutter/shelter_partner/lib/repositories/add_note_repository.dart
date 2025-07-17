@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/note.dart';
 import 'package:shelter_partner/models/photo.dart';
+import 'package:shelter_partner/services/analytics_service.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -16,8 +17,13 @@ import 'package:shelter_partner/providers/firebase_providers.dart';
 
 class AddNoteRepository {
   final FirebaseFirestore _firestore;
-  AddNoteRepository({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  final AnalyticsService _analytics;
+
+  AddNoteRepository({
+    required FirebaseFirestore firestore,
+    required AnalyticsService analytics,
+  }) : _firestore = firestore,
+       _analytics = analytics;
 
   Future<void> updateAnimalTags(
     Animal animal,
@@ -58,6 +64,9 @@ class AddNoteRepository {
 
       transaction.update(docRef, {'tags': tags});
     });
+
+    // Track tag addition
+    await _analytics.trackTagAdded(animal.id, animal.species, tagName);
   }
 
   Future<void> addNoteToAnimal(
@@ -75,6 +84,9 @@ class AddNoteRepository {
         .update({
           'notes': FieldValue.arrayUnion([note.toMap()]),
         });
+
+    // Track note addition
+    await _analytics.trackNoteAdded(animal.id, animal.species);
   }
 
   Future<void> uploadImageToAnimal(
@@ -127,11 +139,15 @@ class AddNoteRepository {
         .update({
           'photos': FieldValue.arrayUnion([photo.toMap()]),
         });
+
+    // Track photo addition
+    await _analytics.trackPhotoAdded(animal.id, animal.species, photo.source);
   }
 }
 
 // Provider for AddNoteRepository
 final addNoteRepositoryProvider = Provider<AddNoteRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);
-  return AddNoteRepository(firestore: firestore);
+  final analytics = ref.watch(analyticsServiceProvider);
+  return AddNoteRepository(firestore: firestore, analytics: analytics);
 });

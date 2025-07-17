@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
+import 'package:shelter_partner/services/analytics_service.dart';
 import 'package:shelter_partner/services/mock_logger_service.dart';
 
 /// Test helper class that provides overrides for Firebase providers
@@ -9,12 +10,14 @@ class FirebaseTestOverrides {
   static late FakeFirebaseFirestore _fakeFirestore;
   static late MockFirebaseAuth _mockFirebaseAuth;
   static late MockLoggerService _mockLogger;
+  static late MockAnalyticsService _mockAnalytics;
 
   /// Initialize fake Firebase instances
   static void initialize() {
     _fakeFirestore = FakeFirebaseFirestore();
     _mockFirebaseAuth = MockFirebaseAuth();
     _mockLogger = MockLoggerService();
+    _mockAnalytics = MockAnalyticsService();
   }
 
   /// Get provider overrides for testing
@@ -22,6 +25,7 @@ class FirebaseTestOverrides {
     firestoreProvider.overrideWithValue(_fakeFirestore),
     firebaseAuthProvider.overrideWithValue(_mockFirebaseAuth),
     loggerServiceProvider.overrideWithValue(_mockLogger),
+    analyticsServiceProvider.overrideWithValue(_mockAnalytics),
   ];
 
   /// Access to the fake Firestore instance for test setup
@@ -32,6 +36,9 @@ class FirebaseTestOverrides {
 
   /// Access to the mock Logger instance for test verification
   static MockLoggerService get mockLogger => _mockLogger;
+
+  /// Access to the mock Analytics instance for test verification
+  static MockAnalyticsService get mockAnalytics => _mockAnalytics;
 
   /// Clean up method to reset instances between tests
   static void cleanup() {
