@@ -12,18 +12,20 @@ class VisitorsRepository {
   Stream<List<Animal>> fetchAnimals(String shelterID) {
     final catsStream = _firestore
         .collection('shelters/$shelterID/cats')
-        .where('isActive', isEqualTo: true)
         .snapshots();
     final dogsStream = _firestore
         .collection('shelters/$shelterID/dogs')
-        .where('isActive', isEqualTo: true)
         .snapshots();
 
     return CombineLatestStream.list([catsStream, dogsStream]).map((snapshots) {
       final allAnimals = <Animal>[];
       for (var snapshot in snapshots) {
         allAnimals.addAll(
-          snapshot.docs.map((doc) => Animal.fromFirestore(doc.data(), doc.id)),
+          snapshot.docs
+              .map((doc) => Animal.fromFirestore(doc.data(), doc.id))
+              .where(
+                (animal) => animal.isActive,
+              ), // Filter at application level
         );
       }
       return allAnimals;

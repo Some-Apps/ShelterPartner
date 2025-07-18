@@ -289,5 +289,160 @@ void main() {
         );
       });
     });
+
+    group('Backward Compatibility', () {
+      test('should show legacy animals without isActive field', () async {
+        // Arrange: Add legacy animals without isActive field
+        await fakeFirestore
+            .collection('shelters/$testShelterId/dogs')
+            .doc('legacy-dog')
+            .set(
+              createTestAnimalDataWithoutActive(
+                id: 'legacy-dog',
+                name: 'LegacyDog',
+              ),
+            );
+
+        await fakeFirestore
+            .collection('shelters/$testShelterId/cats')
+            .doc('legacy-cat')
+            .set(
+              createTestAnimalDataWithoutActive(
+                id: 'legacy-cat',
+                name: 'LegacyCat',
+                species: 'cat',
+              ),
+            );
+
+        // Also add some explicitly active animals
+        await fakeFirestore
+            .collection('shelters/$testShelterId/dogs')
+            .doc('active-dog')
+            .set(
+              createTestAnimalData(
+                id: 'active-dog',
+                name: 'ActiveDog',
+                isActive: true,
+              ),
+            );
+
+        // And some explicitly inactive animals
+        await fakeFirestore
+            .collection('shelters/$testShelterId/dogs')
+            .doc('inactive-dog')
+            .set(
+              createTestAnimalData(
+                id: 'inactive-dog',
+                name: 'InactiveDog',
+                isActive: false,
+              ),
+            );
+
+        // Act: Fetch animals from all repositories
+        final enrichmentAnimals = await enrichmentRepo
+            .fetchAnimals(testShelterId)
+            .first;
+        final visitorsAnimals = await visitorsRepo
+            .fetchAnimals(testShelterId)
+            .first;
+        final statsAnimals = await statsRepo.fetchAnimals(testShelterId).first;
+
+        // Assert: Should get legacy animals and active animals, but not inactive
+        expect(
+          enrichmentAnimals.length,
+          3,
+        ); // LegacyDog + LegacyCat + ActiveDog
+        expect(visitorsAnimals.length, 3);
+        expect(statsAnimals.length, 3);
+
+        // Check that legacy animals are included
+        expect(
+          enrichmentAnimals.any((animal) => animal.name == 'LegacyDog'),
+          isTrue,
+        );
+        expect(
+          enrichmentAnimals.any((animal) => animal.name == 'LegacyCat'),
+          isTrue,
+        );
+        expect(
+          enrichmentAnimals.any((animal) => animal.name == 'ActiveDog'),
+          isTrue,
+        );
+        expect(
+          enrichmentAnimals.any((animal) => animal.name == 'InactiveDog'),
+          isFalse,
+        );
+
+        // Verify that legacy animals are marked as active by the model
+        final legacyDog = enrichmentAnimals.firstWhere(
+          (animal) => animal.name == 'LegacyDog',
+        );
+        final legacyCat = enrichmentAnimals.firstWhere(
+          (animal) => animal.name == 'LegacyCat',
+        );
+        expect(legacyDog.isActive, isTrue);
+        expect(legacyCat.isActive, isTrue);
+      });
+
+      test(
+        'should filter out only animals explicitly marked as inactive',
+        () async {
+          // Arrange: Add animals with mixed states
+          await fakeFirestore
+              .collection('shelters/$testShelterId/dogs')
+              .doc('no-field-dog')
+              .set(
+                createTestAnimalDataWithoutActive(
+                  id: 'no-field-dog',
+                  name: 'NoFieldDog',
+                ),
+              );
+
+          await fakeFirestore
+              .collection('shelters/$testShelterId/dogs')
+              .doc('explicitly-active-dog')
+              .set(
+                createTestAnimalData(
+                  id: 'explicitly-active-dog',
+                  name: 'ExplicitlyActiveDog',
+                  isActive: true,
+                ),
+              );
+
+          await fakeFirestore
+              .collection('shelters/$testShelterId/dogs')
+              .doc('explicitly-inactive-dog')
+              .set(
+                createTestAnimalData(
+                  id: 'explicitly-inactive-dog',
+                  name: 'ExplicitlyInactiveDog',
+                  isActive: false,
+                ),
+              );
+
+          // Act: Fetch animals
+          final animals = await enrichmentRepo
+              .fetchAnimals(testShelterId)
+              .first;
+
+          // Assert: Should get animals without field and explicitly active, but not inactive
+          expect(animals.length, 2);
+          expect(animals.any((animal) => animal.name == 'NoFieldDog'), isTrue);
+          expect(
+            animals.any((animal) => animal.name == 'ExplicitlyActiveDog'),
+            isTrue,
+          );
+          expect(
+            animals.any((animal) => animal.name == 'ExplicitlyInactiveDog'),
+            isFalse,
+          );
+
+          // Verify isActive values
+          for (final animal in animals) {
+            expect(animal.isActive, isTrue);
+          }
+        },
+      );
+    });
   });
 }
