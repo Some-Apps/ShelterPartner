@@ -45,7 +45,9 @@ void main() {
       expect(find.byIcon(Icons.label), findsNWidgets(2));
     });
 
-    testWidgets('shows delete buttons for admin users', (WidgetTester tester) async {
+    testWidgets('shows delete buttons for admin users', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final testTags = [
         Tag(
@@ -73,7 +75,9 @@ void main() {
       expect(find.byIcon(Icons.delete), findsOneWidget);
     });
 
-    testWidgets('hides delete buttons for non-admin users', (WidgetTester tester) async {
+    testWidgets('hides delete buttons for non-admin users', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final testTags = [
         Tag(
@@ -101,7 +105,9 @@ void main() {
       expect(find.byIcon(Icons.delete), findsNothing);
     });
 
-    testWidgets('shows confirmation dialog and calls onDelete when confirmed', (WidgetTester tester) async {
+    testWidgets('shows confirmation dialog and calls onDelete when confirmed', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       String? deletedTagId;
       final testTags = [
@@ -134,7 +140,10 @@ void main() {
 
       // Assert confirmation dialog appears
       expect(find.text('Confirm Delete'), findsOneWidget);
-      expect(find.text('Are you sure you want to delete the tag "Friendly"?'), findsOneWidget);
+      expect(
+        find.text('Are you sure you want to delete the tag "Friendly"?'),
+        findsOneWidget,
+      );
       expect(find.text('Cancel'), findsOneWidget);
       expect(find.text('Delete'), findsOneWidget);
 
@@ -146,7 +155,9 @@ void main() {
       expect(deletedTagId, equals('tag1'));
     });
 
-    testWidgets('does not call onDelete when deletion is cancelled', (WidgetTester tester) async {
+    testWidgets('does not call onDelete when deletion is cancelled', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       String? deletedTagId;
       final testTags = [
@@ -185,7 +196,9 @@ void main() {
       expect(deletedTagId, isNull);
     });
 
-    testWidgets('displays empty state when no tags', (WidgetTester tester) async {
+    testWidgets('displays empty state when no tags', (
+      WidgetTester tester,
+    ) async {
       // Act
       await tester.pumpWidget(
         MaterialApp(

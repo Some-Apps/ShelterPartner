@@ -11,7 +11,6 @@ import 'package:shelter_partner/view_models/account_settings_view_model.dart';
 import 'package:shelter_partner/view_models/edit_animal_view_model.dart';
 import 'package:shelter_partner/views/components/logs_view.dart';
 import 'package:shelter_partner/views/components/notes_view.dart';
-import 'package:shelter_partner/views/components/tags_view.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -139,6 +138,113 @@ class EnrichmentAnimalDetailPage extends ConsumerWidget {
                   ),
 
                   const SizedBox(height: 16.0),
+
+                  // Tags section - displayed between photos and description
+                  if (animal.tags.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Wrap(
+                        spacing: 6.0,
+                        runSpacing: 6.0,
+                        children: animal.tags.map((tag) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                              vertical: 6.0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.grey.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.label,
+                                  size: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                const SizedBox(width: 6.0),
+                                Text(
+                                  tag.title,
+                                  style: const TextStyle(
+                                    fontSize: 13.0,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                if (tag.count > 1) ...[
+                                  const SizedBox(width: 4.0),
+                                  Text(
+                                    '(${tag.count})',
+                                    style: TextStyle(
+                                      fontSize: 11.0,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                                if (isAdmin()) ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      // Show confirmation dialog
+                                      final shouldDelete = await showDialog<bool>(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('Confirm Delete'),
+                                          content: Text(
+                                            'Are you sure you want to delete the tag "${tag.title}"?',
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.of(
+                                                context,
+                                              ).pop(false),
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () => Navigator.of(
+                                                context,
+                                              ).pop(true),
+                                              child: const Text('Delete'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+
+                                      if (shouldDelete == true) {
+                                        ref
+                                            .read(
+                                              animalProvider(
+                                                initialAnimal,
+                                              ).notifier,
+                                            )
+                                            .deleteItemOptimistically(
+                                              appUser!.shelterId,
+                                              animal.species,
+                                              animal.id,
+                                              'tags',
+                                              tag.id,
+                                            );
+                                      }
+                                    },
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 16,
+                                      color: Colors.red.withValues(alpha: 0.7),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+
+                  const SizedBox(height: 16.0),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -249,23 +355,6 @@ class EnrichmentAnimalDetailPage extends ConsumerWidget {
                   ),
 
                   const SizedBox(height: 32.0),
-
-                  // Tags section
-                  TagsWidget(
-                    tags: animal.tags,
-                    isAdmin: isAdmin(),
-                    onDelete: (String tagId) {
-                      ref
-                          .read(animalProvider(initialAnimal).notifier)
-                          .deleteItemOptimistically(
-                            appUser!.shelterId,
-                            animal.species,
-                            animal.id,
-                            'tags',
-                            tagId,
-                          );
-                    },
-                  ),
 
                   if (!visitorPage) ...[
                     const SizedBox(height: 32.0),
