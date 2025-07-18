@@ -43,6 +43,11 @@ class AddLogViewState extends ConsumerState<AddLogView> {
     _durationController.text = duration.toString();
   }
 
+  void _updateTimeControllers() {
+    _startTimeController.text = _formatTime(_startTime);
+    _endTimeController.text = _formatTime(_endTime);
+  }
+
   String _formatTime(DateTime dateTime) {
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
@@ -78,7 +83,7 @@ class AddLogViewState extends ConsumerState<AddLogView> {
     if (minutes != null && minutes > 0) {
       setState(() {
         _startTime = _endTime.subtract(Duration(minutes: minutes));
-        _updateControllers();
+        _updateTimeControllers();
       });
     }
   }
