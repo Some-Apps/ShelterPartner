@@ -89,6 +89,7 @@ def main(request):
     try:
         update_data = {
             "lastApiSync": firestore.SERVER_TIMESTAMP,
+            "lastApiSyncTime": firestore.SERVER_TIMESTAMP, 
             "lastCatApiSync": firestore.SERVER_TIMESTAMP,
             "lastDogApiSync": firestore.SERVER_TIMESTAMP
         }
