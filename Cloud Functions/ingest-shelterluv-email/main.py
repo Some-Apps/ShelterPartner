@@ -286,18 +286,18 @@ def shelterluv_sync(cloud_event):
         print("[DEBUG] Attempting to update Firestore document timestamps...")
         try:
             update_data = {
-                "lastSync": firestore.SERVER_TIMESTAMP,
-                "lastCatSync": firestore.SERVER_TIMESTAMP,
-                "lastDogSync": firestore.SERVER_TIMESTAMP
+                "lastEmailSync": firestore.SERVER_TIMESTAMP,
+                "lastCatEmailSync": firestore.SERVER_TIMESTAMP,
+                "lastDogEmailSync": firestore.SERVER_TIMESTAMP
             }
             shelter_ref.update(update_data)
             print("[DEBUG] shelter_ref.update() completed successfully.")
         except exceptions.NotFound:
             print("[DEBUG] Document not found; attempting to create it with initial timestamps.")
             shelter_ref.set({
-                "lastSync": firestore.SERVER_TIMESTAMP,
-                "lastCatSync": firestore.SERVER_TIMESTAMP,
-                "lastDogSync": firestore.SERVER_TIMESTAMP
+                "lastEmailSync": firestore.SERVER_TIMESTAMP,
+                "lastCatEmailSync": firestore.SERVER_TIMESTAMP,
+                "lastDogEmailSync": firestore.SERVER_TIMESTAMP
             })
             print("[DEBUG] shelter_ref.set() completed successfully.")
 
