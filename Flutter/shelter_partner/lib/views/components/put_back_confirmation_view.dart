@@ -222,36 +222,7 @@ class PutBackConfirmationViewState
                     : 'Do you want to put the selected animals back into their kennels?',
               ),
               const SizedBox(height: 20),
-              for (var animal in widget.animals)
-                if (animal.putBackAlert.isNotEmpty)
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: 'Alert for ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        TextSpan(
-                          text: animal.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const TextSpan(
-                          text: ': ',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        TextSpan(
-                          text: animal.putBackAlert,
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  ),
+              // Move input fields to the top so users see what they need to fill out first
               if (accountSettings
                           .value
                           ?.accountSettings
@@ -302,6 +273,61 @@ class PutBackConfirmationViewState
                     ),
                   ],
                 ),
+              // Add spacing between input fields and alerts if input fields are present
+              if (accountSettings
+                          .value
+                          ?.accountSettings
+                          ?.requireEarlyPutBackReason ==
+                      true &&
+                  shelterSettings
+                          .value
+                          ?.shelterSettings
+                          .earlyPutBackReasons
+                          .isNotEmpty ==
+                      true &&
+                  widget.animals.any(
+                    (animal) =>
+                        Timestamp.now()
+                            .toDate()
+                            .difference(animal.logs.last.startTime.toDate())
+                            .inMinutes <
+                        accountSettings
+                            .value!
+                            .accountSettings!
+                            .minimumLogMinutes,
+                  ))
+                const SizedBox(height: 20),
+              // Alerts section comes after input fields
+              for (var animal in widget.animals)
+                if (animal.putBackAlert.isNotEmpty)
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Alert for ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: animal.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: ': ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: animal.putBackAlert,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ),
             ],
           ),
         ),
