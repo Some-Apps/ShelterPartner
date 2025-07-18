@@ -322,19 +322,19 @@ def parse_animal(animal, only_include_primary_photo=True):
             'id': str(uuid.uuid4()),
             'timestamp': timestamp,
             'note': 'Added animal to the app',
-            'author': "ShelterPartner"
+            'author': "Shelter Partner"
         }],
         'logs': [{
             'id': str(uuid.uuid4()),
             'startTime': timestamp,
             'endTime': timestamp,
-            'type': "Initial Log",
-            'author': "ShelterPartner",
+            'type': "",
+            'author': "Shelter Partner",
             'earlyReason': ''
         }],
         'photos': photos,
         'description': animal.get('Description'),
-        'sex': animal.get('Sex', '').lower(),
+        'sex': animal.get('Sex', '').lower()[0],
         'monthsOld': animal.get('Age'),
         'breed': animal.get('Breed')
     }
