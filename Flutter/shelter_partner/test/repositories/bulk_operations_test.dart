@@ -5,7 +5,6 @@ import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/models/log.dart';
 import 'package:shelter_partner/repositories/take_out_confirmation_repository.dart';
 import 'package:shelter_partner/repositories/put_back_confirmation_repository.dart';
-import 'package:shelter_partner/services/logger_service.dart';
 import 'package:shelter_partner/services/mock_logger_service.dart';
 
 void main() {

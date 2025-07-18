@@ -93,20 +93,19 @@ class PutBackConfirmationViewState
               },
               child: const Text('Close'),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                for (var animal in widget.animals) {
+            if (widget.animals.length == 1)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return AddNoteView(animal: animal);
+                      return AddNoteView(animal: widget.animals.first);
                     },
                   );
-                }
-              },
-              child: const Text('Add Note'),
-            ),
+                },
+                child: const Text('Add Note'),
+              ),
             if ((appUser?.type == 'admin' &&
                     accountSettings.value?.accountSettings?.showCustomForm ==
                         true) ||
