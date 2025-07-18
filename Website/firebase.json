@@ -10,8 +10,12 @@
     "frameworksBackend": {
       "region": "us-central1"
     },
-    "predeploy": [
-      "flutter build web --release"
+    "redirects": [
+      {
+        "source": "/**",
+        "destination": "https://app.shelterpartner.org",
+        "type": 301
+      }
     ]
   }
 }
