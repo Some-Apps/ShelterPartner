@@ -61,7 +61,7 @@ class Animal {
     required this.medicalCategory,
     required this.volunteerCategory,
     required this.inKennel,
-    required this.isActive,
+    this.isActive = true,
     required this.intakeDate,
     required this.photos,
     required this.notes,
