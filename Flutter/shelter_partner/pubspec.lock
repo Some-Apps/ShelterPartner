@@ -1349,6 +1349,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  screenshot_callback:
+    dependency: "direct main"
+    description:
+      name: screenshot_callback
+      sha256: "80ec324d67f1fb45794045b698cdc7711632b64b2e6a21924286faaade1e0be7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   shelf:
     dependency: transitive
     description:

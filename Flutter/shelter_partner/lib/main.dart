@@ -30,6 +30,7 @@ import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
 import 'package:shelter_partner/views/pages/volunteers_page.dart';
+import 'package:shelter_partner/services/screenshot_feedback_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,18 +97,40 @@ void main() async {
   runApp(ProviderScope(child: MyApp(theme: theme)));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   final ThemeData theme;
 
   const MyApp({super.key, required this.theme});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  MyAppState createState() => MyAppState();
+}
+
+class MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize screenshot detection after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ScreenshotFeedbackService.instance.initialize(context);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    ScreenshotFeedbackService.instance.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final goRouter = ref.watch(goRouterProvider); // Watch the GoRouter provider
 
     return MaterialApp.router(
       routerConfig: goRouter,
-      theme: theme,
+      theme: widget.theme,
       themeMode: ThemeMode.light, // Set your desired theme mode
       debugShowCheckedModeBanner: false,
     );

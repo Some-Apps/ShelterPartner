@@ -9,6 +9,7 @@ import 'package:shelter_partner/models/github_release.dart';
 import 'package:shelter_partner/view_models/shelter_details_view_model.dart';
 import 'package:shelter_partner/view_models/auth_view_model.dart';
 import 'package:shelter_partner/views/components/release_notes.dart';
+import 'package:shelter_partner/views/components/feedback_submission_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shelter_partner/providers/firebase_providers.dart';
 import 'package:shelter_partner/services/logger_service.dart';
@@ -364,6 +365,23 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                               //         : "Remove ads and support the developer by subscribing on the mobile app",
                               //   ),
                               // ),
+                              Divider(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.feedback_outlined),
+                                title: const Text("Submit Feedback"),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const FeedbackSubmissionDialog(),
+                                  );
+                                },
+                              ),
                               Divider(
                                 color: Colors.black.withValues(alpha: 0.1),
                                 height: 0,
