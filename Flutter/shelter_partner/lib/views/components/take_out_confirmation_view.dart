@@ -96,33 +96,7 @@ class TakeOutConfirmationViewState
                     : 'Do you want to take out the selected animals?',
               ),
               const SizedBox(height: 20),
-              if (widget.animals.any(
-                (animal) => animal.takeOutAlert.isNotEmpty,
-              ))
-                Column(
-                  children: widget.animals
-                      .where((animal) => animal.takeOutAlert.isNotEmpty)
-                      .map(
-                        (animal) => RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Alert for ${animal.name}: ',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              TextSpan(
-                                text: animal.takeOutAlert,
-                                style: const TextStyle(color: Colors.red),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
+              // Move input fields to the top so users see what they need to fill out first
               if (requireLetOutTypeFlag &&
                   shelterSettings
                           .value
@@ -161,6 +135,44 @@ class TakeOutConfirmationViewState
                   decoration: const InputDecoration(
                     labelText: 'Volunteer Name',
                   ),
+                ),
+              // Add spacing between input fields and alerts if both are present
+              if ((requireLetOutTypeFlag &&
+                      shelterSettings
+                              .value
+                              ?.shelterSettings
+                              .letOutTypes
+                              .isNotEmpty ==
+                          true) ||
+                  requireNameFlag)
+                const SizedBox(height: 20),
+              // Alerts section comes after input fields
+              if (widget.animals.any(
+                (animal) => animal.takeOutAlert.isNotEmpty,
+              ))
+                Column(
+                  children: widget.animals
+                      .where((animal) => animal.takeOutAlert.isNotEmpty)
+                      .map(
+                        (animal) => RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Alert for ${animal.name}: ',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: animal.takeOutAlert,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
                 ),
             ],
           ),
