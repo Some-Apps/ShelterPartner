@@ -164,29 +164,35 @@ class PutBackConfirmationViewState
   Widget build(BuildContext context) {
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
-    final putBackViewModel = ref.read(
-      putBackConfirmationViewModelProvider(widget.animals.first).notifier,
-    );
     final appUser = ref.watch(appUserProvider);
 
     if (accountSettings.value?.accountSettings?.requireEarlyPutBackReason ==
         false) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (var animal in widget.animals) {
-          putBackViewModel.putBackAnimal(
-            animal,
-            Log(
-              id: const Uuid().v4().toString(),
-              type: '',
-              author: _nameController.text,
-              authorID: appUser?.id ?? '',
-              earlyReason: '',
-              startTime: Timestamp.now(),
-              endTime: Timestamp.now(),
-            ),
-          );
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final currentContext = context;
+
+        // Create logs for all animals
+        final logs = widget.animals
+            .map(
+              (animal) => Log(
+                id: const Uuid().v4().toString(),
+                type: '',
+                author: _nameController.text,
+                authorID: appUser?.id ?? '',
+                earlyReason: '',
+                startTime: Timestamp.now(),
+                endTime: Timestamp.now(),
+              ),
+            )
+            .toList();
+
+        // Use bulk operation for faster processing
+        final bulkPutBackViewModel = ref.read(bulkPutBackViewModelProvider);
+        await bulkPutBackViewModel.bulkPutBackAnimals(widget.animals, logs);
+
+        if (currentContext.mounted) {
+          _showThankYouDialog(currentContext);
         }
-        _showThankYouDialog(context);
       });
       return const SizedBox.shrink();
     }
@@ -309,8 +315,14 @@ class PutBackConfirmationViewState
                     },
                   );
 
+                  // Separate animals into those needing deletion vs update
+                  final animalsToDeleteLog = <Animal>[];
+                  final animalsToUpdate = <Animal>[];
+                  final logsToUpdate = <Log>[];
+
                   for (var animal in widget.animals) {
-                    if ((!accountSettings
+                    final shouldDeleteLog =
+                        ((!accountSettings
                                 .value!
                                 .accountSettings!
                                 .createLogsWhenUnderMinimumDuration &&
@@ -339,11 +351,13 @@ class PutBackConfirmationViewState
                                     .value!
                                     .volunteerSettings
                                     .minimumLogMinutes &&
-                            appUser?.type == 'volunteer')) {
-                      await putBackViewModel.deleteLastLog(animal);
+                            appUser?.type == 'volunteer'));
+
+                    if (shouldDeleteLog) {
+                      animalsToDeleteLog.add(animal);
                     } else {
-                      await putBackViewModel.putBackAnimal(
-                        animal,
+                      animalsToUpdate.add(animal);
+                      logsToUpdate.add(
                         Log(
                           id: const Uuid().v4().toString(),
                           type: '',
@@ -356,6 +370,31 @@ class PutBackConfirmationViewState
                       );
                     }
                   }
+
+                  // Process both operations in parallel for maximum speed
+                  final bulkPutBackViewModel = ref.read(
+                    bulkPutBackViewModelProvider,
+                  );
+                  final futures = <Future<void>>[];
+
+                  if (animalsToDeleteLog.isNotEmpty) {
+                    futures.add(
+                      bulkPutBackViewModel.bulkDeleteLastLogs(
+                        animalsToDeleteLog,
+                      ),
+                    );
+                  }
+
+                  if (animalsToUpdate.isNotEmpty) {
+                    futures.add(
+                      bulkPutBackViewModel.bulkPutBackAnimals(
+                        animalsToUpdate,
+                        logsToUpdate,
+                      ),
+                    );
+                  }
+
+                  await Future.wait(futures);
 
                   if (!context.mounted) return;
                   Navigator.of(context).pop(); // Close the progress indicator

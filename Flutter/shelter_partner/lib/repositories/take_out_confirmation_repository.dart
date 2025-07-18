@@ -27,27 +27,70 @@ class TakeOutConfirmationRepository {
           : 'dogs';
       _logger.debug('Determined collection: $collection');
 
-      // Add the note to the notes attribute in Firestore
-      if (animal.inKennel) {
-        await _firestore
-            .collection('shelters/$shelterID/$collection')
-            .doc(animal.id)
-            .update({
-              'logs': FieldValue.arrayUnion([log.toMap()]),
-            });
-      }
+      // Combine operations into a single update for better performance
+      final updates = <String, dynamic>{'inKennel': false};
 
-      _logger.info('Updated logs for ${animal.id}');
+      // Only add log if animal is currently in kennel
+      if (animal.inKennel) {
+        updates['logs'] = FieldValue.arrayUnion([log.toMap()]);
+      }
 
       await _firestore
           .collection('shelters/$shelterID/$collection')
           .doc(animal.id)
-          .update({'inKennel': false});
-      _logger.info('Updated inKennel status for ${animal.id}');
+          .update(updates);
 
       _logger.info('Successfully completed takeOutAnimal for ${animal.id}');
     } catch (e) {
       _logger.error('Error in takeOutAnimal', e);
+    }
+  }
+
+  Future<void> bulkTakeOutAnimals(
+    List<Animal> animals,
+    String shelterID,
+    List<Log> logs,
+  ) async {
+    if (animals.isEmpty) return;
+
+    try {
+      _logger.debug(
+        'Starting bulkTakeOutAnimals for ${animals.length} animals in shelter $shelterID',
+      );
+
+      final batch = _firestore.batch();
+
+      for (int i = 0; i < animals.length; i++) {
+        final animal = animals[i];
+        final log = logs[i];
+
+        // Determine the collection based on species
+        final collection = animal.species.toLowerCase() == 'cat'
+            ? 'cats'
+            : 'dogs';
+
+        final docRef = _firestore
+            .collection('shelters/$shelterID/$collection')
+            .doc(animal.id);
+
+        // Prepare updates for this animal
+        final updates = <String, dynamic>{'inKennel': false};
+
+        // Only add log if animal is currently in kennel
+        if (animal.inKennel) {
+          updates['logs'] = FieldValue.arrayUnion([log.toMap()]);
+        }
+
+        batch.update(docRef, updates);
+      }
+
+      await batch.commit();
+      _logger.info(
+        'Successfully completed bulkTakeOutAnimals for ${animals.length} animals',
+      );
+    } catch (e) {
+      _logger.error('Error in bulkTakeOutAnimals', e);
+      rethrow;
     }
   }
 }

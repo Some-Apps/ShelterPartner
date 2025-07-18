@@ -74,10 +74,6 @@ class TakeOutConfirmationViewState
         ? (accountSettings.value?.accountSettings?.requireName ?? false)
         : (shelterSettings.value?.volunteerSettings.requireName ?? false);
 
-    final takeOutViewModel = ref.read(
-      takeOutConfirmationViewModelProvider(widget.animals.first).notifier,
-    );
-
     return AlertDialog(
       title: Center(
         child: Text(
@@ -180,30 +176,37 @@ class TakeOutConfirmationViewState
                     },
                   );
 
-                  // Apply take-out action for each animal in the list
-                  for (final animal in widget.animals) {
-                    await takeOutViewModel
-                        .takeOutAnimal(
-                          animal,
-                          Log(
-                            id: const Uuid().v4().toString(),
-                            type: _selectedLetOutType ?? '',
-                            author: _nameController.text,
-                            authorID: userDetails!.id,
-                            earlyReason: '',
-                            startTime: Timestamp.now(),
-                            endTime: animal.logs.last.endTime,
-                          ),
-                        )
-                        .then((_) {
-                          ref
-                              .read(updateVolunteerRepositoryProvider)
-                              .modifyVolunteerLastActivity(
-                                userDetails.id,
-                                Timestamp.now(),
-                              );
-                        });
-                  }
+                  // Create logs for all animals
+                  final logs = widget.animals
+                      .map(
+                        (animal) => Log(
+                          id: const Uuid().v4().toString(),
+                          type: _selectedLetOutType ?? '',
+                          author: _nameController.text,
+                          authorID: userDetails!.id,
+                          earlyReason: '',
+                          startTime: Timestamp.now(),
+                          endTime: animal.logs.last.endTime,
+                        ),
+                      )
+                      .toList();
+
+                  // Use bulk operation for much faster processing
+                  final bulkTakeOutViewModel = ref.read(
+                    bulkTakeOutViewModelProvider,
+                  );
+                  await bulkTakeOutViewModel.bulkTakeOutAnimals(
+                    widget.animals,
+                    logs,
+                  );
+
+                  // Update volunteer activity once for the bulk operation
+                  ref
+                      .read(updateVolunteerRepositoryProvider)
+                      .modifyVolunteerLastActivity(
+                        userDetails!.id,
+                        Timestamp.now(),
+                      );
 
                   if (!context.mounted) return;
                   Navigator.of(
