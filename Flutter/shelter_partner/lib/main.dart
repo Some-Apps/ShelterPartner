@@ -31,7 +31,6 @@ import 'package:shelter_partner/views/pages/visitor_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_detail_page.dart';
 import 'package:shelter_partner/views/pages/volunteer_settings_page.dart';
 import 'package:shelter_partner/views/pages/volunteers_page.dart';
-import 'package:shelter_partner/services/screenshot_feedback_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -115,17 +114,10 @@ class MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Initialize screenshot detection after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScreenshotFeedbackService.instance.initialize(context);
-      }
-    });
   }
 
   @override
   void dispose() {
-    ScreenshotFeedbackService.instance.dispose();
     super.dispose();
   }
 

@@ -93,7 +93,7 @@ class FeedbackSubmissionDialogState
           logger.warning('Failed to process image: $e');
           // Continue without image but add note
           body +=
-              '\n\n**Note:** User attempted to include a screenshot but image processing failed: ${e.toString()}';
+              '\n\n**Note:** User attempted to include an image but image processing failed: ${e.toString()}';
           imageBytes = null;
           imageName = null;
         }
@@ -137,7 +137,7 @@ class FeedbackSubmissionDialogState
               if (_selectedImage != null && !response.imageUploaded) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Note: Your screenshot could not be uploaded${response.imageUploadError != null ? ': ${response.imageUploadError}' : '.'}',
+                  'Note: Your image could not be uploaded${response.imageUploadError != null ? ': ${response.imageUploadError}' : '.'}',
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ],
@@ -250,7 +250,7 @@ class FeedbackSubmissionDialogState
                       },
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(child: Text('Screenshot selected')),
+                    const Expanded(child: Text('Image selected')),
                     IconButton(
                       onPressed: _isSubmitting ? null : _removeImage,
                       icon: const Icon(Icons.remove_circle),
@@ -262,7 +262,7 @@ class FeedbackSubmissionDialogState
               ElevatedButton.icon(
                 onPressed: _isSubmitting ? null : _pickImage,
                 icon: const Icon(Icons.add_a_photo),
-                label: const Text('Add Screenshot (Optional)'),
+                label: const Text('Add Image (Optional)'),
               ),
             if (_isSubmitting) ...[
               const SizedBox(height: 16),

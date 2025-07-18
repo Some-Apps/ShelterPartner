@@ -35,8 +35,8 @@ void main() {
       expect(find.text('Cancel'), findsOneWidget);
       expect(find.text('Submit'), findsOneWidget);
 
-      // Verify screenshot button
-      expect(find.text('Add Screenshot (Optional)'), findsOneWidget);
+      // Verify image button
+      expect(find.text('Add Image (Optional)'), findsOneWidget);
     });
 
     testWidgets('should show validation message for empty fields', (
