@@ -12,25 +12,6 @@ class AddLogViewModel extends StateNotifier<Animal> {
 
   AddLogViewModel(this._repository, this.ref, Animal animal) : super(animal);
 
-  Future<void> addQuickLogToAnimal(Animal animal, Log log) async {
-    final logger = ref.read(loggerServiceProvider);
-    logger.debug("Adding quick log to animal: ${log.toMap()}");
-    // Get shelter ID from shelterDetailsViewModelProvider
-    final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
-    // try {
-    await _repository.addLogToAnimal(
-      animal,
-      shelterDetailsAsync.value!.id,
-      log,
-    );
-    // Optionally, update the state if needed
-    //   ref.read(logAddedProvider.notifier).state = true;
-    // } catch (e) {
-    //   // Handle error
-    //   print('Failed to add note: $e');
-    // }
-  }
-
   Future<void> addLogToAnimal(Animal animal, Log log) async {
     final logger = ref.read(loggerServiceProvider);
     logger.debug("Adding log to animal: ${log.toMap()}");
