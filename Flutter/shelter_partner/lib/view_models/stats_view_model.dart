@@ -83,14 +83,14 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
     final syncDataStream = _repository.fetchLastSyncData(shelterID);
 
     _syncDataSubscription = syncDataStream.listen((syncData) {
-      // Look for lastApiSync or similar field in the shelter document
+      // Look for lastSync field that's set by the ShelterLuv cloud function
       DateTime? lastApiSync;
-      if (syncData.containsKey('lastApiSync')) {
-        final lastApiSyncField = syncData['lastApiSync'];
-        if (lastApiSyncField is Timestamp) {
-          lastApiSync = lastApiSyncField.toDate();
-        } else if (lastApiSyncField is String) {
-          lastApiSync = DateTime.tryParse(lastApiSyncField);
+      if (syncData.containsKey('lastSync')) {
+        final lastSyncField = syncData['lastSync'];
+        if (lastSyncField is Timestamp) {
+          lastApiSync = lastSyncField.toDate();
+        } else if (lastSyncField is String) {
+          lastApiSync = DateTime.tryParse(lastSyncField);
         }
       }
 
