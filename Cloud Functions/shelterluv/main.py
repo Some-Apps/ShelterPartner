@@ -186,10 +186,10 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
             commit_batch()
 
     commit_batch()
-    # Delete removed animals
-    animals_to_delete = firestore_animals_set - {animal['id'] for animal in animals if animal['id']}
-    for animal_id in animals_to_delete:
-        delete_animal_if_exists(animal_id, cats_ref, dogs_ref, other_ref, shelterId)
+    # Mark removed animals as inactive instead of deleting them
+    animals_to_mark_inactive = firestore_animals_set - {animal['id'] for animal in animals if animal['id']}
+    for animal_id in animals_to_mark_inactive:
+        mark_animal_as_inactive_if_exists(animal_id, cats_ref, dogs_ref, other_ref, shelterId)
         removed_animals.append(animal_id)
         operations_count += 1
         if operations_count >= max_batch_size:
@@ -203,23 +203,24 @@ def update_firestore_optimized(animals, shelter_doc_ref, cats_ref, dogs_ref, oth
         "lastSyncChanges": {
             "added": added_animals,
             "updated": updated_animals,
-            "removed": removed_animals
+            "removed": removed_animals  # These are actually marked inactive, not removed
         }
     })
 
-def delete_animal_if_exists(animal_id, cats_ref, dogs_ref, other_ref, shelterId):
+def mark_animal_as_inactive_if_exists(animal_id, cats_ref, dogs_ref, other_ref, shelterId):
+    """Mark an animal as inactive instead of deleting it, but still delete photos to save storage costs."""
     cat_doc_ref = cats_ref.document(animal_id)
     dog_doc_ref = dogs_ref.document(animal_id)
     other_doc_ref = other_ref.document(animal_id)
 
     if cat_doc_ref.get().exists:
-        cat_doc_ref.delete()
+        cat_doc_ref.update({'isActive': False})
         delete_images_for_animal(animal_id, shelterId)
     elif dog_doc_ref.get().exists:
-        dog_doc_ref.delete()
+        dog_doc_ref.update({'isActive': False})
         delete_images_for_animal(animal_id, shelterId)
     elif other_doc_ref.get().exists:
-        other_doc_ref.delete()
+        other_doc_ref.update({'isActive': False})
         delete_images_for_animal(animal_id, shelterId)
 
 def delete_images_for_animal(animal_id, shelterId):
@@ -232,13 +233,14 @@ def delete_images_for_animal(animal_id, shelterId):
         blob.delete()
 
 def fetch_firestore_animals(cats_ref, dogs_ref, other_ref):
-    """Fetches IDs of all animals in Firestore for cats, dogs, and other animals"""
+    """Fetches IDs of all active animals in Firestore for cats, dogs, and other animals"""
     firestore_animals = []
-    for doc in cats_ref.stream():
+    # Only fetch active animals for comparison
+    for doc in cats_ref.where('isActive', '==', True).stream():
         firestore_animals.append(doc.id)
-    for doc in dogs_ref.stream():
+    for doc in dogs_ref.where('isActive', '==', True).stream():
         firestore_animals.append(doc.id)
-    for doc in other_ref.stream():
+    for doc in other_ref.where('isActive', '==', True).stream():
         firestore_animals.append(doc.id)
     return firestore_animals
 
@@ -312,6 +314,7 @@ def parse_animal(animal, only_include_primary_photo=True):
         'takeOutAlert': '',
         'putBackAlert': '',
         'inKennel': True,
+        'isActive': True,  # All animals from ShelterLuv are active by default
         'location': currentLocation,
         'fullLocation': full_location,
         'intakeDate': intake_date,

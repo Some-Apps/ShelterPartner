@@ -363,6 +363,7 @@ class AuthRepository {
           ].randomElement(),
           'id': animalId,
           'inKennel': true,
+          'isActive': true,
           'location': row['location'] ?? '',
           'fullLocation':
               '${row['location'] ?? 'Site 1'} > Building ${Random().nextInt(3) + 1} > Room ${['A', 'B', 'C'].randomElement()} > Kennel ${Random().nextInt(20) + 1}',

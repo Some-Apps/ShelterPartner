@@ -26,6 +26,7 @@ class Animal {
   final String volunteerCategory;
 
   final bool inKennel;
+  final bool isActive;
 
   final Timestamp? intakeDate;
 
@@ -60,6 +61,7 @@ class Animal {
     required this.medicalCategory,
     required this.volunteerCategory,
     required this.inKennel,
+    this.isActive = true,
     required this.intakeDate,
     required this.photos,
     required this.notes,
@@ -90,6 +92,9 @@ class Animal {
       medicalCategory: data['medicalCategory'] ?? 'Unknown',
       volunteerCategory: data['volunteerCategory'] ?? 'Unknown',
       inKennel: data['inKennel'] ?? true,
+      isActive:
+          data['isActive'] ??
+          true, // Default to active for backward compatibility
       intakeDate: data['intakeDate'],
       photos: (data['photos'] is List)
           ? (data['photos'] as List)
@@ -129,6 +134,7 @@ class Animal {
     String? medicalCategory,
     String? volunteerCategory,
     bool? inKennel,
+    bool? isActive,
     Timestamp? intakeDate,
     List<Photo>? photos,
     List<Note>? notes,
@@ -155,6 +161,7 @@ class Animal {
       medicalCategory: medicalCategory ?? this.medicalCategory,
       volunteerCategory: volunteerCategory ?? this.volunteerCategory,
       inKennel: inKennel ?? this.inKennel,
+      isActive: isActive ?? this.isActive,
       intakeDate: intakeDate ?? this.intakeDate,
       photos: photos ?? this.photos,
       notes: notes ?? this.notes,
@@ -184,6 +191,7 @@ class Animal {
       'medicalCategory': medicalCategory,
       'volunteerCategory': volunteerCategory,
       'inKennel': inKennel,
+      'isActive': isActive,
       'intakeDate': intakeDate,
       'photos': photos?.map((photo) => photo.toMap()).toList(),
       'notes': notes.map((note) => note.toMap()).toList(),

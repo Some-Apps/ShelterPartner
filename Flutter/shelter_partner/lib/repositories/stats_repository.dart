@@ -21,7 +21,11 @@ class StatsRepository {
       final allAnimals = <Animal>[];
       for (var snapshot in snapshots) {
         allAnimals.addAll(
-          snapshot.docs.map((doc) => Animal.fromFirestore(doc.data(), doc.id)),
+          snapshot.docs
+              .map((doc) => Animal.fromFirestore(doc.data(), doc.id))
+              .where(
+                (animal) => animal.isActive,
+              ), // Filter at application level
         );
       }
       return allAnimals;
