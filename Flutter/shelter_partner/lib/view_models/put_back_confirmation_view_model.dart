@@ -34,6 +34,27 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
     }
   }
 
+  Future<void> bulkPutBackAnimals(List<Animal> animals, List<Log> logs) async {
+    final logger = ref.read(loggerServiceProvider);
+    logger.debug("Bulk putting back ${animals.length} animals");
+
+    // Get shelter ID from shelterDetailsViewModelProvider
+    final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
+
+    try {
+      await _repository.bulkPutBackAnimals(
+        animals,
+        shelterDetailsAsync.value!.id,
+        logs,
+      );
+      logger.info('Successfully bulk put back ${animals.length} animals');
+    } catch (e, stackTrace) {
+      // Handle error
+      logger.error('Failed to bulk put back animals', e, stackTrace);
+      rethrow;
+    }
+  }
+
   Future<void> deleteLastLog(Animal animal) async {
     // Get shelter ID from shelterDetailsViewModelProvider
     final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
@@ -47,6 +68,28 @@ class PutBackConfirmationViewModel extends StateNotifier<Animal> {
       logger.error('Failed to delete last log', e, stackTrace);
     }
   }
+
+  Future<void> bulkDeleteLastLogs(List<Animal> animals) async {
+    final logger = ref.read(loggerServiceProvider);
+    logger.debug("Bulk deleting last logs for ${animals.length} animals");
+
+    // Get shelter ID from shelterDetailsViewModelProvider
+    final shelterDetailsAsync = ref.read(shelterDetailsViewModelProvider);
+
+    try {
+      await _repository.bulkDeleteLastLogs(
+        animals,
+        shelterDetailsAsync.value!.id,
+      );
+      logger.info(
+        'Successfully bulk deleted last logs for ${animals.length} animals',
+      );
+    } catch (e, stackTrace) {
+      // Handle error
+      logger.error('Failed to bulk delete last logs', e, stackTrace);
+      rethrow;
+    }
+  }
 }
 
 // Provider for AddNoteViewModel
@@ -58,3 +101,38 @@ final putBackConfirmationViewModelProvider =
       final repository = ref.watch(putBackConfirmationRepositoryProvider);
       return PutBackConfirmationViewModel(repository, ref, animal);
     });
+
+// Provider for bulk operations
+final bulkPutBackViewModelProvider = Provider<PutBackConfirmationViewModel>((
+  ref,
+) {
+  final repository = ref.watch(putBackConfirmationRepositoryProvider);
+  // Use a dummy animal since we're only using bulk operations
+  final dummyAnimal = Animal(
+    id: 'bulk',
+    name: 'bulk',
+    species: 'dog',
+    sex: 'male',
+    monthsOld: 12,
+    breed: 'unknown',
+    location: 'unknown',
+    fullLocation: 'unknown',
+    description: '',
+    symbol: '',
+    symbolColor: '',
+    takeOutAlert: '',
+    putBackAlert: '',
+    adoptionCategory: 'available',
+    behaviorCategory: '',
+    locationCategory: '',
+    medicalCategory: '',
+    volunteerCategory: '',
+    inKennel: false,
+    intakeDate: null,
+    photos: [],
+    notes: [],
+    logs: [],
+    tags: [],
+  );
+  return PutBackConfirmationViewModel(repository, ref, dummyAnimal);
+});

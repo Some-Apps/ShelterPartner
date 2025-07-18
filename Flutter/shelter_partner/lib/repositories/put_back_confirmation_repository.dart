@@ -23,37 +23,144 @@ class PutBackConfirmationRepository {
           : 'dogs';
       _logger.debug('Determined collection: $collection');
 
-      // Fetch the current logs
       final docRef = _firestore
           .collection('shelters/$shelterID/$collection')
           .doc(animal.id);
-      final docSnapshot = await docRef.get();
-      final data = docSnapshot.data();
-      if (data == null || !data.containsKey('logs')) {
-        throw Exception('No logs found for animal ${animal.id}');
-      }
 
-      List<dynamic> logs = data['logs'];
-      if (logs.isEmpty) {
-        throw Exception('Logs are empty for animal ${animal.id}');
-      }
-
-      // Update the last log
-      Map<String, dynamic> lastLog = logs.last;
-      lastLog['earlyReason'] = log.earlyReason;
-      lastLog['endTime'] = log.endTime;
-
-      // Update the logs array in Firestore
+      // Only process if animal is not in kennel
       if (!animal.inKennel) {
-        await docRef.update({'logs': logs});
-        _logger.info('Updated last log for ${animal.id}');
+        // Fetch current logs and update them
+        final docSnapshot = await docRef.get();
+        final data = docSnapshot.data();
+        if (data == null || !data.containsKey('logs')) {
+          throw Exception('No logs found for animal ${animal.id}');
+        }
 
-        // Update the inKennel status
-        await docRef.update({'inKennel': true});
-        _logger.info('Updated inKennel status for ${animal.id}');
+        List<dynamic> logs = List.from(data['logs']);
+        if (logs.isEmpty) {
+          throw Exception('Logs are empty for animal ${animal.id}');
+        }
+
+        // Update the last log
+        Map<String, dynamic> lastLog = Map.from(logs.last);
+        lastLog['earlyReason'] = log.earlyReason;
+        lastLog['endTime'] = log.endTime;
+        logs[logs.length - 1] = lastLog;
+
+        // Update both logs and inKennel status in a single operation
+        await docRef.update({'logs': logs, 'inKennel': true});
+        _logger.info('Updated last log and inKennel status for ${animal.id}');
       }
     } catch (e) {
       _logger.error('Error in putBackAnimal', e);
+    }
+  }
+
+  Future<void> bulkPutBackAnimals(
+    List<Animal> animals,
+    String shelterID,
+    List<Log> logs,
+  ) async {
+    if (animals.isEmpty) return;
+
+    try {
+      _logger.debug(
+        'Starting bulkPutBackAnimals for ${animals.length} animals in shelter $shelterID',
+      );
+
+      // Use Firestore batch for true batch processing
+      final batch = _firestore.batch();
+
+      for (int i = 0; i < animals.length; i++) {
+        final animal = animals[i];
+        final log = logs[i];
+
+        // Only process if animal is not in kennel
+        if (!animal.inKennel) {
+          // Determine the collection based on species
+          final collection = animal.species.toLowerCase() == 'cat'
+              ? 'cats'
+              : 'dogs';
+
+          final docRef = _firestore
+              .collection('shelters/$shelterID/$collection')
+              .doc(animal.id);
+
+          // Create updated logs list with the updated last log
+          final updatedLogs = List<Map<String, dynamic>>.from(
+            animal.logs.map((existingLog) => existingLog.toMap()),
+          );
+
+          if (updatedLogs.isNotEmpty) {
+            // Update the last log with the new end time and early reason
+            updatedLogs[updatedLogs.length - 1] = {
+              ...updatedLogs.last,
+              'earlyReason': log.earlyReason,
+              'endTime': log.endTime,
+            };
+          }
+
+          // Add both log and inKennel updates to the batch
+          batch.update(docRef, {'logs': updatedLogs, 'inKennel': true});
+        }
+      }
+
+      // Commit all updates in a single batch operation
+      await batch.commit();
+      _logger.info(
+        'Successfully completed bulkPutBackAnimals for ${animals.length} animals using batch operation',
+      );
+    } catch (e) {
+      _logger.error('Error in bulkPutBackAnimals', e);
+      rethrow;
+    }
+  }
+
+  Future<void> bulkDeleteLastLogs(
+    List<Animal> animals,
+    String shelterID,
+  ) async {
+    if (animals.isEmpty) return;
+
+    try {
+      _logger.debug(
+        'Starting bulkDeleteLastLogs for ${animals.length} animals in shelter $shelterID',
+      );
+
+      // Use Firestore batch for true batch processing
+      final batch = _firestore.batch();
+
+      for (final animal in animals) {
+        // Determine the collection based on species
+        final collection = animal.species.toLowerCase() == 'cat'
+            ? 'cats'
+            : 'dogs';
+
+        final docRef = _firestore
+            .collection('shelters/$shelterID/$collection')
+            .doc(animal.id);
+
+        // Create updated logs list without the last log
+        final updatedLogs = List<Map<String, dynamic>>.from(
+          animal.logs.map((existingLog) => existingLog.toMap()),
+        );
+
+        if (updatedLogs.isNotEmpty) {
+          updatedLogs.removeLast();
+        }
+
+        // Add both log and inKennel updates to the batch
+        batch.update(docRef, {'logs': updatedLogs, 'inKennel': true});
+      }
+
+      // Commit all updates in a single batch operation
+      await batch.commit();
+      _logger.info(
+        'Successfully completed bulkDeleteLastLogs for ${animals.length} animals using batch operation',
+      );
+    } catch (e) {
+      _logger.error('Error in bulkDeleteLastLogs', e);
+      rethrow;
     }
   }
 

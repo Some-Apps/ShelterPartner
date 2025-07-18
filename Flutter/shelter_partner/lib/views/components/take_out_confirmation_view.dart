@@ -74,10 +74,6 @@ class TakeOutConfirmationViewState
         ? (accountSettings.value?.accountSettings?.requireName ?? false)
         : (shelterSettings.value?.volunteerSettings.requireName ?? false);
 
-    final takeOutViewModel = ref.read(
-      takeOutConfirmationViewModelProvider(widget.animals.first).notifier,
-    );
-
     return AlertDialog(
       title: Center(
         child: Text(
@@ -86,74 +82,101 @@ class TakeOutConfirmationViewState
               : 'Confirm Action for ${widget.animals.length} animals',
         ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.animals.length == 1
-                ? 'Do you want to take out ${widget.animals.first.name}?'
-                : 'Do you want to take out the selected animals?',
-          ),
-          const SizedBox(height: 20),
-          if (widget.animals.any((animal) => animal.takeOutAlert.isNotEmpty))
-            Column(
-              children: widget.animals
-                  .where((animal) => animal.takeOutAlert.isNotEmpty)
-                  .map(
-                    (animal) => RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Alert for ${animal.name}: ',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          TextSpan(
-                            text: animal.takeOutAlert,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        ],
-                      ),
+      content: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.6,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.animals.length == 1
+                    ? 'Do you want to take out ${widget.animals.first.name}?'
+                    : 'Do you want to take out the selected animals?',
+              ),
+              const SizedBox(height: 20),
+              // Move input fields to the top so users see what they need to fill out first
+              if (requireLetOutTypeFlag &&
+                  shelterSettings
+                          .value
+                          ?.shelterSettings
+                          .letOutTypes
+                          .isNotEmpty ==
+                      true)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text('Type of Let Out'),
+                    const Spacer(),
+                    DropdownButton<String>(
+                      value: _selectedLetOutType,
+                      hint: const Text('Select type'),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedLetOutType = newValue;
+                          _updateConfirmButtonState();
+                        });
+                      },
+                      items: shelterSettings.value!.shelterSettings.letOutTypes
+                          .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          })
+                          .toList(),
                     ),
-                  )
-                  .toList(),
-            ),
-          if (requireLetOutTypeFlag &&
-              shelterSettings.value?.shelterSettings.letOutTypes.isNotEmpty ==
-                  true)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text('Type of Let Out'),
-                const Spacer(),
-                DropdownButton<String>(
-                  value: _selectedLetOutType,
-                  hint: const Text('Select type'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedLetOutType = newValue;
-                      _updateConfirmButtonState();
-                    });
-                  },
-                  items: shelterSettings.value!.shelterSettings.letOutTypes
-                      .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      })
+                  ],
+                ),
+              if (requireNameFlag)
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Volunteer Name',
+                  ),
+                ),
+              // Add spacing between input fields and alerts if both are present
+              if ((requireLetOutTypeFlag &&
+                      shelterSettings
+                              .value
+                              ?.shelterSettings
+                              .letOutTypes
+                              .isNotEmpty ==
+                          true) ||
+                  requireNameFlag)
+                const SizedBox(height: 20),
+              // Alerts section comes after input fields
+              if (widget.animals.any(
+                (animal) => animal.takeOutAlert.isNotEmpty,
+              ))
+                Column(
+                  children: widget.animals
+                      .where((animal) => animal.takeOutAlert.isNotEmpty)
+                      .map(
+                        (animal) => RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Alert for ${animal.name}: ',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: animal.takeOutAlert,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                       .toList(),
                 ),
-              ],
-            ),
-          if (requireNameFlag)
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Volunteer Name'),
-            ),
-        ],
+            ],
+          ),
+        ),
       ),
       actions: [
         TextButton(
@@ -180,30 +203,37 @@ class TakeOutConfirmationViewState
                     },
                   );
 
-                  // Apply take-out action for each animal in the list
-                  for (final animal in widget.animals) {
-                    await takeOutViewModel
-                        .takeOutAnimal(
-                          animal,
-                          Log(
-                            id: const Uuid().v4().toString(),
-                            type: _selectedLetOutType ?? '',
-                            author: _nameController.text,
-                            authorID: userDetails!.id,
-                            earlyReason: '',
-                            startTime: Timestamp.now(),
-                            endTime: animal.logs.last.endTime,
-                          ),
-                        )
-                        .then((_) {
-                          ref
-                              .read(updateVolunteerRepositoryProvider)
-                              .modifyVolunteerLastActivity(
-                                userDetails.id,
-                                Timestamp.now(),
-                              );
-                        });
-                  }
+                  // Create logs for all animals
+                  final logs = widget.animals
+                      .map(
+                        (animal) => Log(
+                          id: const Uuid().v4().toString(),
+                          type: _selectedLetOutType ?? '',
+                          author: _nameController.text,
+                          authorID: userDetails!.id,
+                          earlyReason: '',
+                          startTime: Timestamp.now(),
+                          endTime: animal.logs.last.endTime,
+                        ),
+                      )
+                      .toList();
+
+                  // Use bulk operation for much faster processing
+                  final bulkTakeOutViewModel = ref.read(
+                    bulkTakeOutViewModelProvider,
+                  );
+                  await bulkTakeOutViewModel.bulkTakeOutAnimals(
+                    widget.animals,
+                    logs,
+                  );
+
+                  // Update volunteer activity once for the bulk operation
+                  ref
+                      .read(updateVolunteerRepositoryProvider)
+                      .modifyVolunteerLastActivity(
+                        userDetails!.id,
+                        Timestamp.now(),
+                      );
 
                   if (!context.mounted) return;
                   Navigator.of(

@@ -93,20 +93,19 @@ class PutBackConfirmationViewState
               },
               child: const Text('Close'),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                for (var animal in widget.animals) {
+            if (widget.animals.length == 1)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return AddNoteView(animal: animal);
+                      return AddNoteView(animal: widget.animals.first);
                     },
                   );
-                }
-              },
-              child: const Text('Add Note'),
-            ),
+                },
+                child: const Text('Add Note'),
+              ),
             if ((appUser?.type == 'admin' &&
                     accountSettings.value?.accountSettings?.showCustomForm ==
                         true) ||
@@ -164,29 +163,35 @@ class PutBackConfirmationViewState
   Widget build(BuildContext context) {
     final accountSettings = ref.watch(accountSettingsViewModelProvider);
     final shelterSettings = ref.watch(shelterSettingsViewModelProvider);
-    final putBackViewModel = ref.read(
-      putBackConfirmationViewModelProvider(widget.animals.first).notifier,
-    );
     final appUser = ref.watch(appUserProvider);
 
     if (accountSettings.value?.accountSettings?.requireEarlyPutBackReason ==
         false) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (var animal in widget.animals) {
-          putBackViewModel.putBackAnimal(
-            animal,
-            Log(
-              id: const Uuid().v4().toString(),
-              type: '',
-              author: _nameController.text,
-              authorID: appUser?.id ?? '',
-              earlyReason: '',
-              startTime: Timestamp.now(),
-              endTime: Timestamp.now(),
-            ),
-          );
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final currentContext = context;
+
+        // Create logs for all animals
+        final logs = widget.animals
+            .map(
+              (animal) => Log(
+                id: const Uuid().v4().toString(),
+                type: '',
+                author: _nameController.text,
+                authorID: appUser?.id ?? '',
+                earlyReason: '',
+                startTime: Timestamp.now(),
+                endTime: Timestamp.now(),
+              ),
+            )
+            .toList();
+
+        // Use bulk operation for faster processing
+        final bulkPutBackViewModel = ref.read(bulkPutBackViewModelProvider);
+        await bulkPutBackViewModel.bulkPutBackAnimals(widget.animals, logs);
+
+        if (currentContext.mounted) {
+          _showThankYouDialog(currentContext);
         }
-        _showThankYouDialog(context);
       });
       return const SizedBox.shrink();
     }
@@ -203,93 +208,129 @@ class PutBackConfirmationViewState
               : 'Confirm Action for ${widget.animals.length} animals',
         ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.animals.length == 1
-                ? 'Do you want to put ${widget.animals.first.name} back into their kennel?'
-                : 'Do you want to put the selected animals back into their kennels?',
-          ),
-          const SizedBox(height: 20),
-          for (var animal in widget.animals)
-            if (animal.putBackAlert.isNotEmpty)
-              RichText(
-                text: TextSpan(
+      content: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.6,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.animals.length == 1
+                    ? 'Do you want to put ${widget.animals.first.name} back into their kennel?'
+                    : 'Do you want to put the selected animals back into their kennels?',
+              ),
+              const SizedBox(height: 20),
+              // Move input fields to the top so users see what they need to fill out first
+              if (accountSettings
+                          .value
+                          ?.accountSettings
+                          ?.requireEarlyPutBackReason ==
+                      true &&
+                  shelterSettings
+                          .value
+                          ?.shelterSettings
+                          .earlyPutBackReasons
+                          .isNotEmpty ==
+                      true &&
+                  widget.animals.any(
+                    (animal) =>
+                        Timestamp.now()
+                            .toDate()
+                            .difference(animal.logs.last.startTime.toDate())
+                            .inMinutes <
+                        accountSettings
+                            .value!
+                            .accountSettings!
+                            .minimumLogMinutes,
+                  ))
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const TextSpan(
-                      text: 'Alert for ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: animal.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const TextSpan(
-                      text: ': ',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    TextSpan(
-                      text: animal.putBackAlert,
-                      style: const TextStyle(color: Colors.red),
+                    const Text('Early Put Back Reason: '),
+                    const Spacer(),
+                    DropdownButton<String>(
+                      value: _selectedEarlyReason,
+                      hint: const Text('Select reason'),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedEarlyReason = newValue;
+                          _updateConfirmButtonState();
+                        });
+                      },
+                      items: shelterSettings
+                          .value!
+                          .shelterSettings
+                          .earlyPutBackReasons
+                          .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          })
+                          .toList(),
                     ),
                   ],
                 ),
-              ),
-          if (accountSettings
-                      .value
-                      ?.accountSettings
-                      ?.requireEarlyPutBackReason ==
-                  true &&
-              shelterSettings
-                      .value
-                      ?.shelterSettings
-                      .earlyPutBackReasons
-                      .isNotEmpty ==
-                  true &&
-              widget.animals.any(
-                (animal) =>
-                    Timestamp.now()
-                        .toDate()
-                        .difference(animal.logs.last.startTime.toDate())
-                        .inMinutes <
-                    accountSettings.value!.accountSettings!.minimumLogMinutes,
-              ))
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text('Early Put Back Reason: '),
-                const Spacer(),
-                DropdownButton<String>(
-                  value: _selectedEarlyReason,
-                  hint: const Text('Select reason'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedEarlyReason = newValue;
-                      _updateConfirmButtonState();
-                    });
-                  },
-                  items: shelterSettings
-                      .value!
-                      .shelterSettings
-                      .earlyPutBackReasons
-                      .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      })
-                      .toList(),
-                ),
-              ],
-            ),
-        ],
+              // Add spacing between input fields and alerts if input fields are present
+              if (accountSettings
+                          .value
+                          ?.accountSettings
+                          ?.requireEarlyPutBackReason ==
+                      true &&
+                  shelterSettings
+                          .value
+                          ?.shelterSettings
+                          .earlyPutBackReasons
+                          .isNotEmpty ==
+                      true &&
+                  widget.animals.any(
+                    (animal) =>
+                        Timestamp.now()
+                            .toDate()
+                            .difference(animal.logs.last.startTime.toDate())
+                            .inMinutes <
+                        accountSettings
+                            .value!
+                            .accountSettings!
+                            .minimumLogMinutes,
+                  ))
+                const SizedBox(height: 20),
+              // Alerts section comes after input fields
+              for (var animal in widget.animals)
+                if (animal.putBackAlert.isNotEmpty)
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Alert for ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: animal.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: ': ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: animal.putBackAlert,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ),
+            ],
+          ),
+        ),
       ),
       actions: [
         TextButton(
@@ -309,8 +350,14 @@ class PutBackConfirmationViewState
                     },
                   );
 
+                  // Separate animals into those needing deletion vs update
+                  final animalsToDeleteLog = <Animal>[];
+                  final animalsToUpdate = <Animal>[];
+                  final logsToUpdate = <Log>[];
+
                   for (var animal in widget.animals) {
-                    if ((!accountSettings
+                    final shouldDeleteLog =
+                        ((!accountSettings
                                 .value!
                                 .accountSettings!
                                 .createLogsWhenUnderMinimumDuration &&
@@ -339,11 +386,13 @@ class PutBackConfirmationViewState
                                     .value!
                                     .volunteerSettings
                                     .minimumLogMinutes &&
-                            appUser?.type == 'volunteer')) {
-                      await putBackViewModel.deleteLastLog(animal);
+                            appUser?.type == 'volunteer'));
+
+                    if (shouldDeleteLog) {
+                      animalsToDeleteLog.add(animal);
                     } else {
-                      await putBackViewModel.putBackAnimal(
-                        animal,
+                      animalsToUpdate.add(animal);
+                      logsToUpdate.add(
                         Log(
                           id: const Uuid().v4().toString(),
                           type: '',
@@ -356,6 +405,31 @@ class PutBackConfirmationViewState
                       );
                     }
                   }
+
+                  // Process both operations in parallel for maximum speed
+                  final bulkPutBackViewModel = ref.read(
+                    bulkPutBackViewModelProvider,
+                  );
+                  final futures = <Future<void>>[];
+
+                  if (animalsToDeleteLog.isNotEmpty) {
+                    futures.add(
+                      bulkPutBackViewModel.bulkDeleteLastLogs(
+                        animalsToDeleteLog,
+                      ),
+                    );
+                  }
+
+                  if (animalsToUpdate.isNotEmpty) {
+                    futures.add(
+                      bulkPutBackViewModel.bulkPutBackAnimals(
+                        animalsToUpdate,
+                        logsToUpdate,
+                      ),
+                    );
+                  }
+
+                  await Future.wait(futures);
 
                   if (!context.mounted) return;
                   Navigator.of(context).pop(); // Close the progress indicator
