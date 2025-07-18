@@ -9,7 +9,7 @@ from google.cloud import firestore
 from google.api_core import exceptions
 import requests
 from datetime import datetime
-from pytz import timezone
+from pytz import timezone 
 import pandas as pd
 import ast
 
@@ -110,6 +110,7 @@ def shelterluv_sync(cloud_event):
             print("[DEBUG] Storing email sync date in Firestore...")
             try:
                 shelter_ref.update({"lastEmailSync": email_date})
+                shelter_ref.update({"lastEmailSyncTime": email_date})
                 print("[DEBUG] Last sync date stored successfully in Firestore.")
             except exceptions.GoogleCloudError as e_firestore:
                 print(f"[DEBUG] Error updating Firestore with lastSync date: {e_firestore}")
@@ -287,6 +288,7 @@ def shelterluv_sync(cloud_event):
         try:
             update_data = {
                 "lastEmailSync": firestore.SERVER_TIMESTAMP,
+                "lastEmailSyncTime": firestore.SERVER_TIMESTAMP,
                 "lastCatEmailSync": firestore.SERVER_TIMESTAMP,
                 "lastDogEmailSync": firestore.SERVER_TIMESTAMP
             }
@@ -296,6 +298,7 @@ def shelterluv_sync(cloud_event):
             print("[DEBUG] Document not found; attempting to create it with initial timestamps.")
             shelter_ref.set({
                 "lastEmailSync": firestore.SERVER_TIMESTAMP,
+                "lastEmailSyncTime": firestore.SERVER_TIMESTAMP,
                 "lastCatEmailSync": firestore.SERVER_TIMESTAMP,
                 "lastDogEmailSync": firestore.SERVER_TIMESTAMP
             })
