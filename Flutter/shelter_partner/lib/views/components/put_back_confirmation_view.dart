@@ -208,93 +208,103 @@ class PutBackConfirmationViewState
               : 'Confirm Action for ${widget.animals.length} animals',
         ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.animals.length == 1
-                ? 'Do you want to put ${widget.animals.first.name} back into their kennel?'
-                : 'Do you want to put the selected animals back into their kennels?',
-          ),
-          const SizedBox(height: 20),
-          for (var animal in widget.animals)
-            if (animal.putBackAlert.isNotEmpty)
-              RichText(
-                text: TextSpan(
+      content: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.6,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.animals.length == 1
+                    ? 'Do you want to put ${widget.animals.first.name} back into their kennel?'
+                    : 'Do you want to put the selected animals back into their kennels?',
+              ),
+              const SizedBox(height: 20),
+              for (var animal in widget.animals)
+                if (animal.putBackAlert.isNotEmpty)
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Alert for ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: animal.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: ': ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: animal.putBackAlert,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ),
+              if (accountSettings
+                          .value
+                          ?.accountSettings
+                          ?.requireEarlyPutBackReason ==
+                      true &&
+                  shelterSettings
+                          .value
+                          ?.shelterSettings
+                          .earlyPutBackReasons
+                          .isNotEmpty ==
+                      true &&
+                  widget.animals.any(
+                    (animal) =>
+                        Timestamp.now()
+                            .toDate()
+                            .difference(animal.logs.last.startTime.toDate())
+                            .inMinutes <
+                        accountSettings
+                            .value!
+                            .accountSettings!
+                            .minimumLogMinutes,
+                  ))
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const TextSpan(
-                      text: 'Alert for ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: animal.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const TextSpan(
-                      text: ': ',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    TextSpan(
-                      text: animal.putBackAlert,
-                      style: const TextStyle(color: Colors.red),
+                    const Text('Early Put Back Reason: '),
+                    const Spacer(),
+                    DropdownButton<String>(
+                      value: _selectedEarlyReason,
+                      hint: const Text('Select reason'),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedEarlyReason = newValue;
+                          _updateConfirmButtonState();
+                        });
+                      },
+                      items: shelterSettings
+                          .value!
+                          .shelterSettings
+                          .earlyPutBackReasons
+                          .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          })
+                          .toList(),
                     ),
                   ],
                 ),
-              ),
-          if (accountSettings
-                      .value
-                      ?.accountSettings
-                      ?.requireEarlyPutBackReason ==
-                  true &&
-              shelterSettings
-                      .value
-                      ?.shelterSettings
-                      .earlyPutBackReasons
-                      .isNotEmpty ==
-                  true &&
-              widget.animals.any(
-                (animal) =>
-                    Timestamp.now()
-                        .toDate()
-                        .difference(animal.logs.last.startTime.toDate())
-                        .inMinutes <
-                    accountSettings.value!.accountSettings!.minimumLogMinutes,
-              ))
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text('Early Put Back Reason: '),
-                const Spacer(),
-                DropdownButton<String>(
-                  value: _selectedEarlyReason,
-                  hint: const Text('Select reason'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedEarlyReason = newValue;
-                      _updateConfirmButtonState();
-                    });
-                  },
-                  items: shelterSettings
-                      .value!
-                      .shelterSettings
-                      .earlyPutBackReasons
-                      .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      })
-                      .toList(),
-                ),
-              ],
-            ),
-        ],
+            ],
+          ),
+        ),
       ),
       actions: [
         TextButton(
