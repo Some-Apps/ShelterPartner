@@ -12,9 +12,11 @@ class StatsRepository {
   Stream<List<Animal>> fetchAnimals(String shelterID) {
     final catsStream = _firestore
         .collection('shelters/$shelterID/cats')
+        .where('isActive', isEqualTo: true)
         .snapshots();
     final dogsStream = _firestore
         .collection('shelters/$shelterID/dogs')
+        .where('isActive', isEqualTo: true)
         .snapshots();
 
     return CombineLatestStream.list([catsStream, dogsStream]).map((snapshots) {

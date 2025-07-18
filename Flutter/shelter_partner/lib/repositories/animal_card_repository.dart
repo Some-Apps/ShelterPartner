@@ -44,6 +44,19 @@ class AnimalRepository {
       }
     }
   }
+
+  Future<void> markAnimalAsInactive(
+    String shelterId,
+    String animalType,
+    String animalId,
+  ) async {
+    await _firestore
+        .collection('shelters')
+        .doc(shelterId)
+        .collection(animalType == 'cat' ? 'cats' : 'dogs')
+        .doc(animalId)
+        .update({'isActive': false});
+  }
 }
 
 final animalRepositoryProvider = Provider<AnimalRepository>((ref) {
