@@ -47,20 +47,17 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
 
     _animalsSubscription = animalsStream.listen((animals) {
       final newStats = _groupByTimeframe(animals);
-      
+
       // Only detect changes if this is not the initial load and we have previous stats
       List<Map<String, dynamic>> changes = [];
       if (!_isInitialLoad && state.isNotEmpty) {
         changes = _detectChanges(state, newStats);
       }
-      
+
       // Set initial load to false after first load
       _isInitialLoad = false;
 
-      state = {
-        ...newStats,
-        "recentChanges": changes,
-      };
+      state = {...newStats, "recentChanges": changes};
 
       ref.read(recentChangesProvider.notifier).state = changes
           .map((change) => _getActivityMessage(change))
