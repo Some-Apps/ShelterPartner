@@ -88,9 +88,9 @@ def main(request):
     # Update the shelter document with the last sync times
     try:
         update_data = {
-            "lastSync": firestore.SERVER_TIMESTAMP,
-            "lastCatSync": firestore.SERVER_TIMESTAMP,
-            "lastDogSync": firestore.SERVER_TIMESTAMP
+            "lastApiSync": firestore.SERVER_TIMESTAMP,
+            "lastCatApiSync": firestore.SERVER_TIMESTAMP,
+            "lastDogApiSync": firestore.SERVER_TIMESTAMP
         }
         shelter_doc_ref.update(update_data)
     except Exception as e:

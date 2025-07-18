@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelter_partner/models/animal.dart';
 import 'package:shelter_partner/repositories/stats_repository.dart';
@@ -10,6 +11,8 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
 
   StreamSubscription<void>? _animalsSubscription;
   StreamSubscription<String>? _emailSyncSubscription;
+  StreamSubscription<Map<String, dynamic>>? _syncDataSubscription;
+  bool _isInitialLoad = true;
 
   StatsViewModel(this._repository, this.ref) : super({}) {
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
@@ -24,13 +27,17 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
     if (authState.status == AuthStatus.authenticated) {
       final shelterID = authState.user?.shelterId;
       if (shelterID != null) {
+        _isInitialLoad = true; // Reset initial load flag
         fetchAnimals(shelterID: shelterID);
         _fetchLastEmailSyncTime(shelterID);
+        _fetchLastSyncData(shelterID);
       }
     } else {
       state = {};
+      _isInitialLoad = true;
       _animalsSubscription?.cancel();
       _emailSyncSubscription?.cancel();
+      _syncDataSubscription?.cancel();
     }
   }
 
@@ -40,15 +47,18 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
 
     _animalsSubscription = animalsStream.listen((animals) {
       final newStats = _groupByTimeframe(animals);
-      final changes = _detectChanges(state, newStats);
 
-      state = {
-        ...newStats,
-        "lastApiSyncTime": DateTime.now().toIso8601String(),
-        "recentChanges": changes,
-      };
+      // Only detect changes if this is not the initial load and we have previous stats
+      List<Map<String, dynamic>> changes = [];
+      if (!_isInitialLoad && state.isNotEmpty) {
+        changes = _detectChanges(state, newStats);
+      }
 
-      ref.read(lastSyncProvider.notifier).state = DateTime.now();
+      // Set initial load to false after first load
+      _isInitialLoad = false;
+
+      state = {...newStats, "recentChanges": changes};
+
       ref.read(recentChangesProvider.notifier).state = changes
           .map((change) => _getActivityMessage(change))
           .toList();
@@ -64,6 +74,33 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
       state = {...state, "lastEmailSyncTime": emailSyncTime};
 
       ref.read(lastEmailSyncProvider.notifier).state = emailSyncTime;
+    });
+  }
+
+  /// Fetches last API sync data from shelter document
+  void _fetchLastSyncData(String shelterID) {
+    _syncDataSubscription?.cancel();
+    final syncDataStream = _repository.fetchLastSyncData(shelterID);
+
+    _syncDataSubscription = syncDataStream.listen((syncData) {
+      // Look for lastApiSync field that's set by the ShelterLuv cloud function
+      DateTime? lastApiSync;
+      if (syncData.containsKey('lastApiSync')) {
+        final lastApiSyncField = syncData['lastApiSync'];
+        if (lastApiSyncField is Timestamp) {
+          lastApiSync = lastApiSyncField.toDate();
+        } else if (lastApiSyncField is String) {
+          lastApiSync = DateTime.tryParse(lastApiSyncField);
+        }
+      }
+
+      // Only update if we have a valid sync time
+      if (lastApiSync != null) {
+        ref.read(lastSyncProvider.notifier).state = lastApiSync;
+      } else {
+        // Set to null if no API sync data is available
+        ref.read(lastSyncProvider.notifier).state = null;
+      }
     });
   }
 
@@ -187,6 +224,7 @@ class StatsViewModel extends StateNotifier<Map<String, dynamic>> {
   void dispose() {
     _animalsSubscription?.cancel();
     _emailSyncSubscription?.cancel();
+    _syncDataSubscription?.cancel();
     super.dispose();
   }
 }
