@@ -22,17 +22,40 @@ class AddLogView extends ConsumerStatefulWidget {
 class AddLogViewState extends ConsumerState<AddLogView> {
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _endTimeController = TextEditingController();
+  final TextEditingController _durationController = TextEditingController();
 
   String? _selectedType;
   String? _selectedEarlyReason;
 
-  Future<void> _selectTime(
-    BuildContext context,
-    TextEditingController controller,
-  ) async {
+  DateTime _startTime = DateTime.now().subtract(const Duration(minutes: 30));
+  DateTime _endTime = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _updateControllers();
+  }
+
+  void _updateControllers() {
+    _startTimeController.text = _formatTime(_startTime);
+    _endTimeController.text = _formatTime(_endTime);
+    final duration = _endTime.difference(_startTime).inMinutes;
+    _durationController.text = duration.toString();
+  }
+
+  void _updateTimeControllers() {
+    _startTimeController.text = _formatTime(_startTime);
+    _endTimeController.text = _formatTime(_endTime);
+  }
+
+  String _formatTime(DateTime dateTime) {
+    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _selectTime(BuildContext context, bool isStartTime) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: TimeOfDay.fromDateTime(isStartTime ? _startTime : _endTime),
       initialEntryMode: TimePickerEntryMode.input,
     );
     if (picked != null) {
@@ -45,7 +68,22 @@ class AddLogViewState extends ConsumerState<AddLogView> {
         picked.minute,
       );
       setState(() {
-        controller.text = selectedTime.toIso8601String();
+        if (isStartTime) {
+          _startTime = selectedTime;
+        } else {
+          _endTime = selectedTime;
+        }
+        _updateControllers();
+      });
+    }
+  }
+
+  void _onDurationChanged(String value) {
+    final minutes = int.tryParse(value);
+    if (minutes != null && minutes > 0) {
+      setState(() {
+        _startTime = _endTime.subtract(Duration(minutes: minutes));
+        _updateTimeControllers();
       });
     }
   }
@@ -54,6 +92,7 @@ class AddLogViewState extends ConsumerState<AddLogView> {
   void dispose() {
     _startTimeController.dispose();
     _endTimeController.dispose();
+    _durationController.dispose();
     super.dispose();
   }
 
@@ -129,8 +168,9 @@ class AddLogViewState extends ConsumerState<AddLogView> {
             TextField(
               controller: _startTimeController,
               readOnly: true,
-              onTap: () => _selectTime(context, _startTimeController),
+              onTap: () => _selectTime(context, true),
               decoration: const InputDecoration(
+                labelText: 'Start time',
                 hintText: 'Select start time...',
                 border: OutlineInputBorder(),
               ),
@@ -139,10 +179,23 @@ class AddLogViewState extends ConsumerState<AddLogView> {
             TextField(
               controller: _endTimeController,
               readOnly: true,
-              onTap: () => _selectTime(context, _endTimeController),
+              onTap: () => _selectTime(context, false),
               decoration: const InputDecoration(
+                labelText: 'End time',
                 hintText: 'Select end time...',
                 border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _durationController,
+              keyboardType: TextInputType.number,
+              onChanged: _onDurationChanged,
+              decoration: const InputDecoration(
+                labelText: 'Duration (minutes)',
+                hintText: 'Duration in minutes...',
+                border: OutlineInputBorder(),
+                suffixText: 'min',
               ),
             ),
             const SizedBox(height: 16),
@@ -157,21 +210,15 @@ class AddLogViewState extends ConsumerState<AddLogView> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed:
-              (_startTimeController.text.isNotEmpty &&
-                  _endTimeController.text.isNotEmpty)
+          onPressed: (_selectedType != null && _selectedType!.isNotEmpty)
               ? () async {
                   Log log = Log(
                     id: const Uuid().v4().toString(),
                     type: _selectedType ?? '',
                     author: userDetails!.firstName,
                     authorID: userDetails.id,
-                    startTime: Timestamp.fromDate(
-                      DateTime.parse(_startTimeController.text),
-                    ),
-                    endTime: Timestamp.fromDate(
-                      DateTime.parse(_endTimeController.text),
-                    ),
+                    startTime: Timestamp.fromDate(_startTime),
+                    endTime: Timestamp.fromDate(_endTime),
                     earlyReason: _selectedEarlyReason,
                   );
 
