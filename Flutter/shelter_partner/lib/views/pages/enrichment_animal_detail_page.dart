@@ -354,8 +354,6 @@ class EnrichmentAnimalDetailPage extends ConsumerWidget {
                     },
                   ),
 
-                  const SizedBox(height: 32.0),
-
                   if (!visitorPage) ...[
                     const SizedBox(height: 32.0),
 
